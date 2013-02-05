@@ -26,3 +26,12 @@ dtest( d, d.getTimezoneOffset() );
 function dtest( d, offset ) {
     console.log( "Offset %d date %s", offset, dateutil.toSortableString(d,offset) );
 }
+
+console.log( d.toLocaleString() );       // Existing Date object method
+console.log( d.toISOString() );         // Existing Date object method
+console.log( d.toISOLocaleString() );
+console.log( d.toFileString() );
+console.log( d.toFileString('d') );
+console.log( d.toFileString('ms') );
+
+console.log( dateutil.formatMS(d) );
