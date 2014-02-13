@@ -18,6 +18,7 @@ var d0 = new Date();
 console.log( d.toLocaleString() );       // Existing Date object method
 console.log( d.toISOString() );          // Existing Date object method
 console.log( d.toISOLocaleString() );
+console.log( d.toISOLocaleString(true) ); // Don't output milliseconds
 console.log( d.toFileString() );
 console.log( d.toFileString('d') );
 console.log( d.toFileString('ms') );
