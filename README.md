@@ -1,11 +1,11 @@
-# a5dateutil #
+# dateutil #
 
 Contains date utility functions
 
 ## Date Utilities ##
 
 ```javascript
-var dateutil = require('a5datetuil');
+var dateutil = require('datetuil');
 
 var d0 = new Date();
 console.log( "Date is %s", dateutil.toSortableString(d0);
