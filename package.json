@@ -1,7 +1,6 @@
 {
-    "name": "a5dateutil"
+    "name": "dateutil"
     , "version": "0.0.6"
-    , "private": true
     , "dependencies": {
     }
 }
