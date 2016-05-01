@@ -45,7 +45,7 @@ var self = {
     var hours = Math.floor(ms / ( 60 * 60 * 1000 ));
     var res = decimal + self.pad(milliseconds, 3) + s;
     if (hours) {
-      return hours + h + self.pad(minutes, 2) + n + self.pad(seconds, 2) + res;
+      return hours + h + self.pad(minutes, 2) + m + self.pad(seconds, 2) + res;
     } else if (minutes) {
       return minutes + m + self.pad(seconds, 2) + res;
     }

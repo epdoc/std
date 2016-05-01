@@ -1,6 +1,6 @@
 {
     "name": "time-util",
-    "version": "2.0.2",
+    "version": "2.0.3",
     "dependencies": {
     },
     "description": "Date and time utilities not found in momentjs",
