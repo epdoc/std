@@ -1,24 +1,26 @@
 {
-    "name": "time-util",
-    "version": "2.0.3",
-    "dependencies": {
-    },
-    "description": "Date and time utilities not found in momentjs",
-    "keywords": [
-        "localize",
-        "string"
-    ],
-    "license": "MIT",
-    "author": {
-        "name": "James Pravetz",
-        "email": "jpravetz@epdoc.com"
-    },
-    "main": "index.js",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/jpravetz/time-util"
-    },
-    "scripts": {
-        "test": "mocha test"
-    }
+  "name": "time-util",
+  "version": "2.0.3",
+  "dependencies": {
+    "mocha": "^2.4.5",
+    "should": "^8.3.1"
+  },
+  "description": "Date and time utilities not found in momentjs",
+  "keywords": [
+    "localize",
+    "string"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "James Pravetz",
+    "email": "jpravetz@epdoc.com"
+  },
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jpravetz/time-util"
+  },
+  "scripts": {
+    "test": "mocha test"
+  }
 }

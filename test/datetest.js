@@ -1,20 +1,29 @@
 /*************************************************************************
- * Copyright(c) 2012-2014 Jim Pravetz <jpravetz@epdoc.com>
+ * Copyright(c) 2012-2016 Jim Pravetz <jpravetz@epdoc.com>
  * May be freely distributed under the MIT license.
  **************************************************************************/
 
+var should = require('should');
 var timeutil = require('../index');
 
-var d = new Date();
+describe('time-util test',function() {
+  
+  it('formatMS test',function(done) {
+    should(timeutil.formatMS(3454)).equal('3.454s');
+    should(timeutil.formatMS(32397843)).equal('8h59m57.843s');
+    should(timeutil.formatMS(130054)).equal('2m10.054s');
+    should(timeutil.formatMS(41234)).equal('41.234s');
+    done();
+  });
 
-console.log( d.toLocaleString() );       // Existing Date object method
-console.log( d.toISOString() );         // Existing Date object method
-console.log( d.toISOLocaleString() );
-console.log( d.toISOLocaleString(true) );
+  // Yes I know this only works during daylight savings in PT zone
+  // I'll fix it later, maybe
+  it('toISOLocaleString test',function(done) {
+    var d = new Date('1997-11-25T12:13:14.456Z');
+    should(d.toISOLocaleString()).equal('1997-11-25T04:13:14.456-08:00');
+    should(d.toISOLocaleString(true)).equal('1997-11-25T04:13:14-08:00');
+    done();
+  });
+  
+});
 
-console.log( timeutil.formatMS(d) );
-
-console.log(timeutil.formatMS(3454));
-console.log(timeutil.formatMS(32397843));
-console.log(timeutil.formatMS(130054));
-console.log(timeutil.formatMS(41234));
