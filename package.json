@@ -1,6 +1,6 @@
 {
   "name": "time-util",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "dependencies": {
     "mocha": "^2.4.5",
     "should": "^8.3.1"
