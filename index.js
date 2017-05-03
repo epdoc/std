@@ -58,20 +58,23 @@ var self = {
   },
 
   toISOLocaleString: function (d, bNoMs) {
-    function tz (m) {
-      return ((m < 0) ? '+' : '-') + self.pad(Math.abs(m) / 60, 2) + ':' + self.pad(Math.abs(m) % 60, 2);
+    if( d instanceof Date ) {
+      function tz (m) {
+        return ((m < 0) ? '+' : '-') + self.pad(Math.abs(m) / 60, 2) + ':' + self.pad(Math.abs(m) % 60, 2);
+      }
+
+      var s = String(d.getFullYear()) + '-'
+        + self.pad(d.getMonth() + 1, 2) + '-'
+        + self.pad(d.getDate(), 2) + 'T'
+        + self.pad(d.getHours(), 2) + ':'
+        + self.pad(d.getMinutes(), 2) + ':'
+        + self.pad(d.getSeconds(), 2);
+      if (bNoMs !== true) {
+        s += '.' + self.pad(d.getMilliseconds(), 3)
+      }
+      s += tz(d.getTimezoneOffset());
+      return s;
     }
-    var s = String(d.getFullYear()) + '-'
-      + self.pad(d.getMonth() + 1, 2) + '-'
-      + self.pad(d.getDate(), 2) + 'T'
-      + self.pad(d.getHours(), 2) + ':'
-      + self.pad(d.getMinutes(), 2) + ':'
-      + self.pad(d.getSeconds(), 2);
-    if (bNoMs !== true) {
-      s += '.' + self.pad(d.getMilliseconds(), 3)
-    }
-    s += tz(d.getTimezoneOffset());
-    return s;
   }
 
 };
