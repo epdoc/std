@@ -15,4 +15,9 @@ describe('date-util', function () {
     expect(new DateUtil(d).julianDate()).toEqual(2450778);
     done();
   });
+  it('googleSheetsDate', function (done) {
+    var d = new Date('1997-11-25T12:13:14Z');
+    expect(new DateUtil(d).googleSheetsDate()).toEqual(35759.25918981482);
+    done();
+  });
 });
