@@ -1,6 +1,6 @@
 # time-util #
 
-Contains date and time utilities that are not found in moment.js
+Contains date and time utilities that are not found in moment.js. 
 
 ## Date and Time Utilities ##
 

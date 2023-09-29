@@ -1,15 +1,7 @@
 {
-  "name": "time-util",
-  "version": "2.0.5",
-  "dependencies": {
-    "mocha": "^2.4.5",
-    "should": "^8.3.1"
-  },
+  "name": "epdoc-timeutil",
+  "version": "2.1.0",
   "description": "Lightweight date and time utilities, to avoid the weight of momentjs",
-  "keywords": [
-    "localize",
-    "string"
-  ],
   "license": "MIT",
   "author": {
     "name": "James Pravetz",
@@ -18,9 +10,30 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jpravetz/time-util"
+    "url": "https://github.com/jpravetz/epdoc-timeutil"
   },
   "scripts": {
-    "test": "mocha test"
+    "clean": "rm -rf dist",
+    "build": "tsc",
+    "watch": "jest --watch",
+    "test": "jest --runInBand",
+    "coverage": "jest --coverage --runInBand --verbose",
+    "prepublishOnly": "tsc",
+    "prepare": "npm run build",
+    "format": "prettier --write 'src/**/*.ts'"
+  },
+  "dependencies": {
+    "epdoc-util": "^0.1.17"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.5",
+    "@types/node": "^20.7.1",
+    "jest": "^29.7.0",
+    "mocha": "^10.2.0",
+    "prettier": "^2.8.8",
+    "ts-jest": "^29.1.1",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-plugin-prettier": "^2.3.0",
+    "typescript": "^5.2.2"
   }
 }
