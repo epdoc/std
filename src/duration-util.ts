@@ -6,9 +6,9 @@ export type FormatMsOptions = {
   d: string;
   h: string;
   m: string; // set to a non string (false, null) to supress output, where compact is false
-  s: string; // set to a non string (false, null) to supress output, where compact is false
-  ms: string; // set to a non string (false, null) to supress output, where compact is false
-  decimal?: string;
+  s: string | false; // set to a non string (false, null) to supress output, where compact is false
+  ms: string | false; // set to a non string (false, null) to supress output, where compact is false
+  decimal?: string | false;
   compact: boolean;
   sep?: string;
 };
@@ -69,7 +69,7 @@ export class DurationUtil {
    */
   constructor(ms: Milliseconds, formatting?: FormatMsOptions | FormatName) {
     this._ms = ms;
-    if( isFormatName(formatting)) {
+    if (isFormatName(formatting)) {
       this.options(formatting);
     } else {
       this.options(':').options(formatting);
@@ -96,7 +96,7 @@ export class DurationUtil {
     return this;
   }
 
-  public format(formatting: FormatMsOptions | FormatName): string {
+  public format(formatting?: FormatMsOptions | FormatName): string {
     this.options(formatting);
     let ms = this._ms;
     if (ms < 0) {
@@ -135,7 +135,7 @@ export class DurationUtil {
       } else if (time.m || !isNonEmptyString(opts.s)) {
         return time.m + opts.m + pad(Math.floor(time.s), 2) + res;
       }
-      return time.s + res;
+      return  String(time.s) + res;
     } else {
       return Object.entries(time)
         .filter((val) => val[1] !== 0)

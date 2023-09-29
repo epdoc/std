@@ -3,9 +3,9 @@ export type FormatMsOptions = {
     d: string;
     h: string;
     m: string;
-    s: string;
-    ms: string;
-    decimal?: string;
+    s: string | false;
+    ms: string | false;
+    decimal?: string | false;
     compact: boolean;
     sep?: string;
 };
@@ -32,16 +32,5 @@ export declare class DurationUtil {
      * @returns this
      */
     options(formatting: FormatMsOptions | FormatName): DurationUtil;
-    /**
-     * Do not display milliseconds in output string.
-     * @returns this
-     */
-    /**
-     * Set the character to use for decimal points. Default to '.'. Example use is
-     * to set to a comma for certain latin countries.
-     * @param decimal
-     * @returns
-     */
-    decimal(decimal?: string): DurationUtil;
-    format(formatting: FormatMsOptions | FormatName): string;
+    format(formatting?: FormatMsOptions | FormatName): string;
 }

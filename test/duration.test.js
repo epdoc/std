@@ -26,7 +26,7 @@ describe('duration-util', function () {
     );
     // Same as previous, but also turn off output of seconds
     expect(
-      new DurationUtil(982442990, 'long').options({ sep: ' ', ms: false, s: null }).format()
+      new DurationUtil(982442990, 'long').options({ sep: ' ', ms: false, s: false }).format()
     ).toEqual('11 days 8 hours 54 minutes');
     // Same as previous, but set ms and s to false to get them to not display
     expect(

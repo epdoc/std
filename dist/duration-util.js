@@ -37,7 +37,12 @@ class DurationUtil {
         this._opts = DurationUtil.OPTS[':'];
         this._ms = 0;
         this._ms = ms;
-        this.options(formatting);
+        if (isFormatName(formatting)) {
+            this.options(formatting);
+        }
+        else {
+            this.options(':').options(formatting);
+        }
     }
     /**
      * Define a custom format by overwriting the default format.
@@ -59,24 +64,6 @@ class DurationUtil {
         }
         return this;
     }
-    /**
-     * Do not display milliseconds in output string.
-     * @returns this
-     */
-    // public showMs(val: boolean = true): DurationUtil {
-    //   this._showMs = val;
-    //   return this;
-    // }
-    /**
-     * Set the character to use for decimal points. Default to '.'. Example use is
-     * to set to a comma for certain latin countries.
-     * @param decimal
-     * @returns
-     */
-    decimal(decimal = '.') {
-        this._decimal = decimal;
-        return this;
-    }
     format(formatting) {
         this.options(formatting);
         let ms = this._ms;
@@ -84,14 +71,6 @@ class DurationUtil {
             ms = -ms;
         }
         const opts = this._opts;
-        // if (isBoolean(this._showMs)) {
-        //   opts.showMs = this._showMs;
-        //   this._showMs = undefined;
-        // }
-        if ((0, epdoc_util_1.isString)(this._decimal)) {
-            opts.decimal = this._decimal;
-            this._decimal = undefined;
-        }
         if (!(0, epdoc_util_1.isString)(opts.ms)) {
             ms = Math.round(ms / 1000) * 1000;
         }
@@ -123,7 +102,7 @@ class DurationUtil {
             else if (time.m || !(0, epdoc_util_1.isNonEmptyString)(opts.s)) {
                 return time.m + opts.m + (0, epdoc_util_1.pad)(Math.floor(time.s), 2) + res;
             }
-            return time.s + res;
+            return String(time.s) + res;
         }
         else {
             return Object.entries(time)
