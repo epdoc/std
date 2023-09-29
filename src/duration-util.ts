@@ -3,13 +3,13 @@ import { deepCopy, isDict, isNonEmptyString, isString, pad } from 'epdoc-util';
 export type Milliseconds = number;
 
 export type FormatMsOptions = {
-  d: string;
-  h: string;
-  m: string; // set to a non string (false, null) to supress output, where compact is false
-  s: string | false; // set to a non string (false, null) to supress output, where compact is false
-  ms: string | false; // set to a non string (false, null) to supress output, where compact is false
+  d?: string;
+  h?: string;
+  m?: string; // set to a non string (false, null) to supress output, where compact is false
+  s?: string | false; // set to a non string (false, null) to supress output, where compact is false
+  ms?: string | false; // set to a non string (false, null) to supress output, where compact is false
   decimal?: string | false;
-  compact: boolean;
+  compact?: boolean;
   sep?: string;
 };
 

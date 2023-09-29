@@ -1,7 +1,6 @@
 import { isValidDate, pad, isString } from 'epdoc-util';
 
 export type Minutes = number;
-export type Seconds = number;
 export type JulianDate = number;
 
 export function dateUtil(date: Date) {

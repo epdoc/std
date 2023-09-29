@@ -1,12 +1,12 @@
 export type Milliseconds = number;
 export type FormatMsOptions = {
-    d: string;
-    h: string;
-    m: string;
-    s: string | false;
-    ms: string | false;
+    d?: string;
+    h?: string;
+    m?: string;
+    s?: string | false;
+    ms?: string | false;
     decimal?: string | false;
-    compact: boolean;
+    compact?: boolean;
     sep?: string;
 };
 export declare function isFormatMsOptions(val: any): val is FormatMsOptions;

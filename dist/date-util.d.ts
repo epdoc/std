@@ -1,5 +1,4 @@
 export type Minutes = number;
-export type Seconds = number;
 export type JulianDate = number;
 export declare function dateUtil(date: Date): DateUtil;
 export declare class DateUtil {
