@@ -1,13 +1,13 @@
 {
   "name": "epdoc-timeutil",
   "version": "2.1.0",
-  "description": "Lightweight date and time utilities, to avoid the weight of momentjs",
+  "description": "Lightweight date and duration utilities, where moment.js does not have what we need",
   "license": "MIT",
   "author": {
     "name": "James Pravetz",
     "email": "jpravetz@epdoc.com"
   },
-  "main": "index.js",
+  "main": "dist/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/jpravetz/epdoc-timeutil"
@@ -15,7 +15,6 @@
   "scripts": {
     "clean": "rm -rf dist",
     "build": "tsc",
-    "watch": "jest --watch",
     "test": "jest --runInBand",
     "coverage": "jest --coverage --runInBand --verbose",
     "prepublishOnly": "tsc",

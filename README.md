@@ -1,25 +1,35 @@
-# time-util #
+# epdoc-timeutil #
 
-Contains date and time utilities that are not found in moment.js. 
+Contains date and time duration utilities that are not found in
+[moment.js](https://github.com/moment/moment). Written in TypeScript. The
+examples below use plain vanilla ES6.
 
-## Date and Time Utilities ##
+## Date Utilities ##
+
+There are date utilities to generate from a Date object:
+
+ * an ISO date string that uses the local timezone
+ * the [Julian date](https://en.wikipedia.org/wiki/Julian_day) value
 
 ```javascript
-var timeutil = require('time-util');
+let dateutil = require('epdoc-timeutil').dateUtil;
 
-var d0 = new Date();
-console.log( "Date is %s", dateutil.toISOLocaleString(d0);
+let d0 = new Date();
+console.log( `Date is ${dateutil(d0).toISOLocaleString()}` );
 ```
 
-The  method ```toISOLocaleString``` extends the Date object.
+Resultant output:
+
+```
+Date is 2023-09-29T14:21:03.861-06:00
+```
 
 ```javascript
 var d0 = new Date();
-console.log( d.toLocaleString() );       // Existing Date object method
-console.log( d.toISOString() );          // Existing Date object method
-console.log( d.toISOLocaleString() );
-console.log( d.toISOLocaleString(true) );
-console.log( timeutil.formatMS(d) );
+console.log( d0.toLocaleString() );
+console.log( d0.toISOString() );
+console.log( dateutil(d0).toISOLocaleString() );
+console.log( dateutil(d0).toISOLocaleString(false) );
 ```
 
 Resultant output:
@@ -29,20 +39,28 @@ Resultant output:
 2016-05-01T18:49:21.122Z
 2016-05-01T11:49:21.122-07:00
 2016-05-01T11:49:21-07:00
-406146:49:21.122
 ```
 
+## Duration Utilities
 
-```
+```javascript
+let durationUtil = require('epdoc-timeutil').durationUtil;
+
 // Run
-console.log(timeutil.formatMS(3454));
-console.log(timeutil.formatMS(32397843));
-console.log(timeutil.formatMS(130054));
-console.log(timeutil.formatMS(41234));
+console.log(durationUtil(-4443454).options('long').format());
+console.log(durationUtil(-4443454).format());
+console.log(durationUtil(3454, 'hms').format());
+console.log(durationUtil(982440990).showMs(false).format(':'));
+// Useful when generating audible messages
+console.log( durationUtil(982442990, 'long').options({ sep: ' ', ms: false }).format())
+// Same as previous, but use options to turn off both s and ms.
+console.log( durationUtil(982442990, 'long').options({ sep: ' ', ms: false, s: false }).format())
 
 // Resultant output
-3.454
-8:59:57.843
-2:10.054
-41.234
+1 hour, 14 minutes, 3 seconds, 454 milliseconds
+1:14:03.454
+3.454s
+11d08:54:01
+11 days 8 hours 54 minutes 2 seconds
+11 days 8 hours 54 minutes
 ```

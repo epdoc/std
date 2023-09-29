@@ -1,101 +1,109 @@
-import { isDict, pad } from 'epdoc-util';
+import { deepCopy, isDict, isNonEmptyString, isString, pad } from 'epdoc-util';
 
 export type Milliseconds = number;
 
 export type FormatMsOptions = {
   d: string;
   h: string;
-  m: string;
-  s: string;
-  ms: string;
-  precision?: number;
+  m: string; // set to a non string (false, null) to supress output, where compact is false
+  s: string; // set to a non string (false, null) to supress output, where compact is false
+  ms: string; // set to a non string (false, null) to supress output, where compact is false
+  decimal?: string;
+  compact: boolean;
+  sep?: string;
 };
 
 export function isFormatMsOptions(val: any): val is FormatMsOptions {
-  if (isDict(val)) {
+  if (
+    isDict(val) &&
+    isString(val.d) &&
+    isString(val.h) &&
+    isString(val.m) &&
+    isString(val.s) &&
+    isString(val.ms)
+  ) {
     return true;
   }
   return false;
 }
 
+export function durationUtil(ms: Milliseconds, opts?: FormatMsOptions | FormatName) {
+  return new DurationUtil(ms, opts);
+}
+
+export type FormatName = 'hms' | ':' | 'long';
+export function isFormatName(val: any): val is FormatName {
+  if (isNonEmptyString(val)) {
+    if (val === 'hms' || val === ':' || val === 'long') {
+      return true;
+    }
+  }
+  return false;
+}
+
 export class DurationUtil {
-  private _opts: Record<string, FormatMsOptions> = {
-    short: { d: 'd', h: 'h', m: 'm', s: 's', ms: '' },
-    colon: { d: 'd', h: ':', m: ':', s: ':', ms: '' },
-    long: { d: 'day', h: 'hour', m: 'minute', s: 'second', ms: 'millisecond' },
+  private static OPTS: Record<string, FormatMsOptions> = {
+    hms: { d: 'd', h: 'h', m: 'm', s: 's', ms: '', compact: true, decimal: '.' },
+    ':': { d: 'd', h: ':', m: ':', s: '', ms: '', compact: true, decimal: '.' },
+    long: {
+      d: 'day',
+      h: 'hour',
+      m: 'minute',
+      s: 'second',
+      ms: 'millisecond',
+      compact: false,
+      sep: ', ',
+      decimal: '.',
+    },
   };
-  private _long: boolean = false;
-  private _decimal: string = '.';
-  private _showMs: boolean = true;
+  private _opts: FormatMsOptions = DurationUtil.OPTS[':'];
+  // private _showMs: boolean;
+  private _decimal: string;
+
   private _ms: Milliseconds = 0;
 
-  constructor(ms: Milliseconds, opts?: FormatMsOptions) {
+  /**
+   *
+   * @param ms The duration we are outputing
+   * @param opts
+   */
+  constructor(ms: Milliseconds, formatting?: FormatMsOptions | FormatName) {
     this._ms = ms;
-    if (isFormatMsOptions(opts)) {
-      this._opts.short = opts;
+    if( isFormatName(formatting)) {
+      this.options(formatting);
+    } else {
+      this.options(':').options(formatting);
     }
   }
 
-  options(opts: FormatMsOptions): DurationUtil {
-    this._opts.short = opts;
-    return this;
-  }
-
   /**
-   * Set the number for ms precision. To show all ms digits, set to 3. To show
-   * no ms digits, set to 0.
-   * @param precision
-   * @returns
-   */
-  precision(precision: number): DurationUtil {
-    this._opts.short.precision = precision;
-    return this;
-  }
-
-  long(): string {
-    this._long = true;
-    return this.format();
-  }
-
-  short(): string {
-    this._long = false;
-    return this.format();
-  }
-
-  noms(): DurationUtil {
-    this._showMs = false;
-    return this;
-  }
-
-  /**
-   * Set the character to use for decimal points. Default to '.'. Example use is
-   * to set to a comma for certain latin countries.
-   * @param decimal
-   * @returns
-   */
-  decimal(decimal: string = '.'): DurationUtil {
-    this._decimal = decimal;
-    return this;
-  }
-
-  /**
-   * Set hms separators to the same string `val`. Defaults to colon.
+   * Define a custom format by overwriting the default format.
+   * @param opts The name of one of the preset formatting options, or a
+   * Dictionary with entries from a FormatMsOptions object, which are then used
+   * to override the individual default values.
    * @returns this
    */
-  sep(val: string = ':'): string {
-    this._opts.short.h = val;
-    this._opts.short.m = val;
-    this._opts.short.s = '';
-    this._long = false;
-    return this.format();
+  public options(formatting: FormatMsOptions | FormatName): DurationUtil {
+    if (isFormatName(formatting)) {
+      this._opts = deepCopy(DurationUtil.OPTS[formatting]);
+    } else if (isDict(formatting)) {
+      Object.keys(DurationUtil.OPTS.long).forEach((key) => {
+        if (formatting.hasOwnProperty(key)) {
+          this._opts[key] = formatting[key];
+        }
+      });
+    }
+    return this;
   }
 
-  format(): string {
+  public format(formatting: FormatMsOptions | FormatName): string {
+    this.options(formatting);
     let ms = this._ms;
     if (ms < 0) {
       ms = -ms;
     }
-    if (!this._showMs) {
+    const opts = this._opts;
+    if (!isString(opts.ms)) {
       ms = Math.round(ms / 1000) * 1000;
     }
     const time = {
@@ -106,19 +114,10 @@ export class DurationUtil {
       ms: Math.floor(ms) % 1000,
     };
 
-    if (this._long) {
-      const opts = this._opts.long;
-      return Object.entries(time)
-        .filter((val) => val[1] !== 0)
-        .map(([key, val]) => {
-          return `${val} ${opts[key]}${val !== 1 ? 's' : ''}`;
-        })
-        .join(', ');
-    } else {
-      const opts = this._opts.short;
+    if (opts.compact) {
       let res = opts.s;
-      if (this._showMs) {
-        res = this._decimal + pad(time.ms, 3) + opts.s;
+      if (isString(opts.ms)) {
+        res = opts.decimal + pad(time.ms, 3) + opts.s;
       }
       if (time.d) {
         return (
@@ -133,10 +132,20 @@ export class DurationUtil {
         );
       } else if (time.h) {
         return time.h + opts.h + pad(time.m, 2) + opts.m + pad(Math.floor(time.s), 2) + res;
-      } else if (time.m) {
+      } else if (time.m || !isNonEmptyString(opts.s)) {
         return time.m + opts.m + pad(Math.floor(time.s), 2) + res;
       }
       return time.s + res;
+    } else {
+      return Object.entries(time)
+        .filter((val) => val[1] !== 0)
+        .map(([key, val]) => {
+          if (isString(opts[key])) {
+            return `${val} ${opts[key]}${val !== 1 ? 's' : ''}`;
+          }
+        })
+        .filter((val) => isNonEmptyString(val))
+        .join(opts.sep);
     }
   }
 }
