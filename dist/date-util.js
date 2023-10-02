@@ -9,7 +9,7 @@ exports.dateUtil = dateUtil;
 class DateUtil {
     constructor(date) {
         this._invalidDateString = 'Invalid Date';
-        this._date = date;
+        this._date = (0, epdoc_util_1.isDate)(date) ? new Date(date) : new Date();
     }
     toISOLocaleString(showMs = true) {
         this.validate();
