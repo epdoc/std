@@ -1,4 +1,4 @@
-import { isValidDate, pad, isString } from 'epdoc-util';
+import { isValidDate, pad, isString, isDate } from 'epdoc-util';
 
 export type Minutes = number;
 export type JulianDate = number;
@@ -12,7 +12,7 @@ export class DateUtil {
   private _invalidDateString = 'Invalid Date';
 
   constructor(date: Date) {
-    this._date = date;
+    this._date = isDate(date) ? new Date(date) : new Date();
   }
 
   public toISOLocaleString(showMs: boolean = true): string {
