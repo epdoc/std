@@ -1,10 +1,10 @@
 export type Minutes = number;
 export type JulianDate = number;
-export declare function dateUtil(date: Date): DateUtil;
+export declare function dateUtil(date?: Date): DateUtil;
 export declare class DateUtil {
     private _date;
     private _invalidDateString;
-    constructor(date: Date);
+    constructor(date?: Date);
     toISOLocaleString(showMs?: boolean): string;
     private validate;
     julianDate(): JulianDate;

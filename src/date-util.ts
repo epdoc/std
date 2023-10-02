@@ -3,7 +3,7 @@ import { isValidDate, pad, isString, isDate } from 'epdoc-util';
 export type Minutes = number;
 export type JulianDate = number;
 
-export function dateUtil(date: Date) {
+export function dateUtil(date?: Date) {
   return new DateUtil(date);
 }
 
@@ -11,7 +11,7 @@ export class DateUtil {
   private _date: Date;
   private _invalidDateString = 'Invalid Date';
 
-  constructor(date: Date) {
+  constructor(date?: Date) {
     this._date = isDate(date) ? new Date(date) : new Date();
   }
 
