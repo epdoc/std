@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
-    "target": "ES2015",
+    "target": "es6",
     "module": "commonjs",
     "declaration": true,
     "sourceMap": true,
     "outDir": "./dist",
+    "resolveJsonModule": true,
     "esModuleInterop": true
   },
-  "files": ["src/index.ts"]
+  "include": ["src/**/*.ts", "config/*.json"],
+  "exclude": ["node_modules"]
 }

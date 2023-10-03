@@ -9,8 +9,8 @@ export function dateUtil(date?: Date) {
 
 export class DateUtil {
   private _date: Date;
-  private _invalidDateString = 'Invalid Date';
-
+  private _invalidDateString =   'Invalid Date';
+  
   constructor(date?: Date) {
     this._date = isDate(date) ? new Date(date) : new Date();
   }
