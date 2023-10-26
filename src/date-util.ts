@@ -2,6 +2,7 @@ import { isValidDate, pad, isString, isDate } from 'epdoc-util';
 
 export type Minutes = number;
 export type JulianDate = number;
+export type GoogleSheetsDate = number;
 
 export function dateUtil(date?: Date) {
   return new DateUtil(date);
@@ -9,8 +10,8 @@ export function dateUtil(date?: Date) {
 
 export class DateUtil {
   private _date: Date;
-  private _invalidDateString =   'Invalid Date';
-  
+  private _invalidDateString = 'Invalid Date';
+
   constructor(date?: Date) {
     this._date = isDate(date) ? new Date(date) : new Date();
   }
@@ -57,7 +58,7 @@ export class DateUtil {
    * @param {*} jsDate A value that is passed to a Date constructor
    * @returns
    */
-  public googleSheetsDate() {
+  public googleSheetsDate(): GoogleSheetsDate {
     this.validate();
     const d = this._date;
     const tNull = new Date(Date.UTC(1899, 11, 30, 0, 0, 0, 0)); // the starting value for Google
