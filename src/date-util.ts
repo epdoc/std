@@ -49,7 +49,7 @@ export class DateUtil {
     return Math.floor(this._date.getTime() / 86400000 + 2440587.5);
   }
 
-  private static tz(m: Minutes) {
+  public static tz(m: Minutes) {
     return (m < 0 ? '+' : '-') + pad(Math.abs(m) / 60, 2) + ':' + pad(Math.abs(m) % 60, 2);
   }
 
