@@ -574,7 +574,7 @@ class DateUtil {
   _date;
   _invalidDateString = "Invalid Date";
   constructor(date) {
-    this._date = import_epdoc_util.isDate(date) ? new Date(date) : new Date;
+    this._date = date ? new Date(date) : new Date;
   }
   toISOLocaleString(showMs = true) {
     this.validate();
