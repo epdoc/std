@@ -1,10 +1,10 @@
-import { isValidDate, pad, isString, isDate } from 'epdoc-util';
+import { isValidDate, pad } from 'epdoc-util';
 
 export type Minutes = number;
 export type JulianDate = number;
 export type GoogleSheetsDate = number;
 
-export function dateUtil(date?: Date) {
+export function dateUtil(date?: Date | string | number) {
   return new DateUtil(date);
 }
 
@@ -12,10 +12,21 @@ export class DateUtil {
   private _date: Date;
   private _invalidDateString = 'Invalid Date';
 
-  constructor(date?: Date) {
-    this._date = isDate(date) ? new Date(date) : new Date();
+  /**
+   * Create a DateUtil object.
+   * @param date Optional Date object, or a string or number that can be used
+   * with the Date constructor method.
+   */
+  constructor(date?: Date | string | number) {
+    this._date = date ? new Date(date) : new Date();
   }
 
+  /**
+   * Output the date in the form '2016-05-01T11:49:21-07:00'. This differs from
+   * `Date.toISOString` which always uses UTC in the output.
+   * @param showMs Set to false to not show (truncate) milliseconds
+   * @returns
+   */
   public toISOLocaleString(showMs: boolean = true): string {
     this.validate();
     const d = this._date;
@@ -38,12 +49,19 @@ export class DateUtil {
     return s;
   }
 
+  /**
+   * Validate whether the date is a valid Date object.
+   */
   private validate() {
     if (!isValidDate(this._date)) {
       throw new Error(this._invalidDateString);
     }
   }
 
+  /**
+   * Get the Julian Date.
+   * @returns A number which is the Julian Date
+   */
   public julianDate(): JulianDate {
     this.validate();
     return Math.floor(this._date.getTime() / 86400000 + 2440587.5);
@@ -54,9 +72,9 @@ export class DateUtil {
   }
 
   /**
-   * Convert a javascript Date object to a date value used by Google Sheets.
-   * @param {*} jsDate A value that is passed to a Date constructor
-   * @returns
+   * Get the date in a Google Sheets value
+   * @returns A number which is the date with a value suitable for use in Google
+   * Sheets
    */
   public googleSheetsDate(): GoogleSheetsDate {
     this.validate();

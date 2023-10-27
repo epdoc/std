@@ -10,15 +10,16 @@ Contains methods to generate, from a Date object:
 
 - an ISO date string that uses the local timezone
 - the [Julian date](https://en.wikipedia.org/wiki/Julian_day) value
+- a Google Sheets date value
 
 ```javascript
-let dateutil = require('epdoc-timeutil').dateUtil;
+import { DateUtil } fron 'epdoc-timeutil';
 
-var d0 = new Date();
+let d0 = new Date();
 console.log( d0.toLocaleString() );
 console.log( d0.toISOString() );
-console.log( dateutil(d0).toISOLocaleString() );
-console.log( dateutil(d0).toISOLocaleString(false) );
+console.log( dateUtil(d0).toISOLocaleString() );
+console.log( new DateUtil(d0).toISOLocaleString(false) );
 
 // Resultant output:
 
@@ -26,6 +27,21 @@ console.log( dateutil(d0).toISOLocaleString(false) );
 2016-05-01T18:49:21.122Z
 2016-05-01T11:49:21.122-07:00
 2016-05-01T11:49:21-07:00
+```
+
+With ES module loading
+
+```javascript
+import { DateUtil } fron 'epdoc-timeutil';
+
+const dateUtil = new DateUtil('1997-11-25T12:13:14Z');
+console.log( dateutil.googleSheetsDate() );
+console.log( dateutil.julianDate() );
+
+// Resultant output:
+
+35759.25918981482
+2450778
 ```
 
 ## Duration Utilities
