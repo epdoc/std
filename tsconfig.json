@@ -8,6 +8,10 @@
     "resolveJsonModule": true,
     "esModuleInterop": true
   },
+  "typedocOptions": {
+    "entryPoints": ["src/index.ts"],
+    "out": "docs"
+  },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
 }

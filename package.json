@@ -1,6 +1,6 @@
 {
   "name": "epdoc-timeutil",
-  "version": "2.1.11",
+  "version": "2.2.3",
   "description": "Lightweight date and duration utilities, where moment.js does not have what we need",
   "author": {
     "name": "James Pravetz",
@@ -15,21 +15,24 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "build": "bun build ./src/index.ts --target node --outdir ./dist",
-    "clean": "rm -rf dist && echo 'Done.'",
+    "build": "tsc",
+    "build_fail": "bun build ./src/index.ts --target node --outdir ./dist && bun run build:declaration",
+    "clean": "rm -rf dist && rm -rf docs && echo 'Done.'",
     "coverage": "bun test --coverage",
-    "format": "prettier --write 'src/**/*.ts'"
+    "format": "prettier --write 'src/**/*.ts'",
+    "docs": "./node_modules/typedoc/bin/typedoc"
   },
   "dependencies": {
-    "epdoc-util": "^0.1.17"
+    "epdoc-util": "^0.2.9"
   },
   "devDependencies": {
-    "prettier": "^2.8.8",
+    "bun-types": "latest",
     "eslint": "^8.50.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "^2.28.1",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "eslint-plugin-unicorn": "^48.0.1",
-    "bun-types": "latest"
+    "prettier": "^2.8.8",
+    "typedoc": "^0.25.3"
   }
 }

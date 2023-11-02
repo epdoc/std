@@ -1,30 +1,47 @@
-import { isValidDate, pad } from 'epdoc-util';
+import { Integer, isValidDate, pad } from 'epdoc-util';
 
+export type EpochMilliseconds = Integer;
+export type EpochSeconds = Integer;
 export type Minutes = number;
-export type JulianDate = number;
+/**
+ * An integer value representing the Julian Day.
+ * @see [Julian day](https://en.wikipedia.org/wiki/Julian_day)
+ */
+export type JulianDay = Integer;
+/**
+ * A floating point number representing date and time, suitable for use in Google Sheets.
+ */
 export type GoogleSheetsDate = number;
 
-export function dateUtil(date?: Date | string | number) {
+/**
+ * Calls and returns `new DateUtil(date)`.
+ * @param date
+ * @returns
+ */
+export function dateUtil(date?: Date | string | Integer) {
   return new DateUtil(date);
 }
 
+/**
+ * A wrapper for a javascript `Date` object.
+ */
 export class DateUtil {
   private _date: Date;
   private _invalidDateString = 'Invalid Date';
 
   /**
-   * Create a DateUtil object.
+   * Create a DateUtil object, which is a wrapper for a javascript `Date` object.
    * @param date Optional Date object, or a string or number that can be used
-   * with the Date constructor method.
+   * with the Date constructor method. If undefined then uses the value of `new Date()`.
    */
-  constructor(date?: Date | string | number) {
+  constructor(date?: Date | string | Integer) {
     this._date = date ? new Date(date) : new Date();
   }
 
   /**
    * Output the date in the form '2016-05-01T11:49:21-07:00'. This differs from
    * `Date.toISOString` which always uses UTC in the output.
-   * @param showMs Set to false to not show (truncate) milliseconds
+   * @param showMs Set to false to hide (truncate) milliseconds
    * @returns
    */
   public toISOLocaleString(showMs: boolean = true): string {
@@ -59,10 +76,11 @@ export class DateUtil {
   }
 
   /**
-   * Get the Julian Date.
-   * @returns A number which is the Julian Date
+   * Get the Julian Day.
+   * @returns A number which is the Julian Day
+   * @see [Julian day](https://en.wikipedia.org/wiki/Julian_day)
    */
-  public julianDate(): JulianDate {
+  public julianDate(): JulianDay {
     this.validate();
     return Math.floor(this._date.getTime() / 86400000 + 2440587.5);
   }
