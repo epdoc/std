@@ -1,42 +1,35 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.DurationUtil = exports.isFormatMsName = exports.durationUtil = exports.isFormatMsOptions = exports.isFormatMsUnit = void 0;
-const epdoc_util_1 = require("epdoc-util");
+import { deepCopy, isArray, isBoolean, isDefined, isDict, isInteger, isNonEmptyString, isString, pad, } from 'epdoc-util';
 const REG = {
     formatName: new RegExp(/^(long|hms|:)$/),
 };
-function isFormatMsUnit(val) {
-    if ((0, epdoc_util_1.isString)(val) || val === false) {
+export function isFormatMsUnit(val) {
+    if (isString(val) || val === false) {
         return true;
     }
-    if ((0, epdoc_util_1.isArray)(val) && (0, epdoc_util_1.isString)(val[0]) && (val.length === 1 || (0, epdoc_util_1.isString)(val[1]))) {
+    if (isArray(val) && isString(val[0]) && (val.length === 1 || isString(val[1]))) {
         return true;
     }
     return false;
 }
-exports.isFormatMsUnit = isFormatMsUnit;
 const OPT_KEYS = ['d', 'h', 'm', 's', 'ms', 'compact', 'sep', 'decimal'];
-function isFormatMsOptions(val) {
-    if ((0, epdoc_util_1.isDict)(val) &&
-        (!(0, epdoc_util_1.isDefined)(val.d) || isFormatMsUnit(val.d)) &&
-        (!(0, epdoc_util_1.isDefined)(val.h) || isFormatMsUnit(val.h)) &&
-        (!(0, epdoc_util_1.isDefined)(val.m) || isFormatMsUnit(val.m)) &&
-        (!(0, epdoc_util_1.isDefined)(val.s) || isFormatMsUnit(val.s)) &&
-        (!(0, epdoc_util_1.isDefined)(val.ms) || isFormatMsUnit(val.ms) || (0, epdoc_util_1.isBoolean)(val.ms) || (0, epdoc_util_1.isInteger)(val.ms))) {
+export function isFormatMsOptions(val) {
+    if (isDict(val) &&
+        (!isDefined(val.d) || isFormatMsUnit(val.d)) &&
+        (!isDefined(val.h) || isFormatMsUnit(val.h)) &&
+        (!isDefined(val.m) || isFormatMsUnit(val.m)) &&
+        (!isDefined(val.s) || isFormatMsUnit(val.s)) &&
+        (!isDefined(val.ms) || isFormatMsUnit(val.ms) || isBoolean(val.ms) || isInteger(val.ms))) {
         return true;
     }
     return false;
 }
-exports.isFormatMsOptions = isFormatMsOptions;
-function durationUtil(ms, opts) {
+export function durationUtil(ms, opts) {
     return new DurationUtil(ms, opts);
 }
-exports.durationUtil = durationUtil;
-function isFormatMsName(val) {
+export function isFormatMsName(val) {
     return REG.formatName.test(val);
 }
-exports.isFormatMsName = isFormatMsName;
-class DurationUtil {
+export class DurationUtil {
     /**
      * Construct a new `DurationUtil` instance. If `formatting` is not a
      * `FormatMsName` then will initialize formatting with default `:` format.
@@ -45,6 +38,8 @@ class DurationUtil {
      * @see options
      */
     constructor(ms, formatting) {
+        this._opts = {};
+        // private _showMs: boolean;
         this._ms = 0;
         this._ms = ms;
         if (!isFormatMsName(formatting)) {
@@ -61,11 +56,12 @@ class DurationUtil {
      */
     options(formatting) {
         if (isFormatMsName(formatting)) {
-            this._opts = (0, epdoc_util_1.deepCopy)(DurationUtil.OPTS[formatting]);
+            this._opts = deepCopy(DurationUtil.OPTS[formatting]);
         }
         else if (isFormatMsOptions(formatting)) {
             OPT_KEYS.forEach((key) => {
                 if (formatting.hasOwnProperty(key)) {
+                    // @ts-ignore
                     this._opts[key] = formatting[key];
                 }
             });
@@ -98,31 +94,31 @@ class DurationUtil {
         };
         if (opts.compact) {
             let res = opts.s;
-            if (opts.ms === true || opts.ms === 3 || (0, epdoc_util_1.isString)(opts.ms)) {
-                res = opts.decimal + (0, epdoc_util_1.pad)(time.ms, 3) + opts.s;
+            if (opts.ms === true || opts.ms === 3 || isString(opts.ms)) {
+                res = opts.decimal + pad(time.ms, 3) + opts.s;
             }
             else if (opts.ms === false || opts.ms === 0) {
                 res = opts.s;
             }
-            else if ((0, epdoc_util_1.isInteger)(opts.ms) && [1, 2, 3].includes(opts.ms)) {
+            else if (isInteger(opts.ms) && [1, 2, 3].includes(opts.ms)) {
                 ms = Math.round(ms / Math.pow(10, (3 - opts.ms)));
-                res = opts.decimal + (0, epdoc_util_1.pad)(ms, 3).slice(-opts.ms) + opts.s;
+                res = opts.decimal + pad(ms, 3).slice(-opts.ms) + opts.s;
             }
             if (time.d) {
                 return (String(time.d) +
                     opts.d +
-                    (0, epdoc_util_1.pad)(time.h, 2) +
+                    pad(time.h, 2) +
                     opts.h +
-                    (0, epdoc_util_1.pad)(time.m, 2) +
+                    pad(time.m, 2) +
                     opts.m +
-                    (0, epdoc_util_1.pad)(Math.floor(time.s), 2) +
+                    pad(Math.floor(time.s), 2) +
                     res);
             }
             else if (time.h) {
-                return String(time.h) + opts.h + (0, epdoc_util_1.pad)(time.m, 2) + opts.m + (0, epdoc_util_1.pad)(Math.floor(time.s), 2) + res;
+                return String(time.h) + opts.h + pad(time.m, 2) + opts.m + pad(Math.floor(time.s), 2) + res;
             }
-            else if (time.m || !(0, epdoc_util_1.isNonEmptyString)(opts.s)) {
-                return String(time.m) + opts.m + (0, epdoc_util_1.pad)(Math.floor(time.s), 2) + res;
+            else if (time.m || !isNonEmptyString(opts.s)) {
+                return String(time.m) + opts.m + pad(Math.floor(time.s), 2) + res;
             }
             return String(time.s) + res;
         }
@@ -130,8 +126,9 @@ class DurationUtil {
             return Object.entries(time)
                 .filter((val) => val[1] !== 0)
                 .map(([key, val]) => {
+                // @ts-ignore
                 let units = opts[key];
-                if ((0, epdoc_util_1.isArray)(units)) {
+                if (isArray(units)) {
                     if (val !== 1 && units.length > 1) {
                         units = units[1];
                     }
@@ -139,16 +136,15 @@ class DurationUtil {
                         units = units[0];
                     }
                 }
-                if ((0, epdoc_util_1.isString)(units)) {
+                if (isString(units)) {
                     return `${val} ${units}`;
                 }
             })
-                .filter((val) => (0, epdoc_util_1.isNonEmptyString)(val))
+                .filter((val) => isNonEmptyString(val))
                 .join(opts.sep);
         }
     }
 }
-exports.DurationUtil = DurationUtil;
 DurationUtil.OPTS = {
     hms: { d: 'd', h: 'h', m: 'm', s: 's', ms: true, compact: true, decimal: '.' },
     ':': { d: 'd', h: ':', m: ':', s: '', ms: true, compact: true, decimal: '.' },
@@ -163,4 +159,3 @@ DurationUtil.OPTS = {
         decimal: '.',
     },
 };
-//# sourceMappingURL=duration-util.js.map

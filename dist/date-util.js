@@ -1,20 +1,16 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.DateUtil = exports.dateUtil = void 0;
-const epdoc_util_1 = require("epdoc-util");
+import { isValidDate, pad } from 'epdoc-util';
 /**
  * Calls and returns `new DateUtil(date)`.
  * @param date
  * @returns
  */
-function dateUtil(date) {
+export function dateUtil(date) {
     return new DateUtil(date);
 }
-exports.dateUtil = dateUtil;
 /**
  * A wrapper for a javascript `Date` object.
  */
-class DateUtil {
+export class DateUtil {
     /**
      * Create a DateUtil object, which is a wrapper for a javascript `Date` object.
      * @param date Optional Date object, or a string or number that can be used
@@ -35,17 +31,17 @@ class DateUtil {
         const d = this._date;
         let s = String(d.getFullYear()) +
             '-' +
-            (0, epdoc_util_1.pad)(d.getMonth() + 1, 2) +
+            pad(d.getMonth() + 1, 2) +
             '-' +
-            (0, epdoc_util_1.pad)(d.getDate(), 2) +
+            pad(d.getDate(), 2) +
             'T' +
-            (0, epdoc_util_1.pad)(d.getHours(), 2) +
+            pad(d.getHours(), 2) +
             ':' +
-            (0, epdoc_util_1.pad)(d.getMinutes(), 2) +
+            pad(d.getMinutes(), 2) +
             ':' +
-            (0, epdoc_util_1.pad)(d.getSeconds(), 2);
+            pad(d.getSeconds(), 2);
         if (showMs !== false) {
-            s += '.' + (0, epdoc_util_1.pad)(d.getMilliseconds(), 3);
+            s += '.' + pad(d.getMilliseconds(), 3);
         }
         s += DateUtil.tz(d.getTimezoneOffset());
         return s;
@@ -54,7 +50,7 @@ class DateUtil {
      * Validate whether the date is a valid Date object.
      */
     validate() {
-        if (!(0, epdoc_util_1.isValidDate)(this._date)) {
+        if (!isValidDate(this._date)) {
             throw new Error(this._invalidDateString);
         }
     }
@@ -68,7 +64,7 @@ class DateUtil {
         return Math.floor(this._date.getTime() / 86400000 + 2440587.5);
     }
     static tz(m) {
-        return (m < 0 ? '+' : '-') + (0, epdoc_util_1.pad)(Math.abs(m) / 60, 2) + ':' + (0, epdoc_util_1.pad)(Math.abs(m) % 60, 2);
+        return (m < 0 ? '+' : '-') + pad(Math.abs(m) / 60, 2) + ':' + pad(Math.abs(m) % 60, 2);
     }
     /**
      * Get the date in a Google Sheets value
@@ -82,5 +78,3 @@ class DateUtil {
         return ((d.getTime() - tNull.getTime()) / 60000 - d.getTimezoneOffset()) / 1440;
     }
 }
-exports.DateUtil = DateUtil;
-//# sourceMappingURL=date-util.js.map

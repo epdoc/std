@@ -69,7 +69,6 @@ export declare function isFormatMsName(val: any): val is FormatMsName;
 export declare class DurationUtil {
     private static OPTS;
     private _opts;
-    private _decimal;
     private _ms;
     /**
      * Construct a new `DurationUtil` instance. If `formatting` is not a
@@ -86,7 +85,7 @@ export declare class DurationUtil {
      * values.
      * @returns this
      */
-    options(formatting: FormatMsOptions | FormatMsName): DurationUtil;
+    options(formatting?: FormatMsOptions | FormatMsName): DurationUtil;
     /**
      * Formats the output string.
      * @param formatting Same as per the `options` method. A format to be used

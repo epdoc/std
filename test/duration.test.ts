@@ -1,4 +1,4 @@
-const { DurationUtil } = require('../src/duration-util');
+import { DurationUtil } from './../src';
 
 describe('duration-util', () => {
   describe(':', () => {

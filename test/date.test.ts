@@ -1,4 +1,4 @@
-const { DateUtil } = require('../src/date-util');
+import { DateUtil } from './../src';
 
 describe('date-util', () => {
   // Test is using CST
@@ -9,7 +9,7 @@ describe('date-util', () => {
       expect(tz).toEqual(300);
     });
     it('120', () => {
-      const tz = DateUtil.tz(120);
+      const tz = DateUtil .tz(120);
       expect(tz).toEqual('-02:00');
     });
     it('360', () => {

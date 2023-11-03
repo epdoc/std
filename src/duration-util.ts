@@ -127,9 +127,8 @@ export class DurationUtil {
       decimal: '.',
     },
   };
-  private _opts: FormatMsOptions;
+  private _opts: FormatMsOptions = {};
   // private _showMs: boolean;
-  private _decimal: string;
 
   private _ms: Milliseconds = 0;
 
@@ -155,12 +154,13 @@ export class DurationUtil {
    * values.
    * @returns this
    */
-  public options(formatting: FormatMsOptions | FormatMsName): DurationUtil {
+  public options(formatting?: FormatMsOptions | FormatMsName): DurationUtil {
     if (isFormatMsName(formatting)) {
       this._opts = deepCopy(DurationUtil.OPTS[formatting]);
     } else if (isFormatMsOptions(formatting)) {
       OPT_KEYS.forEach((key) => {
         if (formatting.hasOwnProperty(key)) {
+          // @ts-ignore
           this._opts[key] = formatting[key];
         }
       });
@@ -223,6 +223,7 @@ export class DurationUtil {
       return Object.entries(time)
         .filter((val) => val[1] !== 0)
         .map(([key, val]) => {
+          // @ts-ignore
           let units = opts[key];
           if (isArray(units)) {
             if (val !== 1 && units.length > 1) {
