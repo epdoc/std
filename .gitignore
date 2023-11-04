@@ -9,6 +9,10 @@ logs
 *~
 *.tmp
 tmp*
+tmp
+
+# Build directory
+dist
 
 # Publish tar balls
 *.tgz
