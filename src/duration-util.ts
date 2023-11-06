@@ -10,12 +10,12 @@ import {
   isString,
   pad,
 } from 'epdoc-util';
+import { Milliseconds } from './types';
 
 const REG = {
   formatName: new RegExp(/^(long|hms|:)$/),
 };
 
-export type Milliseconds = Integer;
 /**
  * For `compact` mode this must be a string. Otherwise this can be a string or
  * an array of one or two strings. If it is an array, the first string is used
