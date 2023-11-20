@@ -1,4 +1,4 @@
-# epdoc-timeutil
+# @epdoc/timeutil
 
 Contains date and time duration utilities that are not found in
 [moment.js](https://github.com/moment/moment). Written in TypeScript. The
@@ -12,7 +12,7 @@ Contains methods to generate, from a Date object:
 - the [Julian date](https://en.wikipedia.org/wiki/Julian_day) value
 
 ```javascript
-let dateutil = require('epdoc-timeutil').dateUtil;
+let dateutil = require('@epdoc/timeutil').dateUtil;
 
 var d0 = new Date();
 console.log( d0.toLocaleString() );
@@ -20,18 +20,24 @@ console.log( d0.toISOString() );
 console.log( dateutil(d0).toISOLocaleString() );
 console.log( dateutil(d0).toISOLocaleString(false) );
 
+console.log( dateutil(d0).julianDate() );
+console.log( dateutil(d0).googleSheetsDate() );
+
+
 // Resultant output:
 
-5/1/2016, 11:49:21 AM
-2016-05-01T18:49:21.122Z
-2016-05-01T11:49:21.122-07:00
-2016-05-01T11:49:21-07:00
+11/25/1997, 06:13:14 AM
+1997-11-25T12:13:14.456Z
+1997-11-25T06:13:14.456-06:00
+1997-11-25T06:13:14-06:00'
+2450778
+35759.25918981482
 ```
 
 ## Duration Utilities
 
 ```javascript
-let durationUtil = require('epdoc-timeutil').durationUtil;
+let durationUtil = require('@epdoc/timeutil').durationUtil;
 
 // Run
 console.log(durationUtil(-4443454).options('long').format());

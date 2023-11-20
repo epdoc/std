@@ -1,4 +1,4 @@
-import { Integer, isInteger } from 'epdoc-util';
+import { Integer, isInteger } from '@epdoc/typeutil';
 
 export type Milliseconds = Integer;
 export type EpochMilliseconds = Integer;

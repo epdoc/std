@@ -1,4 +1,4 @@
-import { Integer, isValidDate, pad } from 'epdoc-util';
+import { Integer, isValidDate, pad } from '@epdoc/typeutil';
 
 export type Minutes = number;
 /**

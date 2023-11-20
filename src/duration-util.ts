@@ -1,5 +1,4 @@
 import {
-  Integer,
   deepCopy,
   isArray,
   isBoolean,
@@ -9,7 +8,7 @@ import {
   isNonEmptyString,
   isString,
   pad,
-} from 'epdoc-util';
+} from '@epdoc/typeutil';
 import { Milliseconds } from './types';
 
 const REG = {
