@@ -1,4 +1,9 @@
-import { Integer, isValidDate, pad } from '@epdoc/typeutil';
+import { Integer, asInt, isValidDate, pad } from '@epdoc/typeutil';
+
+const REG = {
+  pdfDate: new RegExp(/^D:(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(.*)$/),
+  pdfTz: new RegExp(/^(Z|\+|\-)(\d\d)*/),
+};
 
 export type Minutes = number;
 /**
@@ -24,6 +29,7 @@ export function dateUtil(date?: Date | string | Integer) {
  * A wrapper for a javascript `Date` object.
  */
 export class DateUtil {
+  private _isDateUtil = true;
   private _date: Date;
   private _invalidDateString = 'Invalid Date';
 
@@ -34,6 +40,14 @@ export class DateUtil {
    */
   constructor(date?: Date | string | Integer) {
     this._date = date ? new Date(date) : new Date();
+  }
+
+  static isInstance(val: any): val is DateUtil {
+    return val && val._isDateUtil === true;
+  }
+
+  get date(): Date {
+    return this._date;
   }
 
   /**
@@ -97,5 +111,27 @@ export class DateUtil {
     const d = this._date;
     const tNull = new Date(Date.UTC(1899, 11, 30, 0, 0, 0, 0)); // the starting value for Google
     return ((d.getTime() - tNull.getTime()) / 60000 - d.getTimezoneOffset()) / 1440;
+  }
+
+  static fromPdfDate(s: string): DateUtil | undefined {
+    let d: Date;
+    const p = s.match(REG.pdfDate);
+    if (p) {
+      if (p[7] === 'Z') {
+        d = new Date(asInt(p[1]), asInt(p[2]) - 1, asInt(p[3]), asInt(p[4]), asInt(p[5]), asInt(p[6]));
+      } else {
+        d = new Date(asInt(p[1]), asInt(p[2]) - 1, asInt(p[3]), asInt(p[4]), asInt(p[5]), asInt(p[6]));
+        const p2 = p[7].match(REG.pdfTz);
+        if (p2 && p2.length > 2) {
+          const mult = p2[1] === '-' ? 1000 : -1000;
+          let val = asInt(p2[2]) * 60;
+          if (p2.length > 3) {
+            val + asInt(p2[3]);
+          }
+          d = new Date(d.getTime() + mult * val);
+        }
+      }
+      return new DateUtil(d);
+    }
   }
 }

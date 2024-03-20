@@ -1,4 +1,4 @@
-import { DateUtil } from "../src/date-util";
+import { DateUtil } from '../src/date-util';
 
 describe('date-util', () => {
   // Test is using CST
@@ -42,5 +42,23 @@ describe('date-util', () => {
   it('googleSheetsDate', () => {
     var d = new Date('1997-11-25T12:13:14Z');
     expect(new DateUtil(d).googleSheetsDate()).toEqual(35759.25918981482);
+  });
+  describe('fromPdfDate', () => {
+    it('CST1', () => {
+      process.env.TZ = 'CST';
+      let d = DateUtil.fromPdfDate('D:20240101120000-0600');
+      expect(d).toBeDefined();
+      if (DateUtil.isInstance(d)) {
+        expect(d.date.toISOString()).toBe('2024-01-01T18:00:00.000Z');
+      }
+    });
+    it('CST2', () => {
+      process.env.TZ = 'CST';
+      let d = DateUtil.fromPdfDate('D:20240101000000Z');
+      expect(d).toBeDefined();
+      if (DateUtil.isInstance(d)) {
+        expect(d.date.toISOString()).toBe('2024-01-01T06:00:00.000Z');
+      }
+    });
   });
 });
