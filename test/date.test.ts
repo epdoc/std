@@ -35,6 +35,13 @@ describe('date-util', () => {
       expect(new DateUtil(d).toISOLocaleString(false)).toEqual('1997-11-25T06:13:14-06:00');
     });
   });
+  it('formatLocale', () => {
+    var d = new Date('1997-11-25T12:13:14.456Z');
+    expect(new DateUtil(d).format('YYYY-MM-DD')).toEqual('1997-11-25');
+    expect(new DateUtil(d).format('YYYYMMDD')).toEqual('19971125');
+    expect(new DateUtil(d).format('YYYYMMDD_HHmmss')).toEqual('19971125_061314');
+    expect(new DateUtil(d).formatUTC('YYYYMMDD_HHmmss')).toEqual('19971125_121314');
+  });
   it('julianDate', () => {
     var d = new Date('1997-11-25T12:13:14.456Z');
     expect(new DateUtil(d).julianDate()).toEqual(2450778);

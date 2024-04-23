@@ -23,6 +23,9 @@ console.log( dateutil(d0).toISOLocaleString(false) );
 console.log( dateutil(d0).julianDate() );
 console.log( dateutil(d0).googleSheetsDate() );
 
+console.log( dateutil(d0).format('YYYYMMDD_HHmmss') );
+console.log( dateutil(d0).formatUTC('YYYYMMDD_HHmmss') );
+
 
 // Resultant output:
 
@@ -32,6 +35,8 @@ console.log( dateutil(d0).googleSheetsDate() );
 1997-11-25T06:13:14-06:00'
 2450778
 35759.25918981482
+19971125_061314
+19971125_121314
 ```
 
 ## Duration Utilities

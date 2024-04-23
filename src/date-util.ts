@@ -87,6 +87,32 @@ export class DateUtil {
     }
   }
 
+  format(format: string): string {
+    let f = String(format);
+    const d = this._date;
+    f = f
+      .replace('YYYY', String(d.getFullYear()))
+      .replace('MM', pad(d.getMonth() + 1, 2))
+      .replace('DD', pad(d.getDate(), 2))
+      .replace('HH', pad(d.getHours(), 2))
+      .replace('mm', pad(d.getMinutes(), 2))
+      .replace('ss', pad(d.getSeconds(), 2));
+    return f;
+  }
+
+  formatUTC(format: string): string {
+    let f = String(format);
+    const d = this._date;
+    f = f
+      .replace('YYYY', String(d.getUTCFullYear()))
+      .replace('MM', pad(d.getUTCMonth() + 1, 2))
+      .replace('DD', pad(d.getUTCDate(), 2))
+      .replace('HH', pad(d.getUTCHours(), 2))
+      .replace('mm', pad(d.getUTCMinutes(), 2))
+      .replace('ss', pad(d.getUTCSeconds(), 2));
+    return f;
+  }
+
   /**
    * Get the Julian Day.
    * @returns A number which is the Julian Day
