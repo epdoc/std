@@ -1,4 +1,4 @@
-import { Integer, asInt, isInteger, isString, isValidDate, pad } from '@epdoc/typeutil';
+import { Integer, asInt, isArray, isInteger, isString, isValidDate, pad } from '@epdoc/typeutil';
 
 const REG = {
   pdfDate: new RegExp(/^D:(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(.*)$/),
@@ -48,7 +48,11 @@ export class DateUtil {
     if (!args.length) {
       this._date = new Date();
     } else if (args.length === 1) {
-      this._date = new Date(args[0]);
+      if (!isArray(args[0])) {
+        this._date = new Date(args[0]);
+      } else {
+        this._date = new Date(...(args[0] as []));
+      }
     } else {
       this._date = new Date(...(args as []));
     }
@@ -83,7 +87,9 @@ export class DateUtil {
    * When using a Date constructor that does not allow the tz to be specified,
    * and the date was, for example, created using localtime, call tz() with the
    * offset, and then adjustForTz() to adjust the Date object.
-   * Example new Date(2024,1,1,11,59,59).withTz()
+   * Example new Date(2024,1,1,11,59,59).withTz().catch((err) => {
+    Note that val '-06:00' `ISOTZ` equals 360 `Minutes`, and '+06:00' equals -360.
+   });
    * @param val If not specified, then use local timezone.
    */
   withTz(val?: Minutes | ISOTZ): this {
@@ -95,7 +101,7 @@ export class DateUtil {
     } else {
       offset = 0;
     }
-    this._date = new Date(this._date.getTime() - offset * 60000);
+    this._date = new Date(this._date.getTime() + offset * 60000);
     return this;
   }
 
@@ -149,19 +155,6 @@ export class DateUtil {
       .replace('HH', pad(d.getUTCHours(), 2))
       .replace('mm', pad(d.getUTCMinutes(), 2))
       .replace('ss', pad(d.getUTCSeconds(), 2));
-    return f;
-  }
-
-  formatDeprecated(format: string): string {
-    let f = String(format);
-    const d = this._date;
-    f = f
-      .replace('YYYY', String(d.getFullYear()))
-      .replace('MM', pad(d.getMonth() + 1, 2))
-      .replace('DD', pad(d.getDate(), 2))
-      .replace('HH', pad(d.getHours(), 2))
-      .replace('mm', pad(d.getMinutes(), 2))
-      .replace('ss', pad(d.getSeconds(), 2));
     return f;
   }
 

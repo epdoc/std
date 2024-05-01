@@ -51,7 +51,7 @@ describe('date-util', () => {
   describe('withTz', () => {
     it('local', () => {
       process.env.TZ = 'CST';
-      const d: DateUtil = dateUtil(2024, 1, 1, 11, 59, 59, 456).withTz();
+      const d: DateUtil = dateUtil(2024, 0, 1, 11, 59, 59, 456).withTz();
       expect(d.toISOLocaleString()).toEqual('2024-01-01T11:59:59.456-06:00');
     });
   });
@@ -138,10 +138,21 @@ describe('date-util', () => {
     });
     it('CST2', () => {
       process.env.TZ = 'CST';
-      let d = DateUtil.fromPdfDate('D:20240101000000Z');
+      let d = DateUtil.fromPdfDate('D:20240101120000Z');
       expect(d).toBeDefined();
       if (DateUtil.isInstance(d)) {
-        expect(d.date.toISOString()).toBe('2024-01-01T06:00:00.000Z');
+        expect(d.date.toISOString()).toBe('2024-01-01T12:00:00.000Z');
+        expect(d.toISOLocaleString(false)).toBe('2024-01-01T06:00:00-06:00');
+        expect(d.tz(-60).toISOLocaleString(false)).toBe('2024-01-01T13:00:00+01:00');
+      }
+    });
+    it('AST +03:00', () => {
+      process.env.TZ = 'AST';
+      let d = DateUtil.fromPdfDate('D:20240101120000Z');
+      expect(d).toBeDefined();
+      if (DateUtil.isInstance(d)) {
+        expect(d.date.toISOString()).toBe('2024-01-01T12:00:00.000Z');
+        expect(d.tz('+03:00').toISOLocaleString(false)).toBe('2024-01-01T15:00:00+03:00');
       }
     });
   });
