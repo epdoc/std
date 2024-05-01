@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/timeutil",
-  "version": "2.4.2",
+  "version": "2.4.4",
   "description": "Lightweight date and duration utilities, where moment.js does not have what we need",
   "author": {
     "name": "James Pravetz",
@@ -16,7 +16,7 @@
     "clean": "rm -rf dist docs coverage",
     "build": "rm -rf dist && tsc",
     "clear-warning": "watchman watch-del-all > /dev/null",
-    "test": "npm run clear-warning; jest --runInBand",
+    "test": "npm run clear-warning; jest --env=node --colors --coverage test",
     "coverage": "jest --coverage --runInBand --verbose",
     "prepublishOnly": "tsc",
     "prepare": "npm run build",

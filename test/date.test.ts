@@ -1,7 +1,25 @@
-import { DateUtil } from '../src/date-util';
+import { DateUtil, dateUtil } from '../src/date-util';
 
 describe('date-util', () => {
   // Test is using CST
+  describe('tz statics', () => {
+    it('parse', () => {
+      expect(DateUtil.tzParse('-06:00')).toEqual(360);
+      expect(DateUtil.tzParse('+06:00')).toEqual(-360);
+      expect(DateUtil.tzParse('-02:30')).toEqual(150);
+      expect(DateUtil.tzParse('+01:00')).toEqual(-60);
+      expect(DateUtil.tzParse('+00:00')).toEqual(0);
+      expect(DateUtil.tzParse('-00:00')).toEqual(0);
+      expect(DateUtil.tzParse('Z')).toEqual(0);
+    });
+    it('format', () => {
+      expect(DateUtil.tzFormat(-360)).toEqual('+06:00');
+      expect(DateUtil.tzFormat(360)).toEqual('-06:00');
+      expect(DateUtil.tzFormat(-390)).toEqual('+06:30');
+      expect(DateUtil.tzFormat(+150)).toEqual('-02:30');
+      expect(DateUtil.tzFormat(0)).toEqual('Z');
+    });
+  });
   describe('tz offset', () => {
     it('120', () => {
       process.env.TZ = 'CST';
@@ -9,22 +27,39 @@ describe('date-util', () => {
       expect(tz).toEqual(360);
     });
     it('120', () => {
-      const tz = DateUtil.tz(120);
+      const tz = DateUtil.tzFormat(120);
       expect(tz).toEqual('-02:00');
     });
     it('360', () => {
-      const tz = DateUtil.tz(360);
+      const tz = DateUtil.tzFormat(360);
       expect(tz).toEqual('-06:00');
     });
     it('-360', () => {
-      const tz = DateUtil.tz(-360);
+      const tz = DateUtil.tzFormat(-360);
       expect(tz).toEqual('+06:00');
+    });
+  });
+  describe('tz set offset', () => {
+    it('30', () => {
+      let d = dateUtil();
+      d.tz(-30);
+      expect(d.getTz()).toEqual(-30);
+      d.tz('-05:00');
+      expect(d.getTz()).toEqual(300);
+    });
+  });
+  describe('withTz', () => {
+    it('local', () => {
+      process.env.TZ = 'CST';
+      const d: DateUtil = dateUtil(2024, 1, 1, 11, 59, 59, 456).withTz();
+      expect(d.toISOLocaleString()).toEqual('2024-01-01T11:59:59.456-06:00');
     });
   });
   describe('toISOLocaleString', () => {
     var d = new Date('1997-11-25T12:13:14.456Z');
     process.env.TZ = 'CST';
     it('default', () => {
+      expect(d.getTimezoneOffset()).toEqual(360);
       expect(d.toISOString()).toEqual('1997-11-25T12:13:14.456Z');
       expect(new DateUtil(d).toISOLocaleString()).toEqual('1997-11-25T06:13:14.456-06:00');
     });
@@ -33,6 +68,48 @@ describe('date-util', () => {
     });
     it('hide milliseconds', () => {
       expect(new DateUtil(d).toISOLocaleString(false)).toEqual('1997-11-25T06:13:14-06:00');
+    });
+  });
+  describe('toISOLocaleString tz -06:00', () => {
+    var d = new Date('1997-11-25T12:13:14.456Z');
+    const du = new DateUtil(d).tz('-06:00');
+    it('default', () => {
+      expect(d.toISOString()).toEqual('1997-11-25T12:13:14.456Z');
+      expect(du.toISOLocaleString()).toEqual('1997-11-25T06:13:14.456-06:00');
+    });
+    it('show milliseconds', () => {
+      expect(du.toISOLocaleString(true)).toEqual('1997-11-25T06:13:14.456-06:00');
+    });
+    it('hide milliseconds', () => {
+      expect(du.toISOLocaleString(false)).toEqual('1997-11-25T06:13:14-06:00');
+    });
+  });
+  describe('toISOLocaleString tz -150', () => {
+    var d = new Date('1997-11-25T12:13:14.456Z');
+    const du = new DateUtil(d).tz(-150);
+    it('default', () => {
+      expect(d.toISOString()).toEqual('1997-11-25T12:13:14.456Z');
+      expect(du.toISOLocaleString()).toEqual('1997-11-25T14:43:14.456+02:30');
+    });
+    it('show milliseconds', () => {
+      expect(du.toISOLocaleString(true)).toEqual('1997-11-25T14:43:14.456+02:30');
+    });
+    it('hide milliseconds', () => {
+      expect(du.toISOLocaleString(false)).toEqual('1997-11-25T14:43:14+02:30');
+    });
+  });
+  describe('toISOLocaleString tz 0', () => {
+    var d = new Date('1997-11-25T12:13:14.456Z');
+    const du = new DateUtil(d).tz(0);
+    it('default', () => {
+      expect(d.toISOString()).toEqual('1997-11-25T12:13:14.456Z');
+      expect(du.toISOLocaleString()).toEqual('1997-11-25T12:13:14.456Z');
+    });
+    it('show milliseconds', () => {
+      expect(du.toISOLocaleString(true)).toEqual('1997-11-25T12:13:14.456Z');
+    });
+    it('hide milliseconds', () => {
+      expect(du.toISOLocaleString(false)).toEqual('1997-11-25T12:13:14Z');
     });
   });
   it('formatLocale', () => {
