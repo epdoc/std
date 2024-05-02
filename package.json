@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/timeutil",
-  "version": "2.4.6",
+  "version": "2.4.7",
   "description": "Lightweight date and duration utilities, where moment.js does not have what we need",
   "author": {
     "name": "James Pravetz",

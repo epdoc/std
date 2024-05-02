@@ -225,8 +225,8 @@ export class DateUtil {
         return 0;
       } else if (p.length > 4) {
         const pol = p[3] === '-' ? 1 : -1;
-        const val = asInt(p[4]) * 60 + asInt(p[5]);
-        return val ? pol * val : val;
+        const result = asInt(p[4]) * 60 + asInt(p[5]);
+        return result ? pol * result : result;
       }
     }
   }
