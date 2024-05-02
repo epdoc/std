@@ -5,6 +5,7 @@ const REG = {
   pdfTz: new RegExp(/^Z|((\+|\-)(\d\d)(\d\d)?)$/),
   isoTz: new RegExp(/^(Z|((\+|\-)(\d\d):(\d\d)))*$/),
 };
+const INVALID_DATE_STRING = 'Invalid Date';
 
 export type ISOTZ = string;
 export type PDFTZ = string;
@@ -35,7 +36,6 @@ export class DateUtil {
   private _isDateUtil = true;
   protected _date: Date;
   protected _tz: Minutes | undefined;
-  protected _invalidDateString = 'Invalid Date';
 
   /**
    * Create a DateUtil object, which is a wrapper for a javascript `Date` object.
@@ -140,10 +140,16 @@ export class DateUtil {
    */
   private validate() {
     if (!isValidDate(this._date)) {
-      throw new Error(this._invalidDateString);
+      throw new Error(INVALID_DATE_STRING);
     }
   }
 
+  /**
+   * Format the date using the supplied format string. Will use the local
+   * timezone when outputing the time. Call tz() to override this value.
+   * @param format
+   * @returns
+   */
   format(format: string): string {
     let f = String(format);
     let tzOffset: Minutes = this._tz ? this._tz : this._date.getTimezoneOffset();
