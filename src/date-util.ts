@@ -151,29 +151,25 @@ export class DateUtil {
    * @returns
    */
   format(format: string): string {
-    let f = String(format);
     let tzOffset: Minutes = this._tz ? this._tz : this._date.getTimezoneOffset();
     const d: Date = new Date(this._date.getTime() - tzOffset * 60000);
-    f = f
-      .replace('YYYY', String(d.getUTCFullYear()))
-      .replace('MM', pad(d.getUTCMonth() + 1, 2))
-      .replace('DD', pad(d.getUTCDate(), 2))
-      .replace('HH', pad(d.getUTCHours(), 2))
-      .replace('mm', pad(d.getUTCMinutes(), 2))
-      .replace('ss', pad(d.getUTCSeconds(), 2));
-    return f;
+    return DateUtil.formatInternal(d, format);
   }
 
   formatUTC(format: string): string {
+    return DateUtil.formatInternal(this._date, format);
+  }
+
+  private static formatInternal(d: Date, format: string): string {
     let f = String(format);
-    const d = this._date;
     f = f
       .replace('YYYY', String(d.getUTCFullYear()))
       .replace('MM', pad(d.getUTCMonth() + 1, 2))
       .replace('DD', pad(d.getUTCDate(), 2))
       .replace('HH', pad(d.getUTCHours(), 2))
       .replace('mm', pad(d.getUTCMinutes(), 2))
-      .replace('ss', pad(d.getUTCSeconds(), 2));
+      .replace('ss', pad(d.getUTCSeconds(), 2))
+      .replace('SSS', pad(d.getUTCMilliseconds(), 3));
     return f;
   }
 
