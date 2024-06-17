@@ -34,6 +34,32 @@ describe('duration-util', () => {
         '11d08h54m01s',
       );
       expect(new DurationUtil(3454, 'hms').options({ decimal: ',' }).format()).toEqual('3,454s');
+    })
+    it('millisecond precision', () => {
+      expect(new DurationUtil(3454, 'hms').options({ ms: 3 }).format()).toEqual('3.454s');
+      expect(new DurationUtil(3454, 'hms').options({ ms: 2 }).format()).toEqual('3.45s');
+      expect(new DurationUtil(3454, 'hms').options({ ms: 1 }).format()).toEqual('3.5s');
+      expect(new DurationUtil(3454, 'hms').options({ ms: 0 }).format()).toEqual('3s');
+      expect(new DurationUtil(3454, 'hms').options({ ms: '3' }).format()).toEqual('3.454s');
+      expect(new DurationUtil(3454, 'hms').options({ ms: '2' }).format()).toEqual('3.45s');
+      expect(new DurationUtil(3454, 'hms').options({ ms: '1' }).format()).toEqual('3.5s');
+      expect(new DurationUtil(3454, 'hms').options({ ms: '0' }).format()).toEqual('3s');
+      expect(new DurationUtil(3454, 'hms').options({ ms: '3?' }).format()).toEqual('3.454s');
+      expect(new DurationUtil(3454, 'hms').options({ ms: '2?' }).format()).toEqual('3.454s');
+      expect(new DurationUtil(3454, 'hms').options({ ms: '1?' }).format()).toEqual('3.454s');
+      expect(new DurationUtil(3454, 'hms').options({ ms: '0?' }).format()).toEqual('3.454s');
+      expect(new DurationUtil(3450, 'hms').options({ ms: '3?' }).format()).toEqual('3.450s');
+      expect(new DurationUtil(3450, 'hms').options({ ms: '2?' }).format()).toEqual('3.45s');
+      expect(new DurationUtil(3450, 'hms').options({ ms: '1?' }).format()).toEqual('3.45s');
+      expect(new DurationUtil(3450, 'hms').options({ ms: '0?' }).format()).toEqual('3.45s');
+      expect(new DurationUtil(3400, 'hms').options({ ms: '3?' }).format()).toEqual('3.400s');
+      expect(new DurationUtil(3400, 'hms').options({ ms: '2?' }).format()).toEqual('3.40s');
+      expect(new DurationUtil(3400, 'hms').options({ ms: '1?' }).format()).toEqual('3.4s');
+      expect(new DurationUtil(3400, 'hms').options({ ms: '0?' }).format()).toEqual('3.4s');
+      expect(new DurationUtil(3000, 'hms').options({ ms: '3?' }).format()).toEqual('3.000s');
+      expect(new DurationUtil(3000, 'hms').options({ ms: '2?' }).format()).toEqual('3.00s');
+      expect(new DurationUtil(3000, 'hms').options({ ms: '1?' }).format()).toEqual('3.0s');
+      expect(new DurationUtil(3000, 'hms').options({ ms: '0?' }).format()).toEqual('3s');
     });
   });
   describe('long', () => {

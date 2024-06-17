@@ -1,10 +1,11 @@
 import {
+  asInt,
   deepCopy,
   isArray,
   isBoolean,
   isDefined,
   isDict,
-  isInteger,
+  isIntegerInRange,
   isNonEmptyString,
   isString,
   pad,
@@ -13,6 +14,7 @@ import { Milliseconds } from './types';
 
 const REG = {
   formatName: new RegExp(/^(long|hms|:)$/),
+  formatMsLen: new RegExp(/^([0-3])(\??)$/),
 };
 
 /**
@@ -24,6 +26,7 @@ const REG = {
  * An example value is `[ 'hour', 'hours' ]`.
  */
 export type FormatMsUnit = string | string[] | false;
+export type FormatMsLength = '0' | '1' | '2' | '3' | '0?' | '1?' | '2?' | '3?';
 export function isFormatMsUnit(val: any): val is FormatMsUnit {
   if (isString(val) || val === false) {
     return true;
@@ -32,6 +35,9 @@ export function isFormatMsUnit(val: any): val is FormatMsUnit {
     return true;
   }
   return false;
+}
+export function isFormatMsLength(val: any): val is FormatMsLength {
+  return isIntegerInRange(val, 0, 3) || REG.formatMsLen.test(val);
 }
 
 /**
@@ -64,12 +70,21 @@ export type FormatMsOptions = {
    */
   s?: FormatMsUnit | false; // set to a non string (false, null) to supress output, where compact is false
   /**
-   * The value `true` is the same as `3`, `false` is the same as `0`. Indicates
-   * the number of digits of milliseconds to display. For non-compact mode, this
-   * can only be a boolean `false` or a string and the string is appended to the
-   * output.
+   * For compact mode:
+   *
+   * Indicates the number of digits of milliseconds to display. Can be a
+   * boolean, number 0-3 or '0?' to '3?', where the '?' results in truncation of
+   * any trailing zeros. The values `true` and `3?` are the same as `3`, `false`
+   * is the same as `0`. '0?' truncates any zeros in milliseconds. '1?'
+   * truncates any zeros past the first digit of milliseconds, '2?' truncates
+   * any zeros past the second digit of milliseconds.
+   *
+   * For non-compact mode:
+   *
+   * The value can only be a boolean `false` or a string and the string is
+   * appended to the output (e.g. 'milliseconds')
    */
-  ms?: boolean | 0 | 1 | 2 | 3 | FormatMsUnit;
+  ms?: boolean | 0 | 1 | 2 | 3 | FormatMsUnit | '0?' | '1?' | '2?';
   /**
    * The character to use for a decimal place. Defaults to `.`.
    */
@@ -88,7 +103,7 @@ export function isFormatMsOptions(val: any): val is FormatMsOptions {
     (!isDefined(val.h) || isFormatMsUnit(val.h)) &&
     (!isDefined(val.m) || isFormatMsUnit(val.m)) &&
     (!isDefined(val.s) || isFormatMsUnit(val.s)) &&
-    (!isDefined(val.ms) || isFormatMsUnit(val.ms) || isBoolean(val.ms) || isInteger(val.ms))
+    (!isDefined(val.ms) || isFormatMsUnit(val.ms) || isBoolean(val.ms) || isFormatMsLength(val.ms))
   ) {
     return true;
   }
@@ -192,24 +207,65 @@ export class DurationUtil {
     };
     if (opts.compact) {
       let res = opts.s;
-      if (opts.ms === true || opts.ms === 3 || isString(opts.ms)) {
-        res = opts.decimal + pad(time.ms, 3) + opts.s;
-      } else if (opts.ms === false || opts.ms === 0) {
-        res = opts.s;
-      } else if (isInteger(opts.ms) && [1, 2, 3].includes(opts.ms)) {
-        ms = Math.round(ms / 10 ** (3 - opts.ms));
-        res = opts.decimal + pad(ms, 3).slice(-opts.ms) + opts.s;
+
+      // Format from decimal to end
+      let msPadded = pad(time.ms, 3);
+      let msLen = 3;
+      if (msPadded.charAt(2) === '0') {
+        msLen = 2;
+        if (msPadded.charAt(1) === '0') {
+          msLen = 1;
+          if (msPadded.charAt(0) === '0') {
+            msLen = 0;
+          }
+        }
       }
+      let num = 3;
+      let trunc = false;
+      if (opts.ms === false) {
+        num = 0;
+      } else if (isIntegerInRange(opts.ms, 0, 3)) {
+        num = opts.ms;
+      } else if (isNonEmptyString(opts.ms)) {
+        const m = opts.ms.match(REG.formatMsLen);
+        if (m && m.length > 1) {
+          num = asInt(m[1]);
+          if (m.length > 2 && m[2] === '?') {
+            trunc = true;
+          }
+        }
+      }
+      if (trunc) {
+        const n = Math.max(num, msLen);
+        if (n > 0) {
+          res = opts.decimal + msPadded.slice(0, n) + opts.s;
+        } else {
+          res = opts.s;
+        }
+        // if (num === 3 && msLen <= 3) {
+        //   res = opts.decimal + msPadded + opts.s;
+        // } else if (num === 2 && msLen <= 2) {
+        //   res = opts.decimal + msPadded.slice(0, 2) + opts.s;
+        // } else if (num === 1 && msLen <= 1) {
+        //   res = opts.decimal + msPadded.slice(0, 1) + opts.s;
+        // } else if (num === 0 && msLen === 0) {
+        //   res = opts.s;
+        // } else {
+        //   res = opts.decimal + msPadded + opts.s;
+        // }
+      } else if (num === 3) {
+        res = opts.decimal + msPadded + opts.s;
+      } else if (num === 0) {
+        res = opts.s;
+      } else {
+        ms = Math.round(ms / 10 ** (3 - asInt(num)));
+        res = opts.decimal + pad(ms, 3).slice(-num) + opts.s;
+      }
+
+      // Format before the decimal
       if (time.d) {
         return (
-          String(time.d) +
-          opts.d +
-          pad(time.h, 2) +
-          opts.h +
-          pad(time.m, 2) +
-          opts.m +
-          pad(Math.floor(time.s), 2) +
-          res
+          String(time.d) + opts.d + pad(time.h, 2) + opts.h + pad(time.m, 2) + opts.m + pad(Math.floor(time.s), 2) + res
         );
       } else if (time.h) {
         return String(time.h) + opts.h + pad(time.m, 2) + opts.m + pad(Math.floor(time.s), 2) + res;
