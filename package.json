@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/timeutil",
-  "version": "2.5.2",
+  "version": "2.5.3",
   "description": "Lightweight date and duration utilities, where moment.js does not have what we need",
   "author": {
     "name": "James Pravetz",
@@ -23,19 +23,19 @@
     "publish": "npm publish --access public"
   },
   "dependencies": {
-    "@epdoc/typeutil": "^1.1.1"
+    "@epdoc/typeutil": "^1.4.1"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
-    "@types/node": "^20.14.2",
+    "@types/node": "^22.2.0",
     "eslint": "8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-prefer-arrow": "^1.2.3",
-    "eslint-plugin-unicorn": "^54.0.0",
+    "eslint-plugin-unicorn": "^55.0.0",
     "jest": "^29.7.0",
-    "prettier": "^3.3.2",
-    "ts-jest": "^29.1.4",
-    "typescript": "^5.4.5"
+    "prettier": "^3.3.3",
+    "ts-jest": "^29.2.4",
+    "typescript": "^5.5.4"
   }
 }
