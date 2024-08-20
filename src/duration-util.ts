@@ -110,6 +110,13 @@ export function isFormatMsOptions(val: any): val is FormatMsOptions {
   return false;
 }
 
+/**
+ * Construct a new `DurationUtil` instance. If `formatting` is not a
+ * `FormatMsName` then will initialize formatting with default `:` format.
+ * @param {Milliseconds} ms - The duration we are outputing. We use the absolute value.
+ * @param {FormatMsOptions | FormatMsName} formatting - Defines the format.
+ * @see options
+ */
 export function durationUtil(ms: Milliseconds, opts?: FormatMsOptions | FormatMsName) {
   return new DurationUtil(ms, opts);
 }
@@ -127,7 +134,7 @@ export function isFormatMsName(val: any): val is FormatMsName {
 }
 
 export class DurationUtil {
-  private static OPTS: Record<string, FormatMsOptions> = {
+  protected static OPTS: Record<string, FormatMsOptions> = {
     hms: { d: 'd', h: 'h', m: 'm', s: 's', ms: true, compact: true, decimal: '.' },
     ':': { d: 'd', h: ':', m: ':', s: '', ms: true, compact: true, decimal: '.' },
     long: {
@@ -141,15 +148,15 @@ export class DurationUtil {
       decimal: '.',
     },
   };
-  private _opts: FormatMsOptions = {};
+  protected _opts: FormatMsOptions = {};
 
-  private _ms: Milliseconds = 0;
+  protected _ms: Milliseconds = 0;
 
   /**
    * Construct a new `DurationUtil` instance. If `formatting` is not a
    * `FormatMsName` then will initialize formatting with default `:` format.
-   * @param ms The duration we are outputing. We use the absolute value.
-   * @param formatting Defines the format.
+   * @param {Milliseconds} ms - The duration we are outputing. We use the absolute value.
+   * @param {FormatMsOptions | FormatMsName} formatting - Defines the format.
    * @see options
    */
   constructor(ms: Milliseconds, formatting?: FormatMsOptions | FormatMsName) {
@@ -194,6 +201,19 @@ export class DurationUtil {
       ms = -ms;
     }
     const opts = this._opts;
+    if (opts.h === false) {
+      opts.m = false;
+      opts.s = false;
+      opts.ms = false;
+      // ms = Math.round(ms / (24 * 3600000)) * 24 * 3600000;
+    } else if (opts.m === false) {
+      opts.s = false;
+      opts.ms = false;
+      // ms = Math.round(ms / 3600000) * 3600000;
+    } else if (opts.s === false) {
+      opts.ms = false;
+      // ms = Math.round(ms / 60000) * 60000;
+    }
     if (opts.ms === false || opts.ms === 0) {
       // Round out the milliseconds
       ms = Math.round(ms / 1000) * 1000;
@@ -264,13 +284,32 @@ export class DurationUtil {
 
       // Format before the decimal
       if (time.d) {
-        return (
-          String(time.d) + opts.d + pad(time.h, 2) + opts.h + pad(time.m, 2) + opts.m + pad(Math.floor(time.s), 2) + res
-        );
+        let s = String(time.d) + opts.d;
+        if (opts.h !== false) {
+          s += pad(time.h, 2) + opts.h;
+        }
+        if (opts.m !== false) {
+          s += pad(time.m, 2) + opts.m;
+        }
+        if (opts.s !== false) {
+          s += pad(Math.floor(time.s), 2) + res;
+        }
+        return s;
       } else if (time.h) {
-        return String(time.h) + opts.h + pad(time.m, 2) + opts.m + pad(Math.floor(time.s), 2) + res;
+        let s = String(time.h) + opts.h;
+        if (opts.m !== false) {
+          s += pad(time.m, 2) + opts.m;
+        }
+        if (opts.s !== false) {
+          s += pad(Math.floor(time.s), 2) + res;
+        }
+        return s;
       } else if (time.m || !isNonEmptyString(opts.s)) {
-        return String(time.m) + opts.m + pad(Math.floor(time.s), 2) + res;
+        let s = String(time.m) + opts.m;
+        if (opts.s !== false) {
+          s += pad(Math.floor(time.s), 2) + res;
+        }
+        return s;
       }
       return String(time.s) + res;
     } else {
