@@ -1,19 +1,19 @@
 import {
-  Integer,
   asInt,
+  Integer,
   isArray,
   isInteger,
   isString,
   isValidDate,
   pad,
-} from 'https://raw.githubusercontent.com/jpravetz/typeutil/master/mod.ts';
+} from "https://raw.githubusercontent.com/jpravetz/typeutil/master/mod.ts";
 
 const REG = {
   pdfDate: new RegExp(/^D:(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(.*)$/),
   pdfTz: new RegExp(/^Z|((\+|\-)(\d\d)(\d\d)?)$/),
   isoTz: new RegExp(/^(Z|((\+|\-)(\d\d):(\d\d)))*$/),
 };
-const INVALID_DATE_STRING = 'Invalid Date';
+const INVALID_DATE_STRING = "Invalid Date";
 
 export type ISOTZ = string;
 export type PDFTZ = string;
@@ -33,7 +33,7 @@ export type GoogleSheetsDate = number;
  * @param date
  * @returns
  */
-export function dateUtil(...args: any) {
+export function dateUtil(...args: unknown[]): DateUtil {
   return new DateUtil(args);
 }
 
@@ -41,7 +41,6 @@ export function dateUtil(...args: any) {
  * A wrapper for a javascript `Date` object.
  */
 export class DateUtil {
-  private _isDateUtil = true;
   protected _date: Date;
   protected _tz: Minutes | undefined;
 
@@ -50,27 +49,20 @@ export class DateUtil {
    * @param date Optional Date object, or a string or number that can be used
    * with the Date constructor method. If undefined then uses the value of `new Date()`.
    */
-  constructor(...args: any) {
+  constructor(...args: unknown[]) {
     1;
     // Examine args because the Date constructor drops ms if you construct with Date(args)
     if (!args.length) {
       this._date = new Date();
     } else if (args.length === 1) {
       if (!isArray(args[0])) {
-        this._date = new Date(args[0]);
+        this._date = new Date(args[0] as string | number | Date);
       } else {
         this._date = new Date(...(args[0] as []));
       }
     } else {
       this._date = new Date(...(args as []));
     }
-  }
-  // constructor(date?: Date | string | Integer) {
-  //   this._date = date ? new Date(date) : new Date();
-  // }
-
-  static isInstance(val: any): val is DateUtil {
-    return val && val._isDateUtil === true;
   }
 
   /**
@@ -105,7 +97,8 @@ export class DateUtil {
     if (isInteger(val)) {
       offset = val - this._date.getTimezoneOffset();
     } else if (DateUtil.isIsoTz(val)) {
-      offset = (DateUtil.tzParse(val) as Minutes) - this._date.getTimezoneOffset();
+      offset = (DateUtil.tzParse(val) as Minutes) -
+        this._date.getTimezoneOffset();
     } else {
       offset = 0;
     }
@@ -122,22 +115,23 @@ export class DateUtil {
    */
   public toISOLocaleString(showMs: boolean = true): string {
     this.validate();
-    const tzOffset: Minutes = isInteger(this._tz) ? this._tz : this._date.getTimezoneOffset();
+    const tzOffset: Minutes = isInteger(this._tz)
+      ? this._tz
+      : this._date.getTimezoneOffset();
     const d: Date = new Date(this._date.getTime() - tzOffset * 60000);
-    let s =
-      String(d.getUTCFullYear()) +
-      '-' +
+    let s = String(d.getUTCFullYear()) +
+      "-" +
       pad(d.getUTCMonth() + 1, 2) +
-      '-' +
+      "-" +
       pad(d.getUTCDate(), 2) +
-      'T' +
+      "T" +
       pad(d.getUTCHours(), 2) +
-      ':' +
+      ":" +
       pad(d.getUTCMinutes(), 2) +
-      ':' +
+      ":" +
       pad(d.getUTCSeconds(), 2);
     if (showMs !== false) {
-      s += '.' + pad(d.getMilliseconds(), 3);
+      s += "." + pad(d.getMilliseconds(), 3);
     }
     s += DateUtil.tzFormat(tzOffset);
     return s;
@@ -159,7 +153,9 @@ export class DateUtil {
    * @returns
    */
   format(format: string): string {
-    let tzOffset: Minutes = this._tz ? this._tz : this._date.getTimezoneOffset();
+    const tzOffset: Minutes = this._tz
+      ? this._tz
+      : this._date.getTimezoneOffset();
     const d: Date = new Date(this._date.getTime() - tzOffset * 60000);
     return DateUtil.formatInternal(d, format);
   }
@@ -171,13 +167,13 @@ export class DateUtil {
   private static formatInternal(d: Date, format: string): string {
     let f = String(format);
     f = f
-      .replace('YYYY', String(d.getUTCFullYear()))
-      .replace('MM', pad(d.getUTCMonth() + 1, 2))
-      .replace('DD', pad(d.getUTCDate(), 2))
-      .replace('HH', pad(d.getUTCHours(), 2))
-      .replace('mm', pad(d.getUTCMinutes(), 2))
-      .replace('ss', pad(d.getUTCSeconds(), 2))
-      .replace('SSS', pad(d.getUTCMilliseconds(), 3));
+      .replace("YYYY", String(d.getUTCFullYear()))
+      .replace("MM", pad(d.getUTCMonth() + 1, 2))
+      .replace("DD", pad(d.getUTCDate(), 2))
+      .replace("HH", pad(d.getUTCHours(), 2))
+      .replace("mm", pad(d.getUTCMinutes(), 2))
+      .replace("ss", pad(d.getUTCSeconds(), 2))
+      .replace("SSS", pad(d.getUTCMilliseconds(), 3));
     return f;
   }
 
@@ -191,12 +187,11 @@ export class DateUtil {
     return Math.floor(this._date.getTime() / 86400000 + 2440587.5);
   }
 
-  static isIsoTz(val: any): val is ISOTZ {
-    return REG.isoTz.test(val);
+  static isIsoTz(val: unknown): val is ISOTZ {
+    return isString(val) && REG.isoTz.test(val);
   }
 
   /**
-   *
    * @param m
    * @returns
    * @deprecated Use tzFormat method instead
@@ -212,9 +207,10 @@ export class DateUtil {
    */
   public static tzFormat(m: Minutes) {
     if (m === 0) {
-      return 'Z';
+      return "Z";
     }
-    return (m < 0 ? '+' : '-') + pad(Math.floor(Math.abs(m) / 60), 2) + ':' + pad(Math.abs(m) % 60, 2);
+    return (m < 0 ? "+" : "-") + pad(Math.floor(Math.abs(m) / 60), 2) + ":" +
+      pad(Math.abs(m) % 60, 2);
   }
 
   /**
@@ -225,10 +221,10 @@ export class DateUtil {
   public static tzParse(val: ISOTZ): Minutes | undefined {
     const p = isString(val) ? val.match(REG.isoTz) : false;
     if (p && p.length > 1) {
-      if (p[1] === 'Z') {
+      if (p[1] === "Z") {
         return 0;
       } else if (p.length > 4) {
-        const pol = p[3] === '-' ? 1 : -1;
+        const pol = p[3] === "-" ? 1 : -1;
         const result = asInt(p[4]) * 60 + asInt(p[5]);
         return result ? pol * result : result;
       }
@@ -243,10 +239,10 @@ export class DateUtil {
   public static pdfTzParse(val: PDFTZ): Minutes | undefined {
     const p = isString(val) ? val.match(REG.pdfTz) : false;
     if (p && p.length > 1) {
-      if (p[1] === 'Z') {
+      if (p[1] === "Z") {
         return 0;
       } else if (p.length > 3) {
-        const pol = p[2] === '-' ? 1 : -1;
+        const pol = p[2] === "-" ? 1 : -1;
         let val = asInt(p[3]) * 60;
         if (p.length > 3) {
           val += asInt(p[4]);
@@ -265,11 +261,11 @@ export class DateUtil {
     this.validate();
     const d = this._date;
     const tNull = new Date(Date.UTC(1899, 11, 30, 0, 0, 0, 0)); // the starting value for Google
-    return ((d.getTime() - tNull.getTime()) / 60000 - d.getTimezoneOffset()) / 1440;
+    return ((d.getTime() - tNull.getTime()) / 60000 - d.getTimezoneOffset()) /
+      1440;
   }
 
   static fromPdfDate(s: string): DateUtil | undefined {
-    let d: Date;
     const p = s.match(REG.pdfDate);
     if (p) {
       const tzOffset: Minutes | undefined = DateUtil.pdfTzParse(p[7]);
@@ -279,7 +275,7 @@ export class DateUtil {
         asInt(p[3]),
         asInt(p[4]),
         asInt(p[5]),
-        asInt(p[6])
+        asInt(p[6]),
       ).withTz(tzOffset);
     }
   }

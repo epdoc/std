@@ -1,6 +1,7 @@
 import {
   asInt,
   deepCopy,
+  Integer,
   isArray,
   isBoolean,
   isDefined,
@@ -9,12 +10,12 @@ import {
   isNonEmptyString,
   isString,
   pad,
-} from 'https://raw.githubusercontent.com/jpravetz/typeutil/master/mod.ts';
-import { Milliseconds } from './types.ts';
+} from "https://raw.githubusercontent.com/jpravetz/typeutil/master/mod.ts";
+import { type HrMilliseconds, Milliseconds } from "./types.ts";
 
 const REG = {
   formatName: new RegExp(/^(long|hms|:)$/),
-  formatMsLen: new RegExp(/^([0-3])(\??)$/),
+  formatMsLen: new RegExp(/^([0-9])(\??)$/),
 };
 
 /**
@@ -26,18 +27,52 @@ const REG = {
  * An example value is `[ 'hour', 'hours' ]`.
  */
 export type FormatMsUnit = string | string[] | false;
-export type FormatMsLength = '0' | '1' | '2' | '3' | '0?' | '1?' | '2?' | '3?';
-export function isFormatMsUnit(val: any): val is FormatMsUnit {
+export type FormatMsLength =
+  | 0
+  | 1
+  | 2
+  | 3
+  | 4
+  | 5
+  | 6
+  | 7
+  | 8
+  | 9
+  | "0"
+  | "1"
+  | "2"
+  | "3"
+  | "4"
+  | "5"
+  | "6"
+  | "7"
+  | "8"
+  | "9"
+  | "0?"
+  | "1?"
+  | "2?"
+  | "3?"
+  | "4?"
+  | "5?"
+  | "6?"
+  | "7?"
+  | "8?"
+  | "9?";
+
+export function isFormatMsUnit(val: unknown): val is FormatMsUnit {
   if (isString(val) || val === false) {
     return true;
   }
-  if (isArray(val) && isString(val[0]) && (val.length === 1 || isString(val[1]))) {
+  if (
+    isArray(val) && isString(val[0]) && (val.length === 1 || isString(val[1]))
+  ) {
     return true;
   }
   return false;
 }
-export function isFormatMsLength(val: any): val is FormatMsLength {
-  return isIntegerInRange(val, 0, 3) || REG.formatMsLen.test(val);
+export function isFormatMsLength(val: unknown): val is FormatMsLength {
+  return isIntegerInRange(val, 0, 9) ||
+    (isString(val) && REG.formatMsLen.test(val));
 }
 
 /**
@@ -84,7 +119,7 @@ export type FormatMsOptions = {
    * The value can only be a boolean `false` or a string and the string is
    * appended to the output (e.g. 'milliseconds')
    */
-  ms?: boolean | 0 | 1 | 2 | 3 | FormatMsUnit | '0?' | '1?' | '2?';
+  ms?: boolean | FormatMsUnit | FormatMsLength;
   /**
    * The character to use for a decimal place. Defaults to `.`.
    */
@@ -94,16 +129,17 @@ export type FormatMsOptions = {
    */
   sep?: string;
 };
-const OPT_KEYS = ['d', 'h', 'm', 's', 'ms', 'compact', 'sep', 'decimal'];
+const OPT_KEYS = ["d", "h", "m", "s", "ms", "compact", "sep", "decimal"];
 
-export function isFormatMsOptions(val: any): val is FormatMsOptions {
+export function isFormatMsOptions(val: unknown): val is FormatMsOptions {
   if (
     isDict(val) &&
     (!isDefined(val.d) || isFormatMsUnit(val.d)) &&
     (!isDefined(val.h) || isFormatMsUnit(val.h)) &&
     (!isDefined(val.m) || isFormatMsUnit(val.m)) &&
     (!isDefined(val.s) || isFormatMsUnit(val.s)) &&
-    (!isDefined(val.ms) || isFormatMsUnit(val.ms) || isBoolean(val.ms) || isFormatMsLength(val.ms))
+    (!isDefined(val.ms) || isFormatMsUnit(val.ms) || isBoolean(val.ms) ||
+      isFormatMsLength(val.ms))
   ) {
     return true;
   }
@@ -117,7 +153,10 @@ export function isFormatMsOptions(val: any): val is FormatMsOptions {
  * @param {FormatMsOptions | FormatMsName} formatting - Defines the format.
  * @see options
  */
-export function durationUtil(ms: Milliseconds, opts?: FormatMsOptions | FormatMsName) {
+export function durationUtil(
+  ms: Milliseconds | HrMilliseconds,
+  opts?: FormatMsOptions | FormatMsName,
+) {
   return new DurationUtil(ms, opts);
 }
 
@@ -128,24 +167,40 @@ export function durationUtil(ms: Milliseconds, opts?: FormatMsOptions | FormatMs
  *  - `hms` output format is `1h14m03.454s`
  *  - `:` output format is `1:14:03.454`
  */
-export type FormatMsName = 'hms' | ':' | 'long';
-export function isFormatMsName(val: any): val is FormatMsName {
-  return REG.formatName.test(val);
+export type FormatMsName = "hms" | ":" | "long";
+export function isFormatMsName(val: unknown): val is FormatMsName {
+  return isString(val) && REG.formatName.test(val);
 }
 
 export class DurationUtil {
   protected static OPTS: Record<string, FormatMsOptions> = {
-    hms: { d: 'd', h: 'h', m: 'm', s: 's', ms: true, compact: true, decimal: '.' },
-    ':': { d: 'd', h: ':', m: ':', s: '', ms: true, compact: true, decimal: '.' },
+    hms: {
+      d: "d",
+      h: "h",
+      m: "m",
+      s: "s",
+      ms: true,
+      compact: true,
+      decimal: ".",
+    },
+    ":": {
+      d: "d",
+      h: ":",
+      m: ":",
+      s: "",
+      ms: true,
+      compact: true,
+      decimal: ".",
+    },
     long: {
-      d: ['day', 'days'],
-      h: ['hour', 'hours'],
-      m: ['minute', 'minutes'],
-      s: ['second', 'seconds'],
-      ms: ['millisecond', 'milliseconds'],
+      d: ["day", "days"],
+      h: ["hour", "hours"],
+      m: ["minute", "minutes"],
+      s: ["second", "seconds"],
+      ms: ["millisecond", "milliseconds"],
       compact: false,
-      sep: ', ',
-      decimal: '.',
+      sep: ", ",
+      decimal: ".",
     },
   };
   protected _opts: FormatMsOptions = {};
@@ -159,10 +214,13 @@ export class DurationUtil {
    * @param {FormatMsOptions | FormatMsName} formatting - Defines the format.
    * @see options
    */
-  constructor(ms: Milliseconds, formatting?: FormatMsOptions | FormatMsName) {
+  constructor(
+    ms: Milliseconds | HrMilliseconds,
+    formatting?: FormatMsOptions | FormatMsName,
+  ) {
     this._ms = ms;
     if (!isFormatMsName(formatting)) {
-      this.options(':');
+      this.options(":");
     }
     this.options(formatting);
   }
@@ -229,28 +287,20 @@ export class DurationUtil {
       let res = opts.s;
 
       // Format from decimal to end
-      let msPadded = pad(time.ms, 3);
-      let msLen = 3;
-      if (msPadded.charAt(2) === '0') {
-        msLen = 2;
-        if (msPadded.charAt(1) === '0') {
-          msLen = 1;
-          if (msPadded.charAt(0) === '0') {
-            msLen = 0;
-          }
-        }
-      }
-      let num = 3;
+      const msLen = DurationUtil.significantDigits(time.ms);
+      const msPadded = pad(ms, 9);
+
+      let num = 9;
       let trunc = false;
       if (opts.ms === false) {
         num = 0;
-      } else if (isIntegerInRange(opts.ms, 0, 3)) {
+      } else if (isIntegerInRange(opts.ms, 0, 9)) {
         num = opts.ms;
       } else if (isNonEmptyString(opts.ms)) {
         const m = opts.ms.match(REG.formatMsLen);
         if (m && m.length > 1) {
           num = asInt(m[1]);
-          if (m.length > 2 && m[2] === '?') {
+          if (m.length > 2 && m[2] === "?") {
             trunc = true;
           }
         }
@@ -332,5 +382,11 @@ export class DurationUtil {
         .filter((val) => isNonEmptyString(val))
         .join(opts.sep);
     }
+  }
+
+  static significantDigits(ms: number): Integer {
+    const msPadded = pad(ms, 9);
+    const result = msPadded.replace(/0+$/, "");
+    return result.length;
   }
 }

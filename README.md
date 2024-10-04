@@ -1,8 +1,7 @@
 # @epdoc/timeutil
 
 Contains date and time duration utilities that are not found in
-[moment.js](https://github.com/moment/moment). Written in TypeScript. The
-examples below use plain vanilla ES6.
+[moment.js](https://github.com/moment/moment).
 
 ## Date Utilities
 
@@ -10,25 +9,29 @@ Contains methods to generate, from a Date object:
 
 - an ISO date string that uses the local timezone
 - the [Julian date](https://en.wikipedia.org/wiki/Julian_day) value
+- a date that is suitable for use in Google Sheets
+- create a new DateUtil object from a date in the PDF date format
+- various methods to work with timezones
 
-```javascript
-let dateutil = require('@epdoc/timeutil').dateUtil;
+```typescript
+import { dateUtil } from "@epdoc/timeutil";
 
-var d0 = new Date();
-console.log( d0.toLocaleString() );
-console.log( d0.toISOString() );
-console.log( dateutil(d0).toISOLocaleString() );
-console.log( dateutil(d0).toISOLocaleString(false) );
+const d0 = new Date();
+console.log(d0.toLocaleString());
+console.log(d0.toISOString());
+console.log(dateUtil(d0).toISOLocaleString());
+console.log(dateUtil(d0).toISOLocaleString(false));
 
-console.log( dateutil(d0).julianDate() );
-console.log( dateutil(d0).googleSheetsDate() );
+console.log(dateUtil(d0).julianDate());
+console.log(dateUtil(d0).googleSheetsDate());
 
-console.log( dateutil(d0).format('YYYYMMDD_HHmmss') );
-console.log( dateutil(d0).formatUTC('YYYYMMDD_HHmmss') );
+console.log(dateUtil(d0).format("YYYYMMDD_HHmmss"));
+console.log(dateUtil(d0).formatUTC("YYYYMMDD_HHmmss"));
+```
 
+Resultant output:
 
-// Resultant output:
-
+```
 11/25/1997, 06:13:14 AM
 1997-11-25T12:13:14.456Z
 1997-11-25T06:13:14.456-06:00
@@ -41,20 +44,30 @@ console.log( dateutil(d0).formatUTC('YYYYMMDD_HHmmss') );
 
 ## Duration Utilities
 
-```javascript
-let durationUtil = require('@epdoc/timeutil').durationUtil;
+Contains methods to generate a duration string from a number of milliseconds.
+
+```typescript
+import { dateUtil } from "@epdoc/timeutil";
 
 // Run
-console.log(durationUtil(-4443454).options('long').format());
+console.log(durationUtil(-4443454).options("long").format());
 console.log(durationUtil(-4443454).format());
-console.log(durationUtil(3454, 'hms').format());
-console.log(durationUtil(982440990,':').format({ms:false}));
+console.log(durationUtil(3454, "hms").format());
+console.log(durationUtil(982440990, ":").format({ ms: false }));
 // Useful when generating audible messages
-console.log( durationUtil(982442990, 'long').options({ sep: ' ', ms: false }).format())
+console.log(
+  durationUtil(982442990, "long").options({ sep: " ", ms: false }).format(),
+);
 // Same as previous, but use options to turn off both s and ms.
-console.log( durationUtil(982442990, 'long').options({ sep: ' ', ms: false, s: false }).format())
+console.log(
+  durationUtil(982442990, "long").options({ sep: " ", ms: false, s: false })
+    .format(),
+);
+```
 
-// Resultant output
+Resultant output:
+
+```
 1 hour, 14 minutes, 3 seconds, 454 milliseconds
 1:14:03.454
 3.454s
