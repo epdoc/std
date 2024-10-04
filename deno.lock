@@ -1,0 +1,59 @@
+{
+  "version": "4",
+  "specifiers": {
+    "jsr:@std/assert@^1.0.6": "1.0.6",
+    "jsr:@std/expect@*": "1.0.4",
+    "jsr:@std/internal@^1.0.4": "1.0.4",
+    "jsr:@std/testing@*": "1.0.3"
+  },
+  "jsr": {
+    "@std/assert@1.0.6": {
+      "integrity": "1904c05806a25d94fe791d6d883b685c9e2dcd60e4f9fc30f4fc5cf010c72207",
+      "dependencies": [
+        "jsr:@std/internal"
+      ]
+    },
+    "@std/expect@1.0.4": {
+      "integrity": "97f68a445a9de0d9670200d2b7a19a7505a01b2cb390a983ba8d97d90ce30c4f",
+      "dependencies": [
+        "jsr:@std/assert",
+        "jsr:@std/internal"
+      ]
+    },
+    "@std/internal@1.0.4": {
+      "integrity": "62e8e4911527e5e4f307741a795c0b0a9e6958d0b3790716ae71ce085f755422"
+    },
+    "@std/testing@1.0.3": {
+      "integrity": "f98c2bee53860a5916727d7e7d3abe920dd6f9edace022e2d059f00d05c2cf42",
+      "dependencies": [
+        "jsr:@std/assert",
+        "jsr:@std/internal"
+      ]
+    }
+  },
+  "remote": {
+    "https://raw.githubusercontent.com/jpravetz/typeutil/master/lib/dict-util.ts": "86be89e635636a8b0f8b8d6a2f31e42726e3dd8d51de77648d1a0dcd4b585d30",
+    "https://raw.githubusercontent.com/jpravetz/typeutil/master/lib/util.ts": "16451c91ee5045f4e6bbe0ca6a37104ade41b199f0e94d800892c183456f412e",
+    "https://raw.githubusercontent.com/jpravetz/typeutil/master/mod.ts": "40a04f235374e261c2129126e550cff9772e2c7b9d06d4b6bc605b3102f0cdc7"
+  },
+  "workspace": {
+    "dependencies": [
+      "jsr:@std/assert@1"
+    ],
+    "packageJson": {
+      "dependencies": [
+        "npm:@epdoc/typeutil@^2.2.1",
+        "npm:@types/jest@^29.5.12",
+        "npm:@types/node@^22.3.0",
+        "npm:eslint-config-prettier@^9.1.0",
+        "npm:eslint-plugin-prefer-arrow@^1.2.3",
+        "npm:eslint-plugin-unicorn@55",
+        "npm:eslint@^9.9.0",
+        "npm:jest@^29.7.0",
+        "npm:prettier@^3.3.3",
+        "npm:ts-jest@^29.2.4",
+        "npm:typescript@^5.5.4"
+      ]
+    }
+  }
+}

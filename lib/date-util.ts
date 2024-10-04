@@ -1,4 +1,12 @@
-import { Integer, asInt, isArray, isInteger, isString, isValidDate, pad } from '@epdoc/typeutil';
+import {
+  Integer,
+  asInt,
+  isArray,
+  isInteger,
+  isString,
+  isValidDate,
+  pad,
+} from 'https://raw.githubusercontent.com/jpravetz/typeutil/master/mod.ts';
 
 const REG = {
   pdfDate: new RegExp(/^D:(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(.*)$/),
@@ -114,7 +122,7 @@ export class DateUtil {
    */
   public toISOLocaleString(showMs: boolean = true): string {
     this.validate();
-    let tzOffset: Minutes = isInteger(this._tz) ? this._tz : this._date.getTimezoneOffset();
+    const tzOffset: Minutes = isInteger(this._tz) ? this._tz : this._date.getTimezoneOffset();
     const d: Date = new Date(this._date.getTime() - tzOffset * 60000);
     let s =
       String(d.getUTCFullYear()) +
@@ -265,9 +273,14 @@ export class DateUtil {
     const p = s.match(REG.pdfDate);
     if (p) {
       const tzOffset: Minutes | undefined = DateUtil.pdfTzParse(p[7]);
-      return new DateUtil(asInt(p[1]), asInt(p[2]) - 1, asInt(p[3]), asInt(p[4]), asInt(p[5]), asInt(p[6])).withTz(
-        tzOffset,
-      );
+      return new DateUtil(
+        asInt(p[1]),
+        asInt(p[2]) - 1,
+        asInt(p[3]),
+        asInt(p[4]),
+        asInt(p[5]),
+        asInt(p[6])
+      ).withTz(tzOffset);
     }
   }
 }

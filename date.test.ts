@@ -1,4 +1,7 @@
-import { DateUtil, dateUtil } from '../src/date-util';
+import { expect } from 'jsr:@std/expect';
+import { describe, it } from 'jsr:@std/testing/bdd';
+import process from 'node:process';
+import { DateUtil, dateUtil } from './mod.ts';
 
 describe('date-util', () => {
   // Test is using CST
