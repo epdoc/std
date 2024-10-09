@@ -1,4 +1,7 @@
-import { Integer } from 'https://raw.githubusercontent.com/jpravetz/typeutil/master/mod.ts';
+import {
+  type CompareResult,
+  Integer,
+} from 'https://raw.githubusercontent.com/jpravetz/typeutil/master/mod.ts';
 
 export const SECONDS_PER_SOLAR_YEAR = ((365 * 24 + 5) * 60 + 48) * 60 + 46;
 
@@ -42,36 +45,57 @@ export function isField(field: string): field is Field {
 //   | 'microseconds'
 //   | 'nanoseconds';
 
+export function compareFields(a: Field, b: Field): CompareResult {
+  if (TIME[a] < TIME[b]) {
+    return -1;
+  }
+  if (TIME[a] > TIME[b]) {
+    return 1;
+  }
+  return 0;
+}
+
+export const commonFormatOpts: string[] = [
+  'style',
+  'fractionalDigits',
+  'hoursMinutesSeparator',
+  'minutesSecondsSeparator',
+];
+
+export type FormatStyle = 'long' | 'short' | 'narrow' | 'digital';
+export type FormatDisplay = 'auto' | 'always';
+export type FormatDays = 'long' | 'short' | 'narrow';
+export type FormatHMS = 'long' | 'short' | 'narrow' | '2-digit' | 'numeric';
+export type FormatMS = 'long' | 'short' | 'narrow' | 'fractional';
+
 export type Format = {
-  locale: string;
-  numberingSystem: string;
-  style: 'long' | 'short' | 'narrow' | 'digital';
+  locale?: string;
+  numberingSystem?: string;
+  style?: FormatStyle;
   fractionalDigits?: Integer;
   hoursMinutesSeparator?: string;
   minutesSecondsSeparator?: string;
-  days?: 'long' | 'short' | 'narrow';
-  daysDisplay?: 'auto' | 'always';
-  hours?: 'long' | 'short' | 'narrow' | '2-digit' | 'numeric';
+  days?: FormatDays;
+  daysDisplay?: FormatDisplay;
+  hours?: FormatHMS;
   hoursDisplay?: 'auto' | 'always';
-  minutes?: 'long' | 'short' | 'narrow' | '2-digit' | 'numeric';
-  minutesDisplay?: 'auto' | 'always';
-  seconds?: 'long' | 'short' | 'narrow' | '2-digit' | 'numeric';
-  secondsDisplay?: 'auto' | 'always';
-  milliseconds?: 'long' | 'short' | 'narrow' | 'fractional';
-  millisecondsDisplay?: 'auto' | 'always';
-  microseconds?: 'long' | 'short' | 'narrow' | 'fractional';
-  microsecondsDisplay?: 'auto' | 'always';
-  nanoseconds?: 'long' | 'short' | 'narrow' | 'fractional';
-  nanosecondsDisplay?: 'auto' | 'always';
+  minutes?: FormatHMS;
+  minutesDisplay?: FormatDisplay;
+  seconds?: FormatHMS;
+  secondsDisplay?: FormatDisplay;
+  milliseconds?: FormatMS;
+  millisecondsDisplay?: FormatDisplay;
+  microseconds?: FormatMS;
+  microsecondsDisplay?: FormatDisplay;
+  nanoseconds?: FormatMS;
+  nanosecondsDisplay?: FormatDisplay;
 };
 
-export type Options = Partial<{
-  style: 'long' | 'short' | 'narrow' | 'digital';
-  minDisplay: Field;
-  maxDisplay: Field;
-  fractionalDigits: Integer;
-  daysHoursSeparator: string;
-  hoursMinutesSeparator: string;
-  minutesSecondsSeparator: string;
-  secondsUnit: string;
-}>;
+export type Options = Format &
+  Partial<{
+    maxDisplay: Field;
+    minDisplay: Field;
+    daysHoursSeparator: string;
+    secondsUnit: string;
+    separator: string;
+  }>;

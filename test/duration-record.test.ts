@@ -25,10 +25,9 @@ const constructorTest = (
   seconds: Integer,
   milliseconds: Integer,
   microseconds: Integer,
-  nanoseconds: Integer
+  nanoseconds: Integer,
 ): DurationRecord => {
-  const ms =
-    (days * 24 * 3600 + hours * 3600 + minutes * 60 + seconds) * 1000 +
+  const ms = (days * 24 * 3600 + hours * 3600 + minutes * 60 + seconds) * 1000 +
     milliseconds +
     microseconds / 1000 +
     nanoseconds / 1000000;
@@ -48,7 +47,7 @@ const constructorTest = (
 };
 
 describe('duration-record', () => {
-  it('constructor', () => {
+  it('construct from ms', () => {
     expect(new DurationRecord(0)).toEqual(zero);
     expect(new DurationRecord(1)).toEqual(modZero({ _ms: 1, milliseconds: 1 }));
     expect(new DurationRecord(2345)).toEqual(modZero({ _ms: 2345, seconds: 2, milliseconds: 345 }));
@@ -56,6 +55,9 @@ describe('duration-record', () => {
     constructorTest(0, 0, 0, 2, 345, 0, 0);
     constructorTest(0, 1, 1, 1, 1, 1, 1);
     constructorTest(3, 23, 59, 59, 999, 999, 999);
+    expect(new DurationRecord(3454.345898)).toEqual(
+      modZero({ _ms: 3454.345898, seconds: 3, milliseconds: 454, microseconds: 345, nanoseconds: 898 }),
+    );
   });
   describe('prune', () => {
     it('should prune minimum fields correctly', () => {

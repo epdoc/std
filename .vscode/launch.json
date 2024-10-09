@@ -11,7 +11,7 @@
       "cwd": "${workspaceFolder}",
       "env": {},
       "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "runtimeArgs": ["test", "--inspect-brk", "--allow-env", "./test/duration-record.test.ts"],
+      "runtimeArgs": ["test", "--inspect-brk", "--allow-env", "./test/duration.test.ts"],
       "attachSimplePort": 9229
     }
   ]
