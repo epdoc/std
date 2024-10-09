@@ -1,7 +1,6 @@
 # @epdoc/timeutil
 
-Contains date and time duration utilities that are not found in
-[moment.js](https://github.com/moment/moment).
+Contains date and time duration utilities that are not found in [moment.js](https://github.com/moment/moment).
 
 ## Date Utilities
 
@@ -14,7 +13,7 @@ Contains methods to generate, from a Date object:
 - various methods to work with timezones
 
 ```typescript
-import { dateUtil } from "@epdoc/timeutil";
+import { dateUtil } from '@epdoc/timeutil';
 
 const d0 = new Date();
 console.log(d0.toLocaleString());
@@ -25,8 +24,8 @@ console.log(dateUtil(d0).toISOLocaleString(false));
 console.log(dateUtil(d0).julianDate());
 console.log(dateUtil(d0).googleSheetsDate());
 
-console.log(dateUtil(d0).format("YYYYMMDD_HHmmss"));
-console.log(dateUtil(d0).formatUTC("YYYYMMDD_HHmmss"));
+console.log(dateUtil(d0).format('YYYYMMDD_HHmmss'));
+console.log(dateUtil(d0).formatUTC('YYYYMMDD_HHmmss'));
 ```
 
 Resultant output:
@@ -47,20 +46,20 @@ Resultant output:
 Contains methods to generate a duration string from a number of milliseconds.
 
 ```typescript
-import { dateUtil } from "@epdoc/timeutil";
+import { dateUtil } from '@epdoc/timeutil';
 
 // Run
-console.log(durationUtil(-4443454).options("long").format());
+console.log(durationUtil(-4443454).options('long').format());
 console.log(durationUtil(-4443454).format());
-console.log(durationUtil(3454, "hms").format());
-console.log(durationUtil(982440990, ":").format({ ms: false }));
+console.log(durationUtil(3454, 'hms').format());
+console.log(durationUtil(982440990, ':').format({ ms: false }));
 // Useful when generating audible messages
 console.log(
-  durationUtil(982442990, "long").options({ sep: " ", ms: false }).format(),
+  durationUtil(982442990, 'long').options({ sep: ' ', ms: false }).format(),
 );
 // Same as previous, but use options to turn off both s and ms.
 console.log(
-  durationUtil(982442990, "long").options({ sep: " ", ms: false, s: false })
+  durationUtil(982442990, 'long').options({ sep: ' ', ms: false, s: false })
     .format(),
 );
 ```

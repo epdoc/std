@@ -6,14 +6,14 @@ import {
   isString,
   isValidDate,
   pad,
-} from "https://raw.githubusercontent.com/jpravetz/typeutil/master/mod.ts";
+} from 'https://raw.githubusercontent.com/jpravetz/typeutil/master/mod.ts';
 
 const REG = {
   pdfDate: new RegExp(/^D:(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(.*)$/),
   pdfTz: new RegExp(/^Z|((\+|\-)(\d\d)(\d\d)?)$/),
   isoTz: new RegExp(/^(Z|((\+|\-)(\d\d):(\d\d)))*$/),
 };
-const INVALID_DATE_STRING = "Invalid Date";
+const INVALID_DATE_STRING = 'Invalid Date';
 
 export type ISOTZ = string;
 export type PDFTZ = string;
@@ -115,23 +115,21 @@ export class DateUtil {
    */
   public toISOLocaleString(showMs: boolean = true): string {
     this.validate();
-    const tzOffset: Minutes = isInteger(this._tz)
-      ? this._tz
-      : this._date.getTimezoneOffset();
+    const tzOffset: Minutes = isInteger(this._tz) ? this._tz : this._date.getTimezoneOffset();
     const d: Date = new Date(this._date.getTime() - tzOffset * 60000);
     let s = String(d.getUTCFullYear()) +
-      "-" +
+      '-' +
       pad(d.getUTCMonth() + 1, 2) +
-      "-" +
+      '-' +
       pad(d.getUTCDate(), 2) +
-      "T" +
+      'T' +
       pad(d.getUTCHours(), 2) +
-      ":" +
+      ':' +
       pad(d.getUTCMinutes(), 2) +
-      ":" +
+      ':' +
       pad(d.getUTCSeconds(), 2);
     if (showMs !== false) {
-      s += "." + pad(d.getMilliseconds(), 3);
+      s += '.' + pad(d.getMilliseconds(), 3);
     }
     s += DateUtil.tzFormat(tzOffset);
     return s;
@@ -153,9 +151,7 @@ export class DateUtil {
    * @returns
    */
   format(format: string): string {
-    const tzOffset: Minutes = this._tz
-      ? this._tz
-      : this._date.getTimezoneOffset();
+    const tzOffset: Minutes = this._tz ? this._tz : this._date.getTimezoneOffset();
     const d: Date = new Date(this._date.getTime() - tzOffset * 60000);
     return DateUtil.formatInternal(d, format);
   }
@@ -167,13 +163,13 @@ export class DateUtil {
   private static formatInternal(d: Date, format: string): string {
     let f = String(format);
     f = f
-      .replace("YYYY", String(d.getUTCFullYear()))
-      .replace("MM", pad(d.getUTCMonth() + 1, 2))
-      .replace("DD", pad(d.getUTCDate(), 2))
-      .replace("HH", pad(d.getUTCHours(), 2))
-      .replace("mm", pad(d.getUTCMinutes(), 2))
-      .replace("ss", pad(d.getUTCSeconds(), 2))
-      .replace("SSS", pad(d.getUTCMilliseconds(), 3));
+      .replace('YYYY', String(d.getUTCFullYear()))
+      .replace('MM', pad(d.getUTCMonth() + 1, 2))
+      .replace('DD', pad(d.getUTCDate(), 2))
+      .replace('HH', pad(d.getUTCHours(), 2))
+      .replace('mm', pad(d.getUTCMinutes(), 2))
+      .replace('ss', pad(d.getUTCSeconds(), 2))
+      .replace('SSS', pad(d.getUTCMilliseconds(), 3));
     return f;
   }
 
@@ -207,9 +203,9 @@ export class DateUtil {
    */
   public static tzFormat(m: Minutes) {
     if (m === 0) {
-      return "Z";
+      return 'Z';
     }
-    return (m < 0 ? "+" : "-") + pad(Math.floor(Math.abs(m) / 60), 2) + ":" +
+    return (m < 0 ? '+' : '-') + pad(Math.floor(Math.abs(m) / 60), 2) + ':' +
       pad(Math.abs(m) % 60, 2);
   }
 
@@ -221,10 +217,10 @@ export class DateUtil {
   public static tzParse(val: ISOTZ): Minutes | undefined {
     const p = isString(val) ? val.match(REG.isoTz) : false;
     if (p && p.length > 1) {
-      if (p[1] === "Z") {
+      if (p[1] === 'Z') {
         return 0;
       } else if (p.length > 4) {
-        const pol = p[3] === "-" ? 1 : -1;
+        const pol = p[3] === '-' ? 1 : -1;
         const result = asInt(p[4]) * 60 + asInt(p[5]);
         return result ? pol * result : result;
       }
@@ -239,10 +235,10 @@ export class DateUtil {
   public static pdfTzParse(val: PDFTZ): Minutes | undefined {
     const p = isString(val) ? val.match(REG.pdfTz) : false;
     if (p && p.length > 1) {
-      if (p[1] === "Z") {
+      if (p[1] === 'Z') {
         return 0;
       } else if (p.length > 3) {
-        const pol = p[2] === "-" ? 1 : -1;
+        const pol = p[2] === '-' ? 1 : -1;
         let val = asInt(p[3]) * 60;
         if (p.length > 3) {
           val += asInt(p[4]);

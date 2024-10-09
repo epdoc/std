@@ -1,7 +1,4 @@
-import {
-  Integer,
-  isInteger,
-} from "https://raw.githubusercontent.com/jpravetz/typeutil/master/mod.ts";
+import { Integer, isInteger } from 'https://raw.githubusercontent.com/jpravetz/typeutil/master/mod.ts';
 
 /**
  * Represents a duration in milliseconds.
