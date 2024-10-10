@@ -1,8 +1,10 @@
 # @epdoc/timeutil
 
 Contains date and time duration utilities that are not found in
-[moment.js](https://github.com/moment/moment). Written in TypeScript. The
-examples below use plain vanilla ES6.
+[moment.js](https://github.com/moment/moment) or require a fair amount of
+wrapper logic when using [Intl.DurationFormat](https://tc39.es/proposal-intl-duration-format/#sec-intl-durationformat-constructor).
+
+Contains no external dependencies.
 
 ## Date Utilities
 
@@ -10,25 +12,29 @@ Contains methods to generate, from a Date object:
 
 - an ISO date string that uses the local timezone
 - the [Julian date](https://en.wikipedia.org/wiki/Julian_day) value
+- a date that is suitable for use in Google Sheets
+- create a new DateUtil object from a date in the PDF date format
+- various methods to work with timezones
 
-```javascript
-let dateutil = require('@epdoc/timeutil').dateUtil;
+```typescript
+import { dateUtil } from './mod.ts';
 
-var d0 = new Date();
-console.log( d0.toLocaleString() );
-console.log( d0.toISOString() );
-console.log( dateutil(d0).toISOLocaleString() );
-console.log( dateutil(d0).toISOLocaleString(false) );
+const d0 = new Date();
+console.log(d0.toLocaleString());
+console.log(d0.toISOString());
+console.log(dateUtil(d0).toISOLocalString());
+console.log(dateUtil(d0).toISOLocalString(false));
 
-console.log( dateutil(d0).julianDate() );
-console.log( dateutil(d0).googleSheetsDate() );
+console.log(dateUtil(d0).julianDate());
+console.log(dateUtil(d0).googleSheetsDate());
 
-console.log( dateutil(d0).format('YYYYMMDD_HHmmss') );
-console.log( dateutil(d0).formatUTC('YYYYMMDD_HHmmss') );
+console.log(dateUtil(d0).format('YYYYMMDD_HHmmss'));
+console.log(dateUtil(d0).formatUTC('YYYYMMDD_HHmmss'));
+```
 
+Resultant output:
 
-// Resultant output:
-
+```
 11/25/1997, 06:13:14 AM
 1997-11-25T12:13:14.456Z
 1997-11-25T06:13:14.456-06:00
@@ -41,24 +47,66 @@ console.log( dateutil(d0).formatUTC('YYYYMMDD_HHmmss') );
 
 ## Duration Utilities
 
-```javascript
-let durationUtil = require('@epdoc/timeutil').durationUtil;
+Contains methods to generate a duration string from a number of milliseconds.
 
-// Run
-console.log(durationUtil(-4443454).options('long').format());
-console.log(durationUtil(-4443454).format());
-console.log(durationUtil(3454, 'hms').format());
-console.log(durationUtil(982440990,':').format({ms:false}));
-// Useful when generating audible messages
-console.log( durationUtil(982442990, 'long').options({ sep: ' ', ms: false }).format())
-// Same as previous, but use options to turn off both s and ms.
-console.log( durationUtil(982442990, 'long').options({ sep: ' ', ms: false, s: false }).format())
+```typescript
+import { Duration } from './mod.ts';
 
-// Resultant output
-1 hour, 14 minutes, 3 seconds, 454 milliseconds
-1:14:03.454
-3.454s
-11d08:54:01
-11 days 8 hours 54 minutes 2 seconds
-11 days 8 hours 54 minutes
+console.log('digital');
+console.log(' ', Duration.util().digital.format(-4443454));
+console.log(' ', Duration.util().digital.digits(0).format(-4443454));
+console.log(' ', Duration.util().digital.format(3454)); // default 3 fractional digits
+console.log(' ', Duration.util().digital.digits(0).format(3454.123456));
+console.log(' ', Duration.util().digital.digits(6).format(3454.123456));
+console.log(' ', Duration.util().digital.digits(9).format(3454.123456));
+
+console.log('narrow');
+console.log(' ', Duration.util().narrow.format(-4443454));
+console.log(' ', Duration.util().narrow.max('minutes').digits(0).format(4443454));
+console.log(' ', Duration.util().narrow.format(3454));
+
+console.log('long');
+console.log(' ', Duration.util().long.format(-4443454));
+console.log(' ', Duration.util().long.separator(' ').digits(0).max('minutes').format(-4443454));
+
+console.log('short');
+console.log(' ', Duration.util().short.digits(0).format(982440990));
+console.log(' ', Duration.util().short.digits(3).format(982440990));
+```
+
+Resultant output:
+
+```
+digital
+  1:14:03.454
+  1:14:03
+  00:03.454
+  00:03
+  00:03.454123
+  00:03.454123456
+narrow
+  1h14m03.454s
+  74m03s
+  3.454s
+long
+  1 hour, 14 minutes, 3 seconds, 454 milliseconds
+  74 minutes 3 seconds
+short
+  11 days 8 hr 54 min
+  11 days 8 hr 54 min 990 ms
+```
+
+## Type Definitions
+
+There are type definitions for the following:
+
+- `Milliseconds`: Integer
+- `HrMilliseconds`: number
+- `EpochMilliseconds`: Integer
+- `EpochSeconds`: Integer
+- `Minutes`: number
+- `Seconds`: number
+
+```typescript
+import type { Milliseconds, HrMilliseconds, EpochMilliseconds, EpochSeconds, Minutes } from './mod.ts';
 ```

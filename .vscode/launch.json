@@ -5,12 +5,14 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug Jest Tests",
-      "type": "node",
       "request": "launch",
-      "runtimeArgs": ["--inspect-brk", "${workspaceRoot}/node_modules/.bin/jest", "--runInBand"],
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
+      "name": "Debug tests",
+      "type": "node",
+      "cwd": "${workspaceFolder}",
+      "env": {},
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "runtimeArgs": ["test", "--inspect-brk", "--allow-env", "./test/duration.test.ts"],
+      "attachSimplePort": 9229
     }
   ]
 }
