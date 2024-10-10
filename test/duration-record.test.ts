@@ -2,7 +2,7 @@
 import { Dict, Integer } from 'https://raw.githubusercontent.com/jpravetz/typeutil/master/mod.ts';
 import { expect } from 'jsr:@std/expect';
 import { describe, it } from 'jsr:@std/testing/bdd';
-import { DurationRecord } from '../lib/duration-record.ts';
+import { DurationRecord } from '../src/duration-record.ts';
 
 const zero = {
   _ms: 0,

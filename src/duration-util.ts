@@ -124,6 +124,15 @@ export class DurationUtil {
     return this;
   }
 
+  max(field: Duration.Field): this {
+    this._opts.maxDisplay = field;
+    return this;
+  }
+
+  min(field: Duration.Field): this {
+    this._opts.minDisplay = field;
+    return this;
+  }
   /**
    * Define a custom format by overwriting the already-set format options.
    * @param opts The `FormatMsName` name of one of the preset formats, or a

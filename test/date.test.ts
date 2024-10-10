@@ -64,7 +64,7 @@ describe('date-util', () => {
     it('local', () => {
       process.env.TZ = 'America/Costa_Rica';
       const d: DateUtil = dateUtil(2024, 0, 1, 11, 59, 59, 456).withTz();
-      expect(d.toISOLocaleString()).toEqual('2024-01-01T11:59:59.456-06:00');
+      expect(d.toISOLocalString()).toEqual('2024-01-01T11:59:59.456-06:00');
     });
   });
   describe('toISOLocaleString', () => {
@@ -73,19 +73,13 @@ describe('date-util', () => {
     it('default', () => {
       expect(d.getTimezoneOffset()).toEqual(360);
       expect(d.toISOString()).toEqual('1997-11-25T12:13:14.456Z');
-      expect(new DateUtil(d).toISOLocaleString()).toEqual(
-        '1997-11-25T06:13:14.456-06:00',
-      );
+      expect(new DateUtil(d).toISOLocalString()).toEqual('1997-11-25T06:13:14.456-06:00');
     });
     it('show milliseconds', () => {
-      expect(new DateUtil(d).toISOLocaleString(true)).toEqual(
-        '1997-11-25T06:13:14.456-06:00',
-      );
+      expect(new DateUtil(d).toISOLocalString(true)).toEqual('1997-11-25T06:13:14.456-06:00');
     });
     it('hide milliseconds', () => {
-      expect(new DateUtil(d).toISOLocaleString(false)).toEqual(
-        '1997-11-25T06:13:14-06:00',
-      );
+      expect(new DateUtil(d).toISOLocalString(false)).toEqual('1997-11-25T06:13:14-06:00');
     });
   });
   describe('toISOLocaleString tz -06:00', () => {
@@ -93,15 +87,13 @@ describe('date-util', () => {
     const du = new DateUtil(d).tz('-06:00');
     it('default', () => {
       expect(d.toISOString()).toEqual('1997-11-25T12:13:14.456Z');
-      expect(du.toISOLocaleString()).toEqual('1997-11-25T06:13:14.456-06:00');
+      expect(du.toISOLocalString()).toEqual('1997-11-25T06:13:14.456-06:00');
     });
     it('show milliseconds', () => {
-      expect(du.toISOLocaleString(true)).toEqual(
-        '1997-11-25T06:13:14.456-06:00',
-      );
+      expect(du.toISOLocalString(true)).toEqual('1997-11-25T06:13:14.456-06:00');
     });
     it('hide milliseconds', () => {
-      expect(du.toISOLocaleString(false)).toEqual('1997-11-25T06:13:14-06:00');
+      expect(du.toISOLocalString(false)).toEqual('1997-11-25T06:13:14-06:00');
     });
   });
   describe('toISOLocaleString tz -150', () => {
@@ -109,15 +101,13 @@ describe('date-util', () => {
     const du = new DateUtil(d).tz(-150);
     it('default', () => {
       expect(d.toISOString()).toEqual('1997-11-25T12:13:14.456Z');
-      expect(du.toISOLocaleString()).toEqual('1997-11-25T14:43:14.456+02:30');
+      expect(du.toISOLocalString()).toEqual('1997-11-25T14:43:14.456+02:30');
     });
     it('show milliseconds', () => {
-      expect(du.toISOLocaleString(true)).toEqual(
-        '1997-11-25T14:43:14.456+02:30',
-      );
+      expect(du.toISOLocalString(true)).toEqual('1997-11-25T14:43:14.456+02:30');
     });
     it('hide milliseconds', () => {
-      expect(du.toISOLocaleString(false)).toEqual('1997-11-25T14:43:14+02:30');
+      expect(du.toISOLocalString(false)).toEqual('1997-11-25T14:43:14+02:30');
     });
   });
   describe('toISOLocaleString tz 0', () => {
@@ -125,25 +115,21 @@ describe('date-util', () => {
     const du = new DateUtil(d).tz(0);
     it('default', () => {
       expect(d.toISOString()).toEqual('1997-11-25T12:13:14.456Z');
-      expect(du.toISOLocaleString()).toEqual('1997-11-25T12:13:14.456Z');
+      expect(du.toISOLocalString()).toEqual('1997-11-25T12:13:14.456Z');
     });
     it('show milliseconds', () => {
-      expect(du.toISOLocaleString(true)).toEqual('1997-11-25T12:13:14.456Z');
+      expect(du.toISOLocalString(true)).toEqual('1997-11-25T12:13:14.456Z');
     });
     it('hide milliseconds', () => {
-      expect(du.toISOLocaleString(false)).toEqual('1997-11-25T12:13:14Z');
+      expect(du.toISOLocalString(false)).toEqual('1997-11-25T12:13:14Z');
     });
   });
   it('formatLocale', () => {
     const d = new Date('1997-11-25T12:13:14.456Z');
     expect(new DateUtil(d).format('YYYY-MM-DD')).toEqual('1997-11-25');
     expect(new DateUtil(d).format('YYYYMMDD')).toEqual('19971125');
-    expect(new DateUtil(d).format('YYYYMMDD_HHmmss')).toEqual(
-      '19971125_061314',
-    );
-    expect(new DateUtil(d).formatUTC('YYYYMMDD_HHmmss')).toEqual(
-      '19971125_121314',
-    );
+    expect(new DateUtil(d).format('YYYYMMDD_HHmmss')).toEqual('19971125_061314');
+    expect(new DateUtil(d).formatUTC('YYYYMMDD_HHmmss')).toEqual('19971125_121314');
   });
   it('julianDate', () => {
     const d = new Date('1997-11-25T12:13:14.456Z');
@@ -168,10 +154,8 @@ describe('date-util', () => {
       expect(d).toBeDefined();
       if (d instanceof DateUtil) {
         expect(d.date.toISOString()).toBe('2024-01-01T12:00:00.000Z');
-        expect(d.toISOLocaleString(false)).toBe('2024-01-01T06:00:00-06:00');
-        expect(d.tz(-60).toISOLocaleString(false)).toBe(
-          '2024-01-01T13:00:00+01:00',
-        );
+        expect(d.toISOLocalString(false)).toBe('2024-01-01T06:00:00-06:00');
+        expect(d.tz(-60).toISOLocalString(false)).toBe('2024-01-01T13:00:00+01:00');
       }
     });
     it('AST +03:00', () => {
@@ -180,9 +164,7 @@ describe('date-util', () => {
       expect(d).toBeDefined();
       if (d instanceof DateUtil) {
         expect(d.date.toISOString()).toBe('2024-01-01T12:00:00.000Z');
-        expect(d.tz('+03:00').toISOLocaleString(false)).toBe(
-          '2024-01-01T15:00:00+03:00',
-        );
+        expect(d.tz('+03:00').toISOLocalString(false)).toBe('2024-01-01T15:00:00+03:00');
       }
     });
   });

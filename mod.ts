@@ -1,3 +1,3 @@
-export * from './lib/date-util.ts';
-export * as Duration from './lib/duration.ts';
-export * from './lib/time-types.ts';
+export * from './src/date-util.ts';
+export * as Duration from './src/duration.ts';
+export * from './src/time-types.ts';

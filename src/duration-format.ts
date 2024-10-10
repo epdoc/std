@@ -4,6 +4,7 @@ import type { Integer } from './types.ts';
 /**
  * Styles for Intl.DurationFormat.
  * We redefine narrow and modify the other styles slightly.
+ * @see https://tc39.es/proposal-intl-duration-format/#sec-intl-durationformat-constructo
  */
 export type Style = 'long' | 'short' | 'narrow' | 'digital';
 /**

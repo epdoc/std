@@ -105,7 +105,7 @@ export class DateUtil {
    * @param showMs Set to false to hide (truncate) milliseconds
    * @returns
    */
-  public toISOLocaleString(showMs: boolean = true): string {
+  public toISOLocalString(showMs: boolean = true): string {
     this.validate();
     const tzOffset: Minutes = Util.isInteger(this._tz) ? this._tz : this._date.getTimezoneOffset();
     const d: Date = new Date(this._date.getTime() - tzOffset * 60000);
