@@ -1,7 +1,8 @@
-import * as Format from './duration-format.ts';
+import type * as Format from './duration-format.ts';
 import { DurationRecord } from './duration-record.ts';
-import * as Duration from './duration-types.ts';
-import { type HrMilliseconds, Milliseconds } from './time-types.ts';
+import type * as Duration from './duration-types.ts';
+// import { formatToParts } from './intl-duration-format.ts';
+import type { HrMilliseconds, Milliseconds } from './time-types.ts';
 import type { Integer } from './types.ts';
 import { isDict, isInteger } from './utils.ts';
 
@@ -63,7 +64,7 @@ const DEFAULT: Record<Format.Style, Format.Options> = {
   },
 };
 
-type DurationPart = {
+export type DurationPart = {
   type: 'literal' | 'integer' | 'unit' | 'decimal' | 'fraction';
   value: string;
   unit?: Duration.Field;
@@ -204,8 +205,8 @@ export class DurationUtil {
         result.push(part.value);
       }
     });
-    // this.emitParts(parts);
-    // console.log(JSON.stringify(result));
+    this.emitParts(parts);
+    console.log(JSON.stringify(result));
     return result.join('');
   }
 

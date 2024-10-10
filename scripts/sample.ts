@@ -1,4 +1,4 @@
-import { Duration } from './mod.ts';
+import { Duration } from '../mod.ts';
 
 console.log('digital');
 console.log(' ', Duration.util().digital.format(-4443454));
@@ -21,7 +21,7 @@ console.log('short');
 console.log(' ', Duration.util().short.digits(0).format(982440990));
 console.log(' ', Duration.util().short.digits(3).format(982440990));
 
-import { dateUtil } from './mod.ts';
+import { dateUtil } from '../mod.ts';
 
 const d0 = new Date();
 console.log(d0.toLocaleString());
