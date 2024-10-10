@@ -1,10 +1,6 @@
-import { Dict, isDict } from 'https://raw.githubusercontent.com/jpravetz/typeutil/master/mod.ts';
 import * as Duration from './duration-types.ts';
-
-export type PruneOptions = Partial<{
-  min: Duration.Field;
-  max: Duration.Field;
-}>;
+import type { Dict } from './types.ts';
+import { isDict } from './utils.ts';
 
 export type DurationRecordOptions = Partial<{
   days: number;
@@ -53,7 +49,8 @@ export class DurationRecord {
       this.milliseconds = arg.milliseconds ?? 0;
       this.microseconds = arg.microseconds ?? 0;
       this.nanoseconds = arg.nanoseconds ?? 0;
-      this._ms = this.days * Duration.TIME.days +
+      this._ms =
+        this.days * Duration.TIME.days +
         this.hours * Duration.TIME.hours +
         this.minutes * Duration.TIME.minutes +
         this.seconds * Duration.TIME.seconds +
@@ -112,8 +109,15 @@ export class DurationRecord {
   }
 
   isZero(): boolean {
-    return this.days === 0 && this.hours === 0 && this.minutes === 0 && this.seconds === 0 && this.milliseconds === 0 &&
-      this.microseconds === 0 && this.nanoseconds === 0;
+    return (
+      this.days === 0 &&
+      this.hours === 0 &&
+      this.minutes === 0 &&
+      this.seconds === 0 &&
+      this.milliseconds === 0 &&
+      this.microseconds === 0 &&
+      this.nanoseconds === 0
+    );
   }
 
   public toTime(): Dict {

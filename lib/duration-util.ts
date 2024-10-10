@@ -1,12 +1,9 @@
-import {
-  Integer,
-  isDefined,
-  isDict,
-  isInteger,
-} from 'https://raw.githubusercontent.com/jpravetz/typeutil/master/mod.ts';
+import * as Format from './duration-format.ts';
 import { DurationRecord } from './duration-record.ts';
 import * as Duration from './duration-types.ts';
-import { type HrMilliseconds, Milliseconds } from './types.ts';
+import { type HrMilliseconds, Milliseconds } from './time-types.ts';
+import type { Integer } from './types.ts';
+import { isDict, isInteger } from './utils.ts';
 
 const REG = {
   isSepWhitespace: /^[,\s]+$/,
@@ -21,11 +18,11 @@ const REG = {
  * @param {FormatMsOptions | FormatMsName} formatting - Defines the format.
  * @see options
  */
-export function durationUtil(format?: Duration.Options) {
+export function durationUtil(format?: Format.Options) {
   return new DurationUtil(format);
 }
 
-const DEFAULT: Record<Duration.FormatStyle, Duration.Options> = {
+const DEFAULT: Record<Format.Style, Format.Options> = {
   digital: {
     style: 'digital',
     daysHoursSeparator: 'd',
@@ -83,7 +80,7 @@ export class DurationUtil {
    * @param {FormatMsOptions | FormatMsName} formatting - Defines the format.
    * @see options
    */
-  constructor(format?: Duration.Options) {
+  constructor(format?: Format.Options) {
     if (format) {
       this._opts = Object.assign({}, format);
     }
@@ -105,7 +102,7 @@ export class DurationUtil {
     return this.style('long');
   }
 
-  style(style: Duration.FormatStyle): this {
+  style(style: Format.Style): this {
     if (DEFAULT[style]) {
       this._opts = Object.assign({}, DEFAULT[style]);
     }
@@ -134,14 +131,14 @@ export class DurationUtil {
    * values.
    * @returns this
    */
-  public options(format?: Duration.Options): this {
+  public options(format?: Format.Options): this {
     if (format) {
       this._opts = Object.assign({}, format);
     }
     return this;
   }
 
-  public apply(format?: Duration.Options): this {
+  public apply(format?: Format.Options): this {
     if (!isDict(this._opts)) {
       this._opts = Object.assign({}, DEFAULT.digital, format);
     } else {
@@ -158,11 +155,6 @@ export class DurationUtil {
     const time: DurationRecord = new DurationRecord(ms)
       .pruneMin(this._opts.minDisplay)
       .pruneMax(this._opts.maxDisplay);
-    console.log(JSON.stringify(time));
-
-    // @ts-ignore DurationFormat is not yet in TS
-    // const parts: DurationPart[] = new Intl.DurationFormat('en', this._opts).formatToParts(time);
-    // console.log(JSON.stringify(parts, null, '  '));
 
     if (this._opts.style === 'digital') {
       return this.formatDigital(time);
@@ -172,13 +164,13 @@ export class DurationUtil {
     return this.formatLong(time);
   }
 
-  protected formatToParts(time: DurationRecord, opts: Duration.Options): DurationPart[] {
+  protected formatToParts(time: DurationRecord, opts: Format.Options): DurationPart[] {
     // @ts-ignore DurationFormat is not yet in TS
     return new Intl.DurationFormat('en', opts ? opts : this._opts).formatToParts(time);
   }
 
   protected formatLong(time: DurationRecord): string {
-    const opts: Duration.Options = Object.assign({ fractionalDigits: 0, separator: ' ' }, this._opts);
+    const opts: Format.Options = Object.assign({ fractionalDigits: 0, separator: ' ' }, this._opts);
 
     if (opts.fractionalDigits === 0) {
       time.milliseconds = 0;
@@ -193,23 +185,23 @@ export class DurationUtil {
       }
     }
 
-    // For debugging
     const parts: DurationPart[] = this.formatToParts(time, opts);
-    this.emitParts(parts);
     const result: string[] = [];
     parts.forEach((part: DurationPart) => {
-      if (part.type === 'literal' && !isDefined(part.unit)) {
+      if (part.type === 'literal' && typeof part.unit !== 'string') {
         // @ts-ignore separator is defined
         result.push(opts.separator);
       } else {
         result.push(part.value);
       }
     });
+    // this.emitParts(parts);
+    // console.log(JSON.stringify(result));
     return result.join('');
   }
 
   protected formatNarrow(time: DurationRecord): string {
-    const opts: Duration.Options = Object.assign({}, this._opts, { style: 'digital' });
+    const opts: Format.Options = Object.assign({}, this._opts, { style: 'digital' });
     let bRemoveMinutesLeadingZero = false;
     let bRemoveSecondsLeadingZero = false;
     if (time.days == 0) {
@@ -250,7 +242,7 @@ export class DurationUtil {
   }
 
   protected formatDigital(time: DurationRecord): string {
-    const opts: Duration.Options = Object.assign({}, this._opts);
+    const opts: Format.Options = Object.assign({}, this._opts);
     if (time.days == 0) {
       opts.hours = 'numeric';
       opts.hoursDisplay = 'auto';
@@ -260,7 +252,6 @@ export class DurationUtil {
   }
 
   protected _formatDigital(parts: DurationPart[]): string {
-    this.emitParts(parts);
     const result: string[] = [];
     parts.forEach((part: DurationPart) => {
       if (part.unit && REG.isNumeric.test(part.type)) {
@@ -292,7 +283,7 @@ export class DurationUtil {
     return result.join('');
   }
 
-  emitParts(parts: DurationPart[]): void {
+  protected emitParts(parts: DurationPart[]): void {
     const result: string[] = [];
     parts.forEach((part: DurationPart) => {
       // result.push(JSON.stringify(part).replaceAll('"', "'"));
@@ -300,20 +291,4 @@ export class DurationUtil {
     });
     console.log(parts);
   }
-  // protected formatDigital(time: DurationRecord): string {
-  //   const result:string[] = [];
-  //   if( time.days > 0 ) {
-  //     result.push(`${time.days}${this._opts.daysHoursSeparator ?? 'd'}`);
-  //   }
-  //   if( time.hours > 0 ) {
-  //     result.push(`${time.hours}${this._opts.hoursMinutesSeparator ?? ':'}`);
-  //   } else if( this._opts.)
-  //   if( time.minutes > 0 ) {
-  //     result.push(`${time.minutes}${this._opts.minutesSecondsSeparator ?? ':'}`);
-  //   }
-  //   if( time.seconds > 0 ) {
-  //     result.push(`${time.seconds}${this._opts.secondsUnit ?? 's'}`);
-  //   }
-  //   console.log(JSON.stringify(parts, null, '  '));
-  // }
 }

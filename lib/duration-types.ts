@@ -1,7 +1,4 @@
-import {
-  type CompareResult,
-  Integer,
-} from 'https://raw.githubusercontent.com/jpravetz/typeutil/master/mod.ts';
+import type { CompareResult } from './types.ts';
 
 export const SECONDS_PER_SOLAR_YEAR = ((365 * 24 + 5) * 60 + 48) * 60 + 46;
 
@@ -54,48 +51,3 @@ export function compareFields(a: Field, b: Field): CompareResult {
   }
   return 0;
 }
-
-export const commonFormatOpts: string[] = [
-  'style',
-  'fractionalDigits',
-  'hoursMinutesSeparator',
-  'minutesSecondsSeparator',
-];
-
-export type FormatStyle = 'long' | 'short' | 'narrow' | 'digital';
-export type FormatDisplay = 'auto' | 'always';
-export type FormatDays = 'long' | 'short' | 'narrow';
-export type FormatHMS = 'long' | 'short' | 'narrow' | '2-digit' | 'numeric';
-export type FormatMS = 'long' | 'short' | 'narrow' | 'fractional';
-
-export type Format = {
-  locale?: string;
-  numberingSystem?: string;
-  style?: FormatStyle;
-  fractionalDigits?: Integer;
-  hoursMinutesSeparator?: string;
-  minutesSecondsSeparator?: string;
-  days?: FormatDays;
-  daysDisplay?: FormatDisplay;
-  hours?: FormatHMS;
-  hoursDisplay?: 'auto' | 'always';
-  minutes?: FormatHMS;
-  minutesDisplay?: FormatDisplay;
-  seconds?: FormatHMS;
-  secondsDisplay?: FormatDisplay;
-  milliseconds?: FormatMS;
-  millisecondsDisplay?: FormatDisplay;
-  microseconds?: FormatMS;
-  microsecondsDisplay?: FormatDisplay;
-  nanoseconds?: FormatMS;
-  nanosecondsDisplay?: FormatDisplay;
-};
-
-export type Options = Format &
-  Partial<{
-    maxDisplay: Field;
-    minDisplay: Field;
-    daysHoursSeparator: string;
-    secondsUnit: string;
-    separator: string;
-  }>;
