@@ -27,6 +27,7 @@ export type EpochSeconds = Integer;
 
 export type Minutes = number;
 export type Seconds = number;
+export type HrSeconds = number;
 
 /**
  * Type guard for Milliseconds type.
