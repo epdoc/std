@@ -172,6 +172,34 @@
       "jsr:@deno/dnt@~0.41.3",
       "jsr:@std/assert@1",
       "npm:@types/intl@^1.2.2"
-    ]
+    ],
+    "members": {
+      "datetime": {
+        "dependencies": [
+          "jsr:@std/assert@1"
+        ]
+      },
+      "duration": {
+        "dependencies": [
+          "jsr:@deno/dnt@~0.41.3",
+          "jsr:@std/assert@1",
+          "npm:@types/intl@^1.2.2"
+        ]
+      },
+      "fs": {
+        "dependencies": [
+          "jsr:@std/assert@1",
+          "jsr:@std/fs@^1.0.4",
+          "jsr:@std/io@0.225",
+          "npm:checksum@1",
+          "npm:pdf-lib@^1.17.1"
+        ]
+      },
+      "type": {
+        "dependencies": [
+          "jsr:@std/assert@1"
+        ]
+      }
+    }
   }
 }
