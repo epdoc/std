@@ -1,5 +1,5 @@
 {
-  "name": "@std/datetime",
+  "name": "@epdoc/datetime",
   "version": "1.0.0",
   "exports": {
     ".": "./mod.ts"

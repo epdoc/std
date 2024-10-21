@@ -1,4 +1,4 @@
-import { type DeepCopyOpts, type Integer, isNonEmptyString } from '@epdoc/typeutil';
+import { type DeepCopyOpts, type Integer, isNonEmptyString } from '@scope/type';
 import type { FSItem } from './fsitem.ts';
 
 /**

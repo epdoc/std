@@ -1,5 +1,5 @@
 {
-  "name": "@std/type",
+  "name": "@epdoc/type",
   "version": "1.0.0",
   "exports": {
     ".": "./mod.ts"

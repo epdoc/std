@@ -15,7 +15,7 @@ import {
   isRegExp,
   isString,
   pad,
-} from '@epdoc/typeutil';
+} from '@scope/type';
 import * as dfs from '@std/fs';
 import checksum from 'checksum';
 import { Buffer } from 'node:buffer';

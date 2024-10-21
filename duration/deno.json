@@ -1,5 +1,5 @@
 {
-  "name": "@std/duration",
+  "name": "@epdoc/duration",
   "version": "1.0.0",
   "description": "Date and duration utilities",
   "exports": "./mod.ts",

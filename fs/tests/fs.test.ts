@@ -1,13 +1,13 @@
-import { dateUtil } from '@epdoc/timeutil';
-import { isArray, isDate, isValidDate } from '@epdoc/typeutil';
+import { dateEx } from '@scope/datetime';
+import { isArray, isDate, isValidDate } from '@scope/type';
 import { expect } from 'jsr:@std/expect';
 import { afterAll, beforeEach, describe, it, test } from 'jsr:@std/testing/bdd';
 import os from 'node:os';
 import path from 'node:path';
 import { FSItem, fsitem, FSStats, isFilename, isFilePath, isFolderPath, type SafeCopyOpts } from '../mod.ts';
-import { fileConflictStrategyType } from './../src/types.ts';
+import { fileConflictStrategyType } from './../types.ts';
 
-const pwd = import.meta.dirname;
+const pwd: string = import.meta.dirname as string;
 const HOME = os.userInfo().homedir;
 const TEST_FILES = ['fs.test.ts', 'fs2.test.ts', 'fs3.test.ts', 'fsbytes.test.ts'];
 const TEST_FOLDERS = ['data', 'data1'];
@@ -15,7 +15,7 @@ const _TEST_FOLDERS2 = ['.withdot', 'folder-sample', 'test-files'];
 
 describe('fsitem', () => {
   beforeEach(async () => {
-    const fs = fsitem('./tests/data');
+    const fs = fsitem( './tests/data');
     await fsitem('./tests/data1').remove({ recursive: true });
     await fs.copyTo('./tests/data1');
     await fsitem('./tests/data2').remove({ recursive: true });
@@ -254,7 +254,7 @@ describe('fsitem', () => {
         if (isDate(resp)) {
           Deno.env.set('TZ', 'America/Costa_Rica');
           expect(new Date(resp).toISOString()).toBe('2018-02-01T00:00:00.000Z');
-          expect(dateUtil(resp).toISOLocalString()).toBe('2018-01-31T18:00:00.000-06:00');
+          expect(dateEx(resp).toISOLocalString()).toBe('2018-01-31T18:00:00.000-06:00');
         }
       })
       .catch((err) => {
@@ -383,7 +383,7 @@ describe('fsitem', () => {
       .then((resp) => {
         expect(resp).toEqual(true);
         return fsitem('./tests/data2/folder-sample/sample2.txt').filesEqual(
-          './tests/data1/folder-sample/sample2.txt',
+          './tests/data1/folder-sample/sample2.txt'
         );
       })
       .then((resp) => {
@@ -434,7 +434,7 @@ describe('fsitem', () => {
       .then((resp) => {
         expect(resp).toEqual(true);
         return fsitem('./tests/data2/folder-sample/sample2.txt').filesEqual(
-          './tests/data1/folder-sample/sample2.txt',
+          './tests/data1/folder-sample/sample2.txt'
         );
       })
       .then((resp) => {

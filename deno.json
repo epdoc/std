@@ -1,19 +1,12 @@
 {
-  "name": "@epdoc/timeutil",
-  "version": "3.0.0-beta.1",
-  "description": "Date and duration utilities",
   "author": {
     "name": "James Pravetz",
     "email": "jpravetz@epdoc.com"
   },
   "license": "MIT",
-  "exports": "./mod.ts",
   "tasks": {
-    "test": "deno test --allow-env",
+    "test": "deno test --allow-env --allow-sys --allow-read --allow-write",
     "lint": "deno lint"
-  },
-  "tests": {
-    "include": ["test/**/*.ts"]
   },
   "imports": {
     "@deno/dnt": "jsr:@deno/dnt@^0.41.3",

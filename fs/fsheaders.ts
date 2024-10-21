@@ -1,4 +1,4 @@
-import type { Integer } from '@epdoc/typeutil';
+import type { Integer } from '@scope/type';
 import { Buffer } from 'node:buffer';
 
 /**

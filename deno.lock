@@ -15,6 +15,7 @@
     "jsr:@std/fmt@1": "1.0.2",
     "jsr:@std/fs@0.223": "0.223.0",
     "jsr:@std/fs@1": "1.0.4",
+    "jsr:@std/fs@^1.0.4": "1.0.4",
     "jsr:@std/fs@~0.229.3": "0.229.3",
     "jsr:@std/internal@^1.0.4": "1.0.4",
     "jsr:@std/io@0.223": "0.223.0",
@@ -27,7 +28,10 @@
     "jsr:@ts-morph/bootstrap@0.24": "0.24.0",
     "jsr:@ts-morph/common@0.24": "0.24.0",
     "npm:@types/intl@^1.2.2": "1.2.2",
-    "npm:@types/node@*": "22.5.4"
+    "npm:@types/node@*": "22.5.4",
+    "npm:checksum@1": "1.0.0",
+    "npm:pdf-lib@*": "1.17.1",
+    "npm:pdf-lib@^1.17.1": "1.17.1"
   },
   "jsr": {
     "@david/code-block-writer@13.0.3": {
@@ -149,6 +153,18 @@
     }
   },
   "npm": {
+    "@pdf-lib/standard-fonts@1.0.0": {
+      "integrity": "sha512-hU30BK9IUN/su0Mn9VdlVKsWBS6GyhVfqjwl1FjZN4TxP6cCw0jP2w7V3Hf5uX7M0AZJ16vey9yE0ny7Sa59ZA==",
+      "dependencies": [
+        "pako"
+      ]
+    },
+    "@pdf-lib/upng@1.0.1": {
+      "integrity": "sha512-dQK2FUMQtowVP00mtIksrlZhdFXQZPC+taih1q4CvPZ5vqdxR/LKBaFg0oAfzd1GlHZXXSPdQfzQnt+ViGvEIQ==",
+      "dependencies": [
+        "pako"
+      ]
+    },
     "@types/intl@1.2.2": {
       "integrity": "sha512-A4g5UEAA9c56JWKhc4LSJ9vzDMztjxVXDAXtVK4EbS3hW1V7Sz05VfcTgDQIvkOYJp1NqH222eg62P72HwltfQ=="
     },
@@ -158,8 +174,38 @@
         "undici-types"
       ]
     },
+    "checksum@1.0.0": {
+      "integrity": "sha512-68bHejnM/sBQhjXcXd2mFusICnqAwikZ9RVMURIacWh7moNjgOdHKimS6yk30Np/PwfR00dceY4b1GwWanu5cg==",
+      "dependencies": [
+        "optimist"
+      ]
+    },
+    "optimist@0.3.7": {
+      "integrity": "sha512-TCx0dXQzVtSCg2OgY/bO9hjM9cV4XYx09TVK+s3+FhkjT6LovsLe+pPMzpWf+6yXK/hUizs2gUoTw3jHM0VaTQ==",
+      "dependencies": [
+        "wordwrap"
+      ]
+    },
+    "pako@1.0.11": {
+      "integrity": "sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw=="
+    },
+    "pdf-lib@1.17.1": {
+      "integrity": "sha512-V/mpyJAoTsN4cnP31vc0wfNA1+p20evqqnap0KLoRUN0Yk/p3wN52DOEsL4oBFcLdb76hlpKPtzJIgo67j/XLw==",
+      "dependencies": [
+        "@pdf-lib/standard-fonts",
+        "@pdf-lib/upng",
+        "pako",
+        "tslib"
+      ]
+    },
+    "tslib@1.14.1": {
+      "integrity": "sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg=="
+    },
     "undici-types@6.19.8": {
       "integrity": "sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw=="
+    },
+    "wordwrap@0.0.3": {
+      "integrity": "sha512-1tMA907+V4QmxV7dbRvb4/8MaRALK6q9Abid3ndMYnbyo8piisCmeONVqVSXqQA3KaP4SLt5b7ud6E2sqP8TFw=="
     }
   },
   "remote": {
