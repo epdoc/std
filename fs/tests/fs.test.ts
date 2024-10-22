@@ -15,31 +15,31 @@ const _TEST_FOLDERS2 = ['.withdot', 'folder-sample', 'test-files'];
 
 describe('fsitem', () => {
   beforeEach(async () => {
-    const fs = fsitem( './tests/data');
-    await fsitem('./tests/data1').remove({ recursive: true });
-    await fs.copyTo('./tests/data1');
-    await fsitem('./tests/data2').remove({ recursive: true });
-    await fsitem('./tests/data2-01').remove({ recursive: true });
-    await fsitem('./tests/data2-02').remove({ recursive: true });
-    await fsitem('./tests/data2-03').remove({ recursive: true });
-    await fsitem('./tests/data3').remove({ recursive: true });
+    const fs = fsitem(pwd, 'data');
+    await fsitem(pwd, 'data1').remove({ recursive: true });
+    await fs.copyTo(fsitem(pwd, 'data1'));
+    await fsitem(pwd, 'data2').remove({ recursive: true });
+    await fsitem(pwd, 'data2-01').remove({ recursive: true });
+    await fsitem(pwd, 'data2-02').remove({ recursive: true });
+    await fsitem(pwd, 'data2-03').remove({ recursive: true });
+    await fsitem(pwd, 'data3').remove({ recursive: true });
   });
 
   afterAll(async () => {
-    await fsitem('./tests/data1').remove({ recursive: true });
-    await fsitem('./tests/data2').remove({ recursive: true });
-    await fsitem('./tests/data2-01').remove({ recursive: true });
-    await fsitem('./tests/data2-02').remove({ recursive: true });
-    await fsitem('./tests/data2-03').remove({ recursive: true });
-    await fsitem('./tests/data3').remove({ recursive: true });
+    await fsitem(pwd, 'data1').remove({ recursive: true });
+    await fsitem(pwd, 'data2').remove({ recursive: true });
+    await fsitem(pwd, 'data2-01').remove({ recursive: true });
+    await fsitem(pwd, 'data2-02').remove({ recursive: true });
+    await fsitem(pwd, 'data2-03').remove({ recursive: true });
+    await fsitem(pwd, 'data3').remove({ recursive: true });
   });
 
   test('fsGetFolders', () => {
-    return fsitem('.')
+    return fsitem(pwd)
       .getFolders()
       .then((resp) => {
         expect(isArray(resp)).toBe(true);
-        return fsitem('./tests').getFolders();
+        return fsitem(pwd).getFolders();
       })
       .then((resp) => {
         expect(isArray(resp)).toBe(true);
@@ -52,8 +52,8 @@ describe('fsitem', () => {
       });
   });
   test('fsGetFiles', () => {
-    const fs0: FSItem = fsitem('.');
-    const fs1 = fsitem('./tests');
+    const fs0: FSItem = fsitem(pwd);
+    const fs1 = fsitem(pwd);
     return fs0
       .getFolders()
       .then((resp) => {
@@ -83,8 +83,8 @@ describe('fsitem', () => {
       });
   });
   it('getChildren', () => {
-    const fs0: FSItem = fsitem('.');
-    const fs1 = fsitem('./tests');
+    const fs0: FSItem = fsitem(pwd);
+    const fs1 = fsitem(pwd);
     return fs0
       .getChildren()
       .then((resp) => {
@@ -121,11 +121,11 @@ describe('fsitem', () => {
   test('isDir', () => {
     return Promise.resolve()
       .then((_resp) => {
-        return fsitem('./tests').isDir();
+        return fsitem(pwd).isDir();
       })
       .then((resp) => {
         expect(resp).toBe(true);
-        return fsitem('./tests/data1').isDir();
+        return fsitem(pwd, 'data1').isDir();
       })
       .then((resp) => {
         expect(resp).toBe(true);
@@ -134,11 +134,11 @@ describe('fsitem', () => {
   test('fsExists', () => {
     return Promise.resolve()
       .then((_resp) => {
-        return fsitem('./tests').exists();
+        return fsitem(pwd).exists();
       })
       .then((resp) => {
         expect(resp).toBe(true);
-        return fsitem('./tests/data1').exists();
+        return fsitem(pwd, 'data1').exists();
       })
       .then((resp) => {
         expect(resp).toBe(true);
@@ -147,11 +147,11 @@ describe('fsitem', () => {
   test('fs dirExists', () => {
     return Promise.resolve()
       .then((_resp) => {
-        return fsitem('./tests').dirExists();
+        return fsitem(pwd).dirExists();
       })
       .then((resp) => {
         expect(resp).toBe(true);
-        return fsitem('./tests/data1').dirExists();
+        return fsitem(pwd, 'data1').dirExists();
       })
       .then((resp) => {
         expect(resp).toBe(true);
@@ -160,15 +160,15 @@ describe('fsitem', () => {
   test('fs fileExists', () => {
     return Promise.resolve()
       .then((_resp) => {
-        return fsitem('./tests').fileExists();
+        return fsitem(pwd).fileExists();
       })
       .then((resp) => {
         expect(resp).toBe(false);
-        return fsitem('./tests/data1').fileExists();
+        return fsitem(pwd, 'data1').fileExists();
       })
       .then((resp) => {
         expect(resp).toBe(false);
-        return fsitem('./tests/data1/sample.txt').fileExists();
+        return fsitem(pwd, 'data1/sample.txt').fileExists();
       })
       .then((resp) => {
         expect(resp).toBe(true);
@@ -177,7 +177,7 @@ describe('fsitem', () => {
   test('fs Stats', () => {
     return Promise.resolve()
       .then((_resp) => {
-        return fsitem('./tests').getStats();
+        return fsitem(pwd).getStats();
       })
       .then((stats) => {
         expect(stats instanceof FSStats).toBe(true);
@@ -191,15 +191,15 @@ describe('fsitem', () => {
   test('constructor with .folder', () => {
     return Promise.resolve()
       .then((_resp) => {
-        return fsitem('./tests').dirExists();
+        return fsitem(pwd).dirExists();
       })
       .then((resp) => {
         expect(resp).toBe(true);
-        return fsitem('./tests/data/.withdot').dirExists();
+        return fsitem(pwd, 'data/.withdot').dirExists();
       })
       .then((resp) => {
         expect(resp).toBe(true);
-        return fsitem('./tests/data/.withdot/dotsample.json').fileExists();
+        return fsitem(pwd, 'data/.withdot/dotsample.json').fileExists();
       })
       .then((resp) => {
         expect(resp).toBe(true);
@@ -247,7 +247,7 @@ describe('fsitem', () => {
   test('getPdfDate', () => {
     return Promise.resolve()
       .then((_resp) => {
-        return fsitem('./tests', 'data', '.withdot/text alignment.pdf').getPdfDate();
+        return fsitem(pwd, 'data', '.withdot/text alignment.pdf').getPdfDate();
       })
       .then((resp) => {
         expect(isValidDate(resp)).toBe(true);
@@ -263,7 +263,7 @@ describe('fsitem', () => {
       });
   });
   test('ext', () => {
-    const fs = fsitem('./tests/xxx.jpg');
+    const fs = fsitem(pwd, 'xxx.jpg');
     fs.setExt('.txt');
     expect(fs.extname).toEqual('.txt');
     fs.setExt('pdf');
@@ -276,7 +276,7 @@ describe('fsitem', () => {
   test('checksum', () => {
     return Promise.resolve()
       .then((_resp) => {
-        return fsitem('./tests/data1/sample.txt').checksum();
+        return fsitem(pwd, 'data1/sample.txt').checksum();
       })
       .then((resp) => {
         expect(resp).toBe('cacc6f06ae07f842663cb1b1722cafbee9b4d203');
@@ -306,7 +306,7 @@ describe('fsitem', () => {
   test('fsEqual', () => {
     return Promise.resolve()
       .then((_resp) => {
-        return fsitem('./tests/fs.test.ts').filesEqual('./tests/fs.test.ts');
+        return fsitem(pwd, 'fs.test.ts').filesEqual(fsitem(pwd, 'fs.test.ts'));
       })
       .then((resp) => {
         expect(resp).toBe(true);
@@ -366,45 +366,45 @@ describe('fsitem', () => {
   test('fsCopy fsitem.Move', () => {
     return Promise.resolve()
       .then((_resp) => {
-        return fsitem('./tests/data1').copyTo('./tests/data2', { preserveTimestamps: true });
+        return fsitem(pwd, 'data1').copyTo(fsitem(pwd, 'data2'), { preserveTimestamps: true });
       })
       .then((resp) => {
         expect(resp).toBeUndefined();
-        return fsitem('./tests/data2').isDir();
+        return fsitem(pwd, 'data2').isDir();
       })
       .then((resp) => {
         expect(resp).toEqual(true);
-        return fsitem('./tests/data2/folder-sample').isDir();
+        return fsitem(pwd, 'data2/folder-sample').isDir();
       })
       .then((resp) => {
         expect(resp).toEqual(true);
-        return fsitem('./tests/data2/folder-sample/sample2.txt').isFile();
+        return fsitem(pwd, 'data2/folder-sample/sample2.txt').isFile();
       })
       .then((resp) => {
         expect(resp).toEqual(true);
-        return fsitem('./tests/data2/folder-sample/sample2.txt').filesEqual(
-          './tests/data1/folder-sample/sample2.txt'
+        return fsitem(pwd, 'data2/folder-sample/sample2.txt').filesEqual(
+          fsitem(pwd, 'data1/folder-sample/sample2.txt')
         );
       })
       .then((resp) => {
         expect(resp).toBe(true);
-        return fsitem('./tests/data2').moveTo('./tests/data3');
+        return fsitem(pwd, 'data2').moveTo(fsitem(pwd, 'data3'));
       })
       .then((resp) => {
         expect(resp).toBeUndefined();
-        return fsitem('./tests/data2').isDir();
+        return fsitem(pwd, 'data2').isDir();
       })
       .then((resp) => {
         expect(resp).toEqual(false);
-        return fsitem('./tests/data3').isDir();
+        return fsitem(pwd, 'data3').isDir();
       })
       .then((resp) => {
         expect(resp).toEqual(true);
-        return fsitem('./tests/data3').remove({ recursive: true });
+        return fsitem(pwd, 'data3').remove({ recursive: true });
       })
       .then((resp) => {
         expect(resp).toBeUndefined();
-        return fsitem('./tests/data3').isDir();
+        return fsitem(pwd, 'data3').isDir();
       })
       .then((resp) => {
         expect(resp).toBe(false);
@@ -417,24 +417,24 @@ describe('fsitem', () => {
         const opts: SafeCopyOpts = {
           ensureParentDirs: true,
         };
-        return fsitem('./tests/data1').safeCopy('./tests/data2', opts);
+        return fsitem(pwd, 'data1').safeCopy(fsitem(pwd, 'data2'), opts);
       })
       .then((resp) => {
         expect(resp).toBe(true);
-        return fsitem('./tests/data2').isDir();
+        return fsitem(pwd, 'data2').isDir();
       })
       .then((resp) => {
         expect(resp).toEqual(true);
-        return fsitem('./tests/data2/folder-sample').isDir();
+        return fsitem(pwd, 'data2/folder-sample').isDir();
       })
       .then((resp) => {
         expect(resp).toEqual(true);
-        return fsitem('./tests/data2/folder-sample/sample2.txt').isFile();
+        return fsitem(pwd, 'data2/folder-sample/sample2.txt').isFile();
       })
       .then((resp) => {
         expect(resp).toEqual(true);
-        return fsitem('./tests/data2/folder-sample/sample2.txt').filesEqual(
-          './tests/data1/folder-sample/sample2.txt'
+        return fsitem(pwd, 'data2/folder-sample/sample2.txt').filesEqual(
+          fsitem(pwd, 'data1/folder-sample/sample2.txt')
         );
       })
       .then((resp) => {
@@ -443,15 +443,15 @@ describe('fsitem', () => {
           ensureParentDirs: false,
           conflictStrategy: { type: fileConflictStrategyType.renameWithNumber, limit: 5 },
         };
-        return fsitem('./tests/data1').safeCopy('./tests/data2', opts);
+        return fsitem(pwd, 'data1').safeCopy(fsitem(pwd, 'data2'), opts);
       })
       .then((resp) => {
         expect(resp).toEqual(true);
-        return fsitem('./tests/data2').isDir();
+        return fsitem(pwd, 'data2').isDir();
       })
       .then((resp) => {
         expect(resp).toEqual(true);
-        return fsitem('./tests/data2-01').isDir();
+        return fsitem(pwd, 'data2-01').isDir();
       })
       .then((resp) => {
         expect(resp).toEqual(true);
@@ -459,19 +459,19 @@ describe('fsitem', () => {
   });
 
   test('json', async () => {
-    const SRC = './tests/data1/folder-sample/sample.json';
-    const DEST = './tests/data1/folder-sample/sample-copy.json';
-    const json = await fsitem(SRC).readJson();
-    await fsitem(DEST).writeJson(json);
-    expect(await fsitem(DEST).isFile()).toEqual(true);
-    const json2 = await fsitem(DEST).readJson();
+    const SRC = 'data1/folder-sample/sample.json';
+    const DEST = 'data1/folder-sample/sample-copy.json';
+    const json = await fsitem(pwd, SRC).readJson();
+    await fsitem(pwd, DEST).writeJson(json);
+    expect(await fsitem(pwd, DEST).isFile()).toEqual(true);
+    const json2 = await fsitem(pwd, DEST).readJson();
     expect(json2).toEqual(json);
   });
   test('json err', () => {
-    const SRC = './tests/data/.withdot/broken.json';
+    const SRC = 'data/.withdot/broken.json';
     return Promise.resolve()
       .then((_resp) => {
-        return fsitem(SRC).readJson();
+        return fsitem(pwd, SRC).readJson();
       })
       .then((_resp) => {
         expect(true).toBe(false);
@@ -483,39 +483,39 @@ describe('fsitem', () => {
 
   test('deep json', async () => {
     const opts = { pre: '{{', post: '}}', includeUrl: true };
-    const SRC = './tests/data1/folder-sample/sample-nested.json';
-    const SRC2 = './tests/data1/folder-sample/sample-compare.json';
-    const json2 = await fsitem(SRC2).readJson();
-    const json = await fsitem(SRC).deepReadJson(opts);
+    const SRC = 'data1/folder-sample/sample-nested.json';
+    const SRC2 = 'data1/folder-sample/sample-compare.json';
+    const json2 = await fsitem(pwd, SRC2).readJson();
+    const json = await fsitem(pwd, SRC).deepReadJson(opts);
     expect(json2).toEqual(json);
   });
 
   test('write utf8', async () => {
     const sin = 'here is a line of text';
-    const DEST = './tests/data1/folder-sample/output.txt';
-    await fsitem(DEST).write(sin);
-    expect(await fsitem(DEST).isFile()).toEqual(true);
-    const s = await fsitem(DEST).readAsString();
+    const DEST = 'data1/folder-sample/output.txt';
+    await fsitem(pwd, DEST).write(sin);
+    expect(await fsitem(pwd, DEST).isFile()).toEqual(true);
+    const s = await fsitem(pwd, DEST).readAsString();
     expect(s).toEqual(sin);
   });
   test('write lines', async () => {
     const lines = ['this', 'is', 'line 2'];
-    const DEST = './tests/data1/folder-sample/output.txt';
-    await fsitem(DEST).write(lines);
-    expect(await fsitem(DEST).isFile()).toEqual(true);
-    const s = await fsitem(DEST).readAsString();
+    const DEST = 'data1/folder-sample/output.txt';
+    await fsitem(pwd, DEST).write(lines);
+    expect(await fsitem(pwd, DEST).isFile()).toEqual(true);
+    const s = await fsitem(pwd, DEST).readAsString();
     expect(s).toEqual(lines.join('\n'));
   });
 
   test('readAsString', async () => {
-    const SRC = './tests/data/sample.txt';
+    const SRC = 'data/sample.txt';
     const result = 'This is sample.txt. \nDo not edit or move this file.\n';
-    const str = await fsitem(SRC).readAsString();
+    const str = await fsitem(pwd, SRC).readAsString();
     console.log(str);
     expect(str).toEqual(result);
   });
   test('path resolve', () => {
-    const _SRC = './tests/data/sample.json';
+    const _SRC = 'data/sample.json';
     const _result = 'This is sample.txt.\\nDo not edit or move this file.';
     const fsitem = new FSItem('/', 'the', 'path', 'goes', 'right.here.txt');
     expect(fsitem.path).toEqual('/the/path/goes/right.here.txt');

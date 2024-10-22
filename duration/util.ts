@@ -204,8 +204,8 @@ export class DurationUtil {
         result.push(part.value);
       }
     });
-    this.emitParts(parts);
-    console.log(JSON.stringify(result));
+    // this.emitParts(parts);
+    // console.log(JSON.stringify(result));
     return result.join('');
   }
 
