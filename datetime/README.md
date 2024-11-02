@@ -1,7 +1,7 @@
 # @epdoc/std/datetime
 
-Contains date  utilities that are not found in [moment.js](https://github.com/moment/moment) or require
-a fair amount of wrapper logic when using
+Contains date utilities that are not found in [moment.js](https://github.com/moment/moment) or require a fair amount of
+wrapper logic when using
 [Intl.DurationFormat](https://tc39.es/proposal-intl-duration-format/#sec-intl-durationformat-constructor).
 
 Contains no external dependencies.
@@ -44,4 +44,3 @@ Resultant output:
 19971125_061314
 19971125_121314
 ```
-

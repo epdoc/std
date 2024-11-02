@@ -69,39 +69,39 @@ describe('duration-util', () => {
   describe('long', () => {
     it('defaults', () => {
       expect(new Duration.Util().long.format(-4443454)).toEqual(
-        '1 hour, 14 minutes, 3 seconds, 454 milliseconds'
+        '1 hour, 14 minutes, 3 seconds, 454 milliseconds',
       );
     });
     it('fractionalDigits', () => {
       let n = 3454.345898;
       const formatter = new Duration.Util().long;
       expect(formatter.digits(9).format(n)).toEqual(
-        '3 seconds, 454 milliseconds, 345 microseconds, 898 nanoseconds'
+        '3 seconds, 454 milliseconds, 345 microseconds, 898 nanoseconds',
       );
       expect(formatter.digits(8).format(n)).toEqual(
-        '3 seconds, 454 milliseconds, 345 microseconds, 898 nanoseconds'
+        '3 seconds, 454 milliseconds, 345 microseconds, 898 nanoseconds',
       );
       expect(formatter.digits(3).format(n)).toEqual('3 seconds, 454 milliseconds');
       expect(formatter.digits(6).format(n)).toEqual('3 seconds, 454 milliseconds, 345 microseconds');
       expect(formatter.digits(7).format(n)).toEqual(
-        '3 seconds, 454 milliseconds, 345 microseconds, 898 nanoseconds'
+        '3 seconds, 454 milliseconds, 345 microseconds, 898 nanoseconds',
       );
       expect(formatter.digits(1).format(n)).toEqual('3 seconds, 454 milliseconds');
       expect(formatter.digits(2).format(n)).toEqual('3 seconds, 454 milliseconds');
       n += 3 * Duration.TIME.minutes;
       expect(formatter.digits(9).format(n)).toEqual(
-        '3 minutes, 3 seconds, 454 milliseconds, 345 microseconds, 898 nanoseconds'
+        '3 minutes, 3 seconds, 454 milliseconds, 345 microseconds, 898 nanoseconds',
       );
       expect(formatter.digits(7).format(n)).toEqual(
-        '3 minutes, 3 seconds, 454 milliseconds, 345 microseconds, 898 nanoseconds'
+        '3 minutes, 3 seconds, 454 milliseconds, 345 microseconds, 898 nanoseconds',
       );
       expect(formatter.digits(1).format(n)).toEqual('3 minutes, 3 seconds, 454 milliseconds');
       n += 8 * Duration.TIME.hours;
       expect(formatter.digits(9).format(n)).toEqual(
-        '8 hours, 3 minutes, 3 seconds, 454 milliseconds, 345 microseconds, 898 nanoseconds'
+        '8 hours, 3 minutes, 3 seconds, 454 milliseconds, 345 microseconds, 898 nanoseconds',
       );
       expect(formatter.digits(7).format(n)).toEqual(
-        '8 hours, 3 minutes, 3 seconds, 454 milliseconds, 345 microseconds, 898 nanoseconds'
+        '8 hours, 3 minutes, 3 seconds, 454 milliseconds, 345 microseconds, 898 nanoseconds',
       );
       expect(formatter.digits(1).format(n)).toEqual('8 hours, 3 minutes, 3 seconds, 454 milliseconds');
     });
@@ -135,7 +135,7 @@ describe('duration-util', () => {
       const n = 3454.345898;
       const formatter = new Duration.Util().long;
       expect(formatter.digits(9).separator('; ').format(n)).toEqual(
-        '3 seconds; 454 milliseconds; 345 microseconds; 898 nanoseconds'
+        '3 seconds; 454 milliseconds; 345 microseconds; 898 nanoseconds',
       );
       expect(formatter.short.digits(3).separator(':').format(n)).toEqual('3 sec:454 ms');
     });

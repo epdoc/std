@@ -189,7 +189,7 @@ export function isNull(val: unknown): val is null {
  * @param val - The value to check.
  * @returns True if the value is defined, otherwise false.
  */
-export function isDefined(val: unknown) {
+export function isDefined(val: unknown): boolean {
   return val !== undefined;
 }
 
@@ -227,7 +227,7 @@ export function isRegExpDef(val: unknown): val is RegExp {
  * @param val - The value to check.
  * @returns True if the value has a value, otherwise false.
  */
-export function hasValue(val: unknown) {
+export function hasValue(val: unknown): boolean {
   return val !== null && val !== undefined;
 }
 
@@ -273,7 +273,7 @@ export function isObject(val: unknown): val is object {
  * @param args - The keys to pick.
  * @returns A new object with the picked keys.
  */
-export function pick(obj: Dict, ...args: (string | number)[]) {
+export function pick(obj: Dict, ...args: (string | number)[]): Dict {
   // eslint-disable-line no-extend-native
   const result: Dict = {};
   if (Array.isArray(args[0])) {
@@ -293,7 +293,7 @@ export function pick(obj: Dict, ...args: (string | number)[]) {
  * @param args - The keys to omit.
  * @returns A new object without the omitted keys.
  */
-export function omit(obj: Dict, ...args: (string | number)[]) {
+export function omit(obj: Dict, ...args: (string | number)[]): Dict {
   if (Array.isArray(args[0])) {
     args = args[0];
   }
@@ -431,11 +431,9 @@ export function asString(data: unknown, isProperty = false): string {
   } else if (data instanceof Error) {
     return data.stack!;
   } else if (typeof data === 'object') {
-    return `{${
-      Object.entries(data)
-        .map(([k, v]) => `"${k}":${asString(v, true)}`)
-        .join(',')
-    }}`;
+    return `{${Object.entries(data)
+      .map(([k, v]) => `"${k}":${asString(v, true)}`)
+      .join(',')}}`;
   }
   return 'undefined';
 }

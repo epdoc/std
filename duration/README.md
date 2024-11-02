@@ -1,10 +1,8 @@
 # @epdoc/std/duration
 
-Contains time duration utilities that are not found in [moment.js](https://github.com/moment/moment) or require
-a fair amount of wrapper logic when using
+Contains time duration utilities that are not found in [moment.js](https://github.com/moment/moment) or require a fair
+amount of wrapper logic when using
 [Intl.DurationFormat](https://tc39.es/proposal-intl-duration-format/#sec-intl-durationformat-constructor).
-
-
 
 ## Duration Utilities
 

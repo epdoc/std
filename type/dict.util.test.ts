@@ -1,6 +1,6 @@
 import { expect } from 'jsr:@std/expect';
 import { describe, it } from 'jsr:@std/testing/bdd';
-import { isType, dictUtil as t } from './dictutil.ts';
+import { dictUtil as t, isType } from './dictutil.ts';
 import { isString } from './util.ts';
 
 describe('dictUtil', () => {
@@ -25,7 +25,7 @@ describe('dictUtil', () => {
       expect(
         t({ a: { b: 3 } })
           .property('a.b')
-          .isType('string|number')
+          .isType('string|number'),
       ).toBe(true);
       expect(() => {
         t({ a: { b: 3 } }, { throw: true })
@@ -47,12 +47,12 @@ describe('dictUtil', () => {
       expect(
         t({ a: { b: 'string' } })
           .prop('a.b')
-          .isString()
+          .isString(),
       ).toBe(true);
       expect(
         t({ a: { b: 'string' } })
           .property('a.c')
-          .isString()
+          .isString(),
       ).toBe(false);
       expect(isString(4)).toBe(false);
     });
@@ -63,7 +63,7 @@ describe('dictUtil', () => {
       expect(
         t({ a: { b: 3 } })
           .property('a.b')
-          .value()
+          .value(),
       ).toBe(3);
     });
     it('value2', () => {
@@ -71,7 +71,7 @@ describe('dictUtil', () => {
         t({ a: { b: 3 } })
           .property('a')
           .prop('b')
-          .value()
+          .value(),
       ).toBe(3);
     });
     it('value3', () => {
@@ -79,7 +79,7 @@ describe('dictUtil', () => {
         t({ a: { b: 3 } })
           .property('a')
           .prop('b')
-          .value()
+          .value(),
       ).toBe(3);
     });
   });

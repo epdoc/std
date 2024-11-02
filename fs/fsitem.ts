@@ -815,7 +815,7 @@ export class FSItem {
    * @param path2
    * @returns {Promise<boolean>} A promise that resolves with true if the files are equal, false otherwise.
    */
-  filesEqual(path2: FilePath|FSItem): Promise<boolean> {
+  filesEqual(path2: FilePath | FSItem): Promise<boolean> {
     return new Promise((resolve, _reject) => {
       const job1 = this.isFile();
       const job2 = fsitem(path2).isFile();
