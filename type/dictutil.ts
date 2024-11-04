@@ -230,7 +230,7 @@ export class DictUtil {
    * Checks if the value is a dictionary.
    * @returns True if the value is a dictionary, otherwise false.
    */
-  isDict() : boolean{
+  isDict(): boolean {
     return isDict(this._val);
   }
 
@@ -238,7 +238,7 @@ export class DictUtil {
    * Checks if the value is a boolean.
    * @returns True if the value is a boolean, otherwise false.
    */
-  isBoolean() : boolean{
+  isBoolean(): boolean {
     return isBoolean(this._val);
   }
 
@@ -262,7 +262,7 @@ export class DictUtil {
    * Checks if the value is a positive number.
    * @returns True if the value is a positive number, otherwise false.
    */
-  isPosNumber() : boolean{
+  isPosNumber(): boolean {
     return isPosNumber(this._val);
   }
 
@@ -270,7 +270,7 @@ export class DictUtil {
    * Checks if the value is an integer.
    * @returns True if the value is an integer, otherwise false.
    */
-  isInteger() : boolean{
+  isInteger(): boolean {
     return isInteger(this._val);
   }
 
@@ -278,7 +278,7 @@ export class DictUtil {
    * Checks if the value is a positive integer.
    * @returns True if the value is a positive integer, otherwise false.
    */
-  isPosInteger() : boolean{
+  isPosInteger(): boolean {
     return isPosInteger(this._val);
   }
 
@@ -294,7 +294,7 @@ export class DictUtil {
    * Checks if the value is a non-empty string.
    * @returns True if the value is a non-empty string, otherwise false.
    */
-  isNonEmptyString() : boolean{
+  isNonEmptyString(): boolean {
     return isNonEmptyString(this._val);
   }
 
@@ -302,7 +302,7 @@ export class DictUtil {
    * Checks if the value is a function.
    * @returns True if the value is a function, otherwise false.
    */
-  isFunction() : boolean{
+  isFunction(): boolean {
     return isFunction(this._val);
   }
 
@@ -310,7 +310,7 @@ export class DictUtil {
    * Checks if the value is a Date object.
    * @returns True if the value is a Date, otherwise false.
    */
-  isDate() : boolean{
+  isDate(): boolean {
     return isDate(this._val);
   }
 
@@ -318,7 +318,7 @@ export class DictUtil {
    * Checks if the value is a valid Date object.
    * @returns True if the value is a valid Date, otherwise false.
    */
-  isValidDate() : boolean{
+  isValidDate(): boolean {
     return isValidDate(this._val);
   }
 
@@ -326,7 +326,7 @@ export class DictUtil {
    * Checks if the value is an array.
    * @returns True if the value is an array, otherwise false.
    */
-  isArray() : boolean{
+  isArray(): boolean {
     return isArray(this._val);
   }
 
@@ -350,7 +350,7 @@ export class DictUtil {
    * Checks if the value is a valid RegExp definition.
    * @returns True if the value is a valid RegExp definition, otherwise false.
    */
-  isRegExpDef() : boolean{
+  isRegExpDef(): boolean {
     return isRegExpDef(this._val);
   }
 
@@ -358,7 +358,7 @@ export class DictUtil {
    * Checks if the value is null.
    * @returns True if the value is null, otherwise false.
    */
-  isNull() : boolean{
+  isNull(): boolean {
     return isNull(this._val);
   }
 
@@ -366,7 +366,7 @@ export class DictUtil {
    * Checks if the value is defined (not undefined).
    * @returns True if the value is defined, otherwise false.
    */
-  isDefined() : boolean{
+  isDefined(): boolean {
     return isDefined(this._val);
   }
 
@@ -390,7 +390,7 @@ export class DictUtil {
    * Checks if the value is an Error object.
    * @returns True if the value is an Error, otherwise false.
    */
-  isError() : boolean{
+  isError(): boolean {
     return isError(this._val);
   }
 
@@ -398,7 +398,7 @@ export class DictUtil {
    * Checks if the value is an object (not an array or Date).
    * @returns True if the value is an object, otherwise false.
    */
-  isObject() : boolean{
+  isObject(): boolean {
     return isObject(this._val);
   }
 
