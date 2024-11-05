@@ -93,7 +93,7 @@ export class FSItem {
   /**
    * Create a new FSItem object from an existing FSItem object, a file path or
    * an array of file path parts that can be merged using node:path#resolve.
-   * @param {(FSItem | FolderPath | FilePath)[])} args - An FSItem, a path, or a spread of paths to be used with path.resolve
+   * @param {(FSItem | FolderPath | FilePath)[]} args - An FSItem, a path, or a spread of paths to be used with path.resolve
    */
   constructor(...args: (FSItem | FolderPath | FilePath)[]) {
     if (args.length === 1) {

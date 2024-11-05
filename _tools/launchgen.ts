@@ -50,7 +50,7 @@ await Promise.all(
     //     result.configurations.push(item as never);
     //   }
     // }
-  })
+  }),
 );
 
 Deno.writeTextFileSync(launchfile, JSON.stringify(result, null, 2));

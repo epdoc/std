@@ -18,7 +18,11 @@
     "options": {
       "singleQuote": true,
       "lineWidth": 120
-    }
+    },
+    "exclude": ["fs/tests/data", "fs/tests/data1", "fs/tests/data2"]
+  },
+  "lint": {
+    "exclude": ["fs/tests/data", "fs/tests/data1", "fs/tests/data2"]
   },
   "workspace": ["./datetime", "./type", "./fs", "./duration"]
 }
