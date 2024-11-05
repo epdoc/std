@@ -43,3 +43,5 @@ node_modules
 
 # Deno NPM build folder
 npm/
+fs/tests/data1
+fs/tests/data2

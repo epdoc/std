@@ -1,3 +1,7 @@
+import { walk } from 'jsr:@std/fs/walk';
+import path from 'node:path';
+import pkg from '../deno.json' with { type: 'json' };
+
 const template = {
   request: 'launch',
   name: 'Debug tests',
@@ -17,17 +21,36 @@ const template = {
   attachSimplePort: 9229,
 };
 
-const result = { version: '0.2.0', configurations: [] };
-for await (const entry of Deno.readDir('./tests')) {
-  if (entry.isFile && entry.name.endsWith('.test.ts')) {
-    const item = Object.assign({}, template, { name: `Debug ${entry.name}` });
-    item.runtimeArgs = [];
-    template.runtimeArgs.forEach((arg) => {
-      item.runtimeArgs.push(arg);
-    });
-    item.runtimeArgs[item.runtimeArgs.length - 1] = `./test/${entry.name}`;
-    result.configurations.push(item as never);
-  }
-}
+const pwd: string = import.meta.dirname as string;
+const launchfile = path.resolve(pwd, '..', '.vscode', 'launch.json');
 
-Deno.writeTextFileSync('.vscode/launch.json', JSON.stringify(result, null, 2));
+const result = { version: '0.2.0', configurations: [] };
+
+await Promise.all(
+  pkg.workspace.map(async (scope) => {
+    for await (const dirEntry of walk(`./${scope}`, { match: [/test\.ts$/] })) {
+      console.log(dirEntry.path);
+      const item = Object.assign({}, template, { name: `Debug ${dirEntry.path}` });
+      item.runtimeArgs = [];
+      template.runtimeArgs.forEach((arg) => {
+        item.runtimeArgs.push(arg);
+      });
+      item.runtimeArgs[item.runtimeArgs.length - 1] = `./${dirEntry.path}`;
+      result.configurations.push(item as never);
+    }
+    // for await (const entry of Deno.walk(path.resolve(pwd, '..', scope))) {
+    //   if (entry.isFile && entry.name.endsWith('test.ts')) {
+    //     console.log(scope, entry.name);
+    //     const item = Object.assign({}, template, { name: `Debug ${scope}/${entry.name}` });
+    //     item.runtimeArgs = [];
+    //     template.runtimeArgs.forEach((arg) => {
+    //       item.runtimeArgs.push(arg);
+    //     });
+    //     item.runtimeArgs[item.runtimeArgs.length - 1] = `./${scope}/${entry.name}`;
+    //     result.configurations.push(item as never);
+    //   }
+    // }
+  })
+);
+
+Deno.writeTextFileSync(launchfile, JSON.stringify(result, null, 2));

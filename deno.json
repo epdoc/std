@@ -6,7 +6,8 @@
   "license": "MIT",
   "tasks": {
     "test": "deno test --allow-env --allow-sys --allow-read --allow-write",
-    "lint": "deno lint"
+    "lint": "deno lint",
+    "launch": "deno  --allow-env --allow-sys --allow-read --allow-write ./_tools/launchgen.ts"
   },
   "imports": {
     "@deno/dnt": "jsr:@deno/dnt@^0.41.3",

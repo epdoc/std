@@ -1,17 +1,166 @@
 {
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
     {
       "request": "launch",
-      "name": "Debug tests",
+      "name": "Debug type/dict.util.test.ts",
       "type": "node",
       "cwd": "${workspaceFolder}",
       "env": {},
       "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "runtimeArgs": ["test", "--inspect-brk", "--allow-env", "./test/duration.test.ts"],
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "--allow-env",
+        "--allow-sys",
+        "--allow-read",
+        "--allow-write",
+        "./type/dict.util.test.ts"
+      ],
+      "attachSimplePort": 9229
+    },
+    {
+      "request": "launch",
+      "name": "Debug duration/record.test.ts",
+      "type": "node",
+      "cwd": "${workspaceFolder}",
+      "env": {},
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "--allow-env",
+        "--allow-sys",
+        "--allow-read",
+        "--allow-write",
+        "./duration/record.test.ts"
+      ],
+      "attachSimplePort": 9229
+    },
+    {
+      "request": "launch",
+      "name": "Debug type/util.test.ts",
+      "type": "node",
+      "cwd": "${workspaceFolder}",
+      "env": {},
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "--allow-env",
+        "--allow-sys",
+        "--allow-read",
+        "--allow-write",
+        "./type/util.test.ts"
+      ],
+      "attachSimplePort": 9229
+    },
+    {
+      "request": "launch",
+      "name": "Debug datetime/date.test.ts",
+      "type": "node",
+      "cwd": "${workspaceFolder}",
+      "env": {},
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "--allow-env",
+        "--allow-sys",
+        "--allow-read",
+        "--allow-write",
+        "./datetime/date.test.ts"
+      ],
+      "attachSimplePort": 9229
+    },
+    {
+      "request": "launch",
+      "name": "Debug duration/duration.test.ts",
+      "type": "node",
+      "cwd": "${workspaceFolder}",
+      "env": {},
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "--allow-env",
+        "--allow-sys",
+        "--allow-read",
+        "--allow-write",
+        "./duration/duration.test.ts"
+      ],
+      "attachSimplePort": 9229
+    },
+    {
+      "request": "launch",
+      "name": "Debug fs/tests/fs.test.ts",
+      "type": "node",
+      "cwd": "${workspaceFolder}",
+      "env": {},
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "--allow-env",
+        "--allow-sys",
+        "--allow-read",
+        "--allow-write",
+        "./fs/tests/fs.test.ts"
+      ],
+      "attachSimplePort": 9229
+    },
+    {
+      "request": "launch",
+      "name": "Debug fs/tests/fsbytes.test.ts",
+      "type": "node",
+      "cwd": "${workspaceFolder}",
+      "env": {},
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "--allow-env",
+        "--allow-sys",
+        "--allow-read",
+        "--allow-write",
+        "./fs/tests/fsbytes.test.ts"
+      ],
+      "attachSimplePort": 9229
+    },
+    {
+      "request": "launch",
+      "name": "Debug fs/tests/fs2.test.ts",
+      "type": "node",
+      "cwd": "${workspaceFolder}",
+      "env": {},
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "--allow-env",
+        "--allow-sys",
+        "--allow-read",
+        "--allow-write",
+        "./fs/tests/fs2.test.ts"
+      ],
+      "attachSimplePort": 9229
+    },
+    {
+      "request": "launch",
+      "name": "Debug fs/tests/fs3.test.ts",
+      "type": "node",
+      "cwd": "${workspaceFolder}",
+      "env": {},
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "--allow-env",
+        "--allow-sys",
+        "--allow-read",
+        "--allow-write",
+        "./fs/tests/fs3.test.ts"
+      ],
       "attachSimplePort": 9229
     }
   ]
