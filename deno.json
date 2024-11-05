@@ -10,9 +10,7 @@
     "launch": "deno  --allow-env --allow-sys --allow-read --allow-write ./_tools/launchgen.ts"
   },
   "imports": {
-    "@deno/dnt": "jsr:@deno/dnt@^0.41.3",
-    "@std/assert": "jsr:@std/assert@1",
-    "@types/intl": "npm:@types/intl@^1.2.2"
+    "@std/assert": "jsr:@std/assert@1"
   },
   "fmt": {
     "options": {
