@@ -1,5 +1,5 @@
-import { dateEx } from '@scope/datetime';
-import { isArray, isDate, isValidDate } from '@scope/type';
+import { dateEx } from '@epdoc/datetime';
+import { isArray, isDate, isValidDate } from '@epdoc/type';
 import { expect } from 'jsr:@std/expect';
 import { afterAll, beforeEach, describe, it, test } from 'jsr:@std/testing/bdd';
 import os from 'node:os';
@@ -383,7 +383,7 @@ describe('fsitem', () => {
       .then((resp) => {
         expect(resp).toEqual(true);
         return fsitem(pwd, 'data2/folder-sample/sample2.txt').filesEqual(
-          fsitem(pwd, 'data1/folder-sample/sample2.txt'),
+          fsitem(pwd, 'data1/folder-sample/sample2.txt')
         );
       })
       .then((resp) => {
@@ -434,7 +434,7 @@ describe('fsitem', () => {
       .then((resp) => {
         expect(resp).toEqual(true);
         return fsitem(pwd, 'data2/folder-sample/sample2.txt').filesEqual(
-          fsitem(pwd, 'data1/folder-sample/sample2.txt'),
+          fsitem(pwd, 'data1/folder-sample/sample2.txt')
         );
       })
       .then((resp) => {

@@ -1,4 +1,4 @@
-import type { Integer } from '@scope/type';
+import type { Integer } from '@epdoc/type';
 import type { Field } from './types.ts';
 
 /**

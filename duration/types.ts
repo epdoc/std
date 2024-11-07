@@ -1,4 +1,4 @@
-import type { CompareResult } from '@scope/type';
+import type { CompareResult } from '@epdoc/type';
 
 export const SECONDS_PER_SOLAR_YEAR = ((365 * 24 + 5) * 60 + 48) * 60 + 46;
 

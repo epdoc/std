@@ -1,14 +1,12 @@
 {
   "name": "@epdoc/duration",
   "version": "1.0.0",
-  "description": "Date and duration utilities",
-  "exports": {
-    ".": "./mod.ts"
-  },
+  "description": "Duration formatting",
+  "exports": "./mod.ts",
   "tasks": {
     "test": "deno test --allow-env"
   },
   "imports": {
-    "@scope/type": "../type/mod.ts"
+    "@epdoc/type": "../type/mod.ts"
   }
 }

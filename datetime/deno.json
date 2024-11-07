@@ -1,10 +1,8 @@
 {
   "name": "@epdoc/datetime",
   "version": "1.0.0",
-  "exports": {
-    ".": "./mod.ts"
-  },
+  "exports": "./mod.ts",
   "imports": {
-    "@scope/type": "../type/mod.ts"
+    "@epdoc/type": "../type/mod.ts"
   }
 }

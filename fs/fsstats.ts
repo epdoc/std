@@ -1,4 +1,4 @@
-import type { Integer } from '@scope/type';
+import type { Integer } from '@epdoc/type';
 
 /**
  * Object contains the [fs.Stats](https://nodejs.org/api/fs.html#class-fsstats)

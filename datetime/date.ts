@@ -1,4 +1,4 @@
-import * as Util from '@scope/type';
+import * as Util from '@epdoc/type';
 
 export type Minutes = Util.Integer;
 
@@ -109,7 +109,8 @@ export class DateEx {
     this.validate();
     const tzOffset: Minutes = Util.isInteger(this._tz) ? this._tz : this._date.getTimezoneOffset();
     const d: Date = new Date(this._date.getTime() - tzOffset * 60000);
-    let s = String(d.getUTCFullYear()) +
+    let s =
+      String(d.getUTCFullYear()) +
       '-' +
       Util.pad(d.getUTCMonth() + 1, 2) +
       '-' +
@@ -263,7 +264,7 @@ export class DateEx {
         Util.asInt(p[3]),
         Util.asInt(p[4]),
         Util.asInt(p[5]),
-        Util.asInt(p[6]),
+        Util.asInt(p[6])
       ).withTz(tzOffset);
     }
   }

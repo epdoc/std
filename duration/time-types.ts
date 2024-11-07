@@ -1,4 +1,4 @@
-import { type Integer, isInteger } from '@scope/type';
+import { type Integer, isInteger } from '@epdoc/type';
 
 /**
  * Represents a duration in milliseconds.

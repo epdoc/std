@@ -1,4 +1,4 @@
-import { type DeepCopyOpts, type Integer, isNonEmptyString } from '@scope/type';
+import { type DeepCopyOpts, type Integer, isNonEmptyString } from '@epdoc/type';
 import type { FSItem } from './fsitem.ts';
 
 /**
@@ -83,7 +83,8 @@ export const fileConflictStrategyType = {
  * Type representing the possible conflict strategy types.
  * This type is derived from the keys of the `fileConflictStrategyType` object.
  */
-export type FileConflictStrategyType = (typeof fileConflictStrategyType)[keyof typeof fileConflictStrategyType];
+export type FileConflictStrategyType =
+  (typeof fileConflictStrategyType)[keyof typeof fileConflictStrategyType];
 
 /**
  * Checks if a given value is a valid FileConflictStrategyType.
