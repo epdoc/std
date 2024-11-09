@@ -383,7 +383,7 @@ describe('fsitem', () => {
       .then((resp) => {
         expect(resp).toEqual(true);
         return fsitem(pwd, 'data2/folder-sample/sample2.txt').filesEqual(
-          fsitem(pwd, 'data1/folder-sample/sample2.txt')
+          fsitem(pwd, 'data1/folder-sample/sample2.txt'),
         );
       })
       .then((resp) => {
@@ -434,7 +434,7 @@ describe('fsitem', () => {
       .then((resp) => {
         expect(resp).toEqual(true);
         return fsitem(pwd, 'data2/folder-sample/sample2.txt').filesEqual(
-          fsitem(pwd, 'data1/folder-sample/sample2.txt')
+          fsitem(pwd, 'data1/folder-sample/sample2.txt'),
         );
       })
       .then((resp) => {

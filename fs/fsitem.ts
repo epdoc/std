@@ -1033,7 +1033,7 @@ export class FSItem {
    * up, or true if the file didn't exist
    */
   async backup(
-    opts: FileConflictStrategy = { type: 'renameWithTilde', errorIfExists: false }
+    opts: FileConflictStrategy = { type: 'renameWithTilde', errorIfExists: false },
   ): Promise<FilePath | boolean> {
     await this.getStats();
 
