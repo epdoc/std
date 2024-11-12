@@ -43,7 +43,6 @@ export class DateEx {
    * with the Date constructor method. If undefined then uses the value of `new Date()`.
    */
   constructor(...args: unknown[]) {
-    1;
     // Examine args because the Date constructor drops ms if you construct with Date(args)
     if (!args.length) {
       this._date = new Date();
@@ -109,7 +108,8 @@ export class DateEx {
     this.validate();
     const tzOffset: Minutes = Util.isInteger(this._tz) ? this._tz : this._date.getTimezoneOffset();
     const d: Date = new Date(this._date.getTime() - tzOffset * 60000);
-    let s = String(d.getUTCFullYear()) +
+    let s =
+      String(d.getUTCFullYear()) +
       '-' +
       Util.pad(d.getUTCMonth() + 1, 2) +
       '-' +
@@ -155,9 +155,9 @@ export class DateEx {
   private static formatInternal(d: Date, format: string): string {
     let f = String(format);
     f = f
-      .replace('YYYY', String(d.getUTCFullYear()))
+      .replace('yyyy', String(d.getUTCFullYear()))
       .replace('MM', Util.pad(d.getUTCMonth() + 1, 2))
-      .replace('DD', Util.pad(d.getUTCDate(), 2))
+      .replace('dd', Util.pad(d.getUTCDate(), 2))
       .replace('HH', Util.pad(d.getUTCHours(), 2))
       .replace('mm', Util.pad(d.getUTCMinutes(), 2))
       .replace('ss', Util.pad(d.getUTCSeconds(), 2))
@@ -263,7 +263,7 @@ export class DateEx {
         Util.asInt(p[3]),
         Util.asInt(p[4]),
         Util.asInt(p[5]),
-        Util.asInt(p[6]),
+        Util.asInt(p[6])
       ).withTz(tzOffset);
     }
   }

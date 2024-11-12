@@ -1,15 +1,33 @@
+import * as msub from './msub.ts';
+
 export function StringEx(str: unknown): StringUtil {
   return new StringUtil(str);
 }
 
 export class StringUtil {
   private _str: string;
+  private _msub: msub.MSub | undefined;
+
   constructor(str: unknown) {
     this._str = String(str);
   }
 
+  msubInit(opts: msub.InitOptions): msub.MSub {
+    this._msub = msub.createMSub(opts);
+    return this._msub;
+  }
+
+  msub(s: string, ...args: msub.Param[]): string {
+    if (!this._msub) {
+      this._msub = msub.createMSub();
+    }
+    return this._msub.replace(s, ...args);
+  }
+
   /**
-   * Returns the plural form of a word based on the given count.
+   * Returns the plural form of a word based on the given count. If the plural
+   * form is not provided, it defaults to the singular form with an 's'
+   * appended.
    * @param {string} singular - The singular form of the word.
    * @param {Integer} n - The count of items.
    * @param {string} [plural] - The plural form of the word (optional).
@@ -23,7 +41,7 @@ export class StringUtil {
   }
 
   /** LLM generated function to count and remove tabs at the beginning of a string */
-  countTabsAtBeginningOfString(): number {
+  countLeadingTabs(): number {
     let count = 0;
     for (let i = 0; i < this._str.length; i++) {
       if (this._str[i] === '\t') {

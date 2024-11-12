@@ -3,5 +3,11 @@
   "version": "1.0.0",
   "exports": {
     ".": "./mod.ts"
+  },
+  "imports": {
+    "@epdoc/datetime": "../datetime/mod.ts",
+    "@epdoc/type": "../type/mod.ts"
   }
+
 }
+  

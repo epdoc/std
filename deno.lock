@@ -4,7 +4,6 @@
     "jsr:@std/assert@*": "1.0.6",
     "jsr:@std/assert@1": "1.0.6",
     "jsr:@std/assert@^1.0.6": "1.0.6",
-    "jsr:@std/datetime@*": "0.225.2",
     "jsr:@std/expect@*": "1.0.4",
     "jsr:@std/fs@*": "1.0.4",
     "jsr:@std/fs@1": "1.0.4",
@@ -24,9 +23,6 @@
       "dependencies": [
         "jsr:@std/internal"
       ]
-    },
-    "@std/datetime@0.225.2": {
-      "integrity": "45f0100554a912cd65f48089ef0a33aa1eb6ea21f08090840b539ab582827eaa"
     },
     "@std/expect@1.0.4": {
       "integrity": "97f68a445a9de0d9670200d2b7a19a7505a01b2cb390a983ba8d97d90ce30c4f",
