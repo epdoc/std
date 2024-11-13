@@ -79,8 +79,16 @@ export class DateEx {
    * When using a Date constructor that does not allow the tz to be specified,
    * and the date was, for example, created using localtime, call tz() with the
    * offset, and then adjustForTz() to adjust the Date object.
-   * Example new Date(2024,1,1,11,59,59).withTz().catch((err) => {
-    Note that val '-06:00' `ISOTZ` equals 360 `Minutes`, and '+06:00' equals -360.
+   * 
+   * @example
+   * ```ts
+   * import { dateEx } from '@epdoc/datetime';
+   * 
+   * const d = new Date(2024,1,1,11,59,59);
+   * const d2 = dateEx(d).withTz(360).date;
+   * assertStrictEquals(d2.toISOString(), '2024-01-01T11:59:59.000Z');
+   * ```
+   * Note that val '-06:00' `ISOTZ` equals 360 `Minutes`, and '+06:00' equals -360.
    });
    * @param val If not specified, then use local timezone.
    */
@@ -143,7 +151,7 @@ export class DateEx {
    * @returns
    */
   format(format: string): string {
-    const tzOffset: Minutes = this._tz ? this._tz : this._date.getTimezoneOffset();
+    const tzOffset: Minutes = Util.isNumber(this._tz) ? this._tz : this._date.getTimezoneOffset();
     const d: Date = new Date(this._date.getTime() - tzOffset * 60000);
     return DateEx.formatInternal(d, format);
   }
