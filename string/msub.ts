@@ -189,7 +189,7 @@ class MSubImpl implements IMSub {
           if (format && isFunction(val[format as keyof Date])) {
             // @ts-ignore cannot find a ts syntax that makes lint happy
             val = val[format as keyof Date](...p);
-          } else if ( isFunction(this.format)) {
+          } else if (isFunction(this.format)) {
             val = this.format(val, format);
           } else {
             val = val.toString();

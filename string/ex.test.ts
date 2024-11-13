@@ -17,13 +17,38 @@ describe('StringEx', () => {
     expect(StringEx('\tbody').countLeadingTabs()).toBe(1);
     expect(StringEx('\t\tbody').countLeadingTabs()).toBe(2);
   });
-  test('rightPadAndTruncate', () => {
-    expect(StringEx('body').rightPadAndTruncate(6)).toBe('body  ');
-    expect(StringEx('body').rightPadAndTruncate(6, 'x')).toBe('bodyxx');
-    expect(StringEx('body').rightPadAndTruncate(5, ' ')).toBe('body ');
-    expect(StringEx('body').rightPadAndTruncate(4)).toBe('body');
-    expect(StringEx('body').rightPadAndTruncate(3)).toBe('bod');
-    expect(StringEx('body').rightPadAndTruncate(2)).toBe('bo');
+  test('rightPad', () => {
+    expect(StringEx('body').rightPad(6)).toBe('body  ');
+    expect(StringEx('body').rightPad(11)).toBe('body       ');
+    expect(StringEx('body').rightPad(6, 'x')).toBe('bodyxx');
+    expect(StringEx('body').rightPad(5, ' ')).toBe('body ');
+    expect(StringEx('body').rightPad(4)).toBe('body');
+    expect(StringEx('body').rightPad(3)).toBe('bod');
+    expect(StringEx('body').rightPad(2)).toBe('bo');
+    expect(StringEx('body').rightPad(3, 'x', false)).toBe('body');
+    expect(StringEx('body').rightPad(2, 'x', false)).toBe('body');
+  });
+  test('leftPad', () => {
+    expect(StringEx('body').leftPad(6)).toBe('  body');
+    expect(StringEx('body').leftPad(11)).toBe('       body');
+    expect(StringEx('body').leftPad(6, 'x')).toBe('xxbody');
+    expect(StringEx('body').leftPad(5, ' ')).toBe(' body');
+    expect(StringEx('body').leftPad(4)).toBe('body');
+    expect(StringEx('body').leftPad(3)).toBe('bod');
+    expect(StringEx('body').leftPad(2)).toBe('bo');
+    expect(StringEx('body').leftPad(3, 'x', false)).toBe('body');
+    expect(StringEx('body').leftPad(2, 'x', false)).toBe('body');
+  });
+  test('center', () => {
+    expect(StringEx('body').center(6)).toBe(' body ');
+    expect(StringEx('body').center(11)).toBe('   body    ');
+    expect(StringEx('body').center(6, 'x')).toBe('xbodyx');
+    expect(StringEx('body').center(5, ' ')).toBe('body ');
+    expect(StringEx('body').center(4)).toBe('body');
+    expect(StringEx('body').center(3)).toBe('bod');
+    expect(StringEx('body').center(2)).toBe('bo');
+    expect(StringEx('body').center(3, 'x', false)).toBe('body');
+    expect(StringEx('body').center(2, 'x', false)).toBe('body');
   });
   test('hexEncode', () => {
     expect(StringEx('body').hexEncode()).toBe('0062006f00640079');
@@ -35,7 +60,7 @@ describe('msub', () => {
     expect(msub.init({ open: '%<{' }).replace('My %<{body}>', { body: 'nose' })).toBe('My nose');
     expect(msub.replace('You have two %<{body}>', { body: 'knees' })).toBe('You have two knees');
     expect(msub.init({ open: '%<{', close: '}' }).replace('You have two %<{body}', { body: 'elbows' })).toBe(
-      'You have two elbows'
+      'You have two elbows',
     );
     // expect(
     //   msub.init({ uppercase: true }).replace('You have two ${BODY_DOUBLE}', { bodyDouble: 'thumbs' })
@@ -43,23 +68,23 @@ describe('msub', () => {
   });
   test('array replacement', () => {
     expect(
-      msub.init().replace('This ${0} of ${1} actually belongs in the string', ['instance', 'string'])
+      msub.init().replace('This ${0} of ${1} actually belongs in the string', ['instance', 'string']),
     ).toBe('This instance of string actually belongs in the string');
   });
   test('number replacement', () => {
     expect(msub.init().replace('We have ${a:toFixed:3} metres of steel', { a: 32.3444 })).toBe(
-      'We have 32.344 metres of steel'
+      'We have 32.344 metres of steel',
     );
     expect(msub.replace('There are ${a:toFixed:1} hours remaining', { a: 93 / 60 })).toBe(
-      'There are 1.6 hours remaining'
+      'There are 1.6 hours remaining',
     );
   });
   test('date formatting', () => {
     expect(msub.replace('The year is ${a:getFullYear}', { a: new Date(100 * 24 * 3600 * 1000) })).toBe(
-      'The year is 1970'
+      'The year is 1970',
     );
     expect(msub.init().replace('The date is ${a:toISOString}', { a: new Date('2024-11-15') })).toBe(
-      'The date is 2024-11-15T00:00:00.000Z'
+      'The date is 2024-11-15T00:00:00.000Z',
     );
   });
   test('date custom formatting', () => {
@@ -87,17 +112,17 @@ describe('StringEx with msub', () => {
     expect(
       StringEx('My %<{body}>')
         .init({ msub: { open: '%<{' } })
-        .replace({ body: 'nose' })
+        .replace({ body: 'nose' }),
     ).toBe('My nose');
     expect(
       StringEx('You have two %<{body}>')
         .init({ msub: { open: '%<{' } })
-        .replace({ body: 'knees' })
+        .replace({ body: 'knees' }),
     ).toBe('You have two knees');
     expect(
       StringEx('You have two %<{body}')
         .init({ msub: { open: '%<{', close: '}' } })
-        .replace({ body: 'elbows' })
+        .replace({ body: 'elbows' }),
     ).toBe('You have two elbows');
   });
 });

@@ -128,10 +128,10 @@ describe('date-util', () => {
   });
   it('formatLocale', () => {
     const d = new Date('1997-11-25T12:13:14.456Z');
-    expect(new DateEx(d).format('YYYY-MM-DD')).toEqual('1997-11-25');
-    expect(new DateEx(d).format('YYYYMMDD')).toEqual('19971125');
-    expect(new DateEx(d).format('YYYYMMDD_HHmmss')).toEqual('19971125_061314');
-    expect(new DateEx(d).formatUTC('YYYYMMDD_HHmmss')).toEqual('19971125_121314');
+    expect(new DateEx(d).format('yyyy-MM-dd')).toEqual('1997-11-25');
+    expect(new DateEx(d).format('yyyyMMdd')).toEqual('19971125');
+    expect(new DateEx(d).format('yyyyMMdd_HHmmss')).toEqual('19971125_061314');
+    expect(new DateEx(d).formatUTC('yyyyMMdd_HHmmss')).toEqual('19971125_121314');
   });
   it('julianDate', () => {
     const d = new Date('1997-11-25T12:13:14.456Z');
