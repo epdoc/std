@@ -4,6 +4,10 @@ export function StringEx(str: unknown): StringUtil {
   return new StringUtil(str);
 }
 
+export type StringExOptions = {
+  msub?: msub.InitOptions;
+};
+
 export class StringUtil {
   private _str: string;
   private _msub: msub.MSub | undefined;
@@ -12,16 +16,18 @@ export class StringUtil {
     this._str = String(str);
   }
 
-  msubInit(opts: msub.InitOptions): msub.MSub {
-    this._msub = msub.createMSub(opts);
-    return this._msub;
+  init(opts: StringExOptions): this {
+    if (opts.msub) {
+      this._msub = msub.createMSub(opts.msub);
+    }
+    return this;
   }
 
-  msub(s: string, ...args: msub.Param[]): string {
+  replace(...args: msub.Param[]): string {
     if (!this._msub) {
       this._msub = msub.createMSub();
     }
-    return this._msub.replace(s, ...args);
+    return this._msub.replace(this._str, ...args);
   }
 
   /**

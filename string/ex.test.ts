@@ -1,7 +1,7 @@
 import { dateEx } from '@epdoc/datetime';
 import { expect } from 'jsr:@std/expect';
 import { describe, test } from 'jsr:@std/testing/bdd';
-import { StringEx, msub } from './mod.ts';
+import { msub, StringEx } from './mod.ts';
 
 describe('StringEx', () => {
   test('pluralize', () => {
@@ -58,22 +58,46 @@ describe('msub', () => {
     expect(msub.replace('The year is ${a:getFullYear}', { a: new Date(100 * 24 * 3600 * 1000) })).toBe(
       'The year is 1970'
     );
-    expect(
-      msub.init().replace('The date is ${a:toISOString}', { a: new Date('2024-11-15') })
-    ).toBe('The date is 2024-11-15T00:00:00.000Z');
-    expect(
-      msub.init({ format: fmt1 }).replace('The date is ${a:toISOString}', { a: new Date('2024-11-15') })
-    ).toBe('The date is 2024-11-15T00:00:00.000Z');
+    expect(msub.init().replace('The date is ${a:toISOString}', { a: new Date('2024-11-15') })).toBe(
+      'The date is 2024-11-15T00:00:00.000Z'
+    );
   });
   test('date custom formatting', () => {
+    const d = new Date('2024-11-15T00:00:00.000Z');
     const fmt1 = (_d: Date, _f: string) => {
-      return dateEx().toISOLocalString();
+      return dateEx(_d).tz(360).toISOLocalString();
     };
     const fmt2 = (d: Date, f: string) => {
-      return dateEx(d).format(f);
+      return dateEx(d).tz(0).format(f);
     };
+
+    const r0 = msub.init({ format: fmt1 }).replace('The date is ${a:toISOString}', { a: d });
+    expect(r0).toBe('The date is 2024-11-15T00:00:00.000Z'); // fmt is ignored because a:toISOstring takes precedence
+
+    const r1 = msub.init({ format: fmt1 }).replace('The date is ${a}', { a: d });
+    expect(r1).toBe('The date is 2024-11-14T18:00:00.000-06:00');
+
+    const r2 = msub.init({ format: fmt2 }).replace('The date is ${a:yyyy/MM/dd}', { a: d });
+    expect(r2).toBe('The date is 2024/11/15');
+  });
+});
+describe('StringEx with msub', () => {
+  test('key value', () => {
+    expect(StringEx('My ${body}').replace({ body: 'eyes' })).toBe('My eyes');
     expect(
-      msub.init({ format: fmt1 }).replace('The date is ${a:toISOString}', { a: new Date('2024-11-15') })
-    ).toBe('The date is 2024-11-15T00:00:00.000Z');
+      StringEx('My %<{body}>')
+        .init({ msub: { open: '%<{' } })
+        .replace({ body: 'nose' })
+    ).toBe('My nose');
+    expect(
+      StringEx('You have two %<{body}>')
+        .init({ msub: { open: '%<{' } })
+        .replace({ body: 'knees' })
+    ).toBe('You have two knees');
+    expect(
+      StringEx('You have two %<{body}')
+        .init({ msub: { open: '%<{', close: '}' } })
+        .replace({ body: 'elbows' })
+    ).toBe('You have two elbows');
   });
 });

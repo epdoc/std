@@ -1,7 +1,25 @@
+/**
+ * @module msub
+ *
+ * This module provides a string replacement utility that allows for dynamic
+ * string formatting using placeholders. The syntax is similar to ES2015 template
+ * literals.
+ */
+
 import { assert } from '@std/assert';
 import { isDate, isNumber, isObject } from '../type/mod.ts';
 import { isFunction, isString } from '../type/util.ts';
 
+/**
+ * Options for initializing the MSub instance.
+ * @typedef {Object} InitOptions
+ * @property {string} [open='${'] - The opening brace for placeholders.
+ * @property {string} [close='}'] - The closing brace for placeholders. If not
+ * specified, the closing brace will be the mirror of brace characters within
+ * the opening brace.
+ * @property {boolean} [uppercase=false] - xxx Whether to convert keys to camelCase.
+ * @property {unknown} [format] - Custom format for values.
+ */
 export type InitOptions = {
   open?: string;
   close?: string;
@@ -9,13 +27,50 @@ export type InitOptions = {
   format?: unknown;
 };
 
+/**
+ * Allowed types for substitution parameters.
+ * @typedef {string | number | boolean | Date} SubParam
+ */
 export type SubParam = string | number | boolean | Date;
+
+/**
+ * Allowed types for parameters in the replace method.
+ * @typedef {SubParam | SubParam[] | { [key: string]: SubParam }} Param
+ */
 export type Param = SubParam | SubParam[] | { [key: string]: SubParam };
 
+/**
+ * Callback function for formatting values.
+ * @callback FormatCallback
+ * @param {unknown} val - The value to format.
+ * @param {string} format - The format string.
+ */
 export type FormatCallback = (val: unknown, format: string) => string;
 
+/**
+ * Interface for MSub implementation.
+ * @interface IMSub
+ */
 interface IMSub {
+  /**
+   * Initializes the MSub instance with options.
+   * @param {InitOptions} [options] - Initialization options.
+   * @returns {this} The instance of MSub.
+   * @example
+   * const msub = new MSubImpl();
+   * msub.init({ open: '{{', close: '}}', uppercase: true });
+   */
   init(options?: InitOptions): this;
+
+  /**
+   * Replaces placeholders in a string with provided arguments.
+   * @param {string} s - The string containing placeholders.
+   * @param {...Param} args - The values to replace the placeholders.
+   * @returns {string} The formatted string.
+   * @example
+   * const result = msub.replace('Hello, ${name}!', { name: 'World' });
+   * console.log(result); // "Hello, World!"
+   */
   replace(s: string, ...args: Param[]): string;
 }
 
@@ -47,6 +102,11 @@ class MSubImpl implements IMSub {
 
   constructor() {}
 
+  /**
+   * Initializes the MSub instance with options.
+   * @param {InitOptions} [options] - Initialization options.
+   * @returns {this} The instance of MSub.
+   */
   init(options?: InitOptions): this {
     if (options) {
       this.open = options.open ? options.open : '${';
@@ -83,6 +143,20 @@ class MSubImpl implements IMSub {
     return braceString; // Return the mirrored closing braces
   }
 
+  /**
+   * Replaces placeholders in a string with provided arguments.
+   * @param {string} s - The string containing placeholders.
+   * @param {...Param} args - The values with which to replace the placeholders.
+   * @returns {string} The formatted string.
+   *
+   * @example
+   * ```ts
+   * import { msub } from '@epdoc/string';
+   *
+   * const result = msub.replace('Hello, ${name}!', { name: 'World' });
+   * console.log(result); // "Hello, World!"
+   * ```
+   */
   replace(s: string, ...args: Param[]): string {
     if (args !== undefined && args !== null) {
       // Resolve input args
@@ -115,7 +189,7 @@ class MSubImpl implements IMSub {
           if (format && isFunction(val[format as keyof Date])) {
             // @ts-ignore cannot find a ts syntax that makes lint happy
             val = val[format as keyof Date](...p);
-          } else if (format && isFunction(this.format)) {
+          } else if ( isFunction(this.format)) {
             val = this.format(val, format);
           } else {
             val = val.toString();
@@ -190,14 +264,46 @@ const __msub: MSubImpl = new MSubImpl();
 export type MSub = MSubImpl;
 // export const msub: MSub = __msub as MSub;
 
-export const replace = (s: string, ...args: Param[]): string => {
-  return __msub.replace(s, ...args);
-};
-
+/**
+ * Initializes a default singleton MSub instance with options.
+ * @param {InitOptions} [options] - Initialization options.
+ * @returns {this} The instance of MSub.
+ * @example
+ * ```ts
+ * import * as msub  from '@epdoc/string'
+ *
+ * msub.init({ open: '{{', close: '}}', uppercase: true });
+ * ```
+ */
 export const init = (options?: InitOptions): MSub => {
   return __msub.init(options);
 };
 
+/**
+ * Replaces placeholders in a string with provided arguments. Uses the default
+ * MSub singleton.
+ * @param {string} s - The string containing placeholders.
+ * @param {...Param} args - The values to replace the placeholders.
+ * @returns {string} The formatted string.
+ * @example
+ * ```ts
+ * import * as msub  from '@epdoc/string'
+ *
+ * const result = msub.replace('Hello, ${name}!', { name: 'World' });
+ * console.log(result); // "Hello, World!"
+ * ``
+ */
+export const replace = (s: string, ...args: Param[]): string => {
+  return __msub.replace(s, ...args);
+};
+
+/**
+ * Creates a new MSub instance and initializes it with options.
+ * @param {InitOptions} [options] - Initialization options.
+ * @returns {MSub} The initialized MSub instance.
+ * @example
+ * const msubInstance = createMSub({ open: '{{', close: '}}' });
+ */
 export function createMSub(options?: InitOptions): MSub {
   return new MSubImpl().init(options);
 }
