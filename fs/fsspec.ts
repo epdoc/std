@@ -52,7 +52,7 @@ const REG = {
 
 /**
  * Create a new FSItem object.
- * @param {(FileSpec | FolderPath | FilePath)[])} args - An FSItem, a path, or a spread of paths to be used with path.resolve
+ * @param {(FileSpec | FolderSpec | FolderPath | FilePath)[])} args - An FSItem, a path, or a spread of paths to be used with path.resolve
  * @returns {FileSpec} - A new FSItem object
  */
 export function fileSpec(...args: (FileSpec | FolderPath | FilePath)[]): FileSpec {
@@ -1158,6 +1158,10 @@ export class FileSpec {
     err.code = code;
     return err;
   }
+}
+
+export function folderSpec(...args: (FileSpec | FolderPath | FilePath)[]): FolderSpec {
+  return new FileSpec(...args) as FolderSpec;
 }
 
 /**
