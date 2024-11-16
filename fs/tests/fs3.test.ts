@@ -3,7 +3,7 @@ import { afterAll, beforeAll, describe, test } from 'jsr:@std/testing/bdd';
 import { Buffer } from 'node:buffer';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import { FileSpec, fileSpec, type FSSortOpts } from '../mod.ts';
+import { type FSSortOpts, FSSpec, fsSpec } from '../mod.ts';
 
 const pwd: string = import.meta.dirname as string;
 
@@ -29,21 +29,21 @@ describe('FSItem Additional Tests', () => {
   // ... (previous tests)
 
   test('haveReadFolderContents returns correct value', async () => {
-    const item = fileSpec(testDir);
+    const item = fsSpec(testDir);
     expect(item.haveReadFolderContents()).toBe(false);
     await item.getChildren();
     expect(item.haveReadFolderContents()).toBe(true);
   });
 
   test('getChildren returns correct children', async () => {
-    const item = fileSpec(testDir);
+    const item = fsSpec(testDir);
     await item.getChildren();
     expect(item.files.length).toBe(2);
     expect(item.folders.length).toBe(1);
   });
 
   test('getFiles returns correct files', async () => {
-    const item = fileSpec(testDir);
+    const item = fsSpec(testDir);
     const files = await item.getFiles();
     expect(files.length).toBe(2);
     expect(files.some((f) => f.filename === 'test.txt')).toBe(true);
@@ -51,14 +51,14 @@ describe('FSItem Additional Tests', () => {
   });
 
   test('getFolders returns correct folders', async () => {
-    const item = fileSpec(testDir);
+    const item = fsSpec(testDir);
     const folders = await item.getFolders();
     expect(folders.length).toBe(1);
     expect(folders[0].filename).toBe('subdir');
   });
 
   test('sortChildren sorts children correctly', async () => {
-    const item = fileSpec(testDir);
+    const item = fsSpec(testDir);
     await item.getChildren();
     const opts: FSSortOpts = { type: 'alphabetical' };
     item.sortChildren(opts);
@@ -67,23 +67,23 @@ describe('FSItem Additional Tests', () => {
   });
 
   test('sortFiles sorts files correctly', async () => {
-    const item = fileSpec(testDir);
+    const item = fsSpec(testDir);
     let files = await item.getFiles();
-    files = FileSpec.sortByFilename(files);
+    files = FSSpec.sortByFilename(files);
     expect(files[0].filename).toBe('test.json');
     expect(files[1].filename).toBe('test.txt');
   });
 
   test('sortFolders sorts folders correctly', async () => {
-    const item = fileSpec(testSubDir);
+    const item = fsSpec(testSubDir);
     let files = await item.getFiles();
-    files = FileSpec.sortByFilename(files);
+    files = FSSpec.sortByFilename(files);
     expect(files[0].filename).toBe('file1.txt');
     expect(files[1].filename).toBe('file2.txt');
   });
 
   test('sortFilesBySize sorts files by size', async () => {
-    const item = fileSpec(testDir);
+    const item = fsSpec(testDir);
     await item.getChildren();
     item.sortChildren({ type: 'size' });
     expect(item.files[0].filename).toBe('test.json');
@@ -91,14 +91,14 @@ describe('FSItem Additional Tests', () => {
   });
 
   test('checksum calculates file checksum', async () => {
-    const item = fileSpec(testFile);
+    const item = fsSpec(testFile);
     const checksum = await item.checksum();
     expect(checksum).toBeTruthy();
     expect(typeof checksum).toBe('string');
   });
 
   test('backup creates a backup of the file', async () => {
-    const item = fileSpec(testFile);
+    const item = fsSpec(testFile);
     const backupPath = await item.backup();
     expect(typeof backupPath).toBe('string');
     const backupExists = await fs
@@ -109,7 +109,7 @@ describe('FSItem Additional Tests', () => {
   });
 
   test('findAvailableIndexFilename finds available filename', async () => {
-    const item = fileSpec(testFile);
+    const item = fsSpec(testFile);
     const newFilename = await item.findAvailableIndexFilename();
     expect(newFilename).toBeTruthy();
     expect(newFilename).not.toBe(testFile);
@@ -128,7 +128,7 @@ describe('FSItem Additional Tests', () => {
   // });
 
   test('newError creates a new error with file path', () => {
-    const item = fileSpec(testFile);
+    const item = fsSpec(testFile);
     const error = item.newError('TEST_ERROR', 'Test error message');
     expect(error).toBeInstanceOf(Error);
     expect(error.message).toContain('Test error message');
@@ -150,7 +150,7 @@ describe('FSItem Additional Tests', () => {
 
   test('writeBase64 writes base64 encoded data', async () => {
     const newFile = path.join(testDir, 'base64.txt');
-    const item = fileSpec(newFile);
+    const item = fsSpec(newFile);
     const base64Data = Buffer.from('Hello, Base64!').toString('base64');
     await item.writeBase64(base64Data);
     const content = await fs.readFile(newFile, 'utf8');

@@ -1,62 +1,25 @@
-import {
-  compareDictValue,
-  deepCopy,
-  deepCopySetDefaultOpts,
-  type Dict,
-  type Integer,
-  isArray,
-  isDict,
-  isError,
-  isInteger,
-  isNonEmptyArray,
-  isNonEmptyString,
-  isNumber,
-  isObject,
-  isRegExp,
-  isString,
-  pad,
-} from '@epdoc/type';
+import { isArray, isError, isString } from '@epdoc/type';
 import * as dfs from '@std/fs';
-import checksum from 'checksum';
-import { Buffer } from 'node:buffer';
-import fs, { close } from 'node:fs';
-import { readFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { FSBytes } from './fsbytes.ts';
+import { FileSpec, fileSpec, type FileSpecParam } from './filespec.ts';
+import { FolderSpec, folderSpec, type FolderSpecParam } from './folderspec.ts';
 import { FSStats } from './fsstats.ts';
-import type { GetChildrenOpts } from './types.ts';
-import {
-  type FileConflictStrategy,
-  fileConflictStrategyType,
-  type FileName,
-  type FilePath,
-  type FolderName,
-  type FolderPath,
-  type FsDeepCopyOpts,
-  type FSSortOpts,
-  isFilePath,
-  type SafeCopyOpts,
-} from './types.ts';
-import { joinContinuationLines } from './util.ts';
-
-const REG = {
-  pdf: /\.pdf$/i,
-  xml: /\.xml$/i,
-  json: /\.json$/i,
-  txt: /\.(txt|text)$/i,
-  lineSeparator: new RegExp(/\r?\0?\n/),
-  leadingDot: new RegExp(/^\./),
-  BOM: new RegExp(/^\uFEFF/),
-};
+import { SymlinkSpec, symlinkSpec } from './symspec.ts';
+import type { FilePath, FolderPath, SafeCopyOpts } from './types.ts';
 
 /**
  * Create a new FSItem object.
- * @param {(FileSpec | FolderSpec | FolderPath | FilePath)[])} args - An FSItem, a path, or a spread of paths to be used with path.resolve
- * @returns {FileSpec} - A new FSItem object
+ * @param {(FSSpec | FolderPath | FilePath)[])} args - An FSItem, a path, or a spread of paths to be used with path.resolve
+ * @returns {FSSpec} - A new FSItem object
  */
-export function fileSpec(...args: (FileSpec | FolderPath | FilePath)[]): FileSpec {
-  return new FileSpec(...args);
+export function fsSpec(...args: (FSSpec | FolderPath | FilePath)[]): FSSpec {
+  if (args.length === 1 && args[0] instanceof FolderSpec) {
+    return folderSpec(...(args as FolderSpecParam[]));
+  } else if (args.length === 1 && args[0] instanceof FileSpec) {
+    return fileSpec(...(args as FileSpecParam[]));
+  }
+  return new FSSpec(...args);
 }
 
 /**
@@ -72,175 +35,81 @@ export function fileSpec(...args: (FileSpec | FolderPath | FilePath)[]): FileSpe
  *  - Getting the creation dates of files, including using the metadata of some file formats
  *  - Testing files for equality
  */
-export class FileSpec {
+export class FSSpec {
   // @ts-ignore this does get initialized
   protected _f: FilePath | FolderPath;
   protected _hasFileInfo: boolean = false;
-  protected _isFile: boolean = false;
-  protected _isDirectory: boolean = false;
-  protected _isSymlink: boolean = false;
+  // protected _isFile: boolean = false;
+  // protected _isDirectory: boolean = false;
+  // protected _isSymlink: boolean = false;
 
   protected _stats: FSStats = new FSStats();
-  // Test to see if _folders and _files have been read
-  protected _haveReadFolderContents: boolean = false;
-  // If this is a folder, contains a filtered list of folders within this folder
-  protected _folders: FileSpec[] = [];
-  // If this is a folder, contains a filtered list of files within this folder
-  protected _files: FileSpec[] = [];
-  // Stores the strings that were used to create the path. This property may be deprecated at unknown time.
-  protected _args: (FilePath | FolderPath)[] = [];
 
   /**
    * Create a new FSItem object from an existing FSItem object, a file path or
    * an array of file path parts that can be merged using node:path#resolve.
-   * @param {(FileSpec | FolderPath | FilePath)[]} args - An FSItem, a path, or a spread of paths to be used with path.resolve
+   * @param {(FSSpec | FolderPath | FilePath)[]} args - An FSItem, a path, or a spread of paths to be used with path.resolve
    */
-  constructor(...args: (FileSpec | FolderPath | FilePath)[]) {
-    if (args.length === 1) {
-      const arg = args[0];
-      if (arg instanceof FileSpec) {
-        this._f = arg._f;
-        this._args = arg._args.map((item) => {
-          return item;
-        });
-        this._stats = arg._stats.copy();
-        this._haveReadFolderContents = arg._haveReadFolderContents;
-        this._folders = arg._folders.map((item) => {
-          return item.copy();
-        });
-        this._files = arg._files.map((item) => {
-          return item.copy();
-        });
-      } else if (isArray(arg)) {
-        if (
-          arg.find((item) => {
-            return !isString(item);
-          })
-        ) {
-          throw new Error('Invalid parameter');
-        } else {
-          this._f = path.resolve(arg);
-          this._args = arg as string[];
-        }
-      } else if (isString(arg)) {
-        this._f = arg;
-        this._args = [arg];
-      }
-    } else if (args.length > 1) {
-      args.forEach((arg) => {
-        if (isString(arg)) {
-          this._args.push(arg);
-        } else {
-          throw new Error('Invalid parameter');
-        }
-      });
-      this._f = path.resolve(...(args as string[]));
+  constructor(...args: (FSSpec | FolderPath | FilePath)[]) {
+    this._f = FSSpec.fromArgs(...args);
+    if (args.length === 1 && args[0] instanceof FSSpec) {
+      args[0].copyParamsTo(this);
     }
   }
 
-  /**
-   * Return a copy of this object. Does not copy the file.
-   * @see FileSpec#copyTo
-   */
-  copy(): FileSpec {
-    return new FileSpec(this);
-  }
-
-  fromDirEntry(entry: Deno.DirEntry): FileSpec {
-    const fs = new FileSpec(this.dirname, entry.name);
-    fs._hasFileInfo = true;
-    fs._isFile = entry.isFile;
-    fs._isDirectory = entry.isDirectory;
-    fs._isSymlink = entry.isSymlink;
-    return fs;
-  }
-
-  static fromWalkEntry(entry: dfs.WalkEntry): FileSpec {
-    const fs = new FileSpec(entry.path);
-    fs._hasFileInfo = true;
-    fs._isFile = entry.isFile;
-    fs._isDirectory = entry.isDirectory;
-    fs._isSymlink = entry.isSymlink;
-    return fs;
-  }
-
-  /**
-   * Append a file or folder name to this.f.
-   * @param args A file name or array of file names.
-   * @returns This
-   */
-  add(...args: FilePath[] | FolderPath[]): this {
-    if (args.length === 1) {
-      if (isArray(args[0])) {
-        this._f = path.resolve(this._f, ...args[0]);
-        args[0].forEach((arg) => {
-          this._args.push(arg as string);
-        });
+  static fromArgs(...args: (FSSpec | FolderPath | FilePath)[]): string {
+    const parts: string[] = [];
+    for (let fdx = 0; fdx < args.length; fdx++) {
+      const item = args[fdx];
+      if (fdx !== args.length - 1 && item instanceof FileSpec) {
+        throw new Error('Invalid FileSpec found');
+      }
+      if (item instanceof FSSpec) {
+        parts.push(item.path);
+      } else if (isString(item)) {
+        parts.push(item);
       } else {
-        this._f = path.resolve(this._f, args[0]);
-        this._args.push(args[0]);
+        throw new Error('Invalid parameter');
       }
-    } else if (args.length > 1) {
-      this._f = path.resolve(this._f, ...args);
-      args.forEach((arg) => {
-        this._args.push(arg);
-      });
     }
-    return this;
+    return path.resolve(...parts);
   }
 
-  /**
-   * Set the path to the home dir
-   */
-  home(...args: FilePath[] | FolderPath[]): this {
-    this._f = os.userInfo().homedir;
-    this._args = [this._f];
-    if (args) {
-      this.add(...args);
+  copy(): FSSpec {
+    return new FSSpec(this);
+  }
+
+  copyParamsTo(target: FSSpec): FSSpec {
+    target._hasFileInfo = this._hasFileInfo;
+    target._stats = this._stats;
+    return target;
+  }
+
+  static fromDirEntry(path: FolderPath, entry: Deno.DirEntry): FSSpec {
+    if (entry.isFile) {
+      return new FileSpec(path, entry.name).hasFileInfo();
+    } else if (entry.isDirectory) {
+      return new FolderSpec(path, entry.name).hasFileInfo();
+    } else if (entry.isSymlink) {
+      return new SymlinkSpec(path, entry.name).hasFileInfo();
     }
+    throw new Error('Invalid file system entry');
+  }
+
+  static fromWalkEntry(entry: dfs.WalkEntry): FSSpec {
+    if (entry.isFile) {
+      return new FileSpec(entry.path).hasFileInfo();
+    } else if (entry.isDirectory) {
+      return new FolderSpec(entry.path).hasFileInfo();
+    } else if (entry.isSymlink) {
+      return new SymlinkSpec(entry.path).hasFileInfo();
+    }
+    throw new Error('Invalid file system entry');
+  }
+
+  hasFileInfo(): this {
+    this._hasFileInfo = true;
     return this;
-  }
-
-  get path(): FilePath {
-    return this._f;
-  }
-
-  /**
-   * Return the original parts that were used to make this.f. The value may
-   * become out of sync with the actual value of this.f if too many operations
-   * were performed on the path.
-   * Use with caution. This may be deprecated.
-   */
-  get parts(): string[] {
-    return this._args;
-  }
-
-  /**
-   * Returns the file's base file name, minus it's extension. For example, for
-   * '/path/to/file.name.html', this method will return 'file.name'. Unlike
-   * node:path
-   * [basename](https://nodejs.org/api/path.html#pathbasenamepath-suffix)
-   * method, this does NOT include the extension.
-   * @return {string} The base portion of the filename, which excludes the file's extension.
-   */
-  get basename(): string {
-    return path.basename(this._f).replace(/\.[^\.]*$/, '');
-  }
-
-  /**
-   * Returns '/path/to' portion of /path/to/file.name.html'
-   */
-  get dirname(): string {
-    return path.dirname(this._f);
-  }
-
-  /**
-   * Returns the file extension, exluding the decimal character. For example,
-   * '/path/to/file.name.html' will return 'html'.
-   * @return {string} File extension, exluding the decimal character.
-   */
-  get extname(): string {
-    return path.extname(this._f);
   }
 
   /**
@@ -253,158 +122,49 @@ export class FileSpec {
   }
 
   /**
-   * For folders, indicates if we have read the folder's contents.
-   * @returns {boolean} - true if this is a folder and we have read the folder's contents.
+   * Append a file or folder name to this.f.
+   * @param args A file name or array of file names.
+   * @returns This
    */
-  haveReadFolderContents(): boolean {
-    return this._haveReadFolderContents;
-  }
-
-  /**
-   * Get the list of FSItem files that matched a previous call to getFiles() or
-   * getChildren().
-   * @returns {FileSpec[]} Array of FSItem objects representing files.
-   */
-  get files(): FileSpec[] {
-    return this._files;
-  }
-
-  /**
-   * Get the list of filenames that matched a previous call to getFolders() or
-   * getChildren().
-   * @returns {FileName[]} Array of filenames.
-   */
-  get filenames(): FileName[] {
-    return this._files.map((fs) => {
-      return fs.filename;
-    });
-  }
-
-  /**
-   * Get the list of FSItem folders that matched a previous call to getFolders() or
-   * getChildren().
-   * @returns {FileSpec[]} Array of FSItem objects representing folders.
-   */
-  get folders(): FileSpec[] {
-    return this._folders;
-  }
-
-  /**
-   * Get the list of folder names that matched a previous call to getFolders() or
-   * getChildren().
-   * @returns {FolderName[]} Array of folder names.
-   */
-  get folderNames(): FolderName[] {
-    return this._folders.map((fs) => {
-      return fs.filename;
-    });
-  }
-
-  /**
-   * Looks at the extension of the filename to determine if it is one of the
-   * listed types.
-   * @param type List of types (eg. 'jpg', 'png')
-   * @returns
-   */
-  isType(...type: (RegExp | string)[]): boolean {
-    const lowerCaseExt = this.extname.toLowerCase().replace(/^\./, '');
-    for (const entry of type) {
-      if (isRegExp(entry)) {
-        if (entry.test(lowerCaseExt)) {
-          return true;
-        }
-      } else if (isString(entry)) {
-        if (entry.toLowerCase() === lowerCaseExt) {
-          return true;
-        }
+  add(...args: FilePath[] | FolderPath[]): this {
+    if (args.length === 1) {
+      if (isArray(args[0])) {
+        this._f = path.resolve(this._f, ...args[0]);
+      } else {
+        this._f = path.resolve(this._f, args[0]);
       }
-    }
-    return false;
-  }
-
-  /**
-   * Tests the extension to see if this is a PDF file.
-   * @param {boolean} [testContents=false] If true, tests the file contents as well (not implemented).
-   * @returns {boolean} True if the extension indicates this is a PDF file.
-   */
-  isPdf(_testContents = false): boolean {
-    return REG.pdf.test(this.extname);
-  }
-
-  /**
-   * Tests the extension to see if this is an XML file.
-   * @returns  {boolean} True if the extension indicates this is an XML file.
-   */
-  isXml(): boolean {
-    return REG.xml.test(this.extname);
-  }
-
-  /**
-   * Tests the extension to see if this is a text file.
-   * @returns {boolean} True if the extension indicates this is a text file.
-   */
-  isTxt(): boolean {
-    return REG.txt.test(this.extname);
-  }
-
-  /**
-   * Tests the extension to see if this is a JSON file.
-   * @returns {boolean} True if the extension indicates this is a JSON file.
-   */
-
-  isJson(): boolean {
-    return REG.json.test(this.extname);
-  }
-
-  /**
- * Asynchronously reads a specified number of bytes from the file and returns
- * them as an FSBytes instance. In order to determine what type of file this is,
- * at least 24 bytes must be read.
-
- * @param {number} [length=24] The number of bytes to read from the file.
- * Defaults to 24.
- * @returns {Promise<FSBytes>} A promise that resolves with an FSBytes instance
- * containing the read bytes, or rejects with an error.
- */
-  getBytes(length = 24): Promise<FSBytes> {
-    return this.readBytes(length).then((buffer: Buffer) => {
-      return new FSBytes(buffer as Buffer);
-    });
-  }
-
-  /**
-   * Set or change the extension of this file. `This` must be a file.
-   * @param {string} ext The extension. The string may or may not include a leading '.'.
-   * @returns {this} The current FSItem instance.
-   */
-  setExt(ext: string): this {
-    if (!REG.leadingDot.test(ext)) {
-      ext = '.' + ext;
-    }
-    if (ext !== this.extname) {
-      this._f = path.format({ ...path.parse(this._f), base: '', ext: ext });
-      this._stats.clear();
+    } else if (args.length > 1) {
+      this._f = path.resolve(this._f, ...args);
     }
     return this;
   }
 
   /**
-   * Set or change the basename of this file. `This` must be a file.
-   * @param {string} val The new basename for the file.
-   * @returns {this} The current FSItem instance.
+   * Set the path relative to the home dir
    */
-  setBasename(val: string): this {
-    if (val !== this.basename) {
-      this._f = path.format({ dir: this.dirname, name: val, ext: this.extname });
-      this._stats.clear();
+  home(...args: FilePath[] | FolderPath[]): this {
+    this._f = os.userInfo().homedir;
+    if (args) {
+      this.add(...args);
     }
     return this;
   }
 
+  get path(): FilePath {
+    return this._f;
+  }
+
   /**
-   * Return the FSSTATS for this file, retrieving the stats and referencing them
-   * with this._stats if they have not been previously read. FSSTATS can become
-   * stale and should be reread if a file is manipulated.
+   * Returns '/path/to' portion of /path/to/file.name.html'
+   */
+  get dirname(): string {
+    return path.dirname(this._f);
+  }
+
+  /**
+   * Return the FSSTATS for this file or folder, retrieving the stats and
+   * referencing them with this._stats if they have not been previously read.
+   * FSSTATS can become stale and should be reread if a file is manipulated.
    *
    * Example `fsutil('mypath/file.txt').getStats().isFile()`.
    *
@@ -412,24 +172,32 @@ export class FileSpec {
    * already been retrieved.
    * @returns {Promise<FSStats>} A promise with an FSStats object
    */
-  public getStats(force = false): Promise<FSStats> {
+  public getStats(force = false): Promise<FSSpec> {
     if (force || !this._stats.isInitialized()) {
       return Deno.lstat(this._f)
         .then((resp: Deno.FileInfo) => {
           this._stats = new FSStats(resp);
-          this._hasFileInfo = true;
-          this._isFile = resp.isFile;
-          this._isDirectory = resp.isDirectory;
-          this._isSymlink = resp.isSymlink;
-          return Promise.resolve(this._stats);
+          if (resp.isFile && !(this instanceof FileSpec)) {
+            return Promise.resolve(fileSpec(this).setStats(this._stats).hasFileInfo());
+          } else if (resp.isDirectory && !(this instanceof FolderSpec)) {
+            return Promise.resolve(folderSpec(this).setStats(this._stats).hasFileInfo());
+          } else if (resp.isSymlink && !(this instanceof SymlinkSpec)) {
+            return Promise.resolve(symlinkSpec(this).setStats(this._stats).hasFileInfo());
+          }
+          return Promise.resolve(this);
         })
         .catch((_err) => {
           this._stats = new FSStats();
-          return Promise.resolve(this._stats);
+          return Promise.resolve(this);
         });
     } else {
-      return Promise.resolve(this._stats);
+      return Promise.resolve(this);
     }
+  }
+
+  setStats(stats: FSStats): this {
+    this._stats = stats;
+    return this;
   }
 
   /**
@@ -442,89 +210,14 @@ export class FileSpec {
   }
 
   /**
-   * Is this a folder? Will retrieve the FSStats for the file system entry if
-   * they haven't been previously read.
-   * @returns a promise with value true if this is a folder.
-   */
-  isDirectory(): Promise<boolean> {
-    if (this._hasFileInfo) {
-      return Promise.resolve(this._isDirectory);
-    }
-    return this.getStats().then(() => {
-      return this._stats.isDirectory();
-    });
-  }
-
-  /**
-   * Calls the FSItem#isDirectory method.
-   * @returns {Prommise<boolean>}
-   * @see FileSpec#isDirectory
-   */
-  isDir(): Promise<boolean> {
-    return this.isDirectory();
-  }
-
-  /**
-   * Calls the FSItem#isDirectory method.
-   * @returns {Prommise<boolean>}
-   * @see FileSpec#isDirectory
-   */
-  isFolder(): Promise<boolean> {
-    return this.isDirectory();
-  }
-
-  /**
-   * Is this a file? Will retrieve the FSStats for the file system entry if they
-   * haven't been previously read.
-   * @returns a promise with value true if this is a file.
-   */
-  isFile(): Promise<boolean> {
-    if (this._hasFileInfo) {
-      return Promise.resolve(this._isFile);
-    }
-    return this.getStats().then(() => {
-      return this._stats.isFile();
-    });
-  }
-
-  isSymlink(): Promise<boolean> {
-    if (this._hasFileInfo) {
-      return Promise.resolve(this._isSymlink);
-    }
-    return this.getStats().then(() => {
-      return this._stats.isSymlink();
-    });
-  }
-
-  /**
    * Does this file or folder exist? Will retrieve the FSStats for the file
    * system entry if they haven't been previously read.
    * @returns a promise with value true if this exists.
    */
   exists(): Promise<boolean> {
     return this.getStats().then(() => {
-      return this._stats.isDirectory() || this._stats.isFile();
+      return this instanceof FileSpec || this instanceof FolderSpec || this instanceof SymlinkSpec;
     });
-  }
-
-  /**
-   * Is this a folder? Will retrieve the FSStats for the file system entry if
-   * they haven't been previously read.
-   * @returns a promise with value true if this is a folder.
-   * @deprecated Use isDir() method instead.
-   */
-  dirExists(): Promise<boolean> {
-    return this.isDir();
-  }
-
-  /**
-   * Is this a file? Will retrieve the FSStats for the file system entry if they
-   * haven't been previously read.
-   * @returns a promise with value true if this is a file.
-   * @deprecated Use isFile() method instead.
-   */
-  fileExists(): Promise<boolean> {
-    return this.isFile();
   }
 
   /**
@@ -537,33 +230,6 @@ export class FileSpec {
     return this.getStats().then(() => {
       return this._stats.createdAt();
     });
-  }
-
-  /**
-   * Test for equality with the basename of this file.
-   * @param {string} name
-   * @returns {boolean} True if equal
-   */
-  isNamed(name: string): boolean {
-    return name === this.basename;
-  }
-
-  /**
-   * Ensures there is a folder with this path.
-   * @returns {Promise<void>} A promise that resolves when the directory is ensured.
-   */
-  ensureDir(): Promise<void> {
-    return dfs.ensureDir(this._f);
-  }
-
-  /**
-   * Synchronous version of `ensureDir`.
-   * @param {fx.EnsureDirOptions | number} [options] Options for ensuring the directory.
-   * @returns {this} The current FSItem instance.
-   */
-  ensureDirSync(): this {
-    dfs.ensureDirSync(this._f);
-    return this;
   }
 
   /**
@@ -591,8 +257,8 @@ export class FileSpec {
    * @param options An fx.CopyOptions object
    * @returns
    */
-  copyTo(dest: FilePath | FileSpec, options?: dfs.CopyOptions): Promise<void> {
-    const p: FilePath = dest instanceof FileSpec ? dest.path : dest;
+  copyTo(dest: FilePath | FSSpec, options?: dfs.CopyOptions): Promise<void> {
+    const p: FilePath = dest instanceof FSSpec ? dest.path : dest;
     return dfs.copy(this._f, p, options);
   }
 
@@ -602,515 +268,41 @@ export class FileSpec {
    * @param options An dfs.CopyOptionsSync object
    * @returns
    */
-  copySync(dest: FilePath | FileSpec, options?: dfs.CopyOptions): this {
-    const p: FilePath = dest instanceof FileSpec ? dest.path : dest;
+  copySync(dest: FilePath | FSSpec, options?: dfs.CopyOptions): this {
+    const p: FilePath = dest instanceof FSSpec ? dest.path : dest;
     dfs.copySync(this._f, p, options);
     return this;
   }
 
   /**
    * Move `this` file or folder to the location `dest`.
-   * @param {FilePath | FileSpec} dest - The new path for the file
+   * @param {FilePath | FSSpec} dest - The new path for the file
    * @param {fx.MoveOptions} options - Options to `overwrite` and `dereference` symlinks.
    * @returns {Promise<void>}
    */
-  moveTo(dest: FilePath | FileSpec, options?: dfs.MoveOptions): Promise<void> {
-    const p: FilePath = dest instanceof FileSpec ? dest.path : dest;
+  moveTo(dest: FilePath | FSSpec, options?: dfs.MoveOptions): Promise<void> {
+    const p: FilePath = dest instanceof FSSpec ? dest.path : dest;
     return dfs.move(this._f, p, options);
-  }
-
-  async readDir(): Promise<FileSpec[]> {
-    const results: FileSpec[] = [];
-    for await (const entry of Deno.readDir(this._f)) {
-      results.push(this.fromDirEntry(entry));
-    }
-    return results;
-  }
-
-  async getFiles(regex?: RegExp): Promise<FileSpec[]> {
-    const results: FileSpec[] = [];
-    for await (const entry of Deno.readDir(this._f)) {
-      if (entry.isFile) {
-        if (!regex || regex.test(entry.name)) {
-          results.push(this.fromDirEntry(entry));
-        }
-      }
-    }
-    return results;
-  }
-
-  async getFolders(regex?: RegExp): Promise<FileSpec[]> {
-    const results: FileSpec[] = [];
-    for await (const entry of Deno.readDir(this._f)) {
-      if (entry.isDirectory) {
-        if (!regex || regex.test(entry.name)) {
-          results.push(this.fromDirEntry(entry));
-        }
-      }
-    }
-    return results;
-  }
-
-  async walk(opts: dfs.WalkOptions): Promise<FileSpec[]> {
-    const entries = await Array.fromAsync(dfs.walk(this._f, opts));
-
-    return entries.map((entry) => FileSpec.fromWalkEntry(entry));
-  }
-
-  /**
-   * If this is a folder, retrieves the list of matching files and folders in
-   * this folder and stores the lists as this._files and this._folders.
-   * @param opts.match (Optional) File or folder names must match this string or
-   * RegExp. If not specified then file and folder names are not filtered.
-   * @return {Promise<FileSpec[]> - Array of all files and folders within this folder
-   */
-  getChildren(options: Partial<GetChildrenOpts> = { levels: 1 }): Promise<FileSpec[]> {
-    const opts: GetChildrenOpts = {
-      match: options.match,
-      levels: isNumber(options.levels) ? options.levels - 1 : 0,
-      callback: options.callback,
-      sort: isDict(options.sort) ? options.sort : {},
-    };
-    const all: FileSpec[] = [];
-    this._folders = [];
-    this._files = [];
-    this._haveReadFolderContents = false;
-    return fs.promises
-      .readdir(this._f)
-      .then((entries) => {
-        const jobs: Promise<unknown>[] = [];
-        for (const entry of entries) {
-          const fs = fileSpec(this._f, entry);
-          let bMatch = false;
-          if (opts.match) {
-            if (isString(opts.match) && entry === opts.match) {
-              bMatch = true;
-            } else if (isRegExp(opts.match) && opts.match.test(entry)) {
-              bMatch = true;
-            }
-          } else {
-            bMatch = true;
-          }
-          if (bMatch) {
-            const job = fs.getStats().then((stat: FSStats) => {
-              all.push(fs);
-              if (opts.callback) {
-                const job1 = opts.callback(fs);
-                jobs.push(job1);
-              }
-              if (stat.isDirectory()) {
-                this._folders.push(fs);
-                if (opts.levels > 0) {
-                  const job2 = fs.getChildren(opts);
-                  jobs.push(job2);
-                }
-              } else if (stat.isFile()) {
-                this._files.push(fs);
-              }
-            });
-            jobs.push(job);
-          }
-        }
-        return Promise.all(jobs);
-      })
-      .then(() => {
-        this._haveReadFolderContents = true;
-        if (isDict(opts.sort)) {
-          this.sortChildren(opts.sort);
-        }
-        return Promise.resolve(all);
-      });
-  }
-
-  /**
-   * Sorts the children (files and folders) of this FSItem.
-   * @param {FSSortOpts} [opts={}] - Sorting options.
-   * @returns {void}
-   */
-  public sortChildren(opts: FSSortOpts = {}) {
-    this._folders = FileSpec.sortByFilename(this._folders);
-    if (opts.type === 'size') {
-      this._files = FileSpec.sortFilesBySize(this._files);
-    } else {
-      this._files = FileSpec.sortByFilename(this._files);
-    }
-    if (opts.direction === 'descending') {
-      this._folders.reverse();
-      this._files.reverse();
-    }
-  }
-
-  /**
-  /**
-   * Sorts the files of this FSItem alphabetically.
-   * @returns {this} The current FSItem instance.
-   */
-  static sortByFilename(items: FileSpec[]): FileSpec[] {
-    return items.sort((a, b) => {
-      return compareDictValue(a as unknown as Dict, b as unknown as Dict, 'filename');
-    });
-  }
-
-  /**
-   * Sorts the files of this FSItem by size. Run getChildren() first.
-   * @returns {this} The current FSItem instance.
-   */
-  static sortFilesBySize(items: FileSpec[]): FileSpec[] {
-    return items
-      .filter((item) => item.isFile())
-      .sort((a, b) => {
-        return compareDictValue(a as unknown as Dict, b as unknown as Dict, 'size');
-      });
-  }
-
-  /**
-   * For files, calculate the checksum of this file
-   * @returns {Promise<string>} A promise that resolves with the checksum of the file.
-   */
-  checksum(): Promise<string> {
-    return new Promise((resolve, reject) => {
-      // @ts-ignore too picky
-      checksum.file(this._f, (err, sum) => {
-        if (err) {
-          reject(this.newError(err));
-        } else {
-          resolve(sum as string);
-        }
-      });
-    });
-  }
-
-  /**
-   * For PDF files, gets the Creation Date of this file file by reading it's
-   * metadata.
-   * @returns {Promise<Date | undefined>} A promise that resolves with the creation date of the PDF file, or undefined if not found.
-   */
-  getPdfDate(): Promise<Date | undefined> {
-    let doc: unknown;
-    return import('npm:pdf-lib')
-      .then(({ PDFDocument }) => {
-        doc = PDFDocument;
-        if (doc) {
-          return Deno.readFile(this._f);
-        }
-      })
-      .then((arrayBuffer) => {
-        if (doc) {
-          // @ts-ignore we don't have types for pdf-lib
-          return doc.load(arrayBuffer, { updateMetadata: false });
-        }
-        return Promise.reject(new Error('No PDFDocument found'));
-      })
-      .then((pdf) => {
-        const pdfDate = pdf.getCreationDate();
-        if (pdfDate) {
-          return Promise.resolve(pdfDate);
-        }
-        return Promise.reject(new Error('No creation date found'));
-      });
-  }
-
-  /**
-   * Use checksums to test if this file is equal to path2
-   * @param path2
-   * @returns {Promise<boolean>} A promise that resolves with true if the files are equal, false otherwise.
-   */
-  filesEqual(path2: FilePath | FileSpec): Promise<boolean> {
-    return new Promise((resolve, _reject) => {
-      const job1 = this.isFile();
-      const job2 = fileSpec(path2).isFile();
-      return Promise.all([job1, job2]).then((resps) => {
-        if (resps && resps.length === 2 && resps[0] === true && resps[1] === true) {
-          const job3 = this.checksum();
-          const job4 = new FileSpec(path2).checksum();
-          return Promise.all([job3, job4]).then((resps) => {
-            if (resps && resps.length === 2 && resps[0] === resps[1]) {
-              resolve(true);
-            } else {
-              resolve(false);
-            }
-          });
-        } else {
-          resolve(false);
-        }
-      });
-    });
-  }
-
-  /**
-   * Asynchronously reads a specified number of bytes from a file.
-   *
-   * @param {number} length The number of bytes to read from the file.
-   * @param {Buffer} [buffer] An optional buffer to store the read bytes. If not provided, a new buffer will be allocated with the specified length.
-   * @param {number} [offset=0] The offset within the buffer where to start storing the read bytes. Defaults to 0.
-   * @param {number} [position=0] The offset within the file from where to start reading (optional). Defaults to 0.
-   * @returns {Promise<Buffer>} A promise that resolves with the buffer containing the read bytes, or rejects with an error.
-   * @throws {Error} Rejects the promise with unknown error encountered during the file opening, reading, or closing operations.
-   */
-  readBytes(length: Integer, buffer?: Buffer, offset: Integer = 0, position: Integer = 0): Promise<Buffer> {
-    return new Promise((resolve, reject) => {
-      fs.open(this.path, 'r', (err, fd) => {
-        if (err) {
-          reject(err);
-        } else {
-          const buf = buffer ? buffer : Buffer.alloc(length);
-          fs.read(fd, buf, offset, length, position, (err2, _bytesRead: Integer, resultBuffer) => {
-            close(fd, (err3) => {
-              if (err2) {
-                reject(err2);
-              } else if (err3) {
-                reject(err3);
-              } else {
-                resolve(resultBuffer);
-              }
-            });
-          });
-        }
-      });
-    });
-  }
-
-  /**
-   * Reads the entire file as a buffer.
-   * @returns {Promise<Buffer>} A promise that resolves with the file contents as a buffer.
-   */
-  readAsBuffer(): Promise<Buffer> {
-    return readFile(this._f).catch((err) => {
-      throw this.newError(err);
-    });
-  }
-
-  /**
-   * Reads the entire file as a string.
-   * @returns {Promise<string>} A promise that resolves with the file contents as a string.
-   */
-  readAsString(): Promise<string> {
-    return new Promise((resolve, reject) => {
-      fs.readFile(this._f, 'utf8', (err, data) => {
-        if (err) {
-          reject(this.newError(err));
-        } else {
-          // Remove BOM, if present
-          resolve(data.replace(REG.BOM, '').toString());
-        }
-      });
-    });
-  }
-
-  /**
-   * Reads the file as a string and splits it into lines.
-   * @returns {Promise<string[]>} A promise that resolves with an array of lines.
-   */
-  readAsLines(continuation?: string): Promise<string[]> {
-    return this.readAsString().then((data: string) => {
-      const lines = data.split(REG.lineSeparator).map((line) => {
-        // RSC output files are encoded oddly and this seems to clean them up
-        return line.replace(/\r/, '').replace(/\0/g, '');
-      });
-
-      if (continuation) {
-        return joinContinuationLines(lines, continuation);
-      } else {
-        return lines;
-      }
-    });
-  }
-
-  /**
-   * Reads the file as JSON and parses it.
-   * @returns {Promise<unknown>} A promise that resolves with the parsed JSON content.
-   */
-  readJson(): Promise<unknown> {
-    return new Promise((resolve, reject) => {
-      fs.readFile(this._f, 'utf8', (err, data) => {
-        if (err) {
-          reject(this.newError(err));
-        } else {
-          try {
-            const json = JSON.parse(data.toString());
-            resolve(json);
-          } catch (error) {
-            reject(this.newError(error));
-          }
-        }
-      });
-    });
-  }
-
-  /**
-   * Reads the file as JSON, parses it, and performs a deep copy with optional transformations.
-   * @param {FsDeepCopyOpts} [opts={}] - Options for the deep copy operation.
-   * @returns {Promise<unknown>} A promise that resolves with the deeply copied and transformed JSON content.
-   */
-  deepReadJson(opts: FsDeepCopyOpts = {}): Promise<unknown> {
-    return this.readJson().then((resp) => {
-      return this.deepCopy(resp, opts);
-    });
-  }
-
-  /**
-   * Performs a deep copy of the given data with optional transformations.
-   * @param {unknown} a - The data to deep copy.
-   * @param {FsDeepCopyOpts} [options] - Options for the deep copy operation.
-   * @returns {Promise<unknown>} A promise that resolves with the deeply copied and transformed data.
-   */
-  private deepCopy(a: unknown, options?: FsDeepCopyOpts): Promise<unknown> {
-    const opts: FsDeepCopyOpts = deepCopySetDefaultOpts(options);
-    const urlTest = new RegExp(`^${opts.pre}(file|http|https):\/\/(.+)${opts.post}$`, 'i');
-    if (opts.includeUrl && isNonEmptyString(a) && urlTest.test(a)) {
-      const p = a.match(urlTest);
-      if (isNonEmptyArray(p) && isFilePath(p[2])) {
-        const fs = new FileSpec(this.dirname, p[2]);
-        return fs.deepReadJson(opts).then((resp) => {
-          return Promise.resolve(resp);
-        });
-      } else {
-        return Promise.resolve(a);
-      }
-    } else if (isObject(a)) {
-      // @ts-ignore xxx
-      const re: RegExp = opts && opts.detectRegExp ? asRegExp(a) : undefined;
-      if (re && isDict(a)) {
-        return Promise.resolve(re);
-      } else {
-        const jobs: unknown[] = [];
-        const result2: Dict = {};
-        Object.keys(a).forEach((key) => {
-          // @ts-ignore fight the type system latter
-          const job = this.deepCopy(a[key], opts).then((resp) => {
-            result2[key] = resp;
-          });
-          jobs.push(job);
-        });
-        return Promise.all(jobs).then((_resp) => {
-          return Promise.resolve(result2);
-        });
-      }
-    } else {
-      return Promise.resolve(deepCopy(a, opts));
-    }
-  }
-
-  /**
-   * Writes JSON data to the file.
-   * @param {unknown} data - The data to write as JSON.
-   * @returns {Promise<void>} A promise that resolves when the write operation is complete.
-   */
-  async writeJson(data: unknown): Promise<void> {
-    const buf = Buffer.from(JSON.stringify(data, null, 2), 'utf8');
-    await fs.promises.writeFile(this._f, buf);
-  }
-
-  /**
-   * Writes base64-encoded data to the file.
-   * @param {string} data - The base64-encoded data to write.
-   * @returns {Promise<void>} A promise that resolves when the write operation is complete.
-   */
-  writeBase64(data: string): Promise<void> {
-    return this.write(data, 'base64');
-  }
-
-  /**
-   * Writes data to the file with the specified encoding.
-   * @param {string | string[]} data - The data to write.
-   * @param {BufferEncoding} [type='utf8'] - The encoding to use.
-   * @returns {Promise<void>} A promise that resolves when the write operation is complete.
-   */
-  write(data: string | string[], type = 'utf8'): Promise<void> {
-    if (isArray(data)) {
-      data = data.join('\n');
-    }
-    // @ts-ignore fight the type daemons later. this should be looked at.
-    const buf = Buffer.from(data, type);
-    return fs.promises.writeFile(this._f, buf);
-  }
-
-  /**
-   * 'Backup' a file by moving it to a new filename. Use when copying a file to
-   * the same location or creating a new file at the same location.
-   * @param {BackupOpts} opts
-   * @returns {Promise<FilePath | boolean>} - Path to file if file was backed
-   * up, or true if the file didn't exist
-   */
-  async backup(
-    opts: FileConflictStrategy = { type: 'renameWithTilde', errorIfExists: false }
-  ): Promise<FilePath | boolean> {
-    await this.getStats();
-
-    if (this._stats && this._stats.exists()) {
-      // this file already exists. Deal with it by renaming it.
-      let newPath: FilePath | undefined = undefined;
-
-      if (opts.type === fileConflictStrategyType.renameWithTilde) {
-        newPath = this.path + '~';
-      } else if (opts.type === fileConflictStrategyType.renameWithNumber) {
-        const limit = isInteger(opts.limit) ? opts.limit : 32;
-        newPath = await this.findAvailableIndexFilename(limit, opts.separator);
-        if (!newPath && opts.errorIfExists) {
-          throw this.newError('EEXIST', 'File exists');
-        }
-      } else if (opts.type === 'overwrite') {
-        newPath = this.path;
-      } else {
-        if (opts.errorIfExists) {
-          throw this.newError('EEXIST', 'File exists');
-        }
-      }
-
-      if (newPath) {
-        return this.moveTo(newPath, { overwrite: true })
-          .then(() => {
-            return Promise.resolve(newPath as FilePath);
-          })
-          .catch(() => {
-            throw this.newError('ENOENT', 'File could not be renamed');
-          });
-      }
-    } else {
-      // The caller should have previously tested if the file exists, so we
-      // should not hit this
-      throw this.newError('ENOENT', 'File does not exist');
-    }
-    return Promise.resolve(true);
-  }
-
-  /**
-   * Finds the next available indexed filename. For example, for `filename.ext`,
-   * tries `filename-01.ext`, `filename-02.ext`, etc until it finds a filename
-   * that is not used.
-   * @param {Integer} [limit=32] - The maximum number of attempts to find an available filename.
-   * @param {string} [sep='-'] - The separator to use between the filename and the index.
-   * @returns {Promise<FilePath | undefined>} A promise that resolves with an available file path, or undefined if not found.
-   */
-  async findAvailableIndexFilename(_limit: Integer = 32, sep: string = '-'): Promise<FilePath | undefined> {
-    let newFsDest: FileSpec | undefined;
-    let count = 0;
-    let looking = true;
-    while (looking) {
-      newFsDest = fileSpec(this.dirname, this.basename + sep + pad(++count, 2) + this.extname);
-      looking = await newFsDest.exists();
-    }
-    if (!looking && newFsDest instanceof FileSpec) {
-      return newFsDest.path;
-    }
   }
 
   /**
    * Copy an existing file or directory to a new location. Optionally creates a
    * backup if there is an existing file or directory at `destFile`.
-   * @param {FilePath | FileSpec} destFile - The destination file or directory.
+   * @param {FilePath | FSSpec} destFile - The destination file or directory.
    * @param {SafeCopyOpts} [opts={}] - Options for the copy or move operation.
    * @returns {Promise<boolean | undefined>} A promise that resolves with true if the file was copied or moved, false otherwise.
    */
-  async safeCopy(destFile: FilePath | FileSpec, opts: SafeCopyOpts = {}): Promise<boolean | undefined> {
+  async safeCopy(destFile: FilePath | FSSpec, opts: SafeCopyOpts = {}): Promise<boolean | undefined> {
     await this.getStats();
 
     if (this._stats && this._stats.exists()) {
-      const fsDest = destFile instanceof FileSpec ? destFile : fileSpec(destFile);
-      await fsDest.getStats();
+      let fsDest: FSSpec = destFile instanceof FSSpec ? destFile : fsSpec(destFile);
+      fsDest = await fsDest.getStats();
 
       let bGoAhead: FilePath | boolean = true;
-      if (fsDest._stats.exists()) {
+      const fsDestParent: FolderSpec = fsDest instanceof FolderSpec ? fsDest : folderSpec(fsDest.dirname);
+
+      if (fsDest instanceof FileSpec) {
         bGoAhead = false;
         // The dest already exists. Deal with it
         bGoAhead = await fsDest.backup(opts.conflictStrategy);
@@ -1118,16 +310,16 @@ export class FileSpec {
 
       if (bGoAhead) {
         if (opts.ensureParentDirs) {
-          await fsDest.ensureDir();
+          await fsDestParent.ensureDir();
         }
 
         if (opts.move) {
-          return this.moveTo(fsDest.path, { overwrite: true }).then((_resp) => {
+          return this.moveTo(fsDestParent.path, { overwrite: true }).then((_resp) => {
             // console.log(`  Moved ${srcFile} to ${destPath}`);
             return Promise.resolve(true);
           });
         } else {
-          return this.copyTo(fsDest.path, { overwrite: true }).then((_resp) => {
+          return this.copyTo(fsDestParent.path, { overwrite: true }).then((_resp) => {
             // console.log(`  Copied ${srcFile} to ${destPath}`);
             return Promise.resolve(true);
           });
@@ -1159,13 +351,3 @@ export class FileSpec {
     return err;
   }
 }
-
-export function folderSpec(...args: (FileSpec | FolderPath | FilePath)[]): FolderSpec {
-  return new FileSpec(...args) as FolderSpec;
-}
-
-/**
- * A FileSpec that represents a directory. This is a type alias for FileSpec for
- * use where it helps clarify the intent.
- */
-export type FolderSpec = FileSpec;

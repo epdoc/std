@@ -1,5 +1,5 @@
 import { type DeepCopyOpts, type Integer, isNonEmptyString } from '@epdoc/type';
-import type { FileSpec } from './fsspec.ts';
+import type { FSSpec } from './fsspec.ts';
 
 /**
  * Represents a file path.
@@ -83,8 +83,7 @@ export const fileConflictStrategyType = {
  * Type representing the possible conflict strategy types.
  * This type is derived from the keys of the `fileConflictStrategyType` object.
  */
-export type FileConflictStrategyType =
-  (typeof fileConflictStrategyType)[keyof typeof fileConflictStrategyType];
+export type FileConflictStrategyType = (typeof fileConflictStrategyType)[keyof typeof fileConflictStrategyType];
 
 /**
  * Checks if a given value is a valid FileConflictStrategyType.
@@ -148,7 +147,7 @@ export type FSSortOpts = {
   direction?: 'ascending' | 'descending';
 };
 
-export type FSItemCallback = (fs: FileSpec) => Promise<unknown>;
+export type FSItemCallback = (fs: FSSpec) => Promise<unknown>;
 export type GetChildrenOpts = FSSortOpts & {
   match: RegExp | string | undefined;
   levels: Integer;
