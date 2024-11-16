@@ -1159,3 +1159,9 @@ export class FileSpec {
     return err;
   }
 }
+
+/**
+ * A FileSpec that represents a directory. This is a type alias for FileSpec for
+ * use where it helps clarify the intent.
+ */
+export type FolderSpec = FileSpec;

@@ -1,5 +1,5 @@
 import { type DeepCopyOpts, type Integer, isNonEmptyString } from '@epdoc/type';
-import type { FileSpec } from './fsitem.ts';
+import type { FileSpec } from './fsspec.ts';
 
 /**
  * Represents a file path.
