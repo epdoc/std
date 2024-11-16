@@ -5,6 +5,7 @@
     "jsr:@std/assert@1": "1.0.6",
     "jsr:@std/assert@^1.0.6": "1.0.6",
     "jsr:@std/expect@*": "1.0.4",
+    "jsr:@std/fmt@*": "1.0.3",
     "jsr:@std/fs@*": "1.0.4",
     "jsr:@std/fs@1": "1.0.4",
     "jsr:@std/fs@^1.0.4": "1.0.4",
@@ -30,6 +31,9 @@
         "jsr:@std/assert@^1.0.6",
         "jsr:@std/internal"
       ]
+    },
+    "@std/fmt@1.0.3": {
+      "integrity": "97765c16aa32245ff4e2204ecf7d8562496a3cb8592340a80e7e554e0bb9149f"
     },
     "@std/fs@1.0.4": {
       "integrity": "2907d32d8d1d9e540588fd5fe0ec21ee638134bd51df327ad4e443aaef07123c",

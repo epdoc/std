@@ -1,4 +1,4 @@
-# @epdoc/fsutil
+# @epdoc/fs
 
 Async File System utilities for Node.js
 
@@ -24,32 +24,32 @@ files, as well as directory management and file type detection.
 To install @epdoc/fsutil, run the following command in your project directory:
 
 ```bash
-npm install @epdoc/fsutil
+deno add jsr:@epdoc/fs
 ```
 
 ## Usage
 
-Here's an example of how to use @epdoc/fsutil to read a JSON file:
+Here's an example of how to use @epdoc/fs to read a JSON file:
 
 ```javascript
-const { fsitem } = require('@epdoc/fsutil');
+import { fileSpec } from 'jsr:@epdoc/fs';
 // Check if a directory exists
-if (await fsitem('~/.ssh').isDir()) {
+if (await fileSpec('~/.ssh').isDir()) {
   console.log('SSH directory exists');
 }
 // Read a JSON file
-const config = await fsitem('config.json').readJson();
+const config = await fileSpec('config.json').readJson();
 // Write to a file
-await fsitem('output.txt').write('Hello, World!');
+await fileSpec('output.txt').write('Hello, World!');
 // Copy a file safely
-await fsitem('source.txt').safeCopy('destination.txt');
+await fileSpec('source.txt').safeCopy('destination.txt');
 ```
 
 ## API Overview
 
 ### Main Classes
 
-- `FSItem`: Core class for file system operations
+- `FileSpec`: Core class for file system operations
   - Methods for file/directory operations (e.g., `isFile()`, `isDir()`, `getStats()`)
   - File content operations (e.g., `readAsBuffer()`, `readAsString()`, `readJson()`)
   - File manipulation (e.g., `write()`, `safeCopy()`, `backup()`)
@@ -65,7 +65,7 @@ await fsitem('source.txt').safeCopy('destination.txt');
 
 ### Factory Functions
 
-- `fsitem(path: string): FSItem`: Creates an FSItem instance for the given path
+- `fileSpec(path: string): FileSpec`: Creates an FileSpec instance for the given path
 - `fsbytes(buffer: Buffer): FSBytes`: Creates an FSBytes instance for the given buffer
 
 ### Types and Interfaces

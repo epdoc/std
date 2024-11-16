@@ -1,5 +1,7 @@
 import { msub } from '@epdoc/string';
 import { expect } from 'jsr:@std/expect';
+import * as colors from 'jsr:@std/fmt/colors';
+
 const msub1: msub.MSub = msub.createMSub({ open: '{[' });
 // const msub2: msub.MSub = msub.createMSub({ open: '{{', uppercase: true });
 
@@ -11,3 +13,6 @@ expect(result1).toBe('My nose');
 
 const result3 = msub.init({ open: '<<' }).replace('My <<body>>', { body: 'eyes' });
 expect(result3).toBe('My eyes');
+
+const toPath = (str: string) => colors.underline(colors.gray(str));
+console.log(toPath('path'));

@@ -52,11 +52,11 @@ const REG = {
 
 /**
  * Create a new FSItem object.
- * @param {(FSItem | FolderPath | FilePath)[])} args - An FSItem, a path, or a spread of paths to be used with path.resolve
- * @returns {FSItem} - A new FSItem object
+ * @param {(FileSpec | FolderPath | FilePath)[])} args - An FSItem, a path, or a spread of paths to be used with path.resolve
+ * @returns {FileSpec} - A new FSItem object
  */
-export function fsitem(...args: (FSItem | FolderPath | FilePath)[]): FSItem {
-  return new FSItem(...args);
+export function fileSpec(...args: (FileSpec | FolderPath | FilePath)[]): FileSpec {
+  return new FileSpec(...args);
 }
 
 /**
@@ -72,7 +72,7 @@ export function fsitem(...args: (FSItem | FolderPath | FilePath)[]): FSItem {
  *  - Getting the creation dates of files, including using the metadata of some file formats
  *  - Testing files for equality
  */
-export class FSItem {
+export class FileSpec {
   // @ts-ignore this does get initialized
   protected _f: FilePath | FolderPath;
   protected _hasFileInfo: boolean = false;
@@ -84,21 +84,21 @@ export class FSItem {
   // Test to see if _folders and _files have been read
   protected _haveReadFolderContents: boolean = false;
   // If this is a folder, contains a filtered list of folders within this folder
-  protected _folders: FSItem[] = [];
+  protected _folders: FileSpec[] = [];
   // If this is a folder, contains a filtered list of files within this folder
-  protected _files: FSItem[] = [];
+  protected _files: FileSpec[] = [];
   // Stores the strings that were used to create the path. This property may be deprecated at unknown time.
   protected _args: (FilePath | FolderPath)[] = [];
 
   /**
    * Create a new FSItem object from an existing FSItem object, a file path or
    * an array of file path parts that can be merged using node:path#resolve.
-   * @param {(FSItem | FolderPath | FilePath)[]} args - An FSItem, a path, or a spread of paths to be used with path.resolve
+   * @param {(FileSpec | FolderPath | FilePath)[]} args - An FSItem, a path, or a spread of paths to be used with path.resolve
    */
-  constructor(...args: (FSItem | FolderPath | FilePath)[]) {
+  constructor(...args: (FileSpec | FolderPath | FilePath)[]) {
     if (args.length === 1) {
       const arg = args[0];
-      if (arg instanceof FSItem) {
+      if (arg instanceof FileSpec) {
         this._f = arg._f;
         this._args = arg._args.map((item) => {
           return item;
@@ -140,14 +140,14 @@ export class FSItem {
 
   /**
    * Return a copy of this object. Does not copy the file.
-   * @see FSItem#copyTo
+   * @see FileSpec#copyTo
    */
-  copy(): FSItem {
-    return new FSItem(this);
+  copy(): FileSpec {
+    return new FileSpec(this);
   }
 
-  fromDirEntry(entry: Deno.DirEntry): FSItem {
-    const fs = new FSItem(this.dirname, entry.name);
+  fromDirEntry(entry: Deno.DirEntry): FileSpec {
+    const fs = new FileSpec(this.dirname, entry.name);
     fs._hasFileInfo = true;
     fs._isFile = entry.isFile;
     fs._isDirectory = entry.isDirectory;
@@ -155,8 +155,8 @@ export class FSItem {
     return fs;
   }
 
-  static fromWalkEntry(entry: dfs.WalkEntry): FSItem {
-    const fs = new FSItem(entry.path);
+  static fromWalkEntry(entry: dfs.WalkEntry): FileSpec {
+    const fs = new FileSpec(entry.path);
     fs._hasFileInfo = true;
     fs._isFile = entry.isFile;
     fs._isDirectory = entry.isDirectory;
@@ -263,9 +263,9 @@ export class FSItem {
   /**
    * Get the list of FSItem files that matched a previous call to getFiles() or
    * getChildren().
-   * @returns {FSItem[]} Array of FSItem objects representing files.
+   * @returns {FileSpec[]} Array of FSItem objects representing files.
    */
-  get files(): FSItem[] {
+  get files(): FileSpec[] {
     return this._files;
   }
 
@@ -283,9 +283,9 @@ export class FSItem {
   /**
    * Get the list of FSItem folders that matched a previous call to getFolders() or
    * getChildren().
-   * @returns {FSItem[]} Array of FSItem objects representing folders.
+   * @returns {FileSpec[]} Array of FSItem objects representing folders.
    */
-  get folders(): FSItem[] {
+  get folders(): FileSpec[] {
     return this._folders;
   }
 
@@ -458,7 +458,7 @@ export class FSItem {
   /**
    * Calls the FSItem#isDirectory method.
    * @returns {Prommise<boolean>}
-   * @see FSItem#isDirectory
+   * @see FileSpec#isDirectory
    */
   isDir(): Promise<boolean> {
     return this.isDirectory();
@@ -467,7 +467,7 @@ export class FSItem {
   /**
    * Calls the FSItem#isDirectory method.
    * @returns {Prommise<boolean>}
-   * @see FSItem#isDirectory
+   * @see FileSpec#isDirectory
    */
   isFolder(): Promise<boolean> {
     return this.isDirectory();
@@ -591,8 +591,8 @@ export class FSItem {
    * @param options An fx.CopyOptions object
    * @returns
    */
-  copyTo(dest: FilePath | FSItem, options?: dfs.CopyOptions): Promise<void> {
-    const p: FilePath = dest instanceof FSItem ? dest.path : dest;
+  copyTo(dest: FilePath | FileSpec, options?: dfs.CopyOptions): Promise<void> {
+    const p: FilePath = dest instanceof FileSpec ? dest.path : dest;
     return dfs.copy(this._f, p, options);
   }
 
@@ -602,33 +602,33 @@ export class FSItem {
    * @param options An dfs.CopyOptionsSync object
    * @returns
    */
-  copySync(dest: FilePath | FSItem, options?: dfs.CopyOptions): this {
-    const p: FilePath = dest instanceof FSItem ? dest.path : dest;
+  copySync(dest: FilePath | FileSpec, options?: dfs.CopyOptions): this {
+    const p: FilePath = dest instanceof FileSpec ? dest.path : dest;
     dfs.copySync(this._f, p, options);
     return this;
   }
 
   /**
    * Move `this` file or folder to the location `dest`.
-   * @param {FilePath | FSItem} dest - The new path for the file
+   * @param {FilePath | FileSpec} dest - The new path for the file
    * @param {fx.MoveOptions} options - Options to `overwrite` and `dereference` symlinks.
    * @returns {Promise<void>}
    */
-  moveTo(dest: FilePath | FSItem, options?: dfs.MoveOptions): Promise<void> {
-    const p: FilePath = dest instanceof FSItem ? dest.path : dest;
+  moveTo(dest: FilePath | FileSpec, options?: dfs.MoveOptions): Promise<void> {
+    const p: FilePath = dest instanceof FileSpec ? dest.path : dest;
     return dfs.move(this._f, p, options);
   }
 
-  async readDir(): Promise<FSItem[]> {
-    const results: FSItem[] = [];
+  async readDir(): Promise<FileSpec[]> {
+    const results: FileSpec[] = [];
     for await (const entry of Deno.readDir(this._f)) {
       results.push(this.fromDirEntry(entry));
     }
     return results;
   }
 
-  async getFiles(regex?: RegExp): Promise<FSItem[]> {
-    const results: FSItem[] = [];
+  async getFiles(regex?: RegExp): Promise<FileSpec[]> {
+    const results: FileSpec[] = [];
     for await (const entry of Deno.readDir(this._f)) {
       if (entry.isFile) {
         if (!regex || regex.test(entry.name)) {
@@ -639,8 +639,8 @@ export class FSItem {
     return results;
   }
 
-  async getFolders(regex?: RegExp): Promise<FSItem[]> {
-    const results: FSItem[] = [];
+  async getFolders(regex?: RegExp): Promise<FileSpec[]> {
+    const results: FileSpec[] = [];
     for await (const entry of Deno.readDir(this._f)) {
       if (entry.isDirectory) {
         if (!regex || regex.test(entry.name)) {
@@ -651,10 +651,10 @@ export class FSItem {
     return results;
   }
 
-  async walk(opts: dfs.WalkOptions): Promise<FSItem[]> {
+  async walk(opts: dfs.WalkOptions): Promise<FileSpec[]> {
     const entries = await Array.fromAsync(dfs.walk(this._f, opts));
 
-    return entries.map((entry) => FSItem.fromWalkEntry(entry));
+    return entries.map((entry) => FileSpec.fromWalkEntry(entry));
   }
 
   /**
@@ -662,16 +662,16 @@ export class FSItem {
    * this folder and stores the lists as this._files and this._folders.
    * @param opts.match (Optional) File or folder names must match this string or
    * RegExp. If not specified then file and folder names are not filtered.
-   * @return {Promise<FSItem[]> - Array of all files and folders within this folder
+   * @return {Promise<FileSpec[]> - Array of all files and folders within this folder
    */
-  getChildren(options: Partial<GetChildrenOpts> = { levels: 1 }): Promise<FSItem[]> {
+  getChildren(options: Partial<GetChildrenOpts> = { levels: 1 }): Promise<FileSpec[]> {
     const opts: GetChildrenOpts = {
       match: options.match,
       levels: isNumber(options.levels) ? options.levels - 1 : 0,
       callback: options.callback,
       sort: isDict(options.sort) ? options.sort : {},
     };
-    const all: FSItem[] = [];
+    const all: FileSpec[] = [];
     this._folders = [];
     this._files = [];
     this._haveReadFolderContents = false;
@@ -680,7 +680,7 @@ export class FSItem {
       .then((entries) => {
         const jobs: Promise<unknown>[] = [];
         for (const entry of entries) {
-          const fs = fsitem(this._f, entry);
+          const fs = fileSpec(this._f, entry);
           let bMatch = false;
           if (opts.match) {
             if (isString(opts.match) && entry === opts.match) {
@@ -728,11 +728,11 @@ export class FSItem {
    * @returns {void}
    */
   public sortChildren(opts: FSSortOpts = {}) {
-    this._folders = FSItem.sortByFilename(this._folders);
+    this._folders = FileSpec.sortByFilename(this._folders);
     if (opts.type === 'size') {
-      this._files = FSItem.sortFilesBySize(this._files);
+      this._files = FileSpec.sortFilesBySize(this._files);
     } else {
-      this._files = FSItem.sortByFilename(this._files);
+      this._files = FileSpec.sortByFilename(this._files);
     }
     if (opts.direction === 'descending') {
       this._folders.reverse();
@@ -745,7 +745,7 @@ export class FSItem {
    * Sorts the files of this FSItem alphabetically.
    * @returns {this} The current FSItem instance.
    */
-  static sortByFilename(items: FSItem[]): FSItem[] {
+  static sortByFilename(items: FileSpec[]): FileSpec[] {
     return items.sort((a, b) => {
       return compareDictValue(a as unknown as Dict, b as unknown as Dict, 'filename');
     });
@@ -755,7 +755,7 @@ export class FSItem {
    * Sorts the files of this FSItem by size. Run getChildren() first.
    * @returns {this} The current FSItem instance.
    */
-  static sortFilesBySize(items: FSItem[]): FSItem[] {
+  static sortFilesBySize(items: FileSpec[]): FileSpec[] {
     return items
       .filter((item) => item.isFile())
       .sort((a, b) => {
@@ -815,14 +815,14 @@ export class FSItem {
    * @param path2
    * @returns {Promise<boolean>} A promise that resolves with true if the files are equal, false otherwise.
    */
-  filesEqual(path2: FilePath | FSItem): Promise<boolean> {
+  filesEqual(path2: FilePath | FileSpec): Promise<boolean> {
     return new Promise((resolve, _reject) => {
       const job1 = this.isFile();
-      const job2 = fsitem(path2).isFile();
+      const job2 = fileSpec(path2).isFile();
       return Promise.all([job1, job2]).then((resps) => {
         if (resps && resps.length === 2 && resps[0] === true && resps[1] === true) {
           const job3 = this.checksum();
-          const job4 = new FSItem(path2).checksum();
+          const job4 = new FileSpec(path2).checksum();
           return Promise.all([job3, job4]).then((resps) => {
             if (resps && resps.length === 2 && resps[0] === resps[1]) {
               resolve(true);
@@ -960,7 +960,7 @@ export class FSItem {
     if (opts.includeUrl && isNonEmptyString(a) && urlTest.test(a)) {
       const p = a.match(urlTest);
       if (isNonEmptyArray(p) && isFilePath(p[2])) {
-        const fs = new FSItem(this.dirname, p[2]);
+        const fs = new FileSpec(this.dirname, p[2]);
         return fs.deepReadJson(opts).then((resp) => {
           return Promise.resolve(resp);
         });
@@ -1033,7 +1033,7 @@ export class FSItem {
    * up, or true if the file didn't exist
    */
   async backup(
-    opts: FileConflictStrategy = { type: 'renameWithTilde', errorIfExists: false },
+    opts: FileConflictStrategy = { type: 'renameWithTilde', errorIfExists: false }
   ): Promise<FilePath | boolean> {
     await this.getStats();
 
@@ -1083,14 +1083,14 @@ export class FSItem {
    * @returns {Promise<FilePath | undefined>} A promise that resolves with an available file path, or undefined if not found.
    */
   async findAvailableIndexFilename(_limit: Integer = 32, sep: string = '-'): Promise<FilePath | undefined> {
-    let newFsDest: FSItem | undefined;
+    let newFsDest: FileSpec | undefined;
     let count = 0;
     let looking = true;
     while (looking) {
-      newFsDest = fsitem(this.dirname, this.basename + sep + pad(++count, 2) + this.extname);
+      newFsDest = fileSpec(this.dirname, this.basename + sep + pad(++count, 2) + this.extname);
       looking = await newFsDest.exists();
     }
-    if (!looking && newFsDest instanceof FSItem) {
+    if (!looking && newFsDest instanceof FileSpec) {
       return newFsDest.path;
     }
   }
@@ -1098,15 +1098,15 @@ export class FSItem {
   /**
    * Copy an existing file or directory to a new location. Optionally creates a
    * backup if there is an existing file or directory at `destFile`.
-   * @param {FilePath | FSItem} destFile - The destination file or directory.
+   * @param {FilePath | FileSpec} destFile - The destination file or directory.
    * @param {SafeCopyOpts} [opts={}] - Options for the copy or move operation.
    * @returns {Promise<boolean | undefined>} A promise that resolves with true if the file was copied or moved, false otherwise.
    */
-  async safeCopy(destFile: FilePath | FSItem, opts: SafeCopyOpts = {}): Promise<boolean | undefined> {
+  async safeCopy(destFile: FilePath | FileSpec, opts: SafeCopyOpts = {}): Promise<boolean | undefined> {
     await this.getStats();
 
     if (this._stats && this._stats.exists()) {
-      const fsDest = destFile instanceof FSItem ? destFile : fsitem(destFile);
+      const fsDest = destFile instanceof FileSpec ? destFile : fileSpec(destFile);
       await fsDest.getStats();
 
       let bGoAhead: FilePath | boolean = true;
