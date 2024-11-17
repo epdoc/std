@@ -1,9 +1,8 @@
 import { compareDictValue, type Dict, isDict, isNumber, isRegExp, isString } from '@epdoc/type';
 import * as dfs from '@std/fs';
 import { assert } from 'jsr:@std/assert';
-import fs from 'node:fs';
 import { FileSpec, fileSpec } from './filespec.ts';
-import { FSSpec, fsSpec } from './fsspec.ts';
+import { FSSpec } from './fsspec.ts';
 import type { FileName, FilePath, FolderName, FolderPath, FSSortOpts, GetChildrenOpts } from './types.ts';
 
 export type FolderSpecParam = FSSpec | FolderSpec | FolderPath;
@@ -187,13 +186,29 @@ export class FolderSpec extends FSSpec {
   }
 
   /**
-   * If this is a folder, retrieves the list of matching files and folders in
-   * this folder and stores the lists as this._files and this._folders.
-   * @param opts.match (Optional) File or folder names must match this string or
-   * RegExp. If not specified then file and folder names are not filtered.
-   * @return {Promise<FSSpec[]> - Array of all files and folders within this folder
+   * Retrieves the list of files and folders within this folder, optionally matching
+   * a specified pattern and limiting the depth of the search.
+   *
+   * @param {GetChildrenOpts} options - Options for retrieving children.
+   * @param {string | RegExp} [options.match] - A string or regular expression to match file or folder names.
+   * @param {number} [options.levels=1] - The number of levels to traverse. Defaults to 1.
+   * @param {function} [options.callback] - A callback function to be called for each matched item.
+   * @param {Object} [options.sort] - Sorting options for the results.
+   * @returns {Promise<FSSpec[]>} - A promise that resolves to an array of FSSpec objects representing the files and folders.
+   *
+   * @example
+   * ```ts
+   * const folder = new FolderSpec('/path/to/folder');
+   * folder.getChildren({ match: /\.txt$/, levels: 2 })
+   *   .then(children => {
+   *     console.log('Matched children:', children);
+   *   })
+   *   .catch(error => {
+   *     console.error('Error retrieving children:', error);
+   *   });
+   * ```
    */
-  getChildren(options: Partial<GetChildrenOpts> = { levels: 1 }): Promise<FSSpec[]> {
+  getChildren(options: GetChildrenOpts = { levels: 1 }): Promise<FSSpec[]> {
     const opts: GetChildrenOpts = {
       match: options.match,
       levels: isNumber(options.levels) ? options.levels - 1 : 0,
@@ -204,17 +219,16 @@ export class FolderSpec extends FSSpec {
     this._folders = [];
     this._files = [];
     this._haveReadFolderContents = false;
-    return fs.promises
-      .readdir(this._f)
-      .then((entries) => {
+    return Promise.resolve()
+      .then(async () => {
         const jobs: Promise<unknown>[] = [];
-        for (const entry of entries) {
-          const fs = fsSpec(this._f, entry);
+        for await (const entry of Deno.readDir(this._f)) {
+          const fs = FSSpec.fromDirEntry(this.path, entry);
           let bMatch = false;
           if (opts.match) {
-            if (isString(opts.match) && entry === opts.match) {
+            if (isString(opts.match) && entry.name === opts.match) {
               bMatch = true;
-            } else if (isRegExp(opts.match) && opts.match.test(entry)) {
+            } else if (isRegExp(opts.match) && opts.match.test(entry.name)) {
               bMatch = true;
             }
           } else {
@@ -229,7 +243,7 @@ export class FolderSpec extends FSSpec {
               }
               if (fsResolved instanceof FolderSpec) {
                 this._folders.push(folderSpec(fs.path));
-                if (opts.levels > 0) {
+                if ((opts.levels as number) > 0) {
                   const job2 = this.getChildren(opts);
                   jobs.push(job2);
                 }
@@ -242,7 +256,7 @@ export class FolderSpec extends FSSpec {
         }
         return Promise.all(jobs);
       })
-      .then(() => {
+      .then((_resp) => {
         this._haveReadFolderContents = true;
         if (isDict(opts.sort)) {
           this.sortChildren(opts.sort);
@@ -292,3 +306,4 @@ export class FolderSpec extends FSSpec {
       });
   }
 }
+

@@ -162,37 +162,53 @@ export class FSSpec {
   }
 
   /**
-   * Return the FSSTATS for this file or folder, retrieving the stats and
-   * referencing them with this._stats if they have not been previously read.
-   * FSSTATS can become stale and should be reread if a file is manipulated.
+   * Factory method retrieves the stats for this file or folder and returns a
+   * new one of FileSpec, FolderSpec or SymlinkSpec, depending on the type of
+   * this. If the stats have already been retrieved for this, then the stats are
+   * not retrieved and this is returned. Stats can become stale and should be
+   * reread if a file is manipulated.
    *
-   * Example `fsutil('mypath/file.txt').getStats().isFile()`.
+   * @example
+   * ```ts
+   * import { fsSpec } from '@epdoc/fs';
    *
-   * @param {boolean} force Force retrieval of the states, even if they have
-   * already been retrieved.
-   * @returns {Promise<FSStats>} A promise with an FSStats object
+   * const item = fsSpec('mypath/file.txt');
+   * const stats = await item.getStats();
+   * if (stats instanceof FileSpec) {
+   *   // do something
+   * }
+   * ```
+   *
+   * @param {boolean} force Force retrieval of the stats, even if they have
+   * already been retrieved. Will also force a new instance of the appropriate
+   * subclass to be returned.
+   * @returns {Promise<FSSpec | FileSpec | FolderSpec | SymlinkSpec>} A promise
+   * with an FSSpec or one of its subclasses.
    */
   public getStats(force = false): Promise<FSSpec | FileSpec | FolderSpec | SymlinkSpec> {
     if (force || !this._stats.isInitialized()) {
-      return Promise.resolve(this)
-        .then(() => {
-          return Deno.lstat(this._f);
-        })
-        .then((resp: Deno.FileInfo) => {
-          this._stats = new FSStats(resp);
-          if (resp.isFile && !(this instanceof FileSpec)) {
-            return Promise.resolve(fileSpec(this).setStats(this._stats).hasFileInfo());
-          } else if (resp.isDirectory && !(this instanceof FolderSpec)) {
-            return Promise.resolve(folderSpec(this).setStats(this._stats).hasFileInfo());
-          } else if (resp.isSymlink && !(this instanceof SymlinkSpec)) {
-            return Promise.resolve(symlinkSpec(this).setStats(this._stats).hasFileInfo());
-          }
-          return Promise.resolve(this);
-        })
-        .catch((_err) => {
-          this._stats = new FSStats();
-          return Promise.resolve(this);
-        });
+      return (
+        Promise.resolve(this)
+          .then(() => {
+            return Deno.lstat(this._f);
+          })
+          // @ts-ignore xxx Trying to find a way to quiet this error
+          .then((resp: Deno.FileInfo) => {
+            this._stats = new FSStats(resp);
+            if (resp.isFile && !(this instanceof FileSpec)) {
+              return Promise.resolve(fileSpec(this).setStats(this._stats).hasFileInfo());
+            } else if (resp.isDirectory && !(this instanceof FolderSpec)) {
+              return Promise.resolve(folderSpec(this).setStats(this._stats).hasFileInfo());
+            } else if (resp.isSymlink && !(this instanceof SymlinkSpec)) {
+              return Promise.resolve(symlinkSpec(this).setStats(this._stats).hasFileInfo());
+            }
+            return Promise.resolve(this);
+          })
+          .catch((_err) => {
+            this._stats = new FSStats();
+            return Promise.resolve(this);
+          })
+      );
     } else {
       return Promise.resolve(this);
     }

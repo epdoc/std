@@ -142,18 +142,19 @@ export type SafeCopyOpts = {
   test?: boolean;
 };
 
+export type FSSpecCallback = (fs: FSSpec) => Promise<unknown>;
+
 export type FSSortOpts = {
   type?: 'alphabetical' | 'size';
   direction?: 'ascending' | 'descending';
 };
 
-export type FSItemCallback = (fs: FSSpec) => Promise<unknown>;
-export type GetChildrenOpts = FSSortOpts & {
+export type GetChildrenOpts = Partial<FSSortOpts & {
   match: RegExp | string | undefined;
   levels: Integer;
   sort?: FSSortOpts;
-  callback?: FSItemCallback;
-};
+  callback?: FSSpecCallback;
+}>;
 
 export type RemoveOpts = Partial<{
   maxRetries: Integer;
