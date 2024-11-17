@@ -1,9 +1,7 @@
-import type { FileSpec } from './filespec.ts';
-import type { FolderSpec } from './folderspec.ts';
 import { FSSpec } from './fsspec.ts';
 import type { FilePath, FolderPath } from './types.ts';
 
-export type SymlinkSpecParam = FolderSpec | FileSpec | FolderPath | FilePath;
+export type SymlinkSpecParam = FSSpec | SymlinkSpec | FolderPath | FilePath;
 
 /**
  * Create a new FSItem object.

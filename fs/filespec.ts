@@ -18,7 +18,6 @@ import { Buffer } from 'node:buffer';
 import fs, { close } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import type { FolderSpec } from './folderspec.ts';
 import { FSBytes } from './fsbytes.ts';
 import { FSSpec, fsSpec } from './fsspec.ts';
 import {
@@ -41,7 +40,7 @@ const REG = {
   BOM: new RegExp(/^\uFEFF/),
 };
 
-export type FileSpecParam = FolderSpec | FileSpec | FolderPath | FilePath;
+export type FileSpecParam = FSSpec | FolderPath | FilePath;
 
 /**
  * Create a new FSItem object.
@@ -93,15 +92,15 @@ export class FileSpec extends FSSpec {
     return path.basename(this._f).replace(/\.[^\.]*$/, '');
   }
 
-    /**
+  /**
    * Test for equality with the basename of this file.
    * @param {string} name
    * @returns {boolean} True if equal
    */
-    isNamed(name: string): boolean {
-      return name === this.basename;
-    }
-  
+  isNamed(name: string): boolean {
+    return name === this.basename;
+  }
+
   /**
    * Returns the file extension, exluding the decimal character. For example,
    * '/path/to/file.name.html' will return 'html'.
@@ -486,7 +485,7 @@ export class FileSpec extends FSSpec {
    * up, or true if the file didn't exist
    */
   async backup(
-    opts: FileConflictStrategy = { type: 'renameWithTilde', errorIfExists: false }
+    opts: FileConflictStrategy = { type: 'renameWithTilde', errorIfExists: false },
   ): Promise<FilePath | boolean> {
     await this.getStats();
 

@@ -4,6 +4,8 @@ import { expect } from 'jsr:@std/expect';
 import { afterAll, beforeEach, describe, it, test } from 'jsr:@std/testing/bdd';
 import os from 'node:os';
 import path from 'node:path';
+import { FileSpec, fileSpec } from '../filespec.ts';
+import { FolderSpec, folderSpec } from '../folderspec.ts';
 import { FSSpec, fsSpec, FSStats, isFilename, isFilePath, isFolderPath, type SafeCopyOpts } from '../mod.ts';
 import { fileConflictStrategyType } from './../types.ts';
 
@@ -35,11 +37,11 @@ describe('fsitem', () => {
   });
 
   test('fsGetFolders', () => {
-    return fsSpec(pwd)
+    return folderSpec(pwd)
       .getFolders()
       .then((resp) => {
         expect(isArray(resp)).toBe(true);
-        return fsSpec(pwd).getFolders();
+        return folderSpec(pwd).getFolders();
       })
       .then((resp) => {
         expect(isArray(resp)).toBe(true);
@@ -52,8 +54,8 @@ describe('fsitem', () => {
       });
   });
   test('fsGetFiles', () => {
-    const fs0: FSSpec = fsSpec(pwd);
-    const fs1 = fsSpec(pwd);
+    const fs0: FolderSpec = folderSpec(pwd);
+    const fs1 = folderSpec(pwd);
     return fs0
       .getFolders()
       .then((resp) => {
@@ -63,7 +65,7 @@ describe('fsitem', () => {
       .then((resp) => {
         expect(isArray(resp)).toBe(true);
         expect(resp.length).toBe(TEST_FILES.length);
-        resp = FSSpec.sortByFilename(resp);
+        resp = FolderSpec.sortByFilename(resp);
         // console.log(resp.map((f) => f.filename));
         expect(resp[0].filename).toBe(TEST_FILES[0]);
         expect(resp[1].filename).toBe(TEST_FILES[1]);
@@ -74,7 +76,7 @@ describe('fsitem', () => {
       .then((resp) => {
         expect(isArray(resp)).toBe(true);
         expect(resp.length).toBe(TEST_FILES.length + 0);
-        resp = FSSpec.sortByFilename(resp);
+        resp = FolderSpec.sortByFilename(resp);
         // console.log(resp.map((f) => f.filename));
         expect(resp[0].filename).toBe(TEST_FILES[0]);
         expect(resp[1].filename).toBe(TEST_FILES[1]);
@@ -83,8 +85,8 @@ describe('fsitem', () => {
       });
   });
   it('getChildren', () => {
-    const fs0: FSSpec = fsSpec(pwd);
-    const fs1 = fsSpec(pwd);
+    const fs0: FolderSpec = folderSpec(pwd);
+    const fs1 = folderSpec(pwd);
     return fs0
       .getChildren()
       .then((resp) => {
@@ -106,14 +108,14 @@ describe('fsitem', () => {
   test('setExt', () => {
     const PATH = './mypath/to/file/sample.json';
     const EXPECTED = './mypath/to/file/sample.rsc';
-    const fs = fsSpec(PATH);
+    const fs = fileSpec(PATH);
     expect(fs.setExt('txt').extname).toEqual('.txt');
     expect(fs.setExt('rsc').path).toEqual(EXPECTED);
   });
   test('setBasename', () => {
     const PATH = './mypath/to/file/sample.less.json';
     const EXPECTED = './mypath/to/file/sample.more.json';
-    const fs = fsSpec(PATH);
+    const fs: FileSpec = fileSpec(PATH);
     fs.setBasename('sample.more');
     expect(fs.path).toEqual(EXPECTED);
     expect(fs.basename).toEqual('sample.more');
@@ -121,57 +123,58 @@ describe('fsitem', () => {
   test('isDir', () => {
     return Promise.resolve()
       .then((_resp) => {
-        return fsSpec(pwd).isDir();
+        return fsSpec(pwd).getStats();
       })
       .then((resp) => {
-        expect(resp).toBe(true);
-        return fsSpec(pwd, 'data1').isDir();
+        expect(resp instanceof FolderSpec).toBe(true);
+        return fsSpec(pwd, 'data1').getStats();
       })
       .then((resp) => {
-        expect(resp).toBe(true);
+        expect(resp instanceof FolderSpec).toBe(true);
       });
   });
   test('fsExists', () => {
     return Promise.resolve()
       .then((_resp) => {
-        return fsSpec(pwd).exists();
+        return fsSpec(pwd).getStats();
       })
       .then((resp) => {
-        expect(resp).toBe(true);
-        return fsSpec(pwd, 'data1').exists();
+        expect(resp instanceof FileSpec || resp instanceof FolderSpec).toBe(true);
+        return fsSpec(pwd, 'data1').getStats();
       })
       .then((resp) => {
-        expect(resp).toBe(true);
+        expect(resp instanceof FileSpec || resp instanceof FolderSpec).toBe(true);
       });
   });
   test('fs dirExists', () => {
     return Promise.resolve()
       .then((_resp) => {
-        return fsSpec(pwd).dirExists();
+        return fsSpec(pwd).getStats();
       })
       .then((resp) => {
-        expect(resp).toBe(true);
-        return fsSpec(pwd, 'data1').dirExists();
+        expect(resp instanceof FolderSpec).toBe(true);
+        return fsSpec(pwd, 'data1').getStats();
       })
       .then((resp) => {
-        expect(resp).toBe(true);
+        expect(resp instanceof FolderSpec).toBe(true);
       });
   });
   test('fs fileExists', () => {
     return Promise.resolve()
       .then((_resp) => {
-        return fsSpec(pwd).fileExists();
+        return fsSpec(pwd).getStats();
       })
       .then((resp) => {
-        expect(resp).toBe(false);
-        return fsSpec(pwd, 'data1').fileExists();
+        expect(resp instanceof FolderSpec).toBe(true);
+        expect(resp instanceof FileSpec).toBe(false);
+        return fsSpec(pwd, 'data1').getStats();
       })
       .then((resp) => {
-        expect(resp).toBe(false);
-        return fsSpec(pwd, 'data1/sample.txt').fileExists();
+        expect(resp instanceof FileSpec).toBe(true);
+        return fsSpec(pwd, 'data1/sample.txt').getStats();
       })
       .then((resp) => {
-        expect(resp).toBe(true);
+        expect(resp instanceof FileSpec).toBe(true);
       });
   });
   test('fs Stats', () => {
@@ -179,13 +182,12 @@ describe('fsitem', () => {
       .then((_resp) => {
         return fsSpec(pwd).getStats();
       })
-      .then((stats) => {
-        expect(stats instanceof FSStats).toBe(true);
-        expect(stats.exists()).toBe(true);
-        expect(stats.isDirectory()).toBe(true);
-        expect(stats.isFile()).toBe(false);
-        expect(isValidDate(stats.createdAt())).toBe(true);
-        expect(stats.size).toBe(256);
+      .then((fs) => {
+        expect(fs instanceof FolderSpec).toBe(true);
+        expect(fs.exists()).toBe(true);
+        expect(fs instanceof FileSpec).toBe(false);
+        expect(isValidDate(fs.createdAt())).toBe(true);
+        expect(fs.size).toBe(256);
       });
   });
   test('constructor with .folder', () => {
@@ -383,7 +385,7 @@ describe('fsitem', () => {
       .then((resp) => {
         expect(resp).toEqual(true);
         return fsSpec(pwd, 'data2/folder-sample/sample2.txt').filesEqual(
-          fsSpec(pwd, 'data1/folder-sample/sample2.txt'),
+          fsSpec(pwd, 'data1/folder-sample/sample2.txt')
         );
       })
       .then((resp) => {
@@ -434,7 +436,7 @@ describe('fsitem', () => {
       .then((resp) => {
         expect(resp).toEqual(true);
         return fsSpec(pwd, 'data2/folder-sample/sample2.txt').filesEqual(
-          fsSpec(pwd, 'data1/folder-sample/sample2.txt'),
+          fsSpec(pwd, 'data1/folder-sample/sample2.txt')
         );
       })
       .then((resp) => {

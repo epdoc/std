@@ -172,9 +172,12 @@ export class FSSpec {
    * already been retrieved.
    * @returns {Promise<FSStats>} A promise with an FSStats object
    */
-  public getStats(force = false): Promise<FSSpec> {
+  public getStats(force = false): Promise<FSSpec | FileSpec | FolderSpec | SymlinkSpec> {
     if (force || !this._stats.isInitialized()) {
-      return Deno.lstat(this._f)
+      return Promise.resolve(this)
+        .then(() => {
+          return Deno.lstat(this._f);
+        })
         .then((resp: Deno.FileInfo) => {
           this._stats = new FSStats(resp);
           if (resp.isFile && !(this instanceof FileSpec)) {

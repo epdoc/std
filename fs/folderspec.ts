@@ -5,7 +5,7 @@ import { FileSpec, fileSpec } from './filespec.ts';
 import { FSSpec, fsSpec } from './fsspec.ts';
 import type { FileName, FilePath, FolderName, FolderPath, FSSortOpts, GetChildrenOpts } from './types.ts';
 
-export type FolderSpecParam = FolderSpec | FolderPath;
+export type FolderSpecParam = FSSpec | FolderSpec | FolderPath;
 
 /**
  * Create a new FSItem object.
