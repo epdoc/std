@@ -1,5 +1,6 @@
 import { compareDictValue, type Dict, isDict, isNumber, isRegExp, isString } from '@epdoc/type';
 import * as dfs from '@std/fs';
+import { assert } from 'jsr:@std/assert';
 import fs from 'node:fs';
 import { FileSpec, fileSpec } from './filespec.ts';
 import { FSSpec, fsSpec } from './fsspec.ts';
@@ -66,6 +67,27 @@ export class FolderSpec extends FSSpec {
    */
   haveReadFolderContents(): boolean {
     return this._haveReadFolderContents;
+  }
+
+  override isFile(): Promise<boolean> {
+    return super.isFile().then((resp: boolean) => {
+      assert(resp === false, 'isFile() must be false');
+      return resp;
+    });
+  }
+
+  override isFolder(): Promise<boolean> {
+    return super.isFolder().then((resp: boolean) => {
+      assert(resp === true, 'isFolder() must be true');
+      return resp;
+    });
+  }
+
+  override isSymlink(): Promise<boolean> {
+    return super.isSymlink().then((resp: boolean) => {
+      assert(resp === false, 'isSymlink() must be false');
+      return resp;
+    });
   }
 
   /**

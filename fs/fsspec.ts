@@ -223,6 +223,24 @@ export class FSSpec {
     });
   }
 
+  isFile(): Promise<boolean> {
+    return this.getStats().then(() => {
+      return this._stats.isFile();
+    });
+  }
+
+  isFolder(): Promise<boolean> {
+    return this.getStats().then(() => {
+      return this._stats.isDirectory();
+    });
+  }
+
+  isSymlink(): Promise<boolean> {
+    return this.getStats().then(() => {
+      return this._stats.isSymlink();
+    });
+  }
+
   /**
    * When was this file system entry created? Will retrieve the FSStats for the
    * file system entry if they haven't been previously read.

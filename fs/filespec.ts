@@ -14,6 +14,7 @@ import {
   pad,
 } from '@epdoc/type';
 import checksum from 'checksum';
+import { assert } from 'jsr:@std/assert';
 import { Buffer } from 'node:buffer';
 import fs, { close } from 'node:fs';
 import { readFile } from 'node:fs/promises';
@@ -134,6 +135,27 @@ export class FileSpec extends FSSpec {
       }
     }
     return false;
+  }
+
+  override isFile(): Promise<boolean> {
+    return super.isFile().then((resp: boolean) => {
+      assert(resp === true, 'isFile() must be true');
+      return resp;
+    });
+  }
+
+  override isFolder(): Promise<boolean> {
+    return super.isFolder().then((resp: boolean) => {
+      assert(resp === false, 'isFolder() must be false');
+      return resp;
+    });
+  }
+
+  override isSymlink(): Promise<boolean> {
+    return super.isSymlink().then((resp: boolean) => {
+      assert(resp === false, 'isSymlink() must be false');
+      return resp;
+    });
   }
 
   /**

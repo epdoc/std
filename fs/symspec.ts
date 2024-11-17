@@ -1,5 +1,6 @@
 import { FSSpec } from './fsspec.ts';
 import type { FilePath, FolderPath } from './types.ts';
+import { assert } from 'jsr:@std/assert';
 
 export type SymlinkSpecParam = FSSpec | SymlinkSpec | FolderPath | FilePath;
 
@@ -49,5 +50,26 @@ export class SymlinkSpec extends FSSpec {
   override copyParamsTo(target: SymlinkSpec): SymlinkSpec {
     super.copyParamsTo(target);
     return target;
+  }
+
+  override isFile(): Promise<boolean> {
+    return super.isFile().then((resp: boolean) => {
+      assert(resp === false, 'isFile() must be false');
+      return resp;
+    });
+  }
+
+  override isFolder(): Promise<boolean> {
+    return super.isFolder().then((resp: boolean) => {
+      assert(resp === false, 'isFolder() must be false');
+      return resp;
+    });
+  }
+
+  override isSymlink(): Promise<boolean> {
+    return super.isSymlink().then((resp: boolean) => {
+      assert(resp === true, 'isSymlink() must be true');
+      return resp;
+    });
   }
 }
