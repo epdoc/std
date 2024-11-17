@@ -47,7 +47,7 @@ export class FSStats {
    */
   exists(): boolean {
     if (this._stats) {
-      return this._stats.isDirectory === true || this._stats.isFile === true;
+      return this._stats.isDirectory === true || this._stats.isFile === true || this._stats.isSymlink === true;
     }
     return false;
   }

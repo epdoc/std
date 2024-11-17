@@ -1,6 +1,5 @@
 import { compareDictValue, type Dict, isDict, isNumber, isRegExp, isString } from '@epdoc/type';
 import * as dfs from '@std/fs';
-import { assert } from 'jsr:@std/assert';
 import { FileSpec, fileSpec } from './filespec.ts';
 import { FSSpec } from './fsspec.ts';
 import type { FileName, FilePath, FolderName, FolderPath, FSSortOpts, GetChildrenOpts } from './types.ts';
@@ -45,18 +44,20 @@ export class FolderSpec extends FSSpec {
    * @see FSSpec#copyTo
    */
   override copy(): FolderSpec {
-    return this.copyParamsTo(new FolderSpec(this));
+    return new FolderSpec(this);
   }
 
-  override copyParamsTo(target: FolderSpec): FolderSpec {
+  override copyParamsTo(target: FSSpec): FSSpec {
     super.copyParamsTo(target);
-    target._haveReadFolderContents = this._haveReadFolderContents;
-    target._folders = this._folders.map((item) => {
-      return item.copy();
-    });
-    target._files = this._files.map((item) => {
-      return item.copy();
-    });
+    if (target instanceof FolderSpec) {
+      target._haveReadFolderContents = this._haveReadFolderContents;
+      target._folders = this._folders.map((item) => {
+        return item.copy();
+      });
+      target._files = this._files.map((item) => {
+        return item.copy();
+      });
+    }
     return target;
   }
 
@@ -68,25 +69,16 @@ export class FolderSpec extends FSSpec {
     return this._haveReadFolderContents;
   }
 
-  override isFile(): Promise<boolean> {
-    return super.isFile().then((resp: boolean) => {
-      assert(resp === false, 'isFile() must be false');
-      return resp;
-    });
+  override isFile(): boolean | undefined {
+    return false;
   }
 
-  override isFolder(): Promise<boolean> {
-    return super.isFolder().then((resp: boolean) => {
-      assert(resp === true, 'isFolder() must be true');
-      return resp;
-    });
+  override isFolder(): boolean | undefined {
+    return true;
   }
 
-  override isSymlink(): Promise<boolean> {
-    return super.isSymlink().then((resp: boolean) => {
-      assert(resp === false, 'isSymlink() must be false');
-      return resp;
-    });
+  override isSymlink(): boolean | undefined {
+    return false;
   }
 
   /**
@@ -235,7 +227,7 @@ export class FolderSpec extends FSSpec {
             bMatch = true;
           }
           if (bMatch) {
-            const job = fs.getStats().then((fsResolved: FSSpec) => {
+            const job = fs.getResolvedType().then((fsResolved: FSSpec) => {
               all.push(fsResolved);
               if (opts.callback) {
                 const job1 = opts.callback(fs);
@@ -306,4 +298,3 @@ export class FolderSpec extends FSSpec {
       });
   }
 }
-

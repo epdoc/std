@@ -149,12 +149,14 @@ export type FSSortOpts = {
   direction?: 'ascending' | 'descending';
 };
 
-export type GetChildrenOpts = Partial<FSSortOpts & {
-  match: RegExp | string | undefined;
-  levels: Integer;
-  sort?: FSSortOpts;
-  callback?: FSSpecCallback;
-}>;
+export type GetChildrenOpts = Partial<
+  FSSortOpts & {
+    match: RegExp | string | undefined;
+    levels: Integer;
+    sort?: FSSortOpts;
+    callback?: FSSpecCallback;
+  }
+>;
 
 export type RemoveOpts = Partial<{
   maxRetries: Integer;

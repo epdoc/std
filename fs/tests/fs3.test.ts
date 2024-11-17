@@ -3,9 +3,9 @@ import { afterAll, beforeAll, describe, test } from 'jsr:@std/testing/bdd';
 import { Buffer } from 'node:buffer';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import { fileSpec, FileSpec } from '../filespec.ts';
+import { FileSpec, fileSpec } from '../filespec.ts';
 import { FolderSpec, folderSpec } from '../folderspec.ts';
-import { type FSSortOpts, fsSpec } from '../mod.ts';
+import type { FSSortOpts } from '../mod.ts';
 
 const pwd: string = import.meta.dirname as string;
 

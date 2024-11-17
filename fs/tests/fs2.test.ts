@@ -89,16 +89,16 @@ describe('FSItem Additional Tests', () => {
 
   test('isType correctly identifies file types', () => {
     const txtItem = fileSpec(testFile);
-    expect(txtItem.isType('txt')).toBe(true);
-    expect(txtItem.isType('json')).toBe(false);
-    expect(txtItem.isType('txt', 'json')).toBe(true);
+    expect(txtItem.isExtType('txt')).toBe(true);
+    expect(txtItem.isExtType('json')).toBe(false);
+    expect(txtItem.isExtType('txt', 'json')).toBe(true);
   });
 
   test('add method correctly joins paths', () => {
     const item = folderSpec(testDir);
     const newItem = item.add('subdir', 'file.txt');
     expect(newItem.path).toBe(path.join(testDir, 'subdir', 'file.txt'));
-    return newItem.getStats().then((resp) => {
+    return newItem.getResolvedType().then((resp) => {
       expect(resp).toBeInstanceOf(FileSpec);
     });
   });

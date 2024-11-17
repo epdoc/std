@@ -10,7 +10,7 @@ import type { FilePath, FolderPath, SafeCopyOpts } from './types.ts';
 
 /**
  * Create a new FSItem object.
- * @param {(FSSpec | FolderPath | FilePath)[])} args - An FSItem, a path, or a spread of paths to be used with path.resolve
+ * @param {(FSSpec | FolderPath | FilePath)[]} args - An FSItem, a path, or a spread of paths to be used with path.resolve
  * @returns {FSSpec} - A new FSItem object
  */
 export function fsSpec(...args: (FSSpec | FolderPath | FilePath)[]): FSSpec {
@@ -38,12 +38,8 @@ export function fsSpec(...args: (FSSpec | FolderPath | FilePath)[]): FSSpec {
 export class FSSpec {
   // @ts-ignore this does get initialized
   protected _f: FilePath | FolderPath;
-  protected _hasFileInfo: boolean = false;
-  // protected _isFile: boolean = false;
-  // protected _isDirectory: boolean = false;
-  // protected _isSymlink: boolean = false;
-
   protected _stats: FSStats = new FSStats();
+  protected _dirEntry: Deno.DirEntry | undefined;
 
   /**
    * Create a new FSItem object from an existing FSItem object, a file path or
@@ -55,6 +51,72 @@ export class FSSpec {
     if (args.length === 1 && args[0] instanceof FSSpec) {
       args[0].copyParamsTo(this);
     }
+  }
+
+  /**
+   * Copies parameters from this FSSpec to the target FSSpec.
+   * @param {FSSpec} target - The target FSSpec to copy parameters to.
+   * @returns {FSSpec} - The target FSSpec with copied parameters.
+   */
+  copyParamsTo(target: FSSpec): FSSpec {
+    target._stats = this._stats;
+    target._dirEntry = this._dirEntry;
+    return target;
+  }
+
+  get path(): FilePath {
+    return this._f;
+  }
+
+  /**
+   * Returns '/path/to' portion of /path/to/file.name.html'
+   */
+  get dirname(): string {
+    return path.dirname(this._f);
+  }
+
+  /**
+   * Returns the full filename of the file or folder, including it's extension.
+   * For example, '/path/to/file.name.html' would return 'file.name.html'.
+   * @return {string} - The full file or folder name, including it's extension, if unknown.
+   */
+  get filename(): string {
+    return path.basename(this._f);
+  }
+
+  setStats(stats: FSStats): this {
+    this._stats = stats;
+    return this;
+  }
+
+  setDirEntry(dirEntry: Deno.DirEntry | undefined): this {
+    this._dirEntry = dirEntry;
+    return this;
+  }
+
+  /**
+   * Getter returns the FSStats object associated with this file. A previous
+   * call to getStats() is needed in order to read stats from disk.
+   * @return {FSStats} - The FSStats for this file, if they have been read.
+   */
+  get stats(): FSStats {
+    return this._stats;
+  }
+
+  /**
+   * Checks if the stats for this file or folder are initialized.
+   * @returns {boolean} - True if stats are initialized, false otherwise.
+   */
+  hasStats(): boolean {
+    return this._stats.isInitialized();
+  }
+
+  get hasFileSize(): boolean {
+    return this._stats.size !== -1;
+  }
+
+  copy(): FSSpec {
+    return new FSSpec(this);
   }
 
   static fromArgs(...args: (FSSpec | FolderPath | FilePath)[]): string {
@@ -75,50 +137,16 @@ export class FSSpec {
     return path.resolve(...parts);
   }
 
-  copy(): FSSpec {
-    return new FSSpec(this);
-  }
-
-  copyParamsTo(target: FSSpec): FSSpec {
-    target._hasFileInfo = this._hasFileInfo;
-    target._stats = this._stats;
-    return target;
-  }
-
   static fromDirEntry(path: FolderPath, entry: Deno.DirEntry): FSSpec {
-    if (entry.isFile) {
-      return new FileSpec(path, entry.name).hasFileInfo();
-    } else if (entry.isDirectory) {
-      return new FolderSpec(path, entry.name).hasFileInfo();
-    } else if (entry.isSymlink) {
-      return new SymlinkSpec(path, entry.name).hasFileInfo();
-    }
-    throw new Error('Invalid file system entry');
+    const fsspec = new FSSpec(path, entry.name);
+    fsspec._dirEntry = entry;
+    return fsspec.resolveType();
   }
 
   static fromWalkEntry(entry: dfs.WalkEntry): FSSpec {
-    if (entry.isFile) {
-      return new FileSpec(entry.path).hasFileInfo();
-    } else if (entry.isDirectory) {
-      return new FolderSpec(entry.path).hasFileInfo();
-    } else if (entry.isSymlink) {
-      return new SymlinkSpec(entry.path).hasFileInfo();
-    }
-    throw new Error('Invalid file system entry');
-  }
-
-  hasFileInfo(): this {
-    this._hasFileInfo = true;
-    return this;
-  }
-
-  /**
-   * Returns the full filename of the file or folder, including it's extension.
-   * For example, '/path/to/file.name.html' would return 'file.name.html'.
-   * @return {string} - The full file or folder name, including it's extension, if unknown.
-   */
-  get filename(): string {
-    return path.basename(this._f);
+    const fsspec = new FSSpec(entry.path);
+    fsspec._dirEntry = entry;
+    return fsspec.resolveType();
   }
 
   /**
@@ -150,42 +178,12 @@ export class FSSpec {
     return this;
   }
 
-  get path(): FilePath {
-    return this._f;
-  }
-
   /**
-   * Returns '/path/to' portion of /path/to/file.name.html'
+   * Retrieves the stats for this file or folder and returns a new instance of FileSpec, FolderSpec, or SymlinkSpec.
+   * @param {boolean} force - Force retrieval of the stats, even if they have already been retrieved.
+   * @returns {Promise<FSSpec | FileSpec | FolderSpec | SymlinkSpec>} - A promise with an FSSpec or one of its subclasses.
    */
-  get dirname(): string {
-    return path.dirname(this._f);
-  }
-
-  /**
-   * Factory method retrieves the stats for this file or folder and returns a
-   * new one of FileSpec, FolderSpec or SymlinkSpec, depending on the type of
-   * this. If the stats have already been retrieved for this, then the stats are
-   * not retrieved and this is returned. Stats can become stale and should be
-   * reread if a file is manipulated.
-   *
-   * @example
-   * ```ts
-   * import { fsSpec } from '@epdoc/fs';
-   *
-   * const item = fsSpec('mypath/file.txt');
-   * const stats = await item.getStats();
-   * if (stats instanceof FileSpec) {
-   *   // do something
-   * }
-   * ```
-   *
-   * @param {boolean} force Force retrieval of the stats, even if they have
-   * already been retrieved. Will also force a new instance of the appropriate
-   * subclass to be returned.
-   * @returns {Promise<FSSpec | FileSpec | FolderSpec | SymlinkSpec>} A promise
-   * with an FSSpec or one of its subclasses.
-   */
-  public getStats(force = false): Promise<FSSpec | FileSpec | FolderSpec | SymlinkSpec> {
+  public getStats(force = false): Promise<FSStats> {
     if (force || !this._stats.isInitialized()) {
       return (
         Promise.resolve(this)
@@ -195,37 +193,42 @@ export class FSSpec {
           // @ts-ignore xxx Trying to find a way to quiet this error
           .then((resp: Deno.FileInfo) => {
             this._stats = new FSStats(resp);
-            if (resp.isFile && !(this instanceof FileSpec)) {
-              return Promise.resolve(fileSpec(this).setStats(this._stats).hasFileInfo());
-            } else if (resp.isDirectory && !(this instanceof FolderSpec)) {
-              return Promise.resolve(folderSpec(this).setStats(this._stats).hasFileInfo());
-            } else if (resp.isSymlink && !(this instanceof SymlinkSpec)) {
-              return Promise.resolve(symlinkSpec(this).setStats(this._stats).hasFileInfo());
-            }
-            return Promise.resolve(this);
+            return Promise.resolve(this._stats);
           })
           .catch((_err) => {
             this._stats = new FSStats();
-            return Promise.resolve(this);
+            return Promise.resolve(this._stats);
           })
       );
     } else {
-      return Promise.resolve(this);
+      return Promise.resolve(this._stats);
     }
   }
 
-  setStats(stats: FSStats): this {
-    this._stats = stats;
+  resolveType(): FSSpec {
+    if (this.isFile() === true) {
+      return fileSpec(this);
+    } else if (this.isFolder() === true) {
+      return folderSpec(this);
+    } else if (this.isSymlink() === true) {
+      return symlinkSpec(this);
+    }
     return this;
   }
 
-  /**
-   * Getter returns the FSStats object associated with this file. A previous
-   * call to getStats() is needed in order to read stats from disk.
-   * @return {FSStats} - The FSStats for this file, if they have been read.
-   */
-  get stats(): FSStats {
-    return this._stats;
+  getResolvedType(): Promise<FSSpec> {
+    return this.getResolvedType().then(() => {
+      return this.resolveType();
+    });
+  }
+
+  exists(): boolean | undefined {
+    if (this._dirEntry) {
+      return true;
+    }
+    if (this._stats.isInitialized()) {
+      return this._stats.exists();
+    }
   }
 
   /**
@@ -233,48 +236,80 @@ export class FSSpec {
    * system entry if they haven't been previously read.
    * @returns a promise with value true if this exists.
    */
-  exists(): Promise<boolean> {
-    return this.getStats().then(() => {
+  getExists(): Promise<boolean> {
+    return this.getResolvedType().then(() => {
       return this instanceof FileSpec || this instanceof FolderSpec || this instanceof SymlinkSpec;
     });
   }
 
-  isFile(): Promise<boolean> {
-    return this.getStats().then(() => {
+  knowType(): boolean {
+    return this._dirEntry || this._stats.isInitialized() ? true : false;
+  }
+
+  isFile(): boolean | undefined {
+    if (this._dirEntry) {
+      return this._dirEntry.isFile;
+    }
+    if (this._stats.isInitialized()) {
+      return this._stats.isFile();
+    }
+  }
+
+  isFolder(): boolean | undefined {
+    if (this._dirEntry) {
+      return this._dirEntry.isDirectory;
+    }
+    if (this._stats.isInitialized()) {
+      return this._stats.isDirectory();
+    }
+  }
+
+  isSymlink(): boolean | undefined {
+    if (this._dirEntry) {
+      return this._dirEntry.isSymlink;
+    }
+    if (this._stats.isInitialized()) {
+      return this._stats.isSymlink();
+    }
+  }
+
+  getIsFile(): Promise<boolean> {
+    return this.getResolvedType().then(() => {
       return this._stats.isFile();
     });
   }
 
-  isFolder(): Promise<boolean> {
-    return this.getStats().then(() => {
+  getIsFolder(): Promise<boolean> {
+    return this.getResolvedType().then(() => {
       return this._stats.isDirectory();
     });
   }
 
-  isSymlink(): Promise<boolean> {
-    return this.getStats().then(() => {
+  getIsSymlink(): Promise<boolean> {
+    return this.getResolvedType().then(() => {
       return this._stats.isSymlink();
     });
   }
 
-  /**
-   * When was this file system entry created? Will retrieve the FSStats for the
-   * file system entry if they haven't been previously read.
-   * @returns a promise with the Date this file was created.
-   * @deprecated Use isFile() method instead.
-   */
-  createdAt(): Promise<Date | undefined> {
-    return this.getStats().then(() => {
+  createdAt(): Date | undefined {
+    if (this._stats.isInitialized()) {
+      return this._stats.createdAt();
+    }
+  }
+
+  getCreatedAt(): Promise<Date | undefined> {
+    return this.getResolvedType().then(() => {
       return this._stats.createdAt();
     });
   }
 
   /**
    * Removes this file or folder.
-   * @returns {Promise<void>} A promise that resolves when the file or folder is removed.
+   * @param {Deno.RemoveOptions} options - Options for removing the file or folder.
+   * @returns {Promise<void>} - A promise that resolves when the file or folder is removed.
    */
   remove(options: Deno.RemoveOptions = {}): Promise<void> {
-    return this.getStats()
+    return this.getResolvedType()
       .then(() => {
         if (this._stats.exists()) {
           return Deno.remove(this._f, options);
@@ -289,10 +324,10 @@ export class FSSpec {
   }
 
   /**
-   * Copy this file or folder to the location `dest`.
-   * @param dest
-   * @param options An fx.CopyOptions object
-   * @returns
+   * Copies this file or folder to the location `dest`.
+   * @param {FilePath | FSSpec} dest - The destination path.
+   * @param {dfs.CopyOptions} [options] - Options for the copy operation.
+   * @returns {Promise<void>} - A promise that resolves when the copy is complete.
    */
   copyTo(dest: FilePath | FSSpec, options?: dfs.CopyOptions): Promise<void> {
     const p: FilePath = dest instanceof FSSpec ? dest.path : dest;
@@ -312,10 +347,10 @@ export class FSSpec {
   }
 
   /**
-   * Move `this` file or folder to the location `dest`.
-   * @param {FilePath | FSSpec} dest - The new path for the file
-   * @param {fx.MoveOptions} options - Options to `overwrite` and `dereference` symlinks.
-   * @returns {Promise<void>}
+   * Moves this file or folder to the location `dest`.
+   * @param {FilePath | FSSpec} dest - The new path for the file.
+   * @param {dfs.MoveOptions} options - Options to overwrite and dereference symlinks.
+   * @returns {Promise<void>} - A promise that resolves when the move is complete.
    */
   moveTo(dest: FilePath | FSSpec, options?: dfs.MoveOptions): Promise<void> {
     const p: FilePath = dest instanceof FSSpec ? dest.path : dest;
@@ -330,11 +365,11 @@ export class FSSpec {
    * @returns {Promise<boolean | undefined>} A promise that resolves with true if the file was copied or moved, false otherwise.
    */
   async safeCopy(destFile: FilePath | FSSpec, opts: SafeCopyOpts = {}): Promise<boolean | undefined> {
-    await this.getStats();
+    await this.getResolvedType();
 
     if (this._stats && this._stats.exists()) {
       let fsDest: FSSpec = destFile instanceof FSSpec ? destFile : fsSpec(destFile);
-      fsDest = await fsDest.getStats();
+      fsDest = await fsDest.getResolvedType();
 
       let bGoAhead: FilePath | boolean = true;
       const fsDestParent: FolderSpec = fsDest instanceof FolderSpec ? fsDest : folderSpec(fsDest.dirname);

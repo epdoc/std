@@ -123,11 +123,11 @@ describe('fsitem', () => {
   test('isDir', () => {
     return Promise.resolve()
       .then((_resp) => {
-        return fsSpec(pwd).getStats();
+        return fsSpec(pwd).getResolvedType();
       })
       .then((resp) => {
         expect(resp instanceof FolderSpec).toBe(true);
-        return fsSpec(pwd, 'data1').getStats();
+        return fsSpec(pwd, 'data1').getResolvedType();
       })
       .then((resp) => {
         expect(resp instanceof FolderSpec).toBe(true);
@@ -136,11 +136,11 @@ describe('fsitem', () => {
   test('fsExists', () => {
     return Promise.resolve()
       .then((_resp) => {
-        return fsSpec(pwd).getStats();
+        return fsSpec(pwd).getResolvedType();
       })
       .then((resp) => {
         expect(resp instanceof FileSpec || resp instanceof FolderSpec).toBe(true);
-        return fsSpec(pwd, 'data1').getStats();
+        return fsSpec(pwd, 'data1').getResolvedType();
       })
       .then((resp) => {
         expect(resp instanceof FileSpec || resp instanceof FolderSpec).toBe(true);
@@ -149,11 +149,11 @@ describe('fsitem', () => {
   test('fs dirExists', () => {
     return Promise.resolve()
       .then((_resp) => {
-        return fsSpec(pwd).getStats();
+        return fsSpec(pwd).getResolvedType();
       })
       .then((resp) => {
         expect(resp instanceof FolderSpec).toBe(true);
-        return fsSpec(pwd, 'data1').getStats();
+        return fsSpec(pwd, 'data1').getResolvedType();
       })
       .then((resp) => {
         expect(resp instanceof FolderSpec).toBe(true);
@@ -162,16 +162,16 @@ describe('fsitem', () => {
   test('fs fileExists', () => {
     return Promise.resolve()
       .then((_resp) => {
-        return fsSpec(pwd).getStats();
+        return fsSpec(pwd).getResolvedType();
       })
       .then((resp) => {
         expect(resp instanceof FolderSpec).toBe(true);
         expect(resp instanceof FileSpec).toBe(false);
-        return fsSpec(pwd, 'data1').getStats();
+        return fsSpec(pwd, 'data1').getResolvedType();
       })
       .then((resp) => {
         expect(resp instanceof FileSpec).toBe(true);
-        return fsSpec(pwd, 'data1/sample.txt').getStats();
+        return fsSpec(pwd, 'data1/sample.txt').getResolvedType();
       })
       .then((resp) => {
         expect(resp instanceof FileSpec).toBe(true);
@@ -180,14 +180,14 @@ describe('fsitem', () => {
   test('fs Stats', () => {
     return Promise.resolve()
       .then((_resp) => {
-        return fsSpec(pwd).getStats();
+        return fsSpec(pwd).getResolvedType();
       })
       .then((fs) => {
         expect(fs instanceof FolderSpec).toBe(true);
         expect(fs.exists()).toBe(true);
         expect(fs instanceof FileSpec).toBe(false);
         expect(isValidDate(fs.createdAt())).toBe(true);
-        return fs.getStats();
+        return fs.getResolvedType();
       })
       .then((fs) => {
         expect(fs instanceof FileSpec).toBe(true);
@@ -227,14 +227,14 @@ describe('fsitem', () => {
     expect(isFolderPath('~/xx/hello')).toBe(true);
   });
   test('isType', () => {
-    expect(fileSpec('file.json').isType('json')).toBe(true);
-    expect(fileSpec('file.json').isType('jsson')).toBe(false);
-    expect(fileSpec('file.JSON').isType('jsson', 'json')).toBe(true);
-    expect(fileSpec('file.txt').isType('jsson', 'JSON')).toBe(false);
-    expect(fileSpec('file.json').isType('jsson', 'JSON')).toBe(true);
-    expect(fileSpec('file.json').isType(/^json$/)).toBe(true);
-    expect(fileSpec('file.json').isType(/^JSON$/)).toBe(false);
-    expect(fileSpec('file.json').isType(/^JSON$/i)).toBe(true);
+    expect(fileSpec('file.json').isExtType('json')).toBe(true);
+    expect(fileSpec('file.json').isExtType('jsson')).toBe(false);
+    expect(fileSpec('file.JSON').isExtType('jsson', 'json')).toBe(true);
+    expect(fileSpec('file.txt').isExtType('jsson', 'JSON')).toBe(false);
+    expect(fileSpec('file.json').isExtType('jsson', 'JSON')).toBe(true);
+    expect(fileSpec('file.json').isExtType(/^json$/)).toBe(true);
+    expect(fileSpec('file.json').isExtType(/^JSON$/)).toBe(false);
+    expect(fileSpec('file.json').isExtType(/^JSON$/i)).toBe(true);
     expect(fileSpec('file.json').isJson()).toBe(true);
     expect(fileSpec('file.JSON').isJson()).toBe(true);
     expect(fileSpec('file.JSON').isPdf()).toBe(false);
@@ -331,7 +331,7 @@ describe('fsitem', () => {
         return folderSpec('./tests/data1/tmp1').ensureDir();
       })
       .then((_resp) => {
-        return fsSpec('./tests/data1/tmp1').getStats();
+        return fsSpec('./tests/data1/tmp1').getResolvedType();
       })
       .then((resp) => {
         expect(resp instanceof FolderSpec).toBe(true);
@@ -389,7 +389,7 @@ describe('fsitem', () => {
       .then((resp) => {
         expect(resp).toEqual(true);
         return fileSpec(pwd, 'data2/folder-sample/sample2.txt').filesEqual(
-          fileSpec(pwd, 'data1/folder-sample/sample2.txt')
+          fileSpec(pwd, 'data1/folder-sample/sample2.txt'),
         );
       })
       .then((resp) => {
@@ -440,7 +440,7 @@ describe('fsitem', () => {
       .then((resp) => {
         expect(resp).toEqual(true);
         return fileSpec(pwd, 'data2/folder-sample/sample2.txt').filesEqual(
-          fileSpec(pwd, 'data1/folder-sample/sample2.txt')
+          fileSpec(pwd, 'data1/folder-sample/sample2.txt'),
         );
       })
       .then((resp) => {
@@ -528,12 +528,12 @@ describe('fsitem', () => {
     expect(fsitem.dirname).toEqual('/the/path/goes');
     expect(fsitem.extname).toEqual('.txt');
     expect(fsitem.basename).toEqual('right.here');
-    expect(fsitem.isType('txt')).toEqual(true);
+    expect(fsitem.isExtType('txt')).toEqual(true);
     expect(fsitem.isTxt()).toEqual(true);
     expect(fsitem.isJson()).toEqual(false);
-    expect(fsitem.isType('json', 'txt')).toEqual(true);
-    expect(fsitem.isType('json', 'pdf')).toEqual(false);
-    expect(fsitem.isType('txt', 'pdf')).toEqual(true);
+    expect(fsitem.isExtType('json', 'txt')).toEqual(true);
+    expect(fsitem.isExtType('json', 'pdf')).toEqual(false);
+    expect(fsitem.isExtType('txt', 'pdf')).toEqual(true);
   });
 
   it('readAsLines', async () => {

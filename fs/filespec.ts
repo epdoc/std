@@ -14,7 +14,6 @@ import {
   pad,
 } from '@epdoc/type';
 import checksum from 'checksum';
-import { assert } from 'jsr:@std/assert';
 import { Buffer } from 'node:buffer';
 import fs, { close } from 'node:fs';
 import { readFile } from 'node:fs/promises';
@@ -45,8 +44,6 @@ export type FileSpecParam = FSSpec | FolderPath | FilePath;
 
 /**
  * Create a new FSItem object.
- * @param {(FileSpec | FolderSpec | FolderPath | FilePath)[])} args - An FSItem, a path, or a spread of paths to be used with path.resolve
- * @returns {FileSpec} - A new FSItem object
  */
 export function fileSpec(...args: FileSpecParam[]): FileSpec {
   return new FileSpec(...args);
@@ -73,10 +70,10 @@ export class FileSpec extends FSSpec {
    * @see FileSpec#copyTo
    */
   override copy(): FileSpec {
-    return this.copyParamsTo(new FileSpec(this));
+    return new FileSpec(this);
   }
 
-  override copyParamsTo(target: FileSpec): FileSpec {
+  override copyParamsTo(target: FSSpec): FSSpec {
     super.copyParamsTo(target);
     return target;
   }
@@ -111,8 +108,16 @@ export class FileSpec extends FSSpec {
     return path.extname(this._f);
   }
 
-  get size(): number {
-    return this.stats.size;
+  size(): Integer | undefined {
+    if (this._stats.isInitialized()) {
+      return this._stats.size;
+    }
+  }
+
+  getSize(): Promise<Integer | undefined> {
+    return this.getResolvedType().then(() => {
+      return this._stats.size;
+    });
   }
 
   /**
@@ -121,7 +126,7 @@ export class FileSpec extends FSSpec {
    * @param type List of types (eg. 'jpg', 'png')
    * @returns
    */
-  isType(...type: (RegExp | string)[]): boolean {
+  isExtType(...type: (RegExp | string)[]): boolean {
     const lowerCaseExt = this.extname.toLowerCase().replace(/^\./, '');
     for (const entry of type) {
       if (isRegExp(entry)) {
@@ -137,25 +142,16 @@ export class FileSpec extends FSSpec {
     return false;
   }
 
-  override isFile(): Promise<boolean> {
-    return super.isFile().then((resp: boolean) => {
-      assert(resp === true, 'isFile() must be true');
-      return resp;
-    });
+  override isFile(): boolean | undefined {
+    return true;
   }
 
-  override isFolder(): Promise<boolean> {
-    return super.isFolder().then((resp: boolean) => {
-      assert(resp === false, 'isFolder() must be false');
-      return resp;
-    });
+  override isFolder(): boolean | undefined {
+    return false;
   }
 
-  override isSymlink(): Promise<boolean> {
-    return super.isSymlink().then((resp: boolean) => {
-      assert(resp === false, 'isSymlink() must be false');
-      return resp;
-    });
+  override isSymlink(): boolean | undefined {
+    return false;
   }
 
   /**
@@ -292,7 +288,7 @@ export class FileSpec extends FSSpec {
   filesEqual(path2: FilePath | FileSpec): Promise<boolean> {
     return new Promise((resolve, _reject) => {
       return fsSpec(path2)
-        .getStats()
+        .getResolvedType()
         .then((resp) => {
           if (resp instanceof FileSpec && this.size === resp.size) {
             const job1 = this.checksum();
@@ -509,7 +505,7 @@ export class FileSpec extends FSSpec {
   async backup(
     opts: FileConflictStrategy = { type: 'renameWithTilde', errorIfExists: false },
   ): Promise<FilePath | boolean> {
-    await this.getStats();
+    await this.getResolvedType();
 
     if (this._stats && this._stats.exists()) {
       // this file already exists. Deal with it by renaming it.
@@ -562,7 +558,7 @@ export class FileSpec extends FSSpec {
     let looking = true;
     while (looking) {
       newFsDest = fileSpec(this.dirname, this.basename + sep + pad(++count, 2) + this.extname);
-      looking = await newFsDest.exists();
+      looking = await newFsDest.getExists();
     }
     if (!looking && newFsDest instanceof FileSpec) {
       return newFsDest.path;
