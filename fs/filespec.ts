@@ -13,13 +13,16 @@ import {
   isString,
   pad,
 } from '@epdoc/type';
+import { assert } from '@std/assert';
 import checksum from 'checksum';
 import { Buffer } from 'node:buffer';
 import fs, { close } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { BaseSpec, type IBaseSpec } from './basespec.ts';
 import { FSBytes } from './fsbytes.ts';
 import { FSSpec, fsSpec } from './fsspec.ts';
+import { FSStats } from './fsstats.ts';
 import {
   type FileConflictStrategy,
   fileConflictStrategyType,
@@ -50,30 +53,20 @@ export function fileSpec(...args: FileSpecParam[]): FileSpec {
 }
 
 /**
- * An object representing a file system entry, which may be either a file or a
- * folder.
- *
- * Has methods to:
- *  - Retrieve properties of an existing file or folder.
- *  - Manipulate file paths.
- *  - Recursive support for reading the contents of folders
- *  - Safe copy and backup methods for an existing file or folder
- *  - Reading and writing files
- *  - Getting the creation dates of files, including using the metadata of some file formats
- *  - Testing files for equality
+ * An object representing a file system entry when it is known to be a file.
  */
-export class FileSpec extends FSSpec {
+export class FileSpec extends BaseSpec implements IBaseSpec {
   // @ts-ignore this does get initialized
 
   /**
    * Return a copy of this object. Does not copy the file.
    * @see FileSpec#copyTo
    */
-  override copy(): FileSpec {
+  copy(): FileSpec {
     return new FileSpec(this);
   }
 
-  override copyParamsTo(target: FSSpec): FSSpec {
+  override copyParamsTo(target: BaseSpec): BaseSpec {
     super.copyParamsTo(target);
     return target;
   }
@@ -115,7 +108,7 @@ export class FileSpec extends FSSpec {
   }
 
   getSize(): Promise<Integer | undefined> {
-    return this.getResolvedType().then(() => {
+    return this.getStats().then(() => {
       return this._stats.size;
     });
   }
@@ -285,25 +278,38 @@ export class FileSpec extends FSSpec {
    * @param path2
    * @returns {Promise<boolean>} A promise that resolves with true if the files are equal, false otherwise.
    */
-  filesEqual(path2: FilePath | FileSpec): Promise<boolean> {
+  filesEqual(arg: FilePath | FileSpec | FSSpec): Promise<boolean> {
+    assert(isFilePath(arg) || arg instanceof BaseSpec, 'Invalid filesEqual argument');
+    const fs: BaseSpec = arg instanceof BaseSpec ? arg : fsSpec(arg);
+
     return new Promise((resolve, _reject) => {
-      return fsSpec(path2)
-        .getResolvedType()
-        .then((resp) => {
-          if (resp instanceof FileSpec && this.size === resp.size) {
-            const job1 = this.checksum();
-            const job2 = resp.checksum();
-            return Promise.all([job1, job2]).then((resps) => {
-              if (resps && resps.length === 2 && resps[0] === resps[1]) {
-                resolve(true);
-              } else {
-                resolve(false);
-              }
-            });
+      if (fs instanceof FileSpec) {
+        return this._filesEqual2(fs).then((resp) => {
+          resolve(resp);
+        });
+      } else if (fs instanceof FSSpec) {
+        return fs.getResolvedType().then((resp) => {
+          if (resp instanceof FileSpec) {
+            return this._filesEqual2(resp);
           } else {
-            resolve(false);
+            return Promise.resolve(false);
           }
         });
+      } else {
+        return Promise.resolve(false);
+      }
+    });
+  }
+
+  protected _filesEqual2(fs: FileSpec): Promise<boolean> {
+    const job1 = this.checksum();
+    const job2 = fs.checksum();
+    return Promise.all([job1, job2]).then((resps) => {
+      if (resps && resps.length === 2 && resps[0] === resps[1]) {
+        return Promise.resolve(true);
+      } else {
+        return Promise.resolve(false);
+      }
     });
   }
 
@@ -502,46 +508,48 @@ export class FileSpec extends FSSpec {
    * @returns {Promise<FilePath | boolean>} - Path to file if file was backed
    * up, or true if the file didn't exist
    */
-  async backup(
-    opts: FileConflictStrategy = { type: 'renameWithTilde', errorIfExists: false },
+  backup(
+    opts: FileConflictStrategy = { type: 'renameWithTilde', errorIfExists: false }
   ): Promise<FilePath | boolean> {
-    await this.getResolvedType();
+    return Promise.resolve()
+      .then(() => {
+        return this.getStats();
+      })
+      .then((stats: FSStats) => {
+        assert(stats && stats.exists(), 'File does not exist');
+        // this file already exists. Deal with it by renaming it.
 
-    if (this._stats && this._stats.exists()) {
-      // this file already exists. Deal with it by renaming it.
-      let newPath: FilePath | undefined = undefined;
-
-      if (opts.type === fileConflictStrategyType.renameWithTilde) {
-        newPath = this.path + '~';
-      } else if (opts.type === fileConflictStrategyType.renameWithNumber) {
-        const limit = isInteger(opts.limit) ? opts.limit : 32;
-        newPath = await this.findAvailableIndexFilename(limit, opts.separator);
-        if (!newPath && opts.errorIfExists) {
-          throw this.newError('EEXIST', 'File exists');
-        }
-      } else if (opts.type === 'overwrite') {
-        newPath = this.path;
-      } else {
-        if (opts.errorIfExists) {
-          throw this.newError('EEXIST', 'File exists');
-        }
-      }
-
-      if (newPath) {
-        return this.moveTo(newPath, { overwrite: true })
-          .then(() => {
-            return Promise.resolve(newPath as FilePath);
-          })
-          .catch(() => {
-            throw this.newError('ENOENT', 'File could not be renamed');
+        if (opts.type === fileConflictStrategyType.renameWithTilde) {
+          return Promise.resolve(this.path + '~');
+        } else if (opts.type === fileConflictStrategyType.renameWithNumber) {
+          const limit = isInteger(opts.limit) ? opts.limit : 32;
+          return this.findAvailableIndexFilename(limit, opts.separator).then((resp) => {
+            if (!resp && opts.errorIfExists) {
+              throw this.newError('EEXIST', 'File exists');
+            }
+            return Promise.resolve(resp);
           });
-      }
-    } else {
-      // The caller should have previously tested if the file exists, so we
-      // should not hit this
-      throw this.newError('ENOENT', 'File does not exist');
-    }
-    return Promise.resolve(true);
+        } else if (opts.type === 'overwrite') {
+          return Promise.resolve(this.path);
+        } else {
+          if (opts.errorIfExists) {
+            throw this.newError('EEXIST', 'File exists');
+          }
+        }
+        return Promise.resolve();
+      })
+      .then((newPath: FilePath | undefined) => {
+        if (newPath) {
+          return this.moveTo(newPath, { overwrite: true })
+            .then(() => {
+              return Promise.resolve(newPath as FilePath);
+            })
+            .catch(() => {
+              throw this.newError('ENOENT', 'File could not be renamed');
+            });
+        }
+        return Promise.resolve(true);
+      });
   }
 
   /**

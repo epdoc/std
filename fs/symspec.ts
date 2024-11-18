@@ -1,7 +1,7 @@
-import { FSSpec } from './fsspec.ts';
+import { BaseSpec, type IBaseSpec } from './basespec.ts';
 import type { FilePath, FolderPath } from './types.ts';
 
-export type SymlinkSpecParam = FSSpec | SymlinkSpec | FolderPath | FilePath;
+export type SymlinkSpecParam = BaseSpec | SymlinkSpec | FolderPath | FilePath;
 
 /**
  * Create a new FSItem object.
@@ -25,7 +25,7 @@ export function symlinkSpec(...args: SymlinkSpecParam[]): SymlinkSpec {
  *  - Getting the creation dates of files, including using the metadata of some file formats
  *  - Testing files for equality
  */
-export class SymlinkSpec extends FSSpec {
+export class SymlinkSpec extends BaseSpec implements IBaseSpec {
   // @ts-ignore this does get initialized
   protected _f: FilePath | FolderPath;
 
@@ -34,7 +34,7 @@ export class SymlinkSpec extends FSSpec {
    * an array of file path parts that can be merged using node:path#resolve.
    * @param {(FileSpec | FolderPath | FilePath)[]} args - An FSItem, a path, or a spread of paths to be used with path.resolve
    */
-  constructor(...args: (FSSpec | FolderPath | FilePath)[]) {
+  constructor(...args: (BaseSpec | FolderPath | FilePath)[]) {
     super(...args);
   }
 
@@ -42,8 +42,8 @@ export class SymlinkSpec extends FSSpec {
    * Return a copy of this object. Does not copy the file.
    * @see FileSpec#copyTo
    */
-  override copy(): SymlinkSpec {
-    return this.copyParamsTo(new SymlinkSpec(this));
+  copy(): SymlinkSpec {
+    return new SymlinkSpec(this);
   }
 
   override copyParamsTo(target: SymlinkSpec): SymlinkSpec {

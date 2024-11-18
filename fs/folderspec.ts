@@ -1,15 +1,31 @@
 import { compareDictValue, type Dict, isDict, isNumber, isRegExp, isString } from '@epdoc/type';
 import * as dfs from '@std/fs';
-import { FileSpec, fileSpec } from './filespec.ts';
-import { FSSpec } from './fsspec.ts';
+import { BaseSpec, type IBaseSpec } from './basespec.ts';
+import { FileSpec } from './filespec.ts';
+import { FSSpec, fsSpec } from './fsspec.ts';
+import { SymlinkSpec } from './symspec.ts';
 import type { FileName, FilePath, FolderName, FolderPath, FSSortOpts, GetChildrenOpts } from './types.ts';
+
+function fromDirEntry(path: FolderPath, entry: Deno.DirEntry): BaseSpec {
+  const result = fsSpec(path, entry.name).setDirEntry(entry);
+  if (result instanceof FSSpec) {
+    return result.resolveType();
+  }
+  return result;
+}
+
+function fromWalkEntry(entry: dfs.WalkEntry): BaseSpec {
+  const result = fsSpec(entry.path).setDirEntry(entry);
+  if (result instanceof FSSpec) {
+    return result.resolveType();
+  }
+  return result;
+}
 
 export type FolderSpecParam = FSSpec | FolderSpec | FolderPath;
 
 /**
- * Create a new FSItem object.
- * @param {(FSSpec | FolderSpec | FolderPath | FilePath)[])} args - An FSItem, a path, or a spread of paths to be used with path.resolve
- * @returns {FSSpec} - A new FSItem object
+ * Create a new FolderSpec object.
  */
 export function folderSpec(...args: FolderSpecParam[]): FolderSpec {
   return new FolderSpec(...args);
@@ -28,7 +44,7 @@ export function folderSpec(...args: FolderSpecParam[]): FolderSpec {
  *  - Getting the creation dates of files, including using the metadata of some file formats
  *  - Testing files for equality
  */
-export class FolderSpec extends FSSpec {
+export class FolderSpec extends BaseSpec implements IBaseSpec {
   // @ts-ignore this does get initialized
   // Test to see if _folders and _files have been read
   protected _haveReadFolderContents: boolean = false;
@@ -36,18 +52,20 @@ export class FolderSpec extends FSSpec {
   protected _folders: FolderSpec[] = [];
   // If this is a folder, contains a filtered list of files within this folder
   protected _files: FileSpec[] = [];
+  // If this is a folder, contains a filtered list of symlinks within this folder
+  protected _symlinks: SymlinkSpec[] = [];
   // Stores the strings that were used to create the path. This property may be deprecated at unknown time.
   protected _args: (FilePath | FolderPath)[] = [];
 
   /**
    * Return a copy of this object. Does not copy the file.
-   * @see FSSpec#copyTo
+   * @see BaseSpec#copyTo
    */
-  override copy(): FolderSpec {
+  copy(): FolderSpec {
     return new FolderSpec(this);
   }
 
-  override copyParamsTo(target: FSSpec): FSSpec {
+  override copyParamsTo(target: BaseSpec): BaseSpec {
     super.copyParamsTo(target);
     if (target instanceof FolderSpec) {
       target._haveReadFolderContents = this._haveReadFolderContents;
@@ -55,6 +73,9 @@ export class FolderSpec extends FSSpec {
         return item.copy();
       });
       target._files = this._files.map((item) => {
+        return item.copy();
+      });
+      target._symlinks = this._symlinks.map((item) => {
         return item.copy();
       });
     }
@@ -84,7 +105,7 @@ export class FolderSpec extends FSSpec {
   /**
    * Get the list of FSItem files that matched a previous call to getFiles() or
    * getChildren().
-   * @returns {FSSpec[]} Array of FSItem objects representing files.
+   * @returns {BaseSpec[]} Array of FSItem objects representing files.
    */
   get files(): FileSpec[] {
     return this._files;
@@ -104,7 +125,7 @@ export class FolderSpec extends FSSpec {
   /**
    * Get the list of FSItem folders that matched a previous call to getFolders() or
    * getChildren().
-   * @returns {FSSpec[]} Array of FSItem objects representing folders.
+   * @returns {BaseSpec[]} Array of FSItem objects representing folders.
    */
   get folders(): FolderSpec[] {
     return this._folders;
@@ -139,42 +160,42 @@ export class FolderSpec extends FSSpec {
     return this;
   }
 
-  async readDir(): Promise<FSSpec[]> {
-    const results: FSSpec[] = [];
+  async readDir(): Promise<BaseSpec[]> {
+    const results: BaseSpec[] = [];
     for await (const entry of Deno.readDir(this._f)) {
-      results.push(FSSpec.fromDirEntry(this.path, entry));
+      results.push(fromDirEntry(this.path, entry));
     }
     return results;
   }
 
-  async getFiles(regex?: RegExp): Promise<FSSpec[]> {
-    const results: FSSpec[] = [];
+  async getFiles(regex?: RegExp): Promise<BaseSpec[]> {
+    const results: BaseSpec[] = [];
     for await (const entry of Deno.readDir(this._f)) {
       if (entry.isFile) {
         if (!regex || regex.test(entry.name)) {
-          results.push(FSSpec.fromDirEntry(this.path, entry));
+          results.push(fromDirEntry(this.path, entry));
         }
       }
     }
     return results;
   }
 
-  async getFolders(regex?: RegExp): Promise<FSSpec[]> {
-    const results: FSSpec[] = [];
+  async getFolders(regex?: RegExp): Promise<BaseSpec[]> {
+    const results: BaseSpec[] = [];
     for await (const entry of Deno.readDir(this._f)) {
       if (entry.isDirectory) {
         if (!regex || regex.test(entry.name)) {
-          results.push(FSSpec.fromDirEntry(this.path, entry));
+          results.push(fromDirEntry(this.path, entry));
         }
       }
     }
     return results;
   }
 
-  async walk(opts: dfs.WalkOptions): Promise<FSSpec[]> {
+  async walk(opts: dfs.WalkOptions): Promise<BaseSpec[]> {
     const entries = await Array.fromAsync(dfs.walk(this._f, opts));
 
-    return entries.map((entry) => FSSpec.fromWalkEntry(entry));
+    return entries.map((entry) => fromWalkEntry(entry));
   }
 
   /**
@@ -186,7 +207,7 @@ export class FolderSpec extends FSSpec {
    * @param {number} [options.levels=1] - The number of levels to traverse. Defaults to 1.
    * @param {function} [options.callback] - A callback function to be called for each matched item.
    * @param {Object} [options.sort] - Sorting options for the results.
-   * @returns {Promise<FSSpec[]>} - A promise that resolves to an array of FSSpec objects representing the files and folders.
+   * @returns {Promise<BaseSpec[]>} - A promise that resolves to an array of FSSpec objects representing the files and folders.
    *
    * @example
    * ```ts
@@ -200,22 +221,23 @@ export class FolderSpec extends FSSpec {
    *   });
    * ```
    */
-  getChildren(options: GetChildrenOpts = { levels: 1 }): Promise<FSSpec[]> {
+  getChildren(options: GetChildrenOpts = { levels: 1 }): Promise<BaseSpec[]> {
     const opts: GetChildrenOpts = {
       match: options.match,
       levels: isNumber(options.levels) ? options.levels - 1 : 0,
       callback: options.callback,
       sort: isDict(options.sort) ? options.sort : {},
     };
-    const all: FSSpec[] = [];
+    const all: BaseSpec[] = [];
     this._folders = [];
     this._files = [];
+    this._symlinks = [];
     this._haveReadFolderContents = false;
     return Promise.resolve()
       .then(async () => {
         const jobs: Promise<unknown>[] = [];
         for await (const entry of Deno.readDir(this._f)) {
-          const fs = FSSpec.fromDirEntry(this.path, entry);
+          const fs = fromDirEntry(this.path, entry);
           let bMatch = false;
           if (opts.match) {
             if (isString(opts.match) && entry.name === opts.match) {
@@ -227,23 +249,22 @@ export class FolderSpec extends FSSpec {
             bMatch = true;
           }
           if (bMatch) {
-            const job = fs.getResolvedType().then((fsResolved: FSSpec) => {
-              all.push(fsResolved);
-              if (opts.callback) {
-                const job1 = opts.callback(fs);
-                jobs.push(job1);
+            all.push(fs);
+            if (opts.callback) {
+              const job1 = opts.callback(fs);
+              jobs.push(job1);
+            }
+            if (fs instanceof FolderSpec) {
+              this._folders.push(fs);
+              if ((opts.levels as number) > 0) {
+                const job2 = fs.getChildren(opts);
+                jobs.push(job2);
               }
-              if (fsResolved instanceof FolderSpec) {
-                this._folders.push(folderSpec(fs.path));
-                if ((opts.levels as number) > 0) {
-                  const job2 = this.getChildren(opts);
-                  jobs.push(job2);
-                }
-              } else if (fsResolved instanceof FileSpec) {
-                this._files.push(fileSpec(fs.path));
-              }
-            });
-            jobs.push(job);
+            } else if (fs instanceof FileSpec) {
+              this._files.push(fs);
+            } else if (fs instanceof SymlinkSpec) {
+              this._symlinks.push(fs);
+            }
           }
         }
         return Promise.all(jobs);
@@ -280,7 +301,7 @@ export class FolderSpec extends FSSpec {
    * Sorts the files of this FSItem alphabetically.
    * @returns {this} The current FSItem instance.
    */
-  static sortByFilename(items: FSSpec[]): FSSpec[] {
+  static sortByFilename(items: BaseSpec[]): BaseSpec[] {
     return items.sort((a, b) => {
       return compareDictValue(a as unknown as Dict, b as unknown as Dict, 'filename');
     });
@@ -290,7 +311,7 @@ export class FolderSpec extends FSSpec {
    * Sorts the files of this FSItem by size. Run getChildren() first.
    * @returns {this} The current FSItem instance.
    */
-  static sortFilesBySize(items: FSSpec[]): FSSpec[] {
+  static sortFilesBySize(items: BaseSpec[]): BaseSpec[] {
     return items
       .filter((item) => item instanceof FileSpec)
       .sort((a, b) => {

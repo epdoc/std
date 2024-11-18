@@ -1,5 +1,5 @@
 import { type DeepCopyOpts, type Integer, isNonEmptyString } from '@epdoc/type';
-import type { FSSpec } from './fsspec.ts';
+import type { BaseSpec } from './basespec.ts';
 
 /**
  * Represents a file path.
@@ -142,7 +142,7 @@ export type SafeCopyOpts = {
   test?: boolean;
 };
 
-export type FSSpecCallback = (fs: FSSpec) => Promise<unknown>;
+export type FSSpecCallback = (fs: BaseSpec) => Promise<unknown>;
 
 export type FSSortOpts = {
   type?: 'alphabetical' | 'size';
