@@ -1,8 +1,10 @@
 import { compareDictValue, type Dict, isDict, isNumber, isRegExp, isString } from '@epdoc/type';
 import * as dfs from '@std/fs';
-import { BaseSpec, type IBaseSpec } from './basespec.ts';
+import { BaseSpec } from './basespec.ts';
 import { FileSpec } from './filespec.ts';
 import { FSSpec, fsSpec } from './fsspec.ts';
+import type { BaseSpecParam, ISafeCopyableSpec } from './icopyable.ts';
+import { safeCopy, type SafeCopyOpts } from './safecopy.ts';
 import { SymlinkSpec } from './symspec.ts';
 import type { FileName, FilePath, FolderName, FolderPath, FSSortOpts, GetChildrenOpts } from './types.ts';
 
@@ -27,7 +29,7 @@ export type FolderSpecParam = FSSpec | FolderSpec | FolderPath;
 /**
  * Create a new FolderSpec object.
  */
-export function folderSpec(...args: FolderSpecParam[]): FolderSpec {
+export function folderSpec(...args: BaseSpecParam): FolderSpec {
   return new FolderSpec(...args);
 }
 
@@ -44,7 +46,7 @@ export function folderSpec(...args: FolderSpecParam[]): FolderSpec {
  *  - Getting the creation dates of files, including using the metadata of some file formats
  *  - Testing files for equality
  */
-export class FolderSpec extends BaseSpec implements IBaseSpec {
+export class FolderSpec extends BaseSpec implements ISafeCopyableSpec {
   // @ts-ignore this does get initialized
   // Test to see if _folders and _files have been read
   protected _haveReadFolderContents: boolean = false;
@@ -62,7 +64,9 @@ export class FolderSpec extends BaseSpec implements IBaseSpec {
    * @see BaseSpec#copyTo
    */
   copy(): FolderSpec {
-    return new FolderSpec(this);
+    const result = new FolderSpec(this);
+    this.copyParamsTo(result);
+    return result;
   }
 
   override copyParamsTo(target: BaseSpec): BaseSpec {
@@ -296,7 +300,10 @@ export class FolderSpec extends BaseSpec implements IBaseSpec {
     }
   }
 
-  /**
+  safeCopy(destFile: FilePath | FileSpec | FolderSpec | FSSpec, opts: SafeCopyOpts = {}): Promise<boolean> {
+    return safeCopy(this, destFile, opts);
+  }
+
   /**
    * Sorts the files of this FSItem alphabetically.
    * @returns {this} The current FSItem instance.

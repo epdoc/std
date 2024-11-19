@@ -4,10 +4,18 @@ import { expect } from 'jsr:@std/expect';
 import { afterAll, beforeEach, describe, it, test } from 'jsr:@std/testing/bdd';
 import os from 'node:os';
 import path from 'node:path';
-import { FileSpec, fileSpec } from '../filespec.ts';
-import { FolderSpec, folderSpec } from '../folderspec.ts';
-import { fsSpec, isFilename, isFilePath, isFolderPath, type SafeCopyOpts } from '../mod.ts';
-import { fileConflictStrategyType } from './../types.ts';
+import {
+  fileConflictStrategyType,
+  FileSpec,
+  fileSpec,
+  FolderSpec,
+  folderSpec,
+  fsSpec,
+  isFilename,
+  isFilePath,
+  isFolderPath,
+  type SafeCopyOpts,
+} from '../mod.ts';
 
 const pwd: string = import.meta.dirname as string;
 const HOME = os.userInfo().homedir;
@@ -187,7 +195,7 @@ describe('fsitem', () => {
         expect(fs.exists()).toBe(true);
         expect(fs instanceof FileSpec).toBe(false);
         expect(isValidDate(fs.createdAt())).toBe(true);
-        return fs.getResolvedType();
+        return fsSpec(pwd, 'data1/sample.txt').getResolvedType();
       })
       .then((fs) => {
         expect(fs instanceof FileSpec).toBe(true);
@@ -254,7 +262,9 @@ describe('fsitem', () => {
       })
       .then((resp) => {
         expect(resp instanceof FileSpec).toBe(true);
-        return (resp as FileSpec).getPdfDate();
+        if (resp instanceof FileSpec) {
+          return resp.getPdfDate();
+        }
       })
       .then((resp) => {
         expect(isValidDate(resp)).toBe(true);
@@ -389,7 +399,7 @@ describe('fsitem', () => {
       .then((resp) => {
         expect(resp).toEqual(true);
         return fileSpec(pwd, 'data2/folder-sample/sample2.txt').filesEqual(
-          fileSpec(pwd, 'data1/folder-sample/sample2.txt'),
+          fileSpec(pwd, 'data1/folder-sample/sample2.txt')
         );
       })
       .then((resp) => {
@@ -420,10 +430,16 @@ describe('fsitem', () => {
   test('safeCopy', () => {
     return Promise.resolve()
       .then((_resp) => {
+        return fsSpec(pwd, 'data1').getResolvedType();
+      })
+      .then((resp) => {
         const opts: SafeCopyOpts = {
           ensureParentDirs: true,
         };
-        return fsSpec(pwd, 'data1').safeCopy(fsSpec(pwd, 'data2'), opts);
+        if (resp instanceof FileSpec || resp instanceof FolderSpec) {
+          return resp.safeCopy(fsSpec(pwd, 'data2'), opts);
+        }
+        return Promise.resolve(true);
       })
       .then((resp) => {
         expect(resp).toBe(true);
@@ -440,16 +456,28 @@ describe('fsitem', () => {
       .then((resp) => {
         expect(resp).toEqual(true);
         return fileSpec(pwd, 'data2/folder-sample/sample2.txt').filesEqual(
-          fileSpec(pwd, 'data1/folder-sample/sample2.txt'),
+          fileSpec(pwd, 'data1/folder-sample/sample2.txt')
         );
       })
       .then((resp) => {
         expect(resp).toBe(true);
+      });
+  });
+
+  test('safeCopy conflict', () => {
+    return Promise.resolve()
+      .then((_resp) => {
+        return fsSpec(pwd, 'data1').getResolvedType();
+      })
+      .then((resp) => {
         const opts: SafeCopyOpts = {
           ensureParentDirs: false,
           conflictStrategy: { type: fileConflictStrategyType.renameWithNumber, limit: 5 },
         };
-        return fsSpec(pwd, 'data1').safeCopy(fsSpec(pwd, 'data2'), opts);
+        if (resp instanceof FileSpec || resp instanceof FolderSpec) {
+          return resp.safeCopy(fsSpec(pwd, 'data2'), opts);
+        }
+        return Promise.resolve(true);
       })
       .then((resp) => {
         expect(resp).toEqual(true);

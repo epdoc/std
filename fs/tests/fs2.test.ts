@@ -2,9 +2,7 @@ import { expect } from 'jsr:@std/expect';
 import { afterAll, beforeAll, describe, test } from 'jsr:@std/testing/bdd';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import { FileSpec, fileSpec } from '../filespec.ts';
-import { folderSpec } from '../folderspec.ts';
-import { BaseSpec, fsSpec } from '../mod.ts';
+import { FileSpec, fileSpec, folderSpec, FSSpec, fsSpec } from '../mod.ts';
 
 const pwd: string = import.meta.dirname as string;
 
@@ -25,7 +23,7 @@ describe('FSItem Additional Tests', () => {
 
   test('fsitem factory function creates FSItem instance', () => {
     const item = fsSpec(testFile);
-    expect(item).toBeInstanceOf(BaseSpec);
+    expect(item).toBeInstanceOf(FSSpec);
   });
 
   test('filename getter returns correct filename', () => {

@@ -1,16 +1,11 @@
-import { isArray, isError, isString } from '@epdoc/type';
+import { isArray, isError } from '@epdoc/type';
 import * as dfs from '@std/fs';
 import os from 'node:os';
 import path from 'node:path';
-import { FileSpec } from './filespec.ts';
-import { FolderSpec, folderSpec } from './folderspec.ts';
-import { FSSpec } from './fsspec.ts';
+import { type FSSpec, fsSpec } from './fsspec.ts';
 import { FSStats } from './fsstats.ts';
-import { type FilePath, type FolderPath, isFilePath, type SafeCopyOpts } from './types.ts';
-
-export interface IBaseSpec {
-  copy(): BaseSpec;
-}
+import { type BaseSpecParam, resolvePathArgs } from './icopyable.ts';
+import type { FilePath, FolderPath } from './types.ts';
 
 /**
  * Abstract class representing a file system item, which may be of unknown type,
@@ -23,15 +18,17 @@ export abstract class BaseSpec {
   protected _dirEntry: Deno.DirEntry | undefined;
 
   /**
-   * Create a new FSItem object from an existing FSItem object, a file path or
-   * an array of file path parts that can be merged using node:path#resolve.
-   * @param {(BaseSpec | FolderPath | FilePath)[]} args - An FSItem, a path, or a spread of paths to be used with path.resolve
+   * Creates a new instance of BaseSpec by resolving the provided path parts.
+   * The constructor accepts a variable number of arguments, which can be the
+   * path from a FolderSpec of FSSpec, followed by strings representing the
+   * path, or just path parts, or a single FileSpec path.
+   *
+   * @throws {Error} Throws an error if the parameters are invalid, such as if
+   * multiple FileSpec instances are provided or if a FolderSpec or FSSpec is
+   * used for anything other than the first argument.
    */
-  constructor(...args: (BaseSpec | FolderPath | FilePath)[]) {
-    this._f = BaseSpec.fromArgs(...args);
-    if (args.length === 1 && args[0] instanceof BaseSpec) {
-      args[0].copyParamsTo(this);
-    }
+  constructor(...args: BaseSpecParam) {
+    this._f = resolvePathArgs(...args);
   }
 
   /**
@@ -96,40 +93,20 @@ export abstract class BaseSpec {
     return this._stats.size !== -1;
   }
 
-  static fromArgs(...args: (BaseSpec | FolderPath | FilePath)[]): string {
-    const parts: string[] = [];
-    for (let fdx = 0; fdx < args.length; fdx++) {
-      const item = args[fdx];
-      if (fdx !== args.length - 1 && item instanceof FileSpec) {
-        throw new Error('Invalid FileSpec found');
-      }
-      if (item instanceof BaseSpec) {
-        parts.push(item.path);
-      } else if (isString(item)) {
-        parts.push(item);
-      } else {
-        throw new Error('Invalid parameter');
-      }
-    }
-    return path.resolve(...parts);
-  }
-
   /**
    * Append a file or folder name to this.f.
    * @param args A file name or array of file names.
-   * @returns This
+   * @returns A new FSSpec object that has not been resolved
    */
-  add(...args: FilePath[] | FolderPath[]): this {
+  add(...args: string[]): FSSpec {
     if (args.length === 1) {
       if (isArray(args[0])) {
-        this._f = path.resolve(this._f, ...args[0]);
+        return fsSpec(path.resolve(this._f, ...args[0]));
       } else {
-        this._f = path.resolve(this._f, args[0]);
+        return fsSpec(path.resolve(this._f, args[0]));
       }
-    } else if (args.length > 1) {
-      this._f = path.resolve(this._f, ...args);
     }
-    return this;
+    return fsSpec(path.resolve(this._f, ...args));
   }
 
   /**
@@ -302,80 +279,6 @@ export abstract class BaseSpec {
   moveTo(dest: FilePath | BaseSpec, options?: dfs.MoveOptions): Promise<void> {
     const p: FilePath = dest instanceof BaseSpec ? dest.path : dest;
     return dfs.move(this._f, p, options);
-  }
-
-  /**
-   * Copy an existing file or directory to a new location. Optionally creates a
-   * backup if there is an existing file or directory at `destFile`.
-   * @param {FilePath | BaseSpec} destFile - The destination file or directory.
-   * @param {SafeCopyOpts} [opts={}] - Options for the copy or move operation.
-   * @returns {Promise<boolean | undefined>} A promise that resolves with true if the file was copied or moved, false otherwise.
-   */
-  safeCopy(
-    destFile: FilePath | FileSpec | FolderSpec,
-    opts: SafeCopyOpts = {}
-  ): Promise<boolean | undefined> {
-    let fsSrc: FileSpec | FolderSpec;
-    let fsDest: FileSpec | FolderSpec;
-    return Promise.resolve()
-      .then(() => {
-        if (this instanceof FSSpec) {
-          return this.getResolvedType();
-        } else {
-          return Promise.resolve(this);
-        }
-      })
-      .then((resp) => {
-        if (resp instanceof FileSpec || resp instanceof FolderSpec) {
-          fsSrc = resp;
-          return fsSrc.getExists();
-        } else {
-          throw new Error('Invalid safeCopy source');
-        }
-      })
-      .then((exists: boolean | undefined) => {
-        if (exists === false) {
-          throw new Error('Does not exist: ' + this._f);
-        }
-        if (isFilePath(destFile)) {
-          return new FSSpec(destFile).getResolvedType();
-        } else if (destFile instanceof FileSpec || destFile instanceof FolderSpec) {
-          fsDest = destFile;
-        } else {
-          throw new Error('Invalid safeCopy destination');
-        }
-      })
-      .then(() => {
-        if (fsDest instanceof FileSpec) {
-          // The dest already exists. Deal with it
-          return fsDest.backup(opts.conflictStrategy);
-        }
-        return Promise.resolve(true);
-      })
-      .then((bGoAhead: FilePath | boolean) => {
-        if (bGoAhead) {
-          const fsDestParent: FolderSpec = fsDest instanceof FolderSpec ? fsDest : folderSpec(fsDest.dirname);
-          return Promise.resolve()
-            .then(() => {
-              if (opts.ensureParentDirs) {
-                return fsDestParent.ensureDir();
-              }
-            })
-            .then((_resp) => {
-              if (opts.move) {
-                return this.moveTo(fsDestParent.path, { overwrite: true }).then((_resp) => {
-                  // console.log(`  Moved ${srcFile} to ${destPath}`);
-                  return Promise.resolve(true);
-                });
-              } else {
-                return this.copyTo(fsDestParent.path, { overwrite: true }).then((_resp) => {
-                  // console.log(`  Copied ${srcFile} to ${destPath}`);
-                  return Promise.resolve(true);
-                });
-              }
-            });
-        }
-      });
   }
 
   /**

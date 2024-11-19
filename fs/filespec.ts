@@ -1,8 +1,7 @@
+import type { Dict, Integer } from '@epdoc/type';
 import {
   deepCopy,
   deepCopySetDefaultOpts,
-  type Dict,
-  type Integer,
   isArray,
   isDict,
   isInteger,
@@ -19,18 +18,15 @@ import { Buffer } from 'node:buffer';
 import fs, { close } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { BaseSpec, type IBaseSpec } from './basespec.ts';
+import { BaseSpec } from './basespec.ts';
+import type { FolderSpec } from './folderspec.ts';
 import { FSBytes } from './fsbytes.ts';
 import { FSSpec, fsSpec } from './fsspec.ts';
-import { FSStats } from './fsstats.ts';
-import {
-  type FileConflictStrategy,
-  fileConflictStrategyType,
-  type FilePath,
-  type FolderPath,
-  type FsDeepCopyOpts,
-  isFilePath,
-} from './types.ts';
+import type { FSStats } from './fsstats.ts';
+import type { BaseSpecParam, ISafeCopyableSpec } from './icopyable.ts';
+import { type FileConflictStrategy, fileConflictStrategyType, safeCopy, type SafeCopyOpts } from './safecopy.ts';
+import type { FilePath, FsDeepCopyOpts } from './types.ts';
+import { isFilePath } from './types.ts';
 import { joinContinuationLines } from './util.ts';
 
 const REG = {
@@ -43,19 +39,17 @@ const REG = {
   BOM: new RegExp(/^\uFEFF/),
 };
 
-export type FileSpecParam = FSSpec | FolderPath | FilePath;
-
 /**
  * Create a new FSItem object.
  */
-export function fileSpec(...args: FileSpecParam[]): FileSpec {
+export function fileSpec(...args: BaseSpecParam): FileSpec {
   return new FileSpec(...args);
 }
 
 /**
  * An object representing a file system entry when it is known to be a file.
  */
-export class FileSpec extends BaseSpec implements IBaseSpec {
+export class FileSpec extends BaseSpec implements ISafeCopyableSpec {
   // @ts-ignore this does get initialized
 
   /**
@@ -63,7 +57,9 @@ export class FileSpec extends BaseSpec implements IBaseSpec {
    * @see FileSpec#copyTo
    */
   copy(): FileSpec {
-    return new FileSpec(this);
+    const result = new FileSpec(this);
+    this.copyParamsTo(result);
+    return result;
   }
 
   override copyParamsTo(target: BaseSpec): BaseSpec {
@@ -434,7 +430,7 @@ export class FileSpec extends BaseSpec implements IBaseSpec {
     const opts: FsDeepCopyOpts = deepCopySetDefaultOpts(options);
     const urlTest = new RegExp(`^${opts.pre}(file|http|https):\/\/(.+)${opts.post}$`, 'i');
     if (opts.includeUrl && isNonEmptyString(a) && urlTest.test(a)) {
-      const p = a.match(urlTest);
+      const p: string[] | null = a.match(urlTest);
       if (isNonEmptyArray(p) && isFilePath(p[2])) {
         const fs = new FileSpec(this.dirname, p[2]);
         return fs.deepReadJson(opts).then((resp) => {
@@ -505,51 +501,58 @@ export class FileSpec extends BaseSpec implements IBaseSpec {
    * 'Backup' a file by moving it to a new filename. Use when copying a file to
    * the same location or creating a new file at the same location.
    * @param {BackupOpts} opts
-   * @returns {Promise<FilePath | boolean>} - Path to file if file was backed
+   * @returns {Promise<FilePath | undefined>} - Path to file if file was backed
    * up, or true if the file didn't exist
    */
-  backup(
-    opts: FileConflictStrategy = { type: 'renameWithTilde', errorIfExists: false }
-  ): Promise<FilePath | boolean> {
-    return Promise.resolve()
-      .then(() => {
-        return this.getStats();
-      })
+  backup(opts: FileConflictStrategy = { type: 'renameWithTilde', errorIfExists: false }): Promise<FilePath> {
+    return this.getStats()
       .then((stats: FSStats) => {
-        assert(stats && stats.exists(), 'File does not exist');
-        // this file already exists. Deal with it by renaming it.
-
-        if (opts.type === fileConflictStrategyType.renameWithTilde) {
-          return Promise.resolve(this.path + '~');
-        } else if (opts.type === fileConflictStrategyType.renameWithNumber) {
-          const limit = isInteger(opts.limit) ? opts.limit : 32;
-          return this.findAvailableIndexFilename(limit, opts.separator).then((resp) => {
-            if (!resp && opts.errorIfExists) {
-              throw this.newError('EEXIST', 'File exists');
-            }
-            return Promise.resolve(resp);
-          });
-        } else if (opts.type === 'overwrite') {
-          return Promise.resolve(this.path);
-        } else {
-          if (opts.errorIfExists) {
-            throw this.newError('EEXIST', 'File exists');
-          }
+        if (!stats || !stats.exists()) {
+          throw this.newError('ENOENT', 'File does not exist');
         }
-        return Promise.resolve();
+        return this._getNewPath(opts);
       })
       .then((newPath: FilePath | undefined) => {
-        if (newPath) {
+        if (isFilePath(newPath)) {
           return this.moveTo(newPath, { overwrite: true })
             .then(() => {
-              return Promise.resolve(newPath as FilePath);
+              return Promise.resolve(newPath);
             })
             .catch(() => {
               throw this.newError('ENOENT', 'File could not be renamed');
             });
+        } else {
+          throw new Error('File could not be renamed');
         }
-        return Promise.resolve(true);
       });
+  }
+
+  safeCopy(destFile: FilePath | FileSpec | FolderSpec | FSSpec, opts: SafeCopyOpts = {}): Promise<boolean> {
+    return safeCopy(this, destFile, opts);
+  }
+
+  private _getNewPath(opts: FileConflictStrategy): Promise<FilePath | undefined> {
+    return new Promise((resolve, reject) => {
+      if (opts.type === fileConflictStrategyType.renameWithTilde) {
+        resolve(this.path + '~'); // Changed to return string directly
+      } else if (opts.type === fileConflictStrategyType.renameWithNumber) {
+        const limit = isInteger(opts.limit) ? opts.limit : 32;
+        this.findAvailableIndexFilename(limit, opts.separator).then((resp) => {
+          if (!resp && opts.errorIfExists) {
+            reject(this.newError('EEXIST', 'File exists'));
+          } else {
+            resolve(resp);
+          }
+        });
+      } else if (opts.type === 'overwrite') {
+        resolve(this.path); // Changed to return string directly
+      } else {
+        if (opts.errorIfExists) {
+          reject(this.newError('EEXIST', 'File exists'));
+        }
+        resolve(undefined);
+      }
+    });
   }
 
   /**

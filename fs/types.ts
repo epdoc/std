@@ -60,41 +60,6 @@ export type FsDeepCopyOpts = DeepCopyOpts & {
   includeUrl?: unknown;
 };
 
-/**
- * Represents the possible conflict resolution strategies for a file.
- */
-export type FileConflictStrategy =
-  | { type: 'renameWithTilde'; errorIfExists?: boolean }
-  | { type: 'renameWithNumber'; separator?: string; limit?: Integer; errorIfExists?: boolean }
-  | { type: 'overwrite'; errorIfExists?: boolean }
-  | { type: 'error'; errorIfExists?: boolean };
-
-/**
- * A mapping of conflict strategy types to their string representations.
- */
-export const fileConflictStrategyType = {
-  renameWithTilde: 'renameWithTilde',
-  renameWithNumber: 'renameWithNumber',
-  overwrite: 'overwrite',
-  error: 'error',
-} as const;
-
-/**
- * Type representing the possible conflict strategy types.
- * This type is derived from the keys of the `fileConflictStrategyType` object.
- */
-export type FileConflictStrategyType = (typeof fileConflictStrategyType)[keyof typeof fileConflictStrategyType];
-
-/**
- * Checks if a given value is a valid FileConflictStrategyType.
- *
- * @param value The value to check.
- * @returns True if the value is a valid FileConflictStrategyType, false otherwise.
- */
-export function isFileConflictStrategyType(value: unknown): value is FileConflictStrategyType {
-  return typeof value === 'string' && value in Object.keys(fileConflictStrategyType);
-}
-
 // export type BackupOpts = Partial<{
 //   /** Do a simple backup by renaming the file with a `~` appended, overwriting unknown previous backups with this same name. If a string then append this string. */
 //   backup: boolean | string;
@@ -119,28 +84,6 @@ export function isFileConflictStrategyType(value: unknown): value is FileConflic
 //     /** don't actually move or copy the file, just execute the logic around it */
 //     test: boolean;
 //   }>;
-
-/**
- * Represents the options for the safeCopy method.
- */
-export type SafeCopyOpts = {
-  /**
-   * Whether to move or copy the file.
-   */
-  move?: boolean;
-  /**
-   * The strategy to use when a file with the same name already exists.
-   */
-  conflictStrategy?: FileConflictStrategy;
-  /**
-   * Whether to ensure the parent directories exist before the operation.
-   */
-  ensureParentDirs?: boolean;
-  /**
-   * Don't actually move or copy the file, just execute the logic around it
-   */
-  test?: boolean;
-};
 
 export type FSSpecCallback = (fs: BaseSpec) => Promise<unknown>;
 

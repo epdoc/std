@@ -1,11 +1,16 @@
-import { BaseSpec, type IBaseSpec } from './basespec.ts';
+import { BaseSpec } from './basespec.ts';
+import type { FileSpec } from './filespec.ts';
+import type { FolderSpec } from './folderspec.ts';
+import type { FSSpec } from './fsspec.ts';
+import type { ICopyableSpec } from './icopyable.ts';
+import type { SafeCopyOpts } from './safecopy.ts';
 import type { FilePath, FolderPath } from './types.ts';
 
-export type SymlinkSpecParam = BaseSpec | SymlinkSpec | FolderPath | FilePath;
+export type SymlinkSpecParam = FolderPath | FilePath;
 
 /**
  * Create a new FSItem object.
- * @param {(FileSpec | FolderSpec | FolderPath | FilePath)[])} args - An FSItem, a path, or a spread of paths to be used with path.resolve
+ * @param {(FileSpec | FolderSpec | FolderPath | FilePath)[]} args - An FSItem, a path, or a spread of paths to be used with path.resolve
  * @returns {FileSpec} - A new FSItem object
  */
 export function symlinkSpec(...args: SymlinkSpecParam[]): SymlinkSpec {
@@ -25,25 +30,19 @@ export function symlinkSpec(...args: SymlinkSpecParam[]): SymlinkSpec {
  *  - Getting the creation dates of files, including using the metadata of some file formats
  *  - Testing files for equality
  */
-export class SymlinkSpec extends BaseSpec implements IBaseSpec {
-  // @ts-ignore this does get initialized
-  protected _f: FilePath | FolderPath;
-
-  /**
-   * Create a new FSItem object from an existing FSItem object, a file path or
-   * an array of file path parts that can be merged using node:path#resolve.
-   * @param {(FileSpec | FolderPath | FilePath)[]} args - An FSItem, a path, or a spread of paths to be used with path.resolve
-   */
-  constructor(...args: (BaseSpec | FolderPath | FilePath)[]) {
-    super(...args);
-  }
-
+export class SymlinkSpec extends BaseSpec implements ICopyableSpec {
   /**
    * Return a copy of this object. Does not copy the file.
    * @see FileSpec#copyTo
    */
   copy(): SymlinkSpec {
-    return new SymlinkSpec(this);
+    const result = new SymlinkSpec(this.path);
+    this.copyParamsTo(result);
+    return result;
+  }
+
+  safeCopy(_destFile: FilePath | FileSpec | FolderSpec | FSSpec, _opts: SafeCopyOpts = {}): Promise<boolean> {
+    throw new Error('Cannot copy a symlink');
   }
 
   override copyParamsTo(target: SymlinkSpec): SymlinkSpec {
