@@ -2,7 +2,7 @@ import { BaseSpec } from './basespec.ts';
 import type { FileSpec } from './filespec.ts';
 import type { FolderSpec } from './folderspec.ts';
 import type { FSSpec } from './fsspec.ts';
-import type { ICopyableSpec } from './icopyable.ts';
+import { resolvePathArgs, type FSSpecParam, type ICopyableSpec } from './icopyable.ts';
 import type { SafeCopyOpts } from './safecopy.ts';
 import type { FilePath, FolderPath } from './types.ts';
 
@@ -31,6 +31,11 @@ export function symlinkSpec(...args: SymlinkSpecParam[]): SymlinkSpec {
  *  - Testing files for equality
  */
 export class SymlinkSpec extends BaseSpec implements ICopyableSpec {
+  constructor(...args: FSSpecParam) {
+    super();
+    this._f = resolvePathArgs(...args);
+  }
+
   /**
    * Return a copy of this object. Does not copy the file.
    * @see FileSpec#copyTo

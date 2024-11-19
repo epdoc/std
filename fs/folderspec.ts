@@ -1,9 +1,11 @@
-import { compareDictValue, type Dict, isDict, isNumber, isRegExp, isString } from '@epdoc/type';
+import { compareDictValue, type Dict, isArray, isDict, isNumber, isRegExp, isString } from '@epdoc/type';
 import * as dfs from '@std/fs';
+import os from 'node:os';
+import path from 'node:path';
 import { BaseSpec } from './basespec.ts';
 import { FileSpec } from './filespec.ts';
 import { FSSpec, fsSpec } from './fsspec.ts';
-import type { BaseSpecParam, ISafeCopyableSpec } from './icopyable.ts';
+import { resolvePathArgs, type FSSpecParam, type IRootableSpec, type ISafeCopyableSpec } from './icopyable.ts';
 import { safeCopy, type SafeCopyOpts } from './safecopy.ts';
 import { SymlinkSpec } from './symspec.ts';
 import type { FileName, FilePath, FolderName, FolderPath, FSSortOpts, GetChildrenOpts } from './types.ts';
@@ -24,12 +26,10 @@ function fromWalkEntry(entry: dfs.WalkEntry): BaseSpec {
   return result;
 }
 
-export type FolderSpecParam = FSSpec | FolderSpec | FolderPath;
-
 /**
  * Create a new FolderSpec object.
  */
-export function folderSpec(...args: BaseSpecParam): FolderSpec {
+export function folderSpec(...args: FSSpecParam): FolderSpec {
   return new FolderSpec(...args);
 }
 
@@ -46,7 +46,7 @@ export function folderSpec(...args: BaseSpecParam): FolderSpec {
  *  - Getting the creation dates of files, including using the metadata of some file formats
  *  - Testing files for equality
  */
-export class FolderSpec extends BaseSpec implements ISafeCopyableSpec {
+export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSpec {
   // @ts-ignore this does get initialized
   // Test to see if _folders and _files have been read
   protected _haveReadFolderContents: boolean = false;
@@ -58,6 +58,11 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec {
   protected _symlinks: SymlinkSpec[] = [];
   // Stores the strings that were used to create the path. This property may be deprecated at unknown time.
   protected _args: (FilePath | FolderPath)[] = [];
+
+  constructor(...args: FSSpecParam) {
+    super()
+    this._f = resolvePathArgs(...args);
+  }
 
   /**
    * Return a copy of this object. Does not copy the file.
@@ -144,6 +149,17 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec {
     return this._folders.map((fs) => {
       return fs.filename;
     });
+  }
+
+  add(...args: string[]): FolderSpec {
+    if (args.length === 1 && isArray(args[0])) {
+      return new FolderSpec(path.resolve(this._f, ...args[0]));
+    }
+    return new FolderSpec(path.resolve(this._f, ...args));
+  }
+
+  home(...args: string[]): FolderSpec {
+    return this.add(os.userInfo().homedir, ...args);
   }
 
   /**

@@ -2,7 +2,7 @@ import { expect } from 'jsr:@std/expect';
 import { afterAll, beforeAll, describe, test } from 'jsr:@std/testing/bdd';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import { FileSpec, fileSpec, folderSpec, FSSpec, fsSpec } from '../mod.ts';
+import { fileSpec, folderSpec, FSSpec, fsSpec } from '../mod.ts';
 
 const pwd: string = import.meta.dirname as string;
 
@@ -93,11 +93,10 @@ describe('FSItem Additional Tests', () => {
   });
 
   test('add method correctly joins paths', () => {
-    const item = folderSpec(testDir);
-    const newItem = item.add('subdir', 'file.txt');
-    expect(newItem.path).toBe(path.join(testDir, 'subdir', 'file.txt'));
-    return newItem.getResolvedType().then((resp) => {
-      expect(resp).toBeInstanceOf(FileSpec);
+    const item = fileSpec(testDir).add('subdir', 'file.txt');
+    expect(item.path).toBe(path.join(testDir, 'subdir', 'file.txt'));
+    return item.getIsFile().then((resp) => {
+      expect(resp).toBe(true);
     });
   });
 

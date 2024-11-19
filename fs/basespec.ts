@@ -1,10 +1,7 @@
-import { isArray, isError } from '@epdoc/type';
+import { isError } from '@epdoc/type';
 import * as dfs from '@std/fs';
-import os from 'node:os';
 import path from 'node:path';
-import { type FSSpec, fsSpec } from './fsspec.ts';
 import { FSStats } from './fsstats.ts';
-import { type BaseSpecParam, resolvePathArgs } from './icopyable.ts';
 import type { FilePath, FolderPath } from './types.ts';
 
 /**
@@ -27,9 +24,9 @@ export abstract class BaseSpec {
    * multiple FileSpec instances are provided or if a FolderSpec or FSSpec is
    * used for anything other than the first argument.
    */
-  constructor(...args: BaseSpecParam) {
-    this._f = resolvePathArgs(...args);
-  }
+  // constructor(...args: FSSpecParam) {
+  //   this._f = resolvePathArgs(...args);
+  // }
 
   /**
    * Copies parameters from this FSSpec to the target FSSpec.
@@ -91,33 +88,6 @@ export abstract class BaseSpec {
 
   get hasFileSize(): boolean {
     return this._stats.size !== -1;
-  }
-
-  /**
-   * Append a file or folder name to this.f.
-   * @param args A file name or array of file names.
-   * @returns A new FSSpec object that has not been resolved
-   */
-  add(...args: string[]): FSSpec {
-    if (args.length === 1) {
-      if (isArray(args[0])) {
-        return fsSpec(path.resolve(this._f, ...args[0]));
-      } else {
-        return fsSpec(path.resolve(this._f, args[0]));
-      }
-    }
-    return fsSpec(path.resolve(this._f, ...args));
-  }
-
-  /**
-   * Set the path relative to the home dir
-   */
-  home(...args: FilePath[] | FolderPath[]): this {
-    this._f = os.userInfo().homedir;
-    if (args) {
-      this.add(...args);
-    }
-    return this;
   }
 
   /**

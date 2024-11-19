@@ -17,14 +17,20 @@ import checksum from 'checksum';
 import { Buffer } from 'node:buffer';
 import fs, { close } from 'node:fs';
 import { readFile } from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 import { BaseSpec } from './basespec.ts';
 import type { FolderSpec } from './folderspec.ts';
 import { FSBytes } from './fsbytes.ts';
 import { FSSpec, fsSpec } from './fsspec.ts';
 import type { FSStats } from './fsstats.ts';
-import type { BaseSpecParam, ISafeCopyableSpec } from './icopyable.ts';
-import { type FileConflictStrategy, fileConflictStrategyType, safeCopy, type SafeCopyOpts } from './safecopy.ts';
+import { resolvePathArgs, type FSSpecParam, type IRootableSpec, type ISafeCopyableSpec } from './icopyable.ts';
+import {
+  type FileConflictStrategy,
+  fileConflictStrategyType,
+  safeCopy,
+  type SafeCopyOpts,
+} from './safecopy.ts';
 import type { FilePath, FsDeepCopyOpts } from './types.ts';
 import { isFilePath } from './types.ts';
 import { joinContinuationLines } from './util.ts';
@@ -42,15 +48,20 @@ const REG = {
 /**
  * Create a new FSItem object.
  */
-export function fileSpec(...args: BaseSpecParam): FileSpec {
+export function fileSpec(...args: FSSpecParam): FileSpec {
   return new FileSpec(...args);
 }
 
 /**
  * An object representing a file system entry when it is known to be a file.
  */
-export class FileSpec extends BaseSpec implements ISafeCopyableSpec {
+export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSpec {
   // @ts-ignore this does get initialized
+
+  constructor(...args: FSSpecParam) {
+    super()
+    this._f = resolvePathArgs(...args);
+  }
 
   /**
    * Return a copy of this object. Does not copy the file.
@@ -95,6 +106,17 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec {
    */
   get extname(): string {
     return path.extname(this._f);
+  }
+
+  add(...args: string[]): FileSpec {
+    if (args.length === 1 && isArray(args[0])) {
+      return new FileSpec(path.resolve(this._f, ...args[0]));
+    }
+    return new FileSpec(path.resolve(this._f, ...args));
+  }
+
+  home(...args: string[]): FileSpec {
+    return this.add(os.userInfo().homedir, ...args);
   }
 
   size(): Integer | undefined {

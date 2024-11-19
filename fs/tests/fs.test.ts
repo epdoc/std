@@ -115,14 +115,14 @@ describe('fsitem', () => {
   });
   test('setExt', () => {
     const PATH = './mypath/to/file/sample.json';
-    const EXPECTED = './mypath/to/file/sample.rsc';
+    const EXPECTED = `${Deno.cwd()}/mypath/to/file/sample.rsc`;
     const fs = fileSpec(PATH);
     expect(fs.setExt('txt').extname).toEqual('.txt');
     expect(fs.setExt('rsc').path).toEqual(EXPECTED);
   });
   test('setBasename', () => {
     const PATH = './mypath/to/file/sample.less.json';
-    const EXPECTED = './mypath/to/file/sample.more.json';
+    const EXPECTED = `${Deno.cwd()}/mypath/to/file/sample.more.json`;
     const fs: FileSpec = fileSpec(PATH);
     fs.setBasename('sample.more');
     expect(fs.path).toEqual(EXPECTED);
@@ -178,10 +178,12 @@ describe('fsitem', () => {
         return fsSpec(pwd, 'data1').getResolvedType();
       })
       .then((resp) => {
-        expect(resp instanceof FileSpec).toBe(true);
+        expect(resp instanceof FolderSpec).toBe(true);
+        expect(resp instanceof FileSpec).toBe(false);
         return fsSpec(pwd, 'data1/sample.txt').getResolvedType();
       })
       .then((resp) => {
+        expect(resp instanceof FolderSpec).toBe(false);
         expect(resp instanceof FileSpec).toBe(true);
       });
   });
@@ -195,17 +197,23 @@ describe('fsitem', () => {
         expect(fs.exists()).toBe(true);
         expect(fs instanceof FileSpec).toBe(false);
         expect(isValidDate(fs.createdAt())).toBe(true);
+      });
+  });
+  test('fs getResolvedType', () => {
+    return Promise.resolve()
+      .then((_resp) => {
         return fsSpec(pwd, 'data1/sample.txt').getResolvedType();
       })
       .then((fs) => {
         expect(fs instanceof FileSpec).toBe(true);
-        expect((fs as FileSpec).size).toBe(256);
+        expect((fs as FileSpec).size()).toBe(52);
       });
   });
   test('constructor with .folder', () => {
     return Promise.resolve()
       .then((_resp) => {
-        return fsSpec(pwd).exists();
+        expect(fsSpec(pwd).exists()).toBe(undefined);
+        return fsSpec(pwd).getExists();
       })
       .then((resp) => {
         expect(resp).toBe(true);
@@ -258,7 +266,7 @@ describe('fsitem', () => {
   test('getPdfDate', () => {
     return Promise.resolve()
       .then((_resp) => {
-        return fsSpec(pwd, 'data', '.withdot/text alignment.pdf');
+        return fileSpec(pwd, 'data', '.withdot/text alignment.pdf');
       })
       .then((resp) => {
         expect(resp instanceof FileSpec).toBe(true);
