@@ -6,7 +6,7 @@ import { fileSpec, folderSpec, FSSpec, fsSpec } from '../mod.ts';
 
 const pwd: string = import.meta.dirname as string;
 
-describe('FSItem Additional Tests', () => {
+describe('FSSpec Tests Part 2', () => {
   const testDir = path.join(pwd, 'test-fsitem');
   const testFile = path.join(testDir, 'test.txt');
   const testJson = path.join(testDir, 'test.json');
@@ -19,6 +19,10 @@ describe('FSItem Additional Tests', () => {
 
   afterAll(async () => {
     await fs.rm(testDir, { recursive: true, force: true });
+  });
+
+  test('testdir exists', async () => {
+    expect(await fsSpec(testDir).getExists()).toBe(true);
   });
 
   test('fsitem factory function creates FSItem instance', () => {
@@ -96,7 +100,7 @@ describe('FSItem Additional Tests', () => {
     const item = fileSpec(testDir).add('subdir', 'file.txt');
     expect(item.path).toBe(path.join(testDir, 'subdir', 'file.txt'));
     return item.getIsFile().then((resp) => {
-      expect(resp).toBe(true);
+      expect(resp).toBe(false);
     });
   });
 

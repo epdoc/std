@@ -2,7 +2,7 @@ import { BaseSpec } from './basespec.ts';
 import type { FileSpec } from './filespec.ts';
 import type { FolderSpec } from './folderspec.ts';
 import type { FSSpec } from './fsspec.ts';
-import { resolvePathArgs, type FSSpecParam, type ICopyableSpec } from './icopyable.ts';
+import { type FSSpecParam, type ICopyableSpec, resolvePathArgs } from './icopyable.ts';
 import type { SafeCopyOpts } from './safecopy.ts';
 import type { FilePath, FolderPath } from './types.ts';
 

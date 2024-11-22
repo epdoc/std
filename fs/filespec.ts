@@ -24,13 +24,8 @@ import type { FolderSpec } from './folderspec.ts';
 import { FSBytes } from './fsbytes.ts';
 import { FSSpec, fsSpec } from './fsspec.ts';
 import type { FSStats } from './fsstats.ts';
-import { resolvePathArgs, type FSSpecParam, type IRootableSpec, type ISafeCopyableSpec } from './icopyable.ts';
-import {
-  type FileConflictStrategy,
-  fileConflictStrategyType,
-  safeCopy,
-  type SafeCopyOpts,
-} from './safecopy.ts';
+import { type FSSpecParam, type IRootableSpec, type ISafeCopyableSpec, resolvePathArgs } from './icopyable.ts';
+import { type FileConflictStrategy, fileConflictStrategyType, safeCopy, type SafeCopyOpts } from './safecopy.ts';
 import type { FilePath, FsDeepCopyOpts } from './types.ts';
 import { isFilePath } from './types.ts';
 import { joinContinuationLines } from './util.ts';
@@ -59,7 +54,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
   // @ts-ignore this does get initialized
 
   constructor(...args: FSSpecParam) {
-    super()
+    super();
     this._f = resolvePathArgs(...args);
   }
 

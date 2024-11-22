@@ -4,7 +4,8 @@
   "description": "File system entry wrapper",
   "exports": "./mod.ts",
   "tasks": {
-    "test": "deno test --allow-env --allow-sys --allow-read --allow-write"
+    "test": "deno test --allow-env --allow-sys --allow-read --allow-write",
+    "test1": "deno test --allow-env --allow-sys --allow-read --allow-write tests/fs.test.ts"
   },
   "tests": {
     "include": ["test/**/*.ts"]
@@ -18,7 +19,7 @@
     "pdf-lib": "npm:pdf-lib@^1.17.1"
   },
   "lint": {
-    "exclude": ["tests/data/**/*.*"]
+    "exclude": ["tests/*/*.*"]
   },
   "fmt": {
     "exclude": ["tests/data/**/*.*"]

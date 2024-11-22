@@ -9,7 +9,7 @@ import type { FSSortOpts } from '../mod.ts';
 
 const pwd: string = import.meta.dirname as string;
 
-describe('FSItem Additional Tests', () => {
+describe('FSSpec Tests Part 3', () => {
   const testDir = path.join(pwd, 'data', 'test-fsitem');
   const testFile = path.join(testDir, 'test.txt');
   const testJson = path.join(testDir, 'test.json');

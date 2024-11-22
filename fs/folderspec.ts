@@ -5,7 +5,7 @@ import path from 'node:path';
 import { BaseSpec } from './basespec.ts';
 import { FileSpec } from './filespec.ts';
 import { FSSpec, fsSpec } from './fsspec.ts';
-import { resolvePathArgs, type FSSpecParam, type IRootableSpec, type ISafeCopyableSpec } from './icopyable.ts';
+import { type FSSpecParam, type IRootableSpec, type ISafeCopyableSpec, resolvePathArgs } from './icopyable.ts';
 import { safeCopy, type SafeCopyOpts } from './safecopy.ts';
 import { SymlinkSpec } from './symspec.ts';
 import type { FileName, FilePath, FolderName, FolderPath, FSSortOpts, GetChildrenOpts } from './types.ts';
@@ -60,7 +60,7 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
   protected _args: (FilePath | FolderPath)[] = [];
 
   constructor(...args: FSSpecParam) {
-    super()
+    super();
     this._f = resolvePathArgs(...args);
   }
 

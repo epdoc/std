@@ -1,4 +1,5 @@
 import { type Integer, isString } from '@epdoc/type';
+import type * as dfs from 'jsr:@std/fs';
 import { FileSpec } from './filespec.ts';
 import { FolderSpec } from './folderspec.ts';
 import { FSSpec } from './fsspec.ts';
@@ -62,24 +63,24 @@ export type SafeCopyOpts = {
   test?: boolean;
 };
 
-function toFileOrFolderSpec(
-  fs: FSSpec | FolderSpec | FileSpec | string,
-): Promise<FSSpec | FolderSpec | FileSpec | SymlinkSpec> {
-  if (fs instanceof FileSpec || fs instanceof FolderSpec) {
-    return Promise.resolve(fs);
-  } else if (isString(fs)) {
-    return new FSSpec(fs).getResolvedType().then((resp) => {
-      if (resp instanceof FileSpec || resp instanceof FolderSpec) {
-        return Promise.resolve(resp);
-      }
-      throw new Error('Invalid safeCopy destination');
-    });
-  } else if (fs instanceof FSSpec) {
-    return fs.getResolvedType();
-  } else {
-    throw new Error('Invalid safeCopy destination');
-  }
-}
+// function toFileOrFolderSpec(
+//   fs: FSSpec | FolderSpec | FileSpec | string,
+// ): Promise<FSSpec | FolderSpec | FileSpec | SymlinkSpec> {
+//   if (fs instanceof FileSpec || fs instanceof FolderSpec) {
+//     return Promise.resolve(fs);
+//   } else if (isString(fs)) {
+//     return new FSSpec(fs).getResolvedType().then((resp) => {
+//       if (resp instanceof FileSpec || resp instanceof FolderSpec) {
+//         return Promise.resolve(resp);
+//       }
+//       throw new Error('Invalid safeCopy destination');
+//     });
+//   } else if (fs instanceof FSSpec) {
+//     return fs.getResolvedType();
+//   } else {
+//     throw new Error('Invalid safeCopy destination');
+//   }
+// }
 
 /**
  * Copy an existing file or directory to a new location. Optionally creates a
@@ -94,7 +95,7 @@ export function safeCopy(
   opts: SafeCopyOpts = {},
 ): Promise<boolean> {
   let fsSrc: FileSpec | FolderSpec;
-  let fsDest: FileSpec | FolderSpec | FSSpec;
+  let fsDest: FSSpec | FileSpec | FolderSpec = isString(destFile) ? new FSSpec(destFile) : destFile;
   return Promise.resolve()
     .then(() => {
       if (srcFile instanceof FSSpec) {
@@ -117,47 +118,61 @@ export function safeCopy(
       }
     })
     .then(() => {
-      return toFileOrFolderSpec(destFile);
+      if (fsDest instanceof FSSpec) {
+        return fsDest.getResolvedType();
+      } else {
+        return Promise.resolve(fsDest);
+      }
     })
     .then((resp: FSSpec | FolderSpec | FileSpec | SymlinkSpec) => {
       if (resp instanceof SymlinkSpec) {
-        throw new Error('SymlinkSpec not supported in safeCopy');
+        throw new Error('safeCopy destination cannot be a symlink');
       }
       fsDest = resp;
       if (fsDest instanceof FileSpec) {
-        // The dest already exists. Deal with it
-        return fsDest
-          .backup(opts.conflictStrategy)
-          .then((newPath: FilePath) => {
-            return srcFile.copyTo(newPath, { overwrite: true });
-          })
-          .then(() => {
+        if (fsDest.exists()) {
+          return fsDest
+            .backup(opts.conflictStrategy)
+            .then((newPath: FilePath) => {
+              if (opts.move) {
+                return srcFile.moveTo(newPath, { overwrite: true });
+              } else {
+                return srcFile.copyTo(newPath, { overwrite: true });
+              }
+            })
+            .then(() => {
+              return Promise.resolve(true);
+            });
+        } else {
+          const copyOpts: dfs.CopyOptions = getCopyOpts(opts);
+          if (opts.move) {
+            return srcFile.moveTo(fsDest, copyOpts);
+          } else {
+            return srcFile.copyTo(fsDest, copyOpts);
+          }
+        }
+      } else {
+        const copyOpts: dfs.CopyOptions = getCopyOpts(opts);
+        if (opts.move) {
+          return srcFile.moveTo(fsDest.path, copyOpts).then(() => {
             return Promise.resolve(true);
           });
-      } else {
-        const fsDestParent: FolderSpec = fsDest instanceof FolderSpec ? fsDest : new FolderSpec(fsDest.dirname);
-        return Promise.resolve()
-          .then(() => {
-            if (opts.ensureParentDirs) {
-              return fsDestParent.ensureDir();
-            }
-          })
-          .then((_resp) => {
-            if (opts.move) {
-              return srcFile.moveTo(fsDestParent.path, { overwrite: true }).then((_resp) => {
-                // console.log(`  Moved ${srcFile} to ${destPath}`);
-                return Promise.resolve(true);
-              });
-            } else {
-              return srcFile.copyTo(fsDestParent.path, { overwrite: true }).then((_resp) => {
-                // console.log(`  Copied ${srcFile} to ${destPath}`);
-                return Promise.resolve(true);
-              });
-            }
+        } else {
+          return srcFile.copyTo(fsDest.path, copyOpts).then(() => {
+            return Promise.resolve(true);
           });
+        }
       }
     })
     .then((_resp) => {
       return Promise.resolve(true);
     });
+}
+
+function getCopyOpts(opts: SafeCopyOpts): dfs.CopyOptions {
+  const copyOpts: dfs.CopyOptions = { preserveTimestamps: true };
+  if (opts.conflictStrategy === 'overwrite') {
+    copyOpts.overwrite = true;
+  }
+  return copyOpts;
 }

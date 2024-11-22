@@ -11,11 +11,8 @@
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "--allow-env",
-        "--allow-sys",
-        "--allow-read",
-        "--allow-write",
-        "././type/dict.util.test.ts"
+        "-RWES",
+        "/Users/jpravetz/dev/@epdoc/std/type/dict.util.test.ts"
       ],
       "attachSimplePort": 9229
     },
@@ -29,11 +26,8 @@
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "--allow-env",
-        "--allow-sys",
-        "--allow-read",
-        "--allow-write",
-        "././duration/record.test.ts"
+        "-RWES",
+        "/Users/jpravetz/dev/@epdoc/std/duration/record.test.ts"
       ],
       "attachSimplePort": 9229
     },
@@ -47,11 +41,8 @@
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "--allow-env",
-        "--allow-sys",
-        "--allow-read",
-        "--allow-write",
-        "././type/util.test.ts"
+        "-RWES",
+        "/Users/jpravetz/dev/@epdoc/std/type/util.test.ts"
       ],
       "attachSimplePort": 9229
     },
@@ -65,11 +56,8 @@
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "--allow-env",
-        "--allow-sys",
-        "--allow-read",
-        "--allow-write",
-        "././datetime/date.test.ts"
+        "-RWES",
+        "/Users/jpravetz/dev/@epdoc/std/datetime/date.test.ts"
       ],
       "attachSimplePort": 9229
     },
@@ -83,11 +71,8 @@
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "--allow-env",
-        "--allow-sys",
-        "--allow-read",
-        "--allow-write",
-        "././duration/duration.test.ts"
+        "-RWES",
+        "/Users/jpravetz/dev/@epdoc/std/duration/duration.test.ts"
       ],
       "attachSimplePort": 9229
     },
@@ -101,11 +86,8 @@
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "--allow-env",
-        "--allow-sys",
-        "--allow-read",
-        "--allow-write",
-        "././string/ex.test.ts"
+        "-RWES",
+        "/Users/jpravetz/dev/@epdoc/std/string/ex.test.ts"
       ],
       "attachSimplePort": 9229
     },
@@ -119,11 +101,8 @@
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "--allow-env",
-        "--allow-sys",
-        "--allow-read",
-        "--allow-write",
-        "././fs/fs.test.ts"
+        "-RWES",
+        "/Users/jpravetz/dev/@epdoc/std/fs/tests/fs.test.ts"
       ],
       "attachSimplePort": 9229
     },
@@ -137,11 +116,8 @@
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "--allow-env",
-        "--allow-sys",
-        "--allow-read",
-        "--allow-write",
-        "././fs/fsbytes.test.ts"
+        "-RWES",
+        "/Users/jpravetz/dev/@epdoc/std/fs/tests/fsbytes.test.ts"
       ],
       "attachSimplePort": 9229
     },
@@ -155,11 +131,8 @@
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "--allow-env",
-        "--allow-sys",
-        "--allow-read",
-        "--allow-write",
-        "././fs/fs2.test.ts"
+        "-RWES",
+        "/Users/jpravetz/dev/@epdoc/std/fs/tests/fs2.test.ts"
       ],
       "attachSimplePort": 9229
     },
@@ -173,11 +146,8 @@
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "--allow-env",
-        "--allow-sys",
-        "--allow-read",
-        "--allow-write",
-        "././fs/fs3.test.ts"
+        "-RWES",
+        "/Users/jpravetz/dev/@epdoc/std/fs/tests/fs3.test.ts"
       ],
       "attachSimplePort": 9229
     }

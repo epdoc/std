@@ -7,7 +7,6 @@ import { type FolderSpec, folderSpec } from './folderspec.ts';
 import { type FSSpecParam, type ICopyableSpec, type IRootableSpec, resolvePathArgs } from './icopyable.ts';
 import { type SymlinkSpec, symlinkSpec } from './symspec.ts';
 
-
 /**
  * Create a new FSItem object.
  * @param {(BaseSpec | FolderPath | FilePath)[]} args - An FSItem, a path, or a spread of paths to be used with path.resolve
