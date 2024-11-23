@@ -71,7 +71,7 @@ describe('FSSpec Tests Part 3', () => {
   test('sortFiles sorts files correctly', async () => {
     const item = folderSpec(testDir);
     let files = await item.getFiles();
-    files = FolderSpec.sortByFilename(files);
+    files = FolderSpec.sortByFilename(files) as FileSpec[];
     expect(files[0].filename).toBe('test.json');
     expect(files[1].filename).toBe('test.txt');
   });
@@ -79,7 +79,7 @@ describe('FSSpec Tests Part 3', () => {
   test('sortFolders sorts folders correctly', async () => {
     const item = folderSpec(testSubDir);
     let files = await item.getFiles();
-    files = FolderSpec.sortByFilename(files);
+    files = FolderSpec.sortByFilename(files) as FileSpec[];
     expect(files[0].filename).toBe('file1.txt');
     expect(files[1].filename).toBe('file2.txt');
   });

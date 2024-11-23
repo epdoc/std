@@ -71,16 +71,16 @@ describe('FSSpec Tests Part 1', () => {
           expect(isArray(resp)).toBe(true);
           return fs1.getFiles();
         })
-        .then((resp) => {
+        .then((resp: FileSpec[]) => {
           expect(isArray(resp)).toBe(true);
           expect(resp.length).toBe(TEST_FILES.length);
-          resp = FolderSpec.sortByFilename(resp);
+          const sortedFiles = FolderSpec.sortByFilename(resp);
           // console.log(resp.map((f) => f.filename));
-          expect(resp[0].filename).toBe(TEST_FILES[0]);
-          expect(resp[1].filename).toBe(TEST_FILES[1]);
-          expect(resp[2].filename).toBe(TEST_FILES[2]);
-          expect(resp[3].filename).toBe(TEST_FILES[3]);
-          return resp;
+          expect(sortedFiles[0].filename).toBe(TEST_FILES[0]);
+          expect(sortedFiles[1].filename).toBe(TEST_FILES[1]);
+          expect(sortedFiles[2].filename).toBe(TEST_FILES[2]);
+          expect(sortedFiles[3].filename).toBe(TEST_FILES[3]);
+          return sortedFiles;
         })
         .then((resp) => {
           expect(isArray(resp)).toBe(true);
@@ -94,25 +94,25 @@ describe('FSSpec Tests Part 1', () => {
         });
     });
     it('getChildren', () => {
-      const fs0: FolderSpec = folderSpec(pwd);
-      const fs1 = folderSpec(pwd);
-      return fs0
+      const folder0: FolderSpec = folderSpec(pwd);
+      const folder1 = folderSpec(pwd);
+      return folder0
         .getChildren()
         .then((resp) => {
           expect(isArray(resp)).toBe(true);
-          expect(isArray(fs0.files)).toBe(true);
-          expect(isArray(fs0.folders)).toBe(true);
-          return fs1.getChildren();
+          expect(isArray(folder0.files)).toBe(true);
+          expect(isArray(folder0.folders)).toBe(true);
+          return folder1.getChildren();
         })
-        .then((resp) => {
-          expect(isArray(resp)).toBe(true);
-          expect(isArray(fs1.files)).toBe(true);
-          expect(isArray(fs1.folders)).toBe(true);
-          expect(fs1.files.length).toBe(TEST_FILES.length);
-          expect(fs1.folders.length).toBe(TEST_FOLDERS.length + TEST_FOLDERS2.length);
-          fs1.sortChildren();
-          expect(fs1.folders[0].filename).toEqual(TEST_FOLDERS[0]);
-          expect(fs1.folders[1].filename).toEqual(TEST_FOLDERS[1]);
+        .then((all) => {
+          expect(isArray(all)).toBe(true);
+          expect(isArray(folder1.files)).toBe(true);
+          expect(isArray(folder1.folders)).toBe(true);
+          expect(folder1.files.length).toBe(TEST_FILES.length);
+          expect(folder1.folders.length).toBe(TEST_FOLDERS.length + TEST_FOLDERS2.length);
+          folder1.sortChildren();
+          expect(folder1.folders[0].filename).toEqual(TEST_FOLDERS[0]);
+          expect(folder1.folders[1].filename).toEqual(TEST_FOLDERS[1]);
         });
     });
     test('setExt', () => {

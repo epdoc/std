@@ -5,17 +5,25 @@ import path from 'node:path';
 import { BaseSpec } from './basespec.ts';
 import { FileSpec } from './filespec.ts';
 import { FSSpec, fsSpec } from './fsspec.ts';
-import { type FSSpecParam, type IRootableSpec, type ISafeCopyableSpec, resolvePathArgs } from './icopyable.ts';
+import {
+  type FSSpecParam,
+  type IRootableSpec,
+  type ISafeCopyableSpec,
+  resolvePathArgs,
+} from './icopyable.ts';
 import { safeCopy, type SafeCopyOpts } from './safecopy.ts';
 import { SymlinkSpec } from './symspec.ts';
 import type { FileName, FilePath, FolderName, FolderPath, FSSortOpts, GetChildrenOpts } from './types.ts';
 
-function fromDirEntry(path: FolderPath, entry: Deno.DirEntry): BaseSpec {
-  const result = fsSpec(path, entry.name).setDirEntry(entry);
-  if (result instanceof FSSpec) {
-    return result.resolveType();
+function fromDirEntry(path: FolderPath, entry: Deno.DirEntry): FileSpec | FolderSpec | SymlinkSpec | FSSpec {
+  if (entry.isDirectory) {
+    return new FolderSpec(path, entry.name).setDirEntry(entry);
+  } else if (entry.isFile) {
+    return new FileSpec(path, entry.name).setDirEntry(entry);
+  } else if (entry.isSymlink) {
+    return new SymlinkSpec(path, entry.name).setDirEntry(entry);
   }
-  return result;
+  return new FSSpec(path, entry.name).setDirEntry(entry);
 }
 
 function fromWalkEntry(entry: dfs.WalkEntry): BaseSpec {
@@ -188,24 +196,26 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
     return results;
   }
 
-  async getFiles(regex?: RegExp): Promise<BaseSpec[]> {
-    const results: BaseSpec[] = [];
+  async getFiles(regex?: RegExp): Promise<FileSpec[]> {
+    const results: FileSpec[] = [];
     for await (const entry of Deno.readDir(this._f)) {
       if (entry.isFile) {
         if (!regex || regex.test(entry.name)) {
-          results.push(fromDirEntry(this.path, entry));
+          const fileSpec = new FileSpec(this.path, entry.name).setDirEntry(entry);
+          results.push(fileSpec);
         }
       }
     }
     return results;
   }
 
-  async getFolders(regex?: RegExp): Promise<BaseSpec[]> {
-    const results: BaseSpec[] = [];
+  async getFolders(regex?: RegExp): Promise<FolderSpec[]> {
+    const results: FolderSpec[] = [];
     for await (const entry of Deno.readDir(this._f)) {
       if (entry.isDirectory) {
         if (!regex || regex.test(entry.name)) {
-          results.push(fromDirEntry(this.path, entry));
+          const folderSpec = new FolderSpec(this.path, entry.name).setDirEntry(entry);
+          results.push(folderSpec);
         }
       }
     }
@@ -311,8 +321,8 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
       this._files = FolderSpec.sortByFilename(this._files) as FileSpec[];
     }
     if (opts.direction === 'descending') {
-      this._folders.reverse();
-      this._files.reverse();
+      this._folders = this._folders.reverse();
+      this._files = this._files.reverse();
     }
   }
 
@@ -324,7 +334,7 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
    * Sorts the files of this FSItem alphabetically.
    * @returns {this} The current FSItem instance.
    */
-  static sortByFilename(items: BaseSpec[]): BaseSpec[] {
+  static sortByFilename(items: (FileSpec | FolderSpec)[]): (FileSpec | FolderSpec)[] {
     return items.sort((a, b) => {
       return compareDictValue(a as unknown as Dict, b as unknown as Dict, 'filename');
     });
