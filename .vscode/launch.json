@@ -6,12 +6,14 @@
       "name": "Debug ./type/dict.util.test.ts",
       "type": "node",
       "cwd": "${workspaceFolder}",
-      "env": {},
+      "env": {
+        "UNIT_TEST": "1"
+      },
       "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "-RWES",
+        "--RWES",
         "/Users/jpravetz/dev/@epdoc/std/type/dict.util.test.ts"
       ],
       "attachSimplePort": 9229
@@ -21,12 +23,14 @@
       "name": "Debug ./duration/record.test.ts",
       "type": "node",
       "cwd": "${workspaceFolder}",
-      "env": {},
+      "env": {
+        "UNIT_TEST": "1"
+      },
       "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "-RWES",
+        "--RWES",
         "/Users/jpravetz/dev/@epdoc/std/duration/record.test.ts"
       ],
       "attachSimplePort": 9229
@@ -36,12 +40,14 @@
       "name": "Debug ./type/util.test.ts",
       "type": "node",
       "cwd": "${workspaceFolder}",
-      "env": {},
+      "env": {
+        "UNIT_TEST": "1"
+      },
       "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "-RWES",
+        "--RWES",
         "/Users/jpravetz/dev/@epdoc/std/type/util.test.ts"
       ],
       "attachSimplePort": 9229
@@ -51,12 +57,14 @@
       "name": "Debug ./datetime/date.test.ts",
       "type": "node",
       "cwd": "${workspaceFolder}",
-      "env": {},
+      "env": {
+        "UNIT_TEST": "1"
+      },
       "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "-RWES",
+        "--RWES",
         "/Users/jpravetz/dev/@epdoc/std/datetime/date.test.ts"
       ],
       "attachSimplePort": 9229
@@ -66,12 +74,14 @@
       "name": "Debug ./duration/duration.test.ts",
       "type": "node",
       "cwd": "${workspaceFolder}",
-      "env": {},
+      "env": {
+        "UNIT_TEST": "1"
+      },
       "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "-RWES",
+        "--RWES",
         "/Users/jpravetz/dev/@epdoc/std/duration/duration.test.ts"
       ],
       "attachSimplePort": 9229
@@ -81,12 +91,14 @@
       "name": "Debug ./string/ex.test.ts",
       "type": "node",
       "cwd": "${workspaceFolder}",
-      "env": {},
+      "env": {
+        "UNIT_TEST": "1"
+      },
       "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "-RWES",
+        "--RWES",
         "/Users/jpravetz/dev/@epdoc/std/string/ex.test.ts"
       ],
       "attachSimplePort": 9229
@@ -96,12 +108,14 @@
       "name": "Debug ./fs/fs.test.ts",
       "type": "node",
       "cwd": "${workspaceFolder}",
-      "env": {},
+      "env": {
+        "UNIT_TEST": "1"
+      },
       "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "-RWES",
+        "--RWES",
         "/Users/jpravetz/dev/@epdoc/std/fs/tests/fs.test.ts"
       ],
       "attachSimplePort": 9229
@@ -111,12 +125,14 @@
       "name": "Debug ./fs/fsbytes.test.ts",
       "type": "node",
       "cwd": "${workspaceFolder}",
-      "env": {},
+      "env": {
+        "UNIT_TEST": "1"
+      },
       "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "-RWES",
+        "--RWES",
         "/Users/jpravetz/dev/@epdoc/std/fs/tests/fsbytes.test.ts"
       ],
       "attachSimplePort": 9229
@@ -126,12 +142,14 @@
       "name": "Debug ./fs/fs2.test.ts",
       "type": "node",
       "cwd": "${workspaceFolder}",
-      "env": {},
+      "env": {
+        "UNIT_TEST": "1"
+      },
       "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "-RWES",
+        "--RWES",
         "/Users/jpravetz/dev/@epdoc/std/fs/tests/fs2.test.ts"
       ],
       "attachSimplePort": 9229
@@ -141,12 +159,14 @@
       "name": "Debug ./fs/fs3.test.ts",
       "type": "node",
       "cwd": "${workspaceFolder}",
-      "env": {},
+      "env": {
+        "UNIT_TEST": "1"
+      },
       "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "-RWES",
+        "--RWES",
         "/Users/jpravetz/dev/@epdoc/std/fs/tests/fs3.test.ts"
       ],
       "attachSimplePort": 9229
