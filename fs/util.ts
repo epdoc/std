@@ -1,3 +1,8 @@
+import { FileSpec } from './filespec.ts';
+import { FolderSpec } from './folderspec.ts';
+import { FSSpec } from './fsspec.ts';
+import { SymlinkSpec } from './symspec.ts';
+
 /**
  * Joins continuation lines in a string array.
  * @param lines - The array of lines to join.
@@ -23,4 +28,16 @@ export function joinContinuationLines(lines: string[], continuation: string | Re
     }
   }
   return result;
+}
+
+export function resolveType(
+  file: string | FSSpec | FileSpec | FolderSpec | SymlinkSpec,
+): Promise<FSSpec | FileSpec | FolderSpec | SymlinkSpec> {
+  if (file instanceof FileSpec || file instanceof FolderSpec || file instanceof SymlinkSpec) {
+    return Promise.resolve(file);
+  }
+  if (file instanceof FSSpec) {
+    return file.getResolvedType();
+  }
+  return new FSSpec(file).getResolvedType();
 }

@@ -1,11 +1,12 @@
-import { type Integer, isString } from '@epdoc/type';
-import type * as dfs from 'jsr:@std/fs';
+import type { Integer } from '@epdoc/type';
+import * as dfs from 'jsr:@std/fs';
+import path from 'node:path';
 import { FileSpec } from './filespec.ts';
 import { FolderSpec } from './folderspec.ts';
 import { FSSpec } from './fsspec.ts';
 import { SymlinkSpec } from './symspec.ts';
 import type { FilePath } from './types.ts';
-
+import { resolveType } from './util.ts';
 /**
  * Represents the possible conflict resolution strategies for a file.
  */
@@ -13,6 +14,7 @@ export type FileConflictStrategy =
   | { type: 'renameWithTilde'; errorIfExists?: boolean }
   | { type: 'renameWithNumber'; separator?: string; limit?: Integer; errorIfExists?: boolean }
   | { type: 'overwrite'; errorIfExists?: boolean }
+  | { type: 'skip'; errorIfExists?: boolean }
   | { type: 'error'; errorIfExists?: boolean };
 
 /**
@@ -22,6 +24,7 @@ export const fileConflictStrategyType = {
   renameWithTilde: 'renameWithTilde',
   renameWithNumber: 'renameWithNumber',
   overwrite: 'overwrite',
+  skip: 'skip',
   error: 'error',
 } as const;
 
@@ -41,138 +44,153 @@ export function isFileConflictStrategyType(value: unknown): value is FileConflic
   return typeof value === 'string' && value in Object.keys(fileConflictStrategyType);
 }
 
-/**
- * Represents the options for the safeCopy method.
- */
-export type SafeCopyOpts = {
-  /**
-   * Whether to move or copy the file.
-   */
-  move?: boolean;
-  /**
-   * The strategy to use when a file with the same name already exists.
-   */
-  conflictStrategy?: FileConflictStrategy;
-  /**
-   * Whether to ensure the parent directories exist before the operation.
-   */
-  ensureParentDirs?: boolean;
+type SafeCopyOptsBase = {
   /**
    * Don't actually move or copy the file, just execute the logic around it
    */
   test?: boolean;
+  /**
+   * Whether to move or copy the file or folder.
+   */
+  move?: boolean;
 };
 
-// function toFileOrFolderSpec(
-//   fs: FSSpec | FolderSpec | FileSpec | string,
-// ): Promise<FSSpec | FolderSpec | FileSpec | SymlinkSpec> {
-//   if (fs instanceof FileSpec || fs instanceof FolderSpec) {
-//     return Promise.resolve(fs);
-//   } else if (isString(fs)) {
-//     return new FSSpec(fs).getResolvedType().then((resp) => {
-//       if (resp instanceof FileSpec || resp instanceof FolderSpec) {
-//         return Promise.resolve(resp);
-//       }
-//       throw new Error('Invalid safeCopy destination');
-//     });
-//   } else if (fs instanceof FSSpec) {
-//     return fs.getResolvedType();
-//   } else {
-//     throw new Error('Invalid safeCopy destination');
-//   }
-// }
+/**
+ * Represents the options for the safeCopy method.
+ */
+export type SafeFileCopyOpts = SafeCopyOptsBase & {
+  /**
+   * The strategy to use when a file with the same name already exists.
+   */
+  conflictStrategy?: FileConflictStrategy;
+};
+
+export type SafeFolderCopyOpts = SafeCopyOptsBase;
 
 /**
- * Copy an existing file or directory to a new location. Optionally creates a
- * backup if there is an existing file or directory at `destFile`.
- * @param {FilePath | BaseSpec} destFile - The destination file or directory.
- * @param {SafeCopyOpts} [opts={}] - Options for the copy or move operation.
- * @returns {Promise<boolean | undefined>} A promise that resolves with true if the file was copied or moved, false otherwise.
+ * Represents the options for the safeCopy method.
  */
-export function safeCopy(
-  srcFile: FSSpec | FileSpec | FolderSpec,
-  destFile: FilePath | FileSpec | FolderSpec | FSSpec,
-  opts: SafeCopyOpts = {},
-): Promise<boolean> {
-  let fsSrc: FileSpec | FolderSpec;
-  let fsDest: FSSpec | FileSpec | FolderSpec = isString(destFile) ? new FSSpec(destFile) : destFile;
-  return Promise.resolve()
-    .then(() => {
-      if (srcFile instanceof FSSpec) {
-        return srcFile.getResolvedType();
-      } else {
-        return Promise.resolve(srcFile) as Promise<FSSpec | FolderSpec | FileSpec | SymlinkSpec>;
-      }
-    })
-    .then((resolvedType: FSSpec | FolderSpec | FileSpec | SymlinkSpec) => {
-      if (resolvedType instanceof FileSpec || resolvedType instanceof FolderSpec) {
-        fsSrc = resolvedType;
-        return fsSrc.getExists();
-      } else {
-        throw new Error('Invalid safeCopy source');
-      }
-    })
-    .then((srcExists: boolean | undefined) => {
-      if (srcExists !== true) {
-        throw new Error('Does not exist: ' + srcFile.path);
-      }
-    })
-    .then(() => {
-      if (fsDest instanceof FSSpec) {
-        return fsDest.getResolvedType();
-      } else {
-        return Promise.resolve(fsDest);
-      }
-    })
-    .then((resp: FSSpec | FolderSpec | FileSpec | SymlinkSpec) => {
-      if (resp instanceof SymlinkSpec) {
-        throw new Error('safeCopy destination cannot be a symlink');
-      }
-      fsDest = resp;
-      if (fsDest instanceof FileSpec) {
-        if (fsDest.exists()) {
-          return fsDest
-            .backup(opts.conflictStrategy)
-            .then((newPath: FilePath) => {
-              if (opts.move) {
-                return srcFile.moveTo(newPath, { overwrite: true });
-              } else {
-                return srcFile.copyTo(newPath, { overwrite: true });
-              }
-            })
-            .then(() => {
-              return Promise.resolve(true);
-            });
-        } else {
-          const copyOpts: dfs.CopyOptions = getCopyOpts(opts);
-          if (opts.move) {
-            return srcFile.moveTo(fsDest, copyOpts);
-          } else {
-            return srcFile.copyTo(fsDest, copyOpts);
-          }
-        }
-      } else {
-        const copyOpts: dfs.CopyOptions = getCopyOpts(opts);
-        if (opts.move) {
-          return srcFile.moveTo(fsDest.path, copyOpts).then(() => {
-            return Promise.resolve(true);
-          });
-        } else {
-          return srcFile.copyTo(fsDest.path, copyOpts).then(() => {
-            return Promise.resolve(true);
-          });
-        }
-      }
-    })
-    .then((_resp) => {
-      return Promise.resolve(true);
-    });
+export type SafeCopyOpts = SafeFileCopyOpts & SafeFolderCopyOpts;
+
+/**
+ * Safely copies a source file or folder to a destination.
+ * @param {BaseSpec} src - The source file or folder to copy.
+ * @param {FilePath | BaseSpec} dest - The destination path.
+ * @param {Object} options - Options for the copy operation.
+ * @returns {Promise<void>} - A promise that resolves when the copy is complete.
+ */
+export async function safeCopy(
+  src: FSSpec | FileSpec | FolderSpec | SymlinkSpec,
+  dest: FilePath | FSSpec | FileSpec | FolderSpec,
+  options: SafeCopyOpts = {},
+): Promise<void> {
+  const fsSrc = await resolveType(src);
+
+  // Check if src is a symlink
+  if (fsSrc.isSymlink()) {
+    throw new Error('Source cannot be a symlink');
+  }
+
+  // Ensure src exists
+  if (!fsSrc.exists()) {
+    throw new Error('Source does not exist');
+  }
+
+  const fsDest = await resolveType(dest);
+  if (fsDest instanceof SymlinkSpec) {
+    throw new Error('Destination cannot be a symlink');
+  }
+
+  if (src instanceof FileSpec) {
+    if (fsDest instanceof FSSpec) {
+      throw new Error('Destination must be a FileSpec or FolderSpec');
+    }
+    await safeCopyFile(src, fsDest, options);
+  } else if (src instanceof FolderSpec) {
+    if (!(fsDest instanceof FolderSpec)) {
+      throw new Error('Destination must be a FolderSpec');
+    }
+    await safeCopyFolder(src, fsDest, options);
+  }
 }
 
-function getCopyOpts(opts: SafeCopyOpts): dfs.CopyOptions {
-  const copyOpts: dfs.CopyOptions = { preserveTimestamps: true };
-  if (opts.conflictStrategy === 'overwrite') {
-    copyOpts.overwrite = true;
+/**
+ * Safely copies a file to a destination.
+ * @param {BaseSpec} src - The source file to copy.
+ * @param {FilePath | BaseSpec} dest - The destination path.
+ * @param {Object} options - Options for the copy operation.
+ * @returns {Promise<void>} - A promise that resolves when the copy is complete.
+ */
+export async function safeCopyFile(
+  src: FileSpec,
+  fsDest: FileSpec | FolderSpec,
+  options: SafeFileCopyOpts = {},
+): Promise<void> {
+  if (fsDest instanceof FileSpec) {
+    if (fsDest.exists()) {
+      // Handle existing destination file
+      await fsDest.backup(options.conflictStrategy);
+    }
+    await src.copyTo(fsDest.path, { overwrite: true, preserveTimestamps: true });
+    if (options.move) {
+      await src.remove();
+    }
+  } else if (fsDest instanceof FolderSpec) {
+    // Ensure parent directory exists
+    const parent = new FolderSpec(fsDest.dirname);
+    await parent.ensureDir();
+    await src.copyTo(fsDest.path);
+
+    // If moving, remove the source file
+    if (options.move) {
+      await src.remove();
+    }
+  } else {
+    throw new Error('Destination must be a FileSpec or FolderSpec');
   }
-  return copyOpts;
 }
+
+/**
+ * Safely copies a folder to a destination.
+ * @param {BaseSpec} src - The source folder to copy.
+ * @param {FilePath | BaseSpec} dest - The destination path.
+ * @param {Object} options - Options for the copy operation.
+ * @returns {Promise<void>} - A promise that resolves when the copy is complete.
+ */
+export async function safeCopyFolder(
+  src: FolderSpec,
+  fsDest: FolderSpec,
+  options: SafeCopyOpts = {},
+): Promise<void> {
+  // if (options.contents === false) {
+  //   fsDest = fsDest.add(src.dirname);
+  // }
+  // Ensure destination folder exists
+  await fsDest.ensureDir();
+
+  // Use walk to copy files and folders
+  for await (const entry of dfs.walk(src.path)) {
+    const relativePath = path.relative(src.path, entry.path);
+    const destEntryPath = path.join(fsDest.path, relativePath);
+
+    if (entry.isDirectory) {
+      await new FolderSpec(destEntryPath).ensureDir();
+    } else if (entry.isFile) {
+      const srcFile = new FileSpec(entry.path);
+      await safeCopyFile(srcFile, new FileSpec(destEntryPath), options);
+    }
+  }
+
+  // If moving, remove the source folder
+  if (options.move) {
+    await src.remove();
+  }
+}
+
+// function getCopyOpts(opts: SafeCopyOpts): dfs.CopyOptions {
+//   const copyOpts: dfs.CopyOptions = { preserveTimestamps: true };
+//   if (opts.conflictStrategy === 'overwrite') {
+//     copyOpts.overwrite = true;
+//   }
+//   return copyOpts;
+// }

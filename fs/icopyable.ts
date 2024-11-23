@@ -18,7 +18,7 @@ export interface IRootableSpec {
 
 export interface ISafeCopyableSpec {
   copy(): FSSpec | FolderSpec | FileSpec | SymlinkSpec;
-  safeCopy(destFile: FilePath | FileSpec | FolderSpec | FSSpec, opts: SafeCopyOpts): Promise<boolean>;
+  safeCopy(destFile: FilePath | FSSpec | FileSpec | FolderSpec, opts: SafeCopyOpts): Promise<void>;
 }
 
 export type FSSpecParam =

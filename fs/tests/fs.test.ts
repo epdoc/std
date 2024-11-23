@@ -415,7 +415,7 @@ describe('FSSpec Tests Part 1', () => {
         .then((resp) => {
           expect(resp).toEqual(true);
           return fileSpec(pwd, 'data2/folder-sample/sample2.txt').filesEqual(
-            fileSpec(pwd, 'data1/folder-sample/sample2.txt'),
+            fileSpec(pwd, 'data1/folder-sample/sample2.txt')
           );
         })
         .then((resp) => {
@@ -448,30 +448,19 @@ describe('FSSpec Tests Part 1', () => {
         .then((_resp) => {
           return fsSpec(pwd, 'data').getResolvedType();
         })
-        .then((resolvedFolderSpec) => {
-          expect(resolvedFolderSpec).toBeInstanceOf(FolderSpec);
-          const opts: SafeCopyOpts = {
-            ensureParentDirs: true,
-          };
-          const dest = fsSpec(pwd, 'data2');
-          return (resolvedFolderSpec as FolderSpec).safeCopy(dest, opts);
+        .then((srcFolderSpec) => {
+          expect(srcFolderSpec).toBeInstanceOf(FolderSpec);
+          const dest = new FolderSpec(pwd, 'data2');
+          return (srcFolderSpec as FolderSpec).safeCopy(dest);
         })
-        .then((resp) => {
-          expect(resp).toBe(true);
-          return fsSpec(pwd, 'data2').getIsFolder();
+        .then(async () => {
+          expect(await fsSpec(pwd, 'data2').getIsFolder()).toBe(true);
+          expect(await fsSpec(pwd, 'data2', 'folder-sample').getIsFolder()).toBe(true);
+          expect(await fsSpec(pwd, 'data2', 'folder-sample', 'sample2.txt').getIsFile()).toBe(true);
         })
-        .then((resp) => {
-          expect(resp).toEqual(true);
-          return fsSpec(pwd, 'data2/folder-sample').getIsFolder();
-        })
-        .then((resp) => {
-          expect(resp).toEqual(true);
-          return fsSpec(pwd, 'data2/folder-sample/sample2.txt').getIsFile();
-        })
-        .then((resp) => {
-          expect(resp).toEqual(true);
+        .then(() => {
           return fileSpec(pwd, 'data2/folder-sample/sample2.txt').filesEqual(
-            fileSpec(pwd, 'data1/folder-sample/sample2.txt'),
+            fileSpec(pwd, 'data1/folder-sample/sample2.txt')
           );
         })
         .then((resp) => {
@@ -486,24 +475,16 @@ describe('FSSpec Tests Part 1', () => {
         })
         .then((resp) => {
           const opts: SafeCopyOpts = {
-            ensureParentDirs: false,
             conflictStrategy: { type: fileConflictStrategyType.renameWithNumber, limit: 5 },
           };
           if (resp instanceof FileSpec || resp instanceof FolderSpec) {
-            return resp.safeCopy(fsSpec(pwd, 'data2'), opts);
+            return resp.safeCopy(folderSpec(pwd, 'data2'), opts);
           }
-          return Promise.resolve(true);
+          return Promise.resolve();
         })
-        .then((resp) => {
-          expect(resp).toEqual(true);
-          return fsSpec(pwd, 'data2').getIsFolder();
-        })
-        .then((resp) => {
-          expect(resp).toEqual(true);
-          return fsSpec(pwd, 'data2-01').getIsFolder();
-        })
-        .then((resp) => {
-          expect(resp).toEqual(true);
+        .then(async () => {
+          expect(await fsSpec(pwd, 'data2').getIsFolder()).toBe(true);
+          expect(await fsSpec(pwd, 'data2-01').getIsFolder()).toBe(false);
         });
     });
 
@@ -512,7 +493,7 @@ describe('FSSpec Tests Part 1', () => {
       const DEST = 'data1/folder-sample/sample-copy.json';
       const json = await fileSpec(pwd, SRC).readJson();
       await fileSpec(pwd, DEST).writeJson(json);
-      expect(await fsSpec(pwd, DEST).isFile()).toEqual(true);
+      expect(await fsSpec(pwd, DEST).getIsFile()).toEqual(true);
       const json2 = await fileSpec(pwd, DEST).readJson();
       expect(json2).toEqual(json);
     });
@@ -543,7 +524,7 @@ describe('FSSpec Tests Part 1', () => {
       const sin = 'here is a line of text';
       const DEST = 'data1/folder-sample/output.txt';
       await fileSpec(pwd, DEST).write(sin);
-      expect(await fsSpec(pwd, DEST).isFile()).toEqual(true);
+      expect(await fsSpec(pwd, DEST).getIsFile()).toEqual(true);
       const s = await fileSpec(pwd, DEST).readAsString();
       expect(s).toEqual(sin);
     });
@@ -551,7 +532,7 @@ describe('FSSpec Tests Part 1', () => {
       const lines = ['this', 'is', 'line 2'];
       const DEST = 'data1/folder-sample/output.txt';
       await fileSpec(pwd, DEST).write(lines);
-      expect(await fsSpec(pwd, DEST).isFile()).toEqual(true);
+      expect(await fsSpec(pwd, DEST).getIsFile()).toEqual(true);
       const s = await fileSpec(pwd, DEST).readAsString();
       expect(s).toEqual(lines.join('\n'));
     });

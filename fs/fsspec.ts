@@ -5,7 +5,9 @@ import { BaseSpec } from './basespec.ts';
 import { type FileSpec, fileSpec } from './filespec.ts';
 import { type FolderSpec, folderSpec } from './folderspec.ts';
 import { type FSSpecParam, type ICopyableSpec, type IRootableSpec, resolvePathArgs } from './icopyable.ts';
+import { safeCopy, type SafeCopyOpts } from './safecopy.ts';
 import { type SymlinkSpec, symlinkSpec } from './symspec.ts';
+import type { FilePath, FolderPath } from './types.ts';
 
 /**
  * Create a new FSItem object.
@@ -66,5 +68,12 @@ export class FSSpec extends BaseSpec implements ICopyableSpec, IRootableSpec {
 
   home(...args: string[]): FSSpec {
     return this.add(os.userInfo().homedir, ...args);
+  }
+
+  safeCopy(
+    destFile: FilePath | FolderPath | FileSpec | FolderSpec | FSSpec,
+    opts: SafeCopyOpts = {},
+  ): Promise<void> {
+    return safeCopy(this, destFile, opts);
   }
 }

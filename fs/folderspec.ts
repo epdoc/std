@@ -316,7 +316,7 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
     }
   }
 
-  safeCopy(destFile: FilePath | FileSpec | FolderSpec | FSSpec, opts: SafeCopyOpts = {}): Promise<boolean> {
+  safeCopy(destFile: FilePath | FileSpec | FolderSpec | FSSpec, opts: SafeCopyOpts = {}): Promise<void> {
     return safeCopy(this, destFile, opts);
   }
 

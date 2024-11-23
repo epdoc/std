@@ -514,6 +514,10 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
     return fs.promises.writeFile(this._f, buf);
   }
 
+  safeCopy(destFile: FilePath | FileSpec | FolderSpec | FSSpec, opts: SafeCopyOpts = {}): Promise<void> {
+    return safeCopy(this, destFile, opts);
+  }
+
   /**
    * 'Backup' a file by moving it to a new filename. Use when copying a file to
    * the same location or creating a new file at the same location.
@@ -542,10 +546,6 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
           throw new Error('File could not be renamed');
         }
       });
-  }
-
-  safeCopy(destFile: FilePath | FileSpec | FolderSpec | FSSpec, opts: SafeCopyOpts = {}): Promise<boolean> {
-    return safeCopy(this, destFile, opts);
   }
 
   private _getNewPath(opts: FileConflictStrategy): Promise<FilePath | undefined> {
