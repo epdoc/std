@@ -172,7 +172,7 @@ export function isNonEmptyArray(val: unknown): val is unknown[] {
  * @returns True if the value is an array of strings, otherwise false.
  */
 export function isStringArray(val: unknown): val is string[] {
-  return isArray(val) && val.every((v) => typeof v === 'string');
+  return Array.isArray(val) && val.every((v) => typeof v === 'string');
 }
 
 /**
@@ -440,11 +440,9 @@ export function asString(data: unknown, isProperty = false): string {
   } else if (data instanceof Error) {
     return data.stack!;
   } else if (typeof data === 'object') {
-    return `{${
-      Object.entries(data)
-        .map(([k, v]) => `"${k}":${asString(v, true)}`)
-        .join(',')
-    }}`;
+    return `{${Object.entries(data)
+      .map(([k, v]) => `"${k}":${asString(v, true)}`)
+      .join(',')}}`;
   }
   return 'undefined';
 }
