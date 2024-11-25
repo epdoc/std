@@ -167,6 +167,15 @@ export function isNonEmptyArray(val: unknown): val is unknown[] {
 }
 
 /**
+ * Checks if the given value is an array of strings.
+ * @param val - The value to check.
+ * @returns True if the value is an array of strings, otherwise false.
+ */
+export function isStringArray(val: unknown): val is string[] {
+  return isArray(val) && val.every((v) => typeof v === 'string');
+}
+
+/**
  * Checks if the given value is a RegExp object.
  * @param val - The value to check.
  * @returns True if the value is a RegExp, otherwise false.

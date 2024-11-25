@@ -415,7 +415,7 @@ describe('FSSpec Tests Part 1', () => {
         .then((resp) => {
           expect(resp).toEqual(true);
           return fileSpec(pwd, 'data2/folder-sample/sample2.txt').filesEqual(
-            fileSpec(pwd, 'data1/folder-sample/sample2.txt')
+            fileSpec(pwd, 'data1/folder-sample/sample2.txt'),
           );
         })
         .then((resp) => {
@@ -460,7 +460,7 @@ describe('FSSpec Tests Part 1', () => {
         })
         .then(() => {
           return fileSpec(pwd, 'data2/folder-sample/sample2.txt').filesEqual(
-            fileSpec(pwd, 'data1/folder-sample/sample2.txt')
+            fileSpec(pwd, 'data1/folder-sample/sample2.txt'),
           );
         })
         .then((resp) => {

@@ -28,6 +28,7 @@ import {
   isPosNumber,
   isRegExp,
   isRegExpDef,
+  isStringArray,
   isTrue,
   isValidDate,
   isWholeNumber,
@@ -219,11 +220,17 @@ describe('util', () => {
       c: 'd',
       e: 4,
     };
+    const _strArray = ['a', 'b', 'c'];
 
     it('isArray', () => {
       expect(isArray(['string'])).toBe(true);
       expect(isArray(4)).toBe(false);
       expect(isArray({ a: 'string' })).toBe(false);
+    });
+    it('isStringArray', () => {
+      expect(isStringArray(_strArray)).toBe(true);
+      expect(isStringArray([1, 2, 3])).toBe(false);
+      expect(isStringArray({ a: 'string' })).toBe(false);
     });
 
     it('isFunction', () => {

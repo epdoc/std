@@ -5,12 +5,7 @@ import path from 'node:path';
 import { BaseSpec } from './basespec.ts';
 import { FileSpec } from './filespec.ts';
 import { FSSpec, fsSpec } from './fsspec.ts';
-import {
-  type FSSpecParam,
-  type IRootableSpec,
-  type ISafeCopyableSpec,
-  resolvePathArgs,
-} from './icopyable.ts';
+import { type FSSpecParam, type IRootableSpec, type ISafeCopyableSpec, resolvePathArgs } from './icopyable.ts';
 import { safeCopy, type SafeCopyOpts } from './safecopy.ts';
 import { SymlinkSpec } from './symspec.ts';
 import type { FileName, FilePath, FolderName, FolderPath, FSSortOpts, GetChildrenOpts } from './types.ts';
