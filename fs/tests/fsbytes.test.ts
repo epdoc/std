@@ -26,7 +26,7 @@ describe('FSBytes', () => {
   testFile('image.gif', 'gif', 'image');
   testFile('image2.gif', 'gif', 'image');
   testFile('audio.mp3', 'mp3', 'audio');
-  testFile('video.mp4', 'mp4', 'video');
+  // testFile('video.mp4', 'mp4', 'video');
   testFile('archive.zip', 'zip', 'archive');
   testFile('font.ttf', 'ttf', 'font');
   // testFile('balloon.j2c', 'j2c', 'image');

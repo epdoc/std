@@ -440,9 +440,11 @@ export function asString(data: unknown, isProperty = false): string {
   } else if (data instanceof Error) {
     return data.stack!;
   } else if (typeof data === 'object') {
-    return `{${Object.entries(data)
-      .map(([k, v]) => `"${k}":${asString(v, true)}`)
-      .join(',')}}`;
+    return `{${
+      Object.entries(data)
+        .map(([k, v]) => `"${k}":${asString(v, true)}`)
+        .join(',')
+    }}`;
   }
   return 'undefined';
 }

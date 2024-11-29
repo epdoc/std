@@ -15,8 +15,7 @@ import {
 import { assert } from '@std/assert';
 import checksum from 'checksum';
 import { Buffer } from 'node:buffer';
-import fs, { close } from 'node:fs';
-import { readFile } from 'node:fs/promises';
+import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { BaseSpec } from './basespec.ts';
@@ -204,10 +203,10 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
  * @returns {Promise<FSBytes>} A promise that resolves with an FSBytes instance
  * containing the read bytes, or rejects with an error.
  */
-  getBytes(length = 24): Promise<FSBytes> {
-    return this.readBytes(length).then((buffer: Buffer) => {
-      return new FSBytes(buffer as Buffer);
-    });
+  async getBytes(length = 24): Promise<FSBytes> {
+    const buf = new Uint8Array(length);
+    const _numRead = await this.readBytes(buf, 0);
+    return new FSBytes(buf);
   }
 
   /**
@@ -327,103 +326,63 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
   }
 
   /**
-   * Asynchronously reads a specified number of bytes from a file.
+   * @param {Uint8Array} buffer - An Uint8Array of the length that is to be read
+   * @param {Integer} [position=0] - The starting offset to read from the file
+   * @returns {Promise<number>} - Resolves to either the number of bytes read during the operation or EOF (null) if there was nothing more to read.
    *
-   * @param {number} length The number of bytes to read from the file.
-   * @param {Buffer} [buffer] An optional buffer to store the read bytes. If not provided, a new buffer will be allocated with the specified length.
-   * @param {number} [offset=0] The offset within the buffer where to start storing the read bytes. Defaults to 0.
-   * @param {number} [position=0] The offset within the file from where to start reading (optional). Defaults to 0.
-   * @returns {Promise<Buffer>} A promise that resolves with the buffer containing the read bytes, or rejects with an error.
-   * @throws {Error} Rejects the promise with unknown error encountered during the file opening, reading, or closing operations.
+   * @example
+   * ```ts
+   * const buf = new Uint8Array(100);
+   * const numberOfBytesRead = await fileSpec.read(buf,0);
+   * ```
    */
-  readBytes(length: Integer, buffer?: Buffer, offset: Integer = 0, position: Integer = 0): Promise<Buffer> {
-    return new Promise((resolve, reject) => {
-      fs.open(this.path, 'r', (err, fd) => {
-        if (err) {
-          reject(err);
-        } else {
-          const buf = buffer ? buffer : Buffer.alloc(length);
-          fs.read(fd, buf, offset, length, position, (err2, _bytesRead: Integer, resultBuffer) => {
-            close(fd, (err3) => {
-              if (err2) {
-                reject(err2);
-              } else if (err3) {
-                reject(err3);
-              } else {
-                resolve(resultBuffer);
-              }
-            });
-          });
-        }
-      });
-    });
+  async readBytes(buffer: Uint8Array, position: Integer = 0): Promise<number | null> {
+    const file = await Deno.open(this._f, { read: true });
+    await file.seek(position, Deno.SeekMode.Start);
+    return await file.read(buffer);
   }
 
   /**
-   * Reads the entire file as a buffer.
-   * @returns {Promise<Buffer>} A promise that resolves with the file contents as a buffer.
+   * Reads the entire file as a Uint8Array.
+   * @returns {Promise<Uint8Array>} A promise that resolves with the file contents as a buffer.
    */
-  readAsBuffer(): Promise<Buffer> {
-    return readFile(this._f).catch((err) => {
-      throw this.newError(err);
-    });
+  async readAsBytes(): Promise<Uint8Array> {
+    return await Deno.readFile(this._f);
   }
 
   /**
    * Reads the entire file as a string.
    * @returns {Promise<string>} A promise that resolves with the file contents as a string.
    */
-  readAsString(): Promise<string> {
-    return new Promise((resolve, reject) => {
-      fs.readFile(this._f, 'utf8', (err, data) => {
-        if (err) {
-          reject(this.newError(err));
-        } else {
-          // Remove BOM, if present
-          resolve(data.replace(REG.BOM, '').toString());
-        }
-      });
-    });
+  async readAsString(): Promise<string> {
+    return await Deno.readTextFile(this._f);
   }
 
   /**
    * Reads the file as a string and splits it into lines.
    * @returns {Promise<string[]>} A promise that resolves with an array of lines.
    */
-  readAsLines(continuation?: string): Promise<string[]> {
-    return this.readAsString().then((data: string) => {
-      const lines = data.split(REG.lineSeparator).map((line) => {
-        // RSC output files are encoded oddly and this seems to clean them up
-        return line.replace(/\r/, '').replace(/\0/g, '');
-      });
-
-      if (continuation) {
-        return joinContinuationLines(lines, continuation);
-      } else {
-        return lines;
-      }
+  async readAsLines(continuation?: string): Promise<string[]> {
+    const data = await Deno.readTextFile(this._f);
+    const lines = data.split(REG.lineSeparator).map((line) => {
+      // RSC output files are encoded oddly and this seems to clean them up
+      return line.replace(/\r/, '').replace(/\0/g, '');
     });
+
+    if (continuation) {
+      return joinContinuationLines(lines, continuation);
+    } else {
+      return lines;
+    }
   }
 
   /**
    * Reads the file as JSON and parses it.
    * @returns {Promise<unknown>} A promise that resolves with the parsed JSON content.
    */
-  readJson(): Promise<unknown> {
-    return new Promise((resolve, reject) => {
-      fs.readFile(this._f, 'utf8', (err, data) => {
-        if (err) {
-          reject(this.newError(err));
-        } else {
-          try {
-            const json = JSON.parse(data.toString());
-            resolve(json);
-          } catch (error) {
-            reject(this.newError(error));
-          }
-        }
-      });
-    });
+  async readJson(): Promise<unknown> {
+    const s = await Deno.readTextFile(this._f);
+    return JSON.parse(s);
   }
 
   /**
@@ -431,10 +390,9 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
    * @param {FsDeepCopyOpts} [opts={}] - Options for the deep copy operation.
    * @returns {Promise<unknown>} A promise that resolves with the deeply copied and transformed JSON content.
    */
-  deepReadJson(opts: FsDeepCopyOpts = {}): Promise<unknown> {
-    return this.readJson().then((resp) => {
-      return this.deepCopy(resp, opts);
-    });
+  async deepReadJson(opts: FsDeepCopyOpts = {}): Promise<unknown> {
+    const data = await this.readJson();
+    return this.deepCopy(data, opts);
   }
 
   /**

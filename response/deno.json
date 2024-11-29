@@ -1,0 +1,13 @@
+{
+  "name": "@epdoc/response",
+  "version": "1.0.0",
+  "exports": {
+    ".": "./mod.ts"
+  },
+  "tasks": {
+    "test": "deno test -R"
+  },
+  "imports": {
+    "@epdoc/type": "../type/mod.ts"
+  }
+}

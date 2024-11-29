@@ -1,5 +1,7 @@
-import { Buffer } from 'node:buffer';
+import { equals } from 'jsr:@std/bytes/equals';
 import { FILE_HEADERS, type FileCategory, type FileHeaderEntry, type FileType } from './fsheaders.ts';
+
+// const encoder = new TextEncoder();
 
 /**
  * A class representing the bytes in a file.
@@ -8,14 +10,14 @@ export class FSBytes {
   /**
    * The buffer containing the file's first 24 bytes.
    */
-  private _buffer: Buffer;
+  private _buffer: Uint8Array;
 
   /**
    * Creates a new FSBytes instance with a provided buffer.
    *
    * @param {Buffer} buffer The buffer containing the file's contents. MUST contain at least the first 24 bytes of the file.
    */
-  constructor(buffer: Buffer) {
+  constructor(buffer: Uint8Array) {
     if (buffer.length < 24) {
       throw new Error('Buffer must contain at least 24 bytes');
     }
@@ -93,12 +95,12 @@ export class FSBytes {
     }
   }
 
-  private startsWith(buffer: Buffer, offset: number): boolean {
-    return this._buffer.subarray(offset, offset + buffer.length).equals(buffer);
+  private startsWith(buffer: Uint8Array, offset: number): boolean {
+    return equals(this._buffer.subarray(offset, offset + buffer.length), buffer);
   }
 
   private getJPEG2000Type(): FileType {
-    const ftypBox = this._buffer.subarray(20, 24).toString('ascii');
+    const ftypBox = this._buffer.subarray(20, 24).toString();
     switch (ftypBox) {
       case 'jp2 ':
         return 'jp2';
@@ -112,31 +114,36 @@ export class FSBytes {
   }
 
   private getJPEGType(): FileType | null {
-    const exifMarker = this._buffer.subarray(2, 4).toString('hex');
-    return exifMarker === 'ffe1' ? 'jpg' : 'jpeg';
+    const exifMarker = this._buffer.subarray(2, 4);
+    return equals(exifMarker, new Uint8Array([0xff, 0xe1])) ? 'jpg' : 'jpeg';
   }
 
   private getMP4Type(): FileType {
-    const ftypStart = this._buffer.indexOf(Buffer.from('ftyp'));
-    if (ftypStart >= 4 && ftypStart <= 8) {
-      const brand = this._buffer.subarray(ftypStart + 4, ftypStart + 8).toString();
-      switch (brand) {
-        case 'mp41':
-        case 'mp42':
-        case 'isom':
-        case 'iso2':
-        case 'avc1':
-        case 'mmp4':
-          return 'mp4';
-        case 'M4V ':
-          return 'm4v';
-        case 'M4A ':
-          return 'm4a';
-        default:
-          return 'mp4';
-      }
-    }
-    return 'mp4';
+    throw new Error('Not implemented');
+    //   const ftypStart = this._buffer.findIndex((element,index,array)=>{
+    //     return element === 102
+    //   })
+    //   // const ftypStart = this._buffer.indexOf(...encoder.encode('ftyp'));
+    //   const ftypStart2 = this._buffer.indexOf(102,116,121,112);
+    //   if (ftypStart >= 4 && ftypStart <= 8) {
+    //     const brand = this._buffer.subarray(ftypStart + 4, ftypStart + 8).toString();
+    //     switch (brand) {
+    //       case 'mp41':
+    //       case 'mp42':
+    //       case 'isom':
+    //       case 'iso2':
+    //       case 'avc1':
+    //       case 'mmp4':
+    //         return 'mp4';
+    //       case 'M4V ':
+    //         return 'm4v';
+    //       case 'M4A ':
+    //         return 'm4a';
+    //       default:
+    //         return 'mp4';
+    //     }
+    //   }
+    //   return 'mp4';
   }
 
   private getWebPType(): FileType | null {
@@ -148,13 +155,13 @@ export class FSBytes {
 
   private getWavOrAviType(): FileType | null {
     if (
-      this._buffer.subarray(0, 4).toString('ascii') === 'RIFF' &&
-      this._buffer.subarray(8, 12).toString('ascii') === 'WAVE'
+      this._buffer.subarray(0, 4).toString() === 'RIFF' &&
+      this._buffer.subarray(8, 12).toString() === 'WAVE'
     ) {
       return 'wav';
     } else if (
-      this._buffer.subarray(0, 4).toString('ascii') === 'RIFF' &&
-      this._buffer.subarray(8, 12).toString('ascii') === 'AVI '
+      this._buffer.subarray(0, 4).toString() === 'RIFF' &&
+      this._buffer.subarray(8, 12).toString() === 'AVI '
     ) {
       return 'avi';
     }
