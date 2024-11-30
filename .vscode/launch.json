@@ -13,7 +13,6 @@
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "-RWES",
         "/Users/jpravetz/dev/@epdoc/std/type/dict.util.test.ts"
       ],
       "attachSimplePort": 9229
@@ -30,8 +29,39 @@
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "-RWES",
         "/Users/jpravetz/dev/@epdoc/std/duration/record.test.ts"
+      ],
+      "attachSimplePort": 9229
+    },
+    {
+      "request": "launch",
+      "name": "Debug ./daterange/date-range.test.ts",
+      "type": "node",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "UNIT_TEST": "1"
+      },
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "/Users/jpravetz/dev/@epdoc/std/daterange/date-range.test.ts"
+      ],
+      "attachSimplePort": 9229
+    },
+    {
+      "request": "launch",
+      "name": "Debug ./response/mod.test.ts",
+      "type": "node",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "UNIT_TEST": "1"
+      },
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "/Users/jpravetz/dev/@epdoc/std/response/mod.test.ts"
       ],
       "attachSimplePort": 9229
     },
@@ -47,7 +77,6 @@
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "-RWES",
         "/Users/jpravetz/dev/@epdoc/std/type/util.test.ts"
       ],
       "attachSimplePort": 9229
@@ -64,7 +93,6 @@
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "-RWES",
         "/Users/jpravetz/dev/@epdoc/std/datetime/date.test.ts"
       ],
       "attachSimplePort": 9229
@@ -81,7 +109,6 @@
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "-RWES",
         "/Users/jpravetz/dev/@epdoc/std/duration/duration.test.ts"
       ],
       "attachSimplePort": 9229
@@ -98,7 +125,6 @@
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "-RWES",
         "/Users/jpravetz/dev/@epdoc/std/string/ex.test.ts"
       ],
       "attachSimplePort": 9229
@@ -115,7 +141,6 @@
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "-RWES",
         "/Users/jpravetz/dev/@epdoc/std/fs/tests/fs.test.ts"
       ],
       "attachSimplePort": 9229
@@ -132,7 +157,6 @@
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "-RWES",
         "/Users/jpravetz/dev/@epdoc/std/fs/tests/fsbytes.test.ts"
       ],
       "attachSimplePort": 9229
@@ -149,7 +173,6 @@
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "-RWES",
         "/Users/jpravetz/dev/@epdoc/std/fs/tests/fs2.test.ts"
       ],
       "attachSimplePort": 9229
@@ -166,7 +189,6 @@
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "-RWES",
         "/Users/jpravetz/dev/@epdoc/std/fs/tests/fs3.test.ts"
       ],
       "attachSimplePort": 9229
