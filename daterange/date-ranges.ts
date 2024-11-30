@@ -5,8 +5,7 @@ import type { DateRangeDef } from './util.ts';
  * Represents a collection of date ranges.
  */
 export class DateRanges {
-  private _isDateRanges = true;
-  private _dateRanges: DateRangeDef[] = [];
+  private _ranges: DateRangeDef[] = [];
 
   /**
    * Creates an instance of DateRanges.
@@ -15,7 +14,7 @@ export class DateRanges {
   constructor(dateRanges?: DateRangeDef[]) {
     if (isNonEmptyArray(dateRanges)) {
       dateRanges.forEach((item) => {
-        this._dateRanges.push({ before: item.before, after: item.after });
+        this._ranges.push({ before: item.before, after: item.after });
       });
     }
   }
@@ -25,7 +24,7 @@ export class DateRanges {
    * @returns {DateRanges} A new instance of DateRanges with the same date ranges.
    */
   copy(): DateRanges {
-    const result = new DateRanges(this._dateRanges);
+    const result = new DateRanges(this._ranges);
     return result;
   }
 
@@ -33,8 +32,8 @@ export class DateRanges {
    * Gets the array of date ranges.
    * @returns {DateRangeDef[]} The array of date ranges.
    */
-  get dateRanges(): DateRangeDef[] {
-    return this._dateRanges;
+  get ranges(): DateRangeDef[] {
+    return this._ranges;
   }
 
   /**
@@ -45,8 +44,8 @@ export class DateRanges {
    */
   isDateInRange(date: Date | undefined, _defVal = true): boolean {
     if (isValidDate(date)) {
-      for (let ddx = 0; ddx < this._dateRanges.length; ++ddx) {
-        const range = this._dateRanges[ddx];
+      for (let ddx = 0; ddx < this._ranges.length; ++ddx) {
+        const range = this._ranges[ddx];
         if (isValidDate(range.after) && date.getTime() < range.after.getTime()) {
           return false;
         }
@@ -63,13 +62,13 @@ export class DateRanges {
    * @returns {Date | undefined} The 'after' date if it exists, otherwise undefined.
    */
   hasOneAfterDate(): Date | undefined {
-    if (this.hasDateRanges()) {
+    if (this.hasRanges()) {
       if (
-        this._dateRanges.length === 1 &&
-        this._dateRanges[0].before === undefined &&
-        isValidDate(this._dateRanges[0].after)
+        this._ranges.length === 1 &&
+        this._ranges[0].before === undefined &&
+        isValidDate(this._ranges[0].after)
       ) {
-        return this._dateRanges[0].after;
+        return this._ranges[0].after;
       }
     }
   }
@@ -78,7 +77,7 @@ export class DateRanges {
    * Checks if there are any date ranges defined.
    * @returns {boolean} True if there are date ranges, otherwise false.
    */
-  hasDateRanges(): boolean {
-    return isNonEmptyArray(this._dateRanges);
+  hasRanges(): boolean {
+    return isNonEmptyArray(this._ranges);
   }
 }
