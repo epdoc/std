@@ -13,6 +13,7 @@ import {
   pad,
 } from '@epdoc/type';
 import { assert } from '@std/assert';
+import * as dfs from '@std/fs';
 import checksum from 'checksum';
 import { Buffer } from 'node:buffer';
 import fs from 'node:fs';
@@ -23,8 +24,18 @@ import type { FolderSpec } from './folderspec.ts';
 import { FSBytes } from './fsbytes.ts';
 import { FSSpec, fsSpec } from './fsspec.ts';
 import type { FSStats } from './fsstats.ts';
-import { type FSSpecParam, type IRootableSpec, type ISafeCopyableSpec, resolvePathArgs } from './icopyable.ts';
-import { type FileConflictStrategy, fileConflictStrategyType, safeCopy, type SafeCopyOpts } from './safecopy.ts';
+import {
+  type FSSpecParam,
+  type IRootableSpec,
+  type ISafeCopyableSpec,
+  resolvePathArgs,
+} from './icopyable.ts';
+import {
+  type FileConflictStrategy,
+  fileConflictStrategyType,
+  safeCopy,
+  type SafeCopyOpts,
+} from './safecopy.ts';
 import type { FilePath, FsDeepCopyOpts } from './types.ts';
 import { isFilePath } from './types.ts';
 import { joinContinuationLines } from './util.ts';
@@ -253,6 +264,14 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
         }
       });
     });
+  }
+
+  /**
+   * Ensures that the parent folder to this file exists
+   * @returns {Promise<void>} A promise that resolves when the directory is ensured.
+   */
+  async ensureParentDir(): Promise<void> {
+    await dfs.ensureDir(this.dirname);
   }
 
   /**
