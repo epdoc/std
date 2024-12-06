@@ -194,6 +194,24 @@ export function isNull(val: unknown): val is null {
 }
 
 /**
+ * Checks if the given value is undefined.
+ * @param val - The value to check.
+ * @returns True if the value is undefined, otherwise false.
+ */
+export function isUndefined(val: unknown): val is undefined {
+  return val === undefined ? true : false;
+}
+
+/**
+ * Checks if the given value is null or undefined.
+ * @param val - The value to check.
+ * @returns True if the value is null or undefined, otherwise false.
+ */
+export function isNullOrUndefined(val: unknown): boolean {
+  return val === undefined || val === null ? true : false;
+}
+
+/**
  * Checks if the given value is defined (not undefined).
  * @param val - The value to check.
  * @returns True if the value is defined, otherwise false.
@@ -277,44 +295,6 @@ export function isObject(val: unknown): val is object {
 }
 
 /**
- * Picks specified keys from the given object.
- * @param obj - The object to pick from.
- * @param args - The keys to pick.
- * @returns A new object with the picked keys.
- */
-export function pick(obj: Dict, ...args: (string | number)[]): Dict {
-  // eslint-disable-line no-extend-native
-  const result: Dict = {};
-  if (Array.isArray(args[0])) {
-    args = args[0];
-  }
-  args.forEach((key) => {
-    if (obj[key] !== undefined) {
-      result[key] = obj[key];
-    }
-  });
-  return result;
-}
-
-/**
- * Omits specified keys from the given object.
- * @param obj - The object to omit from.
- * @param args - The keys to omit.
- * @returns A new object without the omitted keys.
- */
-export function omit(obj: Dict, ...args: (string | number)[]): Dict {
-  if (Array.isArray(args[0])) {
-    args = args[0];
-  }
-  const keys = Object.keys(obj).filter((key) => args.indexOf(key) < 0);
-  const newObj: Dict = {};
-  keys.forEach((k) => {
-    newObj[k] = obj[k];
-  });
-  return newObj;
-}
-
-/**
  * Tests if the given value is definitively true.
  * @param val - The value to test.
  * @returns True if the value is true, otherwise false.
@@ -344,6 +324,16 @@ export function isFalse(val: unknown): boolean {
     return val.length && REGEX.isFalse.test(val) ? true : false;
   }
   return false;
+}
+
+/**
+ * Checks if the given object is a class of a specified name.
+ * @param obj - The object to check.
+ * @param name - The name of the class to check against.
+ * @returns True if the object is an instance of the class, otherwise false.
+ */
+export function isClass(obj: unknown, name: string): boolean {
+  return isObject(obj) && obj.constructor.name === name;
 }
 
 /**
@@ -440,11 +430,9 @@ export function asString(data: unknown, isProperty = false): string {
   } else if (data instanceof Error) {
     return data.stack!;
   } else if (typeof data === 'object') {
-    return `{${
-      Object.entries(data)
-        .map(([k, v]) => `"${k}":${asString(v, true)}`)
-        .join(',')
-    }}`;
+    return `{${Object.entries(data)
+      .map(([k, v]) => `"${k}":${asString(v, true)}`)
+      .join(',')}}`;
   }
   return 'undefined';
 }
@@ -465,6 +453,74 @@ export function asRegExp(val: unknown): RegExp | undefined {
       return new RegExp(val.pattern);
     }
   }
+}
+
+/**
+ * Converts arguments into an Error object.
+ * @param args - The arguments to convert.
+ * @returns The resulting Error object.
+ */
+export function asError(...args: unknown[]): Error {
+  let err: Error | undefined;
+  const msg: string[] = [];
+  if (args.length) {
+    args.forEach((arg) => {
+      if (arg instanceof Error) {
+        if (!err) {
+          err = arg;
+        }
+        msg.push(err.message);
+      } else if (isString(arg)) {
+        msg.push(arg);
+      } else {
+        msg.push(String(arg));
+      }
+    });
+    if (!err) {
+      err = new Error(msg.join(' '));
+    } else {
+      err.message = msg.join(' ');
+    }
+  }
+  return err as Error;
+}
+
+/**
+ * Picks specified keys from the given object.
+ * @param obj - The object to pick from.
+ * @param args - The keys to pick.
+ * @returns A new object with the picked keys.
+ */
+export function pick(obj: Dict, ...args: (string | number)[]): Dict {
+  // eslint-disable-line no-extend-native
+  const result: Dict = {};
+  if (Array.isArray(args[0])) {
+    args = args[0];
+  }
+  args.forEach((key) => {
+    if (obj[key] !== undefined) {
+      result[key] = obj[key];
+    }
+  });
+  return result;
+}
+
+/**
+ * Omits specified keys from the given object.
+ * @param obj - The object to omit from.
+ * @param args - The keys to omit.
+ * @returns A new object without the omitted keys.
+ */
+export function omit(obj: Dict, ...args: (string | number)[]): Dict {
+  if (Array.isArray(args[0])) {
+    args = args[0];
+  }
+  const keys = Object.keys(obj).filter((key) => args.indexOf(key) < 0);
+  const newObj: Dict = {};
+  keys.forEach((k) => {
+    newObj[k] = obj[k];
+  });
+  return newObj;
 }
 
 /**
@@ -675,36 +731,6 @@ function _isSet(a: unknown): boolean {
 }
 
 /**
- * Converts arguments into an Error object.
- * @param args - The arguments to convert.
- * @returns The resulting Error object.
- */
-export function asError(...args: unknown[]): Error {
-  let err: Error | undefined;
-  const msg: string[] = [];
-  if (args.length) {
-    args.forEach((arg) => {
-      if (arg instanceof Error) {
-        if (!err) {
-          err = arg;
-        }
-        msg.push(err.message);
-      } else if (isString(arg)) {
-        msg.push(arg);
-      } else {
-        msg.push(String(arg));
-      }
-    });
-    if (!err) {
-      err = new Error(msg.join(' '));
-    } else {
-      err.message = msg.join(' ');
-    }
-  }
-  return err as Error;
-}
-
-/**
  * Delays a promise for a specified number of milliseconds.
  * @param ms - The number of milliseconds to delay.
  * @returns A promise that resolves after the delay.
@@ -715,16 +741,6 @@ export function delayPromise(ms: number): Promise<void> {
       resolve();
     }, ms);
   });
-}
-
-/**
- * Checks if the given object is a class of a specified name.
- * @param obj - The object to check.
- * @param name - The name of the class to check against.
- * @returns True if the object is an instance of the class, otherwise false.
- */
-export function isClass(obj: unknown, name: string): boolean {
-  return isObject(obj) && obj.constructor.name === name;
 }
 
 /**
