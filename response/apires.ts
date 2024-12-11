@@ -80,22 +80,6 @@ export class Response<T> {
       this._assertedError = true;
     }
   }
-
-  // assertValid(): void {
-  //   if (!this.ok) {
-  //     throw this.error;
-  //   }
-  // }
-
-  // assertOk(s: string = 'No response data'): this is IResponseOk<T> {
-  //   if (!this.ok) {
-  //     throw this.error;
-  //   }
-  //   if (!this._data) {
-  //     throw new Error(s);
-  //   }
-  //   return true;
-  // }
 }
 
 export class ApiResponse<T> extends Response<T> {

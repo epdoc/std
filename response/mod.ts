@@ -1,2 +1,2 @@
 export * from './apires.ts';
-export * from './error.ts';
+export * from './safe.ts';

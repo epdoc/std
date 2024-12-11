@@ -430,9 +430,11 @@ export function asString(data: unknown, isProperty = false): string {
   } else if (data instanceof Error) {
     return data.stack!;
   } else if (typeof data === 'object') {
-    return `{${Object.entries(data)
-      .map(([k, v]) => `"${k}":${asString(v, true)}`)
-      .join(',')}}`;
+    return `{${
+      Object.entries(data)
+        .map(([k, v]) => `"${k}":${asString(v, true)}`)
+        .join(',')
+    }}`;
   }
   return 'undefined';
 }
@@ -464,6 +466,7 @@ export function asError(...args: unknown[]): Error {
   let err: Error | undefined;
   const msg: string[] = [];
   if (args.length) {
+    let opts: Dict = {};
     args.forEach((arg) => {
       if (arg instanceof Error) {
         if (!err) {
@@ -472,17 +475,34 @@ export function asError(...args: unknown[]): Error {
         msg.push(err.message);
       } else if (isString(arg)) {
         msg.push(arg);
+      } else if (isDict(arg)) {
+        opts = arg;
       } else {
         msg.push(String(arg));
       }
     });
-    if (!err) {
-      err = new Error(msg.join(' '));
+    if (err instanceof Error) {
+      if (args.length > 1) {
+        err.message = msg.join(' ');
+      }
+      Object.keys(opts).forEach((key) => {
+        // @ts-ignore add our own properties anyway
+        err[key] = opts[key];
+      });
     } else {
-      err.message = msg.join(' ');
+      err = new Error(msg.join(' '), opts);
     }
+    return err;
   }
-  return err as Error;
+  return new Error('Invalid Error error');
+}
+
+export interface ICodeErrorOptions extends ErrorOptions {
+  code?: string;
+}
+
+export interface ICodeError extends Error {
+  code?: string;
 }
 
 /**

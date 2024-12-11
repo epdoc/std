@@ -1,4 +1,3 @@
-import { isError } from '@epdoc/type';
 import * as dfs from '@std/fs';
 import path from 'node:path';
 import { FSStats } from './fsstats.ts';
@@ -249,22 +248,5 @@ export abstract class BaseSpec {
   moveTo(dest: FilePath | BaseSpec, options?: dfs.MoveOptions): Promise<void> {
     const p: FilePath = dest instanceof BaseSpec ? dest.path : dest;
     return dfs.move(this._f, p, options);
-  }
-
-  /**
-   * Creates a new Error with the specified code and message, including the file path.
-   * @param {unknown} code - The error code or Error object.
-   * @param {string} [message] - The error message.
-   * @returns {Error} A new Error object.
-   */
-  newError(code: unknown, message?: string): Error {
-    if (isError(code)) {
-      code.message = `${code.message}: ${this._f}`;
-      return code;
-    }
-    const err: Error = new Error(`${message}: ${this._f}`);
-    // @ts-ignore xxx
-    err.code = code;
-    return err;
   }
 }

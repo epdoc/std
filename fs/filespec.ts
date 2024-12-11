@@ -1,6 +1,6 @@
-import { ApiResponse, type ApiResponsePromise } from '@epdoc/response';
 import type { Dict, Integer } from '@epdoc/type';
 import {
+  asError,
   deepCopy,
   deepCopySetDefaultOpts,
   isArray,
@@ -26,18 +26,8 @@ import type { FolderSpec } from './folderspec.ts';
 import { FSBytes } from './fsbytes.ts';
 import { FSSpec, fsSpec } from './fsspec.ts';
 import type { FSStats } from './fsstats.ts';
-import {
-  type FSSpecParam,
-  type IRootableSpec,
-  type ISafeCopyableSpec,
-  resolvePathArgs,
-} from './icopyable.ts';
-import {
-  type FileConflictStrategy,
-  fileConflictStrategyType,
-  safeCopy,
-  type SafeCopyOpts,
-} from './safecopy.ts';
+import { type FSSpecParam, type IRootableSpec, type ISafeCopyableSpec, resolvePathArgs } from './icopyable.ts';
+import { type FileConflictStrategy, fileConflictStrategyType, safeCopy, type SafeCopyOpts } from './safecopy.ts';
 import type { FilePath, FsDeepCopyOpts } from './types.ts';
 import { isFilePath } from './types.ts';
 import { joinContinuationLines } from './util.ts';
@@ -260,7 +250,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
       // @ts-ignore too picky
       checksum.file(this._f, (err, sum) => {
         if (err) {
-          reject(this.newError(err));
+          reject(asError(err, { path: this._f }));
         } else {
           resolve(sum as string);
         }
@@ -303,19 +293,9 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
           return Promise.resolve(pdfDate);
         }
         return Promise.reject(new Error('No creation date found'));
-      });
-  }
-
-  safeGetPdfDate(): ApiResponsePromise<Date | undefined> {
-    const result = new ApiResponse<Date | undefined>();
-    return this.getPdfDate()
-      .then((resp) => {
-        result.setData(resp);
-        return Promise.resolve(result);
       })
       .catch((err) => {
-        result.setError(err);
-        return Promise.resolve(result);
+        throw asError(err, { path: this._f, cause: 'getPdfDate' });
       });
   }
 
@@ -371,9 +351,13 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
    * ```
    */
   async readBytes(buffer: Uint8Array, position: Integer = 0): Promise<number | null> {
-    const file = await Deno.open(this._f, { read: true });
-    await file.seek(position, Deno.SeekMode.Start);
-    return await file.read(buffer);
+    try {
+      const file = await Deno.open(this._f, { read: true });
+      await file.seek(position, Deno.SeekMode.Start);
+      return await file.read(buffer);
+    } catch (err) {
+      throw asError(err, { path: this._f, cause: 'readBytes' });
+    }
   }
 
   /**
@@ -381,7 +365,11 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
    * @returns {Promise<Uint8Array>} A promise that resolves with the file contents as a buffer.
    */
   async readAsBytes(): Promise<Uint8Array> {
-    return await Deno.readFile(this._f);
+    try {
+      return await Deno.readFile(this._f);
+    } catch (err) {
+      throw asError(err, { path: this._f, cause: 'readFile' });
+    }
   }
 
   /**
@@ -389,55 +377,47 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
    * @returns {Promise<string>} A promise that resolves with the file contents as a string.
    */
   async readAsString(): Promise<string> {
-    return await Deno.readTextFile(this._f);
+    try {
+      return await Deno.readTextFile(this._f);
+    } catch (err) {
+      throw asError(err, { path: this._f, cause: 'readTextFile' });
+    }
   }
 
-  safeReadAsString(): ApiResponsePromise<string> {
-    const result = new ApiResponse<string>();
-    return Deno.readTextFile(this._f)
-      .then((resp) => {
-        result.setData(resp);
-        return Promise.resolve(result);
-      })
-      .catch((err) => {
-        result.setError(new FSError(err, { cause: err.cause, path: this._f }));
-        return Promise.resolve(result);
-      });
-  }
+  // safeReadAsString(): ApiResponsePromise<string> {
+  //   return await safe(read)
+  //   const result = new ApiResponse<string>();
+  //   return Deno.readTextFile(this._f)
+  //     .then((resp) => {
+  //       result.setData(resp);
+  //       return Promise.resolve(result);
+  //     })
+  //     .catch((err) => {
+  //       result.setError(new FSError(err, { cause: err.cause, path: this._f }));
+  //       return Promise.resolve(result);
+  //     });
+  // }
 
   /**
    * Reads the file as a string and splits it into lines.
    * @returns {Promise<string[]>} A promise that resolves with an array of lines.
    */
   async readAsLines(continuation?: string): Promise<string[]> {
-    const data = await Deno.readTextFile(this._f);
-    const lines = data.split(REG.lineSeparator).map((line) => {
-      // RSC output files are encoded oddly and this seems to clean them up
-      return line.replace(/\r/, '').replace(/\0/g, '');
-    });
-
-    if (continuation) {
-      return joinContinuationLines(lines, continuation);
-    } else {
-      return lines;
-    }
-  }
-
-  /**
-   * Reads the file as a string and splits it into lines.
-   * @returns {Promise<string[]>} A promise that resolves with an array of lines.
-   */
-  safeReadAsLines(continuation?: string): ApiResponsePromise<string[]> {
-    const result = new ApiResponse<string[]>();
-    return this.readAsLines(continuation)
-      .then((resp) => {
-        result.setData(resp);
-        return Promise.resolve(result);
-      })
-      .catch((err) => {
-        result.setError(err);
-        return Promise.resolve(result);
+    try {
+      const data = await Deno.readTextFile(this._f);
+      const lines = data.split(REG.lineSeparator).map((line) => {
+        // RSC output files are encoded oddly and this seems to clean them up
+        return line.replace(/\r/, '').replace(/\0/g, '');
       });
+
+      if (continuation) {
+        return joinContinuationLines(lines, continuation);
+      } else {
+        return lines;
+      }
+    } catch (err) {
+      throw asError(err, { path: this._f, cause: 'readAsLines' });
+    }
   }
 
   /**
@@ -445,20 +425,12 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
    * @returns {Promise<unknown>} A promise that resolves with the parsed JSON content.
    */
   async readJson(): Promise<unknown> {
-    const s = await Deno.readTextFile(this._f);
-    return JSON.parse(s);
-  }
-
-  async safeReadJson(): Promise<unknown> {
-    const s = await this.safeReadAsString();
-    if (s.hasData()) {
-      try {
-        s.setData(JSON.parse(s.data));
-      } catch (err) {
-        s.setError(err);
-      }
+    try {
+      const s = await Deno.readTextFile(this._f);
+      return JSON.parse(s);
+    } catch (err) {
+      throw asError(err, { path: this._f, cause: 'readJson' });
     }
-    return s;
   }
 
   /**
@@ -563,7 +535,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
     return this.getStats()
       .then((stats: FSStats) => {
         if (!stats || !stats.exists()) {
-          throw this.newError('ENOENT', 'File does not exist');
+          throw new FSError('File does not exist', { code: 'ENOENT', path: this._f });
         }
         return this._getNewPath(opts);
       })
@@ -574,7 +546,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
               return Promise.resolve(newPath);
             })
             .catch(() => {
-              throw this.newError('ENOENT', 'File could not be renamed');
+              throw new FSError('File could not be renamed', { code: 'ENOENT', path: this._f });
             });
         } else {
           throw new Error('File could not be renamed');
@@ -590,7 +562,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
         const limit = isInteger(opts.limit) ? opts.limit : 32;
         this.findAvailableIndexFilename(limit, opts.separator).then((resp) => {
           if (!resp && opts.errorIfExists) {
-            reject(this.newError('EEXIST', 'File exists'));
+            reject(new FSError('File exists', { code: 'EEXIST', path: this._f }));
           } else {
             resolve(resp);
           }
@@ -599,7 +571,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
         resolve(this.path); // Changed to return string directly
       } else {
         if (opts.errorIfExists) {
-          reject(this.newError('EEXIST', 'File exists'));
+          reject(new FSError('File exists', { code: 'EEXIST', path: this._f }));
         }
         resolve(undefined);
       }

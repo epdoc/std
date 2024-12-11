@@ -1,4 +1,4 @@
-import type { ICodeError, ICodeErrorOptions } from '@epdoc/response';
+import type { ICodeError, ICodeErrorOptions } from '@epdoc/type';
 import { isError } from '@epdoc/type';
 
 export interface FSErrorOptions extends ICodeErrorOptions {

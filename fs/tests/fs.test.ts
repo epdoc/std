@@ -4,6 +4,7 @@ import { expect } from 'jsr:@std/expect';
 import { afterAll, beforeEach, describe, it, test } from 'jsr:@std/testing/bdd';
 import os from 'node:os';
 import path from 'node:path';
+import { FSError } from '../error.ts';
 import {
   fileConflictStrategyType,
   FileSpec,
@@ -310,20 +311,13 @@ describe('FSSpec Tests Part 1', () => {
         });
     });
     test('newError string', () => {
-      const fs = new FileSpec('my/path/to/file.txt');
-      const err = fs.newError(23, 'my message');
+      const opts = { code: 'EEXISTS', path: 'my/path/to/file.txt', cause: 'readFile' };
+      const err = new FSError('my message', opts);
       // @ts-ignore xxx
-      expect(err.code).toEqual(23);
-      expect(err.message).toEqual(`my message: ${Deno.cwd()}/my/path/to/file.txt`);
-    });
-    test('newError Error', () => {
-      const fs = new FileSpec('my/path/to', 'file.txt');
-      const err0 = new Error('hello');
-      const err = fs.newError(err0);
-      // @ts-ignore xxx
-      expect(err.code).toBeUndefined();
-      const val = path.resolve('my/path/to', 'file.txt');
-      expect(err.message).toEqual('hello: ' + val);
+      expect(err.code).toEqual(opts.code);
+      expect(err.message).toEqual('my message');
+      expect(err.path).toEqual(opts.path);
+      expect(err.cause).toEqual(opts.cause);
     });
   });
   describe.skip('Section 2', () => {

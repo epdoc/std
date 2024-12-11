@@ -5,6 +5,7 @@ export type { FileCategory, FileType } from './fsheaders.ts';
 export * from './fsspec.ts';
 export * from './fsstats.ts';
 // export * from './icopyable.ts';
+export * from './error.ts';
 export * from './safecopy.ts';
 export * from './symspec.ts';
 export * from './types.ts';

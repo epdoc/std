@@ -131,14 +131,6 @@ describe('FSSpec Tests Part 3', () => {
   //   expect(destExists).toBe(true);
   // });
 
-  test('newError creates a new error with file path', () => {
-    const item = fileSpec(testFile);
-    const error = item.newError('TEST_ERROR', 'Test error message');
-    expect(error).toBeInstanceOf(Error);
-    expect(error.message).toContain('Test error message');
-    expect(error.message).toContain(testFile);
-  });
-
   // test('readBytes reads specified number of bytes', async () => {
   //   const item = fsitem(testFile);
   //   const buffer = await item.readBytes(5);
