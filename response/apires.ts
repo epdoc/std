@@ -1,4 +1,4 @@
-import { isNull, isString } from '@epdoc/type';
+import { isError, isNull, isString } from '@epdoc/type';
 import { assert } from '@std/assert';
 
 const NO_RESPONSE_DATA = 'No response data';
@@ -25,8 +25,13 @@ export class Response<T> {
     return this._data;
   }
 
-  setError(val: Error | string): this {
-    this._error = isString(val) ? new Error(val) : val;
+  setError(val: unknown): this {
+    if (isString(val)) {
+      this._error = new Error(val);
+    } else if (isError(val)) {
+      this._error = val;
+      // val = asCodeError(val);
+    }
     this.ok = false;
     return this;
   }

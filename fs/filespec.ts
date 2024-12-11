@@ -1,3 +1,4 @@
+import { ApiResponse, type ApiResponsePromise } from '@epdoc/response';
 import type { Dict, Integer } from '@epdoc/type';
 import {
   deepCopy,
@@ -20,6 +21,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { BaseSpec } from './basespec.ts';
+import { FSError } from './error.ts';
 import type { FolderSpec } from './folderspec.ts';
 import { FSBytes } from './fsbytes.ts';
 import { FSSpec, fsSpec } from './fsspec.ts';
@@ -304,6 +306,19 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
       });
   }
 
+  safeGetPdfDate(): ApiResponsePromise<Date | undefined> {
+    const result = new ApiResponse<Date | undefined>();
+    return this.getPdfDate()
+      .then((resp) => {
+        result.setData(resp);
+        return Promise.resolve(result);
+      })
+      .catch((err) => {
+        result.setError(err);
+        return Promise.resolve(result);
+      });
+  }
+
   /**
    * Use checksums to test if this file is equal to path2
    * @param path2
@@ -377,6 +392,19 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
     return await Deno.readTextFile(this._f);
   }
 
+  safeReadAsString(): ApiResponsePromise<string> {
+    const result = new ApiResponse<string>();
+    return Deno.readTextFile(this._f)
+      .then((resp) => {
+        result.setData(resp);
+        return Promise.resolve(result);
+      })
+      .catch((err) => {
+        result.setError(new FSError(err, { cause: err.cause, path: this._f }));
+        return Promise.resolve(result);
+      });
+  }
+
   /**
    * Reads the file as a string and splits it into lines.
    * @returns {Promise<string[]>} A promise that resolves with an array of lines.
@@ -396,12 +424,41 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
   }
 
   /**
+   * Reads the file as a string and splits it into lines.
+   * @returns {Promise<string[]>} A promise that resolves with an array of lines.
+   */
+  safeReadAsLines(continuation?: string): ApiResponsePromise<string[]> {
+    const result = new ApiResponse<string[]>();
+    return this.readAsLines(continuation)
+      .then((resp) => {
+        result.setData(resp);
+        return Promise.resolve(result);
+      })
+      .catch((err) => {
+        result.setError(err);
+        return Promise.resolve(result);
+      });
+  }
+
+  /**
    * Reads the file as JSON and parses it.
    * @returns {Promise<unknown>} A promise that resolves with the parsed JSON content.
    */
   async readJson(): Promise<unknown> {
     const s = await Deno.readTextFile(this._f);
     return JSON.parse(s);
+  }
+
+  async safeReadJson(): Promise<unknown> {
+    const s = await this.safeReadAsString();
+    if (s.hasData()) {
+      try {
+        s.setData(JSON.parse(s.data));
+      } catch (err) {
+        s.setError(err);
+      }
+    }
+    return s;
   }
 
   /**
