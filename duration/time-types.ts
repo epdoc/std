@@ -7,7 +7,8 @@ import { type Integer, isInteger } from '@epdoc/type';
 export type Milliseconds = Integer;
 
 /**
- * Represents a duration in high resolution milliseconds.
+ * Represents a duration in high resolution milliseconds, as would be returned
+ * by performance.now();
  * @typedef {number} HrMilliseconds
  */
 export type HrMilliseconds = number;

@@ -5,7 +5,12 @@ import path from 'node:path';
 import { BaseSpec } from './basespec.ts';
 import { FileSpec } from './filespec.ts';
 import { FSSpec, fsSpec } from './fsspec.ts';
-import { type FSSpecParam, type IRootableSpec, type ISafeCopyableSpec, resolvePathArgs } from './icopyable.ts';
+import {
+  type FSSpecParam,
+  type IRootableSpec,
+  type ISafeCopyableSpec,
+  resolvePathArgs,
+} from './icopyable.ts';
 import { safeCopy, type SafeCopyOpts } from './safecopy.ts';
 import { SymlinkSpec } from './symspec.ts';
 import type { FileName, FilePath, FolderName, FolderPath, FSSortOpts, GetChildrenOpts } from './types.ts';
@@ -183,6 +188,11 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
     return this;
   }
 
+  async ensureParentDir(): Promise<void> {
+    await dfs.ensureDir(this.dirname);
+  }
+
+
   async readDir(): Promise<BaseSpec[]> {
     const results: BaseSpec[] = [];
     for await (const entry of Deno.readDir(this._f)) {
@@ -345,5 +355,43 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
       .sort((a, b) => {
         return compareDictValue(a as unknown as Dict, b as unknown as Dict, 'size');
       });
+  }
+
+  /**
+   * Compare the files in two folders to see if they are identical. This is not
+   * a deep compare, and ignores subfolders.
+   * @param folder
+   * @param filter
+   * @param opts
+   * @returns
+   */
+  async compare(folder: FolderSpec, filter?: RegExp, opts: { checksum?: boolean } = {}): Promise<boolean> {
+    let bFiles = await folder.getFiles(filter);
+    let aFiles = await this.getFiles(filter);
+    bFiles = FolderSpec.sortByFilename(bFiles) as FileSpec[];
+    aFiles = FolderSpec.sortByFilename(aFiles) as FileSpec[];
+    if (aFiles.length !== bFiles.length) {
+      return false;
+    }
+    for (let fdx = 0; fdx < aFiles.length; ++fdx) {
+      const aFile = aFiles[fdx];
+      const bFile = bFiles[fdx];
+      if (aFile.filename.toLowerCase() !== bFile.filename.toLowerCase()) {
+        return false;
+      }
+      const aSize = await aFile.getSize();
+      const bSize = await bFile.getSize();
+      if (aSize !== bSize) {
+        return false;
+      }
+      if (opts.checksum) {
+        const aChecksum = await aFile.checksum();
+        const bChecksum = await bFile.checksum();
+        if (aChecksum !== bChecksum) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 }

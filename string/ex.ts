@@ -25,8 +25,8 @@ export type StringExOptions = {
  * @class StringUtil
  */
 export class StringUtil {
-  private _str: string;
-  private _msub: msub.MSub | undefined;
+  protected _str: string;
+  protected _msub: msub.MSub | undefined;
 
   /**
    * Creates an instance of StringUtil.

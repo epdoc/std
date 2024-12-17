@@ -76,4 +76,8 @@ export class FSSpec extends BaseSpec implements ICopyableSpec, IRootableSpec {
   ): Promise<void> {
     return safeCopy(this, destFile, opts);
   }
+
+  equalPaths(val: FSSpec | FileSpec | FolderSpec): boolean {
+    return this.path === val.path
+  }
 }
