@@ -78,6 +78,6 @@ export class FSSpec extends BaseSpec implements ICopyableSpec, IRootableSpec {
   }
 
   equalPaths(val: FSSpec | FileSpec | FolderSpec): boolean {
-    return this.path === val.path
+    return this.path === val.path;
   }
 }

@@ -1,3 +1,4 @@
+import { FSError } from './error.ts';
 import type { Integer } from '@epdoc/type';
 import * as dfs from 'jsr:@std/fs';
 import path from 'node:path';
@@ -7,6 +8,7 @@ import { FSSpec } from './fsspec.ts';
 import { SymlinkSpec } from './symspec.ts';
 import type { FilePath } from './types.ts';
 import { resolveType } from './util.ts';
+
 /**
  * Represents the possible conflict resolution strategies for a file.
  */
@@ -32,7 +34,8 @@ export const fileConflictStrategyType = {
  * Type representing the possible conflict strategy types.
  * This type is derived from the keys of the `fileConflictStrategyType` object.
  */
-export type FileConflictStrategyType = (typeof fileConflictStrategyType)[keyof typeof fileConflictStrategyType];
+export type FileConflictStrategyType =
+  (typeof fileConflictStrategyType)[keyof typeof fileConflictStrategyType];
 
 /**
  * Checks if a given value is a valid FileConflictStrategyType.
@@ -82,33 +85,34 @@ export type SafeCopyOpts = SafeFileCopyOpts & SafeFolderCopyOpts;
 export async function safeCopy(
   src: FSSpec | FileSpec | FolderSpec | SymlinkSpec,
   dest: FilePath | FSSpec | FileSpec | FolderSpec,
-  options: SafeCopyOpts = {},
+  options: SafeCopyOpts = {}
 ): Promise<void> {
   const fsSrc = await resolveType(src);
 
   // Check if src is a symlink
   if (fsSrc.isSymlink()) {
-    throw new Error('Source cannot be a symlink');
+    throw new FSError('Source cannot be a symlink', { path: fsSrc.path });
   }
 
   // Ensure src exists
-  if (!fsSrc.exists()) {
-    throw new Error('Source does not exist');
+  const srcExists = await fsSrc.getExists();
+  if (!srcExists) {
+    throw new FSError('Source does not exist', { path: fsSrc.path });
   }
 
   const fsDest = await resolveType(dest);
   if (fsDest instanceof SymlinkSpec) {
-    throw new Error('Destination cannot be a symlink');
+    throw new FSError('Destination cannot be a symlink', { path: fsDest.path });
   }
 
   if (src instanceof FileSpec) {
     if (fsDest instanceof FSSpec) {
-      throw new Error('Destination must be a FileSpec or FolderSpec');
+      throw new FSError('Destination must be a FileSpec or FolderSpec', { path: fsDest.path });
     }
     await safeCopyFile(src, fsDest, options);
   } else if (src instanceof FolderSpec) {
     if (!(fsDest instanceof FolderSpec)) {
-      throw new Error('Destination must be a FolderSpec');
+      throw new FSError('Destination must be a FolderSpec', { path: fsSrc.path });
     }
     await safeCopyFolder(src, fsDest, options);
   }
@@ -124,12 +128,15 @@ export async function safeCopy(
 export async function safeCopyFile(
   src: FileSpec,
   fsDest: FileSpec | FolderSpec,
-  options: SafeFileCopyOpts = {},
+  options: SafeFileCopyOpts = {}
 ): Promise<void> {
   if (fsDest instanceof FileSpec) {
-    if (fsDest.exists()) {
+    const destExists = await fsDest.getExists();
+    if (destExists) {
       // Handle existing destination file
       await fsDest.backup(options.conflictStrategy);
+    } else {
+      await fsDest.ensureParentDir();
     }
     await src.copyTo(fsDest.path, { overwrite: true, preserveTimestamps: true });
     if (options.move) {
@@ -160,7 +167,7 @@ export async function safeCopyFile(
 export async function safeCopyFolder(
   src: FolderSpec,
   fsDest: FolderSpec,
-  options: SafeCopyOpts = {},
+  options: SafeCopyOpts = {}
 ): Promise<void> {
   // if (options.contents === false) {
   //   fsDest = fsDest.add(src.dirname);
