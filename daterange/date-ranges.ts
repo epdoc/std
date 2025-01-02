@@ -1,3 +1,4 @@
+import { dateEx } from '@epdoc/datetime';
 import { isNonEmptyArray, isValidDate } from '@epdoc/type';
 import type { DateRangeDef } from './util.ts';
 
@@ -79,5 +80,13 @@ export class DateRanges {
    */
   hasRanges(): boolean {
     return isNonEmptyArray(this._ranges);
+  }
+
+  toString(): string {
+    const s: string[] = [];
+    this._ranges.forEach((range) => {
+      s.push(`from ${range.after ? dateEx(range.after).toISOLocalString() : '2000'} to ${range.before ? dateEx(range.before).toISOLocalString() : 'now'}`);
+    });
+    return s.join(', ');
   }
 }
