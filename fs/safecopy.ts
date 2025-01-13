@@ -1,7 +1,7 @@
-import { FSError } from './error.ts';
 import type { Integer } from '@epdoc/type';
 import * as dfs from 'jsr:@std/fs';
 import path from 'node:path';
+import { FSError } from './error.ts';
 import { FileSpec } from './filespec.ts';
 import { FolderSpec } from './folderspec.ts';
 import { FSSpec } from './fsspec.ts';

@@ -26,11 +26,22 @@ import type { FolderSpec } from './folderspec.ts';
 import { FSBytes } from './fsbytes.ts';
 import { FSSpec, fsSpec } from './fsspec.ts';
 import type { FSStats } from './fsstats.ts';
-import { type FSSpecParam, type IRootableSpec, type ISafeCopyableSpec, resolvePathArgs } from './icopyable.ts';
-import { type FileConflictStrategy, fileConflictStrategyType, safeCopy, type SafeCopyOpts } from './safecopy.ts';
+import {
+  type FSSpecParam,
+  type IRootableSpec,
+  type ISafeCopyableSpec,
+  resolvePathArgs,
+} from './icopyable.ts';
+import {
+  type FileConflictStrategy,
+  fileConflictStrategyType,
+  safeCopy,
+  type SafeCopyOpts,
+} from './safecopy.ts';
 import type { FilePath, FsDeepCopyOpts } from './types.ts';
 import { isFilePath } from './types.ts';
 import { joinContinuationLines } from './util.ts';
+import { toHexString } from 'pdf-lib';
 
 const REG = {
   pdf: /\.pdf$/i,
@@ -305,18 +316,21 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
    * @returns {Promise<boolean>} A promise that resolves with true if the files are equal, false otherwise.
    */
   filesEqual(arg: FilePath | FileSpec | FSSpec): Promise<boolean> {
+    if( arg instanceof FileSpec ) {
+      return this._equal(arg)
+    }
     assert(isFilePath(arg) || arg instanceof BaseSpec, 'Invalid filesEqual argument');
     const fs: BaseSpec = arg instanceof BaseSpec ? arg : fsSpec(arg);
 
     return new Promise((resolve, _reject) => {
       if (fs instanceof FileSpec) {
-        return this._filesEqual2(fs).then((resp) => {
+        return this._equal(fs).then((resp) => {
           resolve(resp);
         });
       } else if (fs instanceof FSSpec) {
         return fs.getResolvedType().then((resp) => {
           if (resp instanceof FileSpec) {
-            return this._filesEqual2(resp);
+            return this._equal(resp);
           } else {
             return Promise.resolve(false);
           }
@@ -327,16 +341,15 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
     });
   }
 
-  protected _filesEqual2(fs: FileSpec): Promise<boolean> {
-    const job1 = this.checksum();
-    const job2 = fs.checksum();
-    return Promise.all([job1, job2]).then((resps) => {
-      if (resps && resps.length === 2 && resps[0] === resps[1]) {
-        return Promise.resolve(true);
-      } else {
-        return Promise.resolve(false);
-      }
-    });
+  protected async _equal(fs: FileSpec): Promise<boolean> {
+    const exists1 = await this.getExists();
+    const exists2 = await this.getExists();
+    if (exists1 && exists2) {
+      const checksum1 = await this.checksum();
+      const checksum2 = await fs.checksum();
+      return checksum1 === checksum2;
+    }
+    return false;
   }
 
   /**
@@ -545,11 +558,14 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
             .then(() => {
               return Promise.resolve(newPath);
             })
-            .catch(() => {
-              throw new FSError('File could not be renamed', { code: 'ENOENT', path: this._f });
+            .catch((err) => {
+              if( err instanceof Error ) {
+                throw err;
+              }
+              throw new FSError(String(err), { code: 'ENOENT', path: this._f });
             });
         } else {
-          throw new Error('File could not be renamed');
+          throw new FSError(`New path ${newPath} is not a file path`,{cause:'backup',path:this._f});
         }
       });
   }
