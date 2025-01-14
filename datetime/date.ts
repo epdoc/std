@@ -146,6 +146,7 @@ export class DateEx {
   /**
    * Format the date using the supplied format string. Will use the local
    * timezone when outputing the time. Call tz() to override this value.
+   * Format strings are yyyy, MM, dd, HH, mm, ss and SSS.
    * @param format
    * @returns
    */
