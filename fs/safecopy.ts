@@ -34,8 +34,7 @@ export const fileConflictStrategyType = {
  * Type representing the possible conflict strategy types.
  * This type is derived from the keys of the `fileConflictStrategyType` object.
  */
-export type FileConflictStrategyType =
-  (typeof fileConflictStrategyType)[keyof typeof fileConflictStrategyType];
+export type FileConflictStrategyType = (typeof fileConflictStrategyType)[keyof typeof fileConflictStrategyType];
 
 /**
  * Checks if a given value is a valid FileConflictStrategyType.
@@ -85,7 +84,7 @@ export type SafeCopyOpts = SafeFileCopyOpts & SafeFolderCopyOpts;
 export async function safeCopy(
   src: FSSpec | FileSpec | FolderSpec | SymlinkSpec,
   dest: FilePath | FSSpec | FileSpec | FolderSpec,
-  options: SafeCopyOpts = {}
+  options: SafeCopyOpts = {},
 ): Promise<void> {
   const fsSrc = await resolveType(src);
 
@@ -128,7 +127,7 @@ export async function safeCopy(
 export async function safeCopyFile(
   src: FileSpec,
   fsDest: FileSpec | FolderSpec,
-  options: SafeFileCopyOpts = {}
+  options: SafeFileCopyOpts = {},
 ): Promise<void> {
   if (fsDest instanceof FileSpec) {
     const destExists = await fsDest.getExists();
@@ -167,7 +166,7 @@ export async function safeCopyFile(
 export async function safeCopyFolder(
   src: FolderSpec,
   fsDest: FolderSpec,
-  options: SafeCopyOpts = {}
+  options: SafeCopyOpts = {},
 ): Promise<void> {
   // if (options.contents === false) {
   //   fsDest = fsDest.add(src.dirname);

@@ -86,7 +86,9 @@ export class DateRanges {
     const s: string[] = [];
     this._ranges.forEach((range) => {
       s.push(
-        `from ${range.after ? dateEx(range.after).format('yyyy/MM/dd HH:mm:ss') : '2000'} to ${range.before ? dateEx(range.before).format('yyyy/MM/dd HH:mm:ss') : 'now'}`
+        `from ${range.after ? dateEx(range.after).format('yyyy/MM/dd HH:mm:ss') : '2000'} to ${
+          range.before ? dateEx(range.before).format('yyyy/MM/dd HH:mm:ss') : 'now'
+        }`,
       );
     });
     return s.join(', ');

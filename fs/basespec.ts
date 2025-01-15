@@ -95,21 +95,19 @@ export abstract class BaseSpec {
    */
   public getStats(force = false): Promise<FSStats> {
     if (force || !this._stats.isInitialized()) {
-      return (
-        Promise.resolve(this)
-          .then(() => {
-            return Deno.lstat(this._f);
-          })
-          // @ts-ignore xxx Trying to find a way to quiet this error
-          .then((resp: Deno.FileInfo) => {
-            this._stats = new FSStats(resp);
-            return Promise.resolve(this._stats);
-          })
-          .catch((_err) => {
-            this._stats = new FSStats();
-            return Promise.resolve(this._stats);
-          })
-      );
+      return Promise.resolve(this)
+        .then(() => {
+          return Deno.lstat(this._f);
+        })
+        // @ts-ignore xxx Trying to find a way to quiet this error
+        .then((resp: Deno.FileInfo) => {
+          this._stats = new FSStats(resp);
+          return Promise.resolve(this._stats);
+        })
+        .catch((_err) => {
+          this._stats = new FSStats();
+          return Promise.resolve(this._stats);
+        });
     } else {
       return Promise.resolve(this._stats);
     }

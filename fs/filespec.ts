@@ -26,22 +26,11 @@ import type { FolderSpec } from './folderspec.ts';
 import { FSBytes } from './fsbytes.ts';
 import { FSSpec, fsSpec } from './fsspec.ts';
 import type { FSStats } from './fsstats.ts';
-import {
-  type FSSpecParam,
-  type IRootableSpec,
-  type ISafeCopyableSpec,
-  resolvePathArgs,
-} from './icopyable.ts';
-import {
-  type FileConflictStrategy,
-  fileConflictStrategyType,
-  safeCopy,
-  type SafeCopyOpts,
-} from './safecopy.ts';
+import { type FSSpecParam, type IRootableSpec, type ISafeCopyableSpec, resolvePathArgs } from './icopyable.ts';
+import { type FileConflictStrategy, fileConflictStrategyType, safeCopy, type SafeCopyOpts } from './safecopy.ts';
 import type { FilePath, FsDeepCopyOpts } from './types.ts';
 import { isFilePath } from './types.ts';
 import { joinContinuationLines } from './util.ts';
-import { toHexString } from 'pdf-lib';
 
 const REG = {
   pdf: /\.pdf$/i,
@@ -316,8 +305,8 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
    * @returns {Promise<boolean>} A promise that resolves with true if the files are equal, false otherwise.
    */
   filesEqual(arg: FilePath | FileSpec | FSSpec): Promise<boolean> {
-    if( arg instanceof FileSpec ) {
-      return this._equal(arg)
+    if (arg instanceof FileSpec) {
+      return this._equal(arg);
     }
     assert(isFilePath(arg) || arg instanceof BaseSpec, 'Invalid filesEqual argument');
     const fs: BaseSpec = arg instanceof BaseSpec ? arg : fsSpec(arg);
@@ -559,13 +548,13 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
               return Promise.resolve(newPath);
             })
             .catch((err) => {
-              if( err instanceof Error ) {
+              if (err instanceof Error) {
                 throw err;
               }
               throw new FSError(String(err), { code: 'ENOENT', path: this._f });
             });
         } else {
-          throw new FSError(`New path ${newPath} is not a file path`,{cause:'backup',path:this._f});
+          throw new FSError(`New path ${newPath} is not a file path`, { cause: 'backup', path: this._f });
         }
       });
   }
