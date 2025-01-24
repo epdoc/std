@@ -5,7 +5,12 @@ import path from 'node:path';
 import { BaseSpec } from './basespec.ts';
 import { FileSpec } from './filespec.ts';
 import { FSSpec, fsSpec } from './fsspec.ts';
-import { type FSSpecParam, type IRootableSpec, type ISafeCopyableSpec, resolvePathArgs } from './icopyable.ts';
+import {
+  type FSSpecParam,
+  type IRootableSpec,
+  type ISafeCopyableSpec,
+  resolvePathArgs,
+} from './icopyable.ts';
 import { safeCopy, type SafeCopyOpts } from './safecopy.ts';
 import { SymlinkSpec } from './symspec.ts';
 import type { FileName, FilePath, FolderName, FolderPath, FSSortOpts, GetChildrenOpts } from './types.ts';
@@ -35,6 +40,12 @@ function fromWalkEntry(entry: dfs.WalkEntry): BaseSpec {
 export function folderSpec(...args: FSSpecParam): FolderSpec {
   return new FolderSpec(...args);
 }
+
+export type FolderDiff = {
+  missing: FileName[];
+  added: FileName[];
+  diff: FileName[];
+};
 
 /**
  * An object representing a file system entry, which may be either a file or a
@@ -373,19 +384,72 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
       if (aFile.filename.toLowerCase() !== bFile.filename.toLowerCase()) {
         return false;
       }
-      const aSize = await aFile.getSize();
-      const bSize = await bFile.getSize();
-      if (aSize !== bSize) {
+      const bEqual = await filesEqual(aFile, bFile, opts);
+      if (!bEqual) {
         return false;
-      }
-      if (opts.checksum) {
-        const aChecksum = await aFile.checksum();
-        const bChecksum = await bFile.checksum();
-        if (aChecksum !== bChecksum) {
-          return false;
-        }
       }
     }
     return true;
   }
+
+  /**
+   * Compare the files in two folders to see if they are identical. This is not
+   * a deep compare, and ignores subfolders.
+   * @param folder
+   * @param filter
+   * @param opts
+   * @returns
+   */
+  async getDiff(folder: FolderSpec, filter?: RegExp, opts: { checksum?: boolean } = {}): Promise<FolderDiff> {
+    const result: FolderDiff = { missing: [], added: [], diff: [] };
+    let aFiles = await this.getFiles(filter);
+    let bFiles = await folder.getFiles(filter);
+    aFiles = FolderSpec.sortByFilename(aFiles) as FileSpec[];
+    bFiles = FolderSpec.sortByFilename(bFiles) as FileSpec[];
+    for (let adx = 0; adx < aFiles.length; ++adx) {
+      const aFile = aFiles[adx];
+      const bFile = bFiles.find((file) => {
+        return file.filename === aFile.filename;
+      });
+      if (!bFile) {
+        result.missing.push(aFile.filename);
+      } else {
+        const bEqual = await filesEqual(aFile, bFile, opts);
+        if (!bEqual) {
+          result.diff.push(aFile.filename);
+        }
+      }
+    }
+    for (let bdx = 0; bdx < bFiles.length; ++bdx) {
+      const bFile = bFiles[bdx];
+      const aFile = aFiles.find((file) => {
+        return file.filename === bFile.filename;
+      });
+      if (!aFile) {
+        result.added.push(bFile.filename);
+      }
+    }
+
+    return result;
+  }
+}
+
+async function filesEqual(
+  aFile: FileSpec,
+  bFile: FileSpec,
+  opts: { checksum?: boolean } = { checksum: true }
+): Promise<boolean> {
+  const aSize = await aFile.getSize();
+  const bSize = await bFile.getSize();
+  if (aSize !== bSize) {
+    return false;
+  }
+  if (opts.checksum) {
+    const aChecksum = await aFile.checksum();
+    const bChecksum = await bFile.checksum();
+    if (aChecksum !== bChecksum) {
+      return false;
+    }
+  }
+  return true;
 }
