@@ -565,7 +565,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
         resolve(this.path + '~'); // Changed to return string directly
       } else if (opts.type === fileConflictStrategyType.renameWithNumber) {
         const limit = isInteger(opts.limit) ? opts.limit : 32;
-        this.findAvailableIndexFilename(limit, opts.separator).then((resp) => {
+        this.findAvailableIndexFilename(limit, opts.separator, opts.prefix).then((resp) => {
           if (!resp && opts.errorIfExists) {
             reject(new FSError('File exists', { code: 'EEXIST', path: this._f }));
           } else {
@@ -591,12 +591,12 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
    * @param {string} [sep='-'] - The separator to use between the filename and the index.
    * @returns {Promise<FilePath | undefined>} A promise that resolves with an available file path, or undefined if not found.
    */
-  async findAvailableIndexFilename(_limit: Integer = 32, sep: string = '-'): Promise<FilePath | undefined> {
+  async findAvailableIndexFilename(_limit: Integer = 32, sep: string = '-', prefix:string = ''): Promise<FilePath | undefined> {
     let newFsDest: FileSpec | undefined;
     let count = 0;
     let looking = true;
     while (looking) {
-      newFsDest = fileSpec(this.dirname, this.basename + sep + pad(++count, 2) + this.extname);
+      newFsDest = fileSpec(this.dirname, this.basename + sep + prefix + pad(++count, 2) + this.extname);
       looking = await newFsDest.getExists();
     }
     if (!looking && newFsDest instanceof FileSpec) {

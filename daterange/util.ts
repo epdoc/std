@@ -27,7 +27,7 @@ export type DateRangeDef = {
    are not specified, the start hour is set to 0, and the finish hour is set to
    24 such that the entire end day is included.
  * @param {string} val - A string containing date ranges separated by commas.
-   @param {number} h - The hour of the day to use when not specified in the definitions.
+   @param {number} h - The hour of the day, in local time, to use when not specified in the definitions.
  * @returns {DateRangeDef[]} An array of DateRangeDef objects.
  */
 export function dateList(val: string, h: Integer = 0): DateRangeDef[] {
@@ -44,7 +44,7 @@ export function dateList(val: string, h: Integer = 0): DateRangeDef[] {
         t1 = dateStringToDate(p[1], h + 24);
       } else if (idx === ranges.length - 1) {
         t0 = dateStringToDate(range);
-        t1 = new Date(); // now
+        t1 = new Date(new Date().getTime() + 3600*1000); // now plus an hour
       } else {
         t0 = dateStringToDate(range);
         t1 = new Date(t0.getTime() + DAY);
