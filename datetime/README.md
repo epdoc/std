@@ -1,23 +1,22 @@
 # @epdoc/std/datetime
 
-Contains date utilities that are not found in [moment.js](https://github.com/moment/moment) or require a fair amount of
+Contains several date utilities that are not found in
+[moment.js](https://github.com/moment/moment) or require a fair amount of
 wrapper logic when using
 [Intl.DurationFormat](https://tc39.es/proposal-intl-duration-format/#sec-intl-durationformat-constructor).
-
-Contains no external dependencies.
 
 ## Date Utilities
 
 Contains methods to generate, from a Date object:
 
-- an ISO date string that uses the local timezone
-- the [Julian date](https://en.wikipedia.org/wiki/Julian_day) value
-- a date that is suitable for use in Google Sheets
-- create a new DateUtil object from a date in the PDF date format
-- various methods to work with timezones
+- An ISO date string that uses the local timezone (The Date object's toISOString only uses GMT)
+- The [Julian date](https://en.wikipedia.org/wiki/Julian_day) value
+- A date that is suitable for use in Google Sheets
+- Create a new DateUtil object from a date in the PDF date format
+- Various methods to work with timezones
 
 ```typescript
-import { dateUtil } from './mod.ts';
+import { dateUtil } from 'jsr:@epdoc/datetime';
 
 const d0 = new Date();
 console.log(d0.toLocaleString());
@@ -44,3 +43,12 @@ Resultant output:
 19971125_061314
 19971125_121314
 ```
+
+## Roadmap
+
+The goal of this package is to make it go away or be simplified by using more
+standard Javascript library functions.
+
+## License
+
+[MIT](./LICENSE)

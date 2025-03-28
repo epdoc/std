@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "exports": "./mod.ts",
   "imports": {
-    "@epdoc/type": "../type/mod.ts"
+    "@epdoc/type": "jsr:@epdoc/type"
   }
 }

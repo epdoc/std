@@ -135,6 +135,11 @@
       "jsr:@std/assert@1"
     ],
     "members": {
+      "datetime": {
+        "dependencies": [
+          "jsr:@epdoc/type@*"
+        ]
+      },
       "fs": {
         "dependencies": [
           "jsr:@std/bytes@^1.0.5",
