@@ -1,8 +1,7 @@
 # @epdoc/std/datetime
 
-Contains several date utilities that are not found in
-[moment.js](https://github.com/moment/moment) or require a fair amount of
-wrapper logic when using
+Contains several date utilities that are not found in [moment.js](https://github.com/moment/moment) or require a fair
+amount of wrapper logic when using
 [Intl.DurationFormat](https://tc39.es/proposal-intl-duration-format/#sec-intl-durationformat-constructor).
 
 ## Date Utilities
@@ -46,8 +45,7 @@ Resultant output:
 
 ## Roadmap
 
-The goal of this package is to make it go away or be simplified by using more
-standard Javascript library functions.
+The goal of this package is to make it go away or be simplified by using more standard Javascript library functions.
 
 ## License
 

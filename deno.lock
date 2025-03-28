@@ -135,18 +135,43 @@
       "jsr:@std/assert@1"
     ],
     "members": {
+      "daterange": {
+        "dependencies": [
+          "jsr:@epdoc/datetime@1.0.0",
+          "jsr:@epdoc/type@1.0.2"
+        ]
+      },
       "datetime": {
         "dependencies": [
-          "jsr:@epdoc/type@*"
+          "jsr:@epdoc/type@1.0.2"
+        ]
+      },
+      "duration": {
+        "dependencies": [
+          "jsr:@epdoc/type@1.0.2"
         ]
       },
       "fs": {
         "dependencies": [
+          "jsr:@epdoc/datetime@1.0.0",
+          "jsr:@epdoc/response@1.0.0",
+          "jsr:@epdoc/type@1.0.2",
           "jsr:@std/bytes@^1.0.5",
           "jsr:@std/fs@^1.0.4",
           "jsr:@std/io@0.225",
           "npm:checksum@1",
           "npm:pdf-lib@^1.17.1"
+        ]
+      },
+      "response": {
+        "dependencies": [
+          "jsr:@epdoc/type@1.0.2"
+        ]
+      },
+      "string": {
+        "dependencies": [
+          "jsr:@epdoc/datetime@1.0.0",
+          "jsr:@epdoc/type@1.0.2"
         ]
       }
     }
