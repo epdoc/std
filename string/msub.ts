@@ -7,8 +7,8 @@
  */
 
 import { assert } from '@std/assert';
-import { isDate, isNumber, isObject } from '../type/mod.ts';
-import { isFunction, isString } from '../type/util.ts';
+import { isDate, isNumber, isObject } from '@epdoc/type';
+import { isFunction, isString } from '@epdoc/type';
 
 /**
  * Options for initializing the MSub instance.
