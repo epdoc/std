@@ -14,7 +14,7 @@
     "@epdoc/datetime": "../datetime/mod.ts",
     "@epdoc/type": "../type/mod.ts",
     "@epdoc/response": "../response/mod.ts",
-    "@std/bytes": "jsr:@std/bytes@^1.0.4",
+    "@std/bytes": "jsr:@std/bytes@^1.0.5",
     "@std/fs": "jsr:@std/fs@^1.0.4",
     "@std/io": "jsr:@std/io@^0.225.0",
     "checksum": "npm:checksum@^1.0.0",

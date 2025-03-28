@@ -1,4 +1,4 @@
-import { equals } from 'jsr:@std/bytes/equals';
+import { equals } from '@std/bytes';
 import { FILE_HEADERS, type FileCategory, type FileHeaderEntry, type FileType } from './fsheaders.ts';
 
 // const encoder = new TextEncoder();

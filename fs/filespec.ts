@@ -273,7 +273,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
    */
   getPdfDate(): Promise<Date | undefined> {
     let doc: unknown;
-    return import('npm:pdf-lib')
+    return import('pdf-lib')
       .then(({ PDFDocument }) => {
         doc = PDFDocument;
         if (doc) {
