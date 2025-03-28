@@ -3,7 +3,7 @@
 ## Install
 
 ```bash
-deno add:@epdoc/daterange
+deno add jsr:@epdoc/daterange
 ```
 
 ## DateRange

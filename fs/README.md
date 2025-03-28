@@ -1,12 +1,12 @@
 # @epdoc/fs
 
-Async File System utilities for Node.js
+Async File System utilities for ~~Node.js~~ Deno
 
 ## Description
 
-@epdoc/fsutil is a powerful and flexible Node.js package that provides asynchronous file system utilities. It offers an
-intuitive API for working with files and directories, including operations like reading, writing, copying, and moving
-files, as well as directory management and file type detection.
+@epdoc/fs provides asynchronous file system utilities. It offers an intuitive API for working with files and
+directories, including operations like reading, writing, copying, and moving files, as well as directory management and
+file type detection.
 
 ## Key Features
 
@@ -105,7 +105,7 @@ To check for the latest version of dependencies, use `npm-check -u` (must be ins
 
 ## License
 
-[Insert license information here]
+[MIT](./LICENSE)
 
 ## Contributing
 

@@ -69,3 +69,12 @@ There are type definitions for the following:
 ```typescript
 import type { EpochMilliseconds, EpochSeconds, HrMilliseconds, Milliseconds, Minutes } from './mod.ts';
 ```
+
+## Roadmap
+
+The goal of this package is to make it go away or be simplified by using common standard Javascript library functions.
+Please check jsr:@std/duration before using this library.
+
+## License
+
+[MIT](./LICENSE)

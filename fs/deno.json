@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/fs",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "File system entry wrapper",
   "exports": "./mod.ts",
   "tasks": {
