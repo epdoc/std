@@ -1,8 +1,7 @@
 # @epdoc/string
 
-A string wrapper that adds some common and some less common string methods.
-Includes `msub`, a string replacement method that supports substitution of object
-properties or array values.
+A string wrapper that adds some common and some less common string methods. Includes `msub`, a string replacement method
+that supports substitution of object properties or array values.
 
 ## Install
 
@@ -204,10 +203,8 @@ expect(result3).toBe('My eyes');
 
 ## Versions
 
-`msub` has a previous life as an [npm
-package](https://www.npmjs.com/package/msub). With the advent of string
-literals, the need for msub has diminished, but it is still useful for some
-applications.
+`msub` has a previous life as an [npm package](https://www.npmjs.com/package/msub). With the advent of string literals,
+the need for msub has diminished, but it is still useful for some applications.
 
 ## License
 
