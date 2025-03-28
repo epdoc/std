@@ -462,8 +462,8 @@ export function asRegExp(val: unknown): RegExp | undefined {
  * @param args - The arguments to convert.
  * @returns The resulting Error object.
  */
-export function asError(...args: unknown[]): Error {
-  let err: Error | undefined;
+export function asError(...args: unknown[]): CodeError {
+  let err: CodeError | undefined;
   const msg: string[] = [];
   if (args.length) {
     let opts: Dict = {};
@@ -490,11 +490,11 @@ export function asError(...args: unknown[]): Error {
         err[key] = opts[key];
       });
     } else {
-      err = new Error(msg.join(' '), opts);
+      err = new CodeError(msg.join(' '), opts);
     }
     return err;
   }
-  return new Error('Invalid Error error');
+  return new CodeError('Invalid Error error');
 }
 
 export interface ICodeErrorOptions extends ErrorOptions {
@@ -503,6 +503,10 @@ export interface ICodeErrorOptions extends ErrorOptions {
 
 export interface ICodeError extends Error {
   code?: string;
+}
+
+export class CodeError extends Error {
+  code?: string | number;
 }
 
 /**

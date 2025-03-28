@@ -591,7 +591,11 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
    * @param {string} [sep='-'] - The separator to use between the filename and the index.
    * @returns {Promise<FilePath | undefined>} A promise that resolves with an available file path, or undefined if not found.
    */
-  async findAvailableIndexFilename(_limit: Integer = 32, sep: string = '-', prefix:string = ''): Promise<FilePath | undefined> {
+  async findAvailableIndexFilename(
+    _limit: Integer = 32,
+    sep: string = '-',
+    prefix: string = '',
+  ): Promise<FilePath | undefined> {
     let newFsDest: FileSpec | undefined;
     let count = 0;
     let looking = true;

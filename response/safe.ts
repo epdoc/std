@@ -1,8 +1,8 @@
-import { asError } from '@epdoc/type';
+import { asError, type CodeError } from '@epdoc/type';
 
-export type SafeResponse<T> = [Error, null] | [null, T];
+export type SafeResponse<T> = [CodeError, null] | [null, T];
 export type SafePromise<T> = Promise<SafeResponse<T>>;
-export type SafeApiResponse<T> = [Error, null, number] | [null, T, number];
+export type SafeApiResponse<T> = [CodeError, null, number] | [null, T, number];
 export type SafeApiPromise<T> = Promise<SafeApiResponse<T>>;
 
 export async function safe<T>(promise: Promise<T>): SafePromise<T> {

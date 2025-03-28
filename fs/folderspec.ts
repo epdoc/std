@@ -5,12 +5,7 @@ import path from 'node:path';
 import { BaseSpec } from './basespec.ts';
 import { FileSpec } from './filespec.ts';
 import { FSSpec } from './fsspec.ts';
-import {
-  type FSSpecParam,
-  type IRootableSpec,
-  type ISafeCopyableSpec,
-  resolvePathArgs,
-} from './icopyable.ts';
+import { type FSSpecParam, type IRootableSpec, type ISafeCopyableSpec, resolvePathArgs } from './icopyable.ts';
 import { safeCopy, type SafeCopyOpts } from './safecopy.ts';
 import { SymlinkSpec } from './symspec.ts';
 import type { FileName, FilePath, FolderName, FolderPath, FSSortOpts, GetChildrenOpts } from './types.ts';
@@ -26,13 +21,13 @@ function fromDirEntry(path: FolderPath, entry: Deno.DirEntry): FileSpec | Folder
   return new FSSpec(path, entry.name).setDirEntry(entry);
 }
 
-function fromWalkEntry(entry: dfs.WalkEntry): FileSpec | FolderSpec | SymlinkSpec| FSSpec {
-  if( entry.isDirectory ) {
-    return new FolderSpec(entry.path).setDirEntry(entry)
-  } else if( entry.isFile ) {
-    return new FileSpec(entry.path).setDirEntry(entry)
-  } else if( entry.isSymlink ) {
-    return new SymlinkSpec(entry.path).setDirEntry(entry)
+function fromWalkEntry(entry: dfs.WalkEntry): FileSpec | FolderSpec | SymlinkSpec | FSSpec {
+  if (entry.isDirectory) {
+    return new FolderSpec(entry.path).setDirEntry(entry);
+  } else if (entry.isFile) {
+    return new FileSpec(entry.path).setDirEntry(entry);
+  } else if (entry.isSymlink) {
+    return new SymlinkSpec(entry.path).setDirEntry(entry);
   }
   return new FSSpec(entry.path).setDirEntry(entry);
 }
@@ -202,10 +197,10 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
   }
 
   /**
- * Reads the contents of the directory and returns an array of BaseSpec objects
- * representing both files and folders.
- * @returns {Promise<BaseSpec[]>} Array of BaseSpec objects for directory entries
- */
+   * Reads the contents of the directory and returns an array of BaseSpec objects
+   * representing both files and folders.
+   * @returns {Promise<BaseSpec[]>} Array of BaseSpec objects for directory entries
+   */
   async readDir(): Promise<BaseSpec[]> {
     const results: BaseSpec[] = [];
     for await (const entry of Deno.readDir(this._f)) {
@@ -215,12 +210,12 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
   }
 
   /**
- * Returns an array of FileSpec objects for files in the directory that match
- * the optional regex pattern.
- * @param {RegExp} [regex] - Optional regular expression to filter filenames
- * @returns {Promise<FileSpec[]>} Array of FileSpec objects for matching files
- */
-async getFiles(regex?: RegExp): Promise<FileSpec[]> {
+   * Returns an array of FileSpec objects for files in the directory that match
+   * the optional regex pattern.
+   * @param {RegExp} [regex] - Optional regular expression to filter filenames
+   * @returns {Promise<FileSpec[]>} Array of FileSpec objects for matching files
+   */
+  async getFiles(regex?: RegExp): Promise<FileSpec[]> {
     const results: FileSpec[] = [];
     for await (const entry of Deno.readDir(this._f)) {
       if (entry.isFile) {
@@ -234,12 +229,12 @@ async getFiles(regex?: RegExp): Promise<FileSpec[]> {
   }
 
   /**
- * Returns an array of FolderSpec objects for subdirectories that match
- * the optional regex pattern.
- * @param {RegExp} [regex] - Optional regular expression to filter folder names
- * @returns {Promise<FolderSpec[]>} Array of FolderSpec objects for matching folders
- */
-async getFolders(regex?: RegExp): Promise<FolderSpec[]> {
+   * Returns an array of FolderSpec objects for subdirectories that match
+   * the optional regex pattern.
+   * @param {RegExp} [regex] - Optional regular expression to filter folder names
+   * @returns {Promise<FolderSpec[]>} Array of FolderSpec objects for matching folders
+   */
+  async getFolders(regex?: RegExp): Promise<FolderSpec[]> {
     const results: FolderSpec[] = [];
     for await (const entry of Deno.readDir(this._f)) {
       if (entry.isDirectory) {
@@ -253,30 +248,30 @@ async getFolders(regex?: RegExp): Promise<FolderSpec[]> {
   }
 
   /**
- * Recursively walks through the directory tree and returns all matching entries.
- * 
- * @param {dfs.WalkOptions} opts - Options for the walk:
- *   - maxDepth?: number - Maximum directory depth to traverse
- *   - includeFiles?: boolean - Whether to include files (default: true)
- *   - includeDirs?: boolean - Whether to include directories (default: true)
- *   - match?: RegExp[] - Array of patterns to match against
- *   - skip?: RegExp[] - Array of patterns to skip
- * @returns {Promise<BaseSpec[]>} Array of BaseSpec objects for matched entries
- * 
- * @example
- * // Find all files ending in 2 digits (e.g. metadata-01.json)
- * const folder = new FolderSpec("./data");
- * const results = await folder.walk({
- *   includeFiles: true,
- *   includeDirs: false,
- *   match: [/\-\d{2}\..*$/]
- * });
- * // Results: [
- * //   FileSpec { path: "data/metadata-01.json" },
- * //   FileSpec { path: "data/chapter-42.md" }
- * // ]
- */
-async walk(opts: dfs.WalkOptions): Promise<BaseSpec[]> {
+   * Recursively walks through the directory tree and returns all matching entries.
+   *
+   * @param {dfs.WalkOptions} opts - Options for the walk:
+   *   - maxDepth?: number - Maximum directory depth to traverse
+   *   - includeFiles?: boolean - Whether to include files (default: true)
+   *   - includeDirs?: boolean - Whether to include directories (default: true)
+   *   - match?: RegExp[] - Array of patterns to match against
+   *   - skip?: RegExp[] - Array of patterns to skip
+   * @returns {Promise<BaseSpec[]>} Array of BaseSpec objects for matched entries
+   *
+   * @example
+   * // Find all files ending in 2 digits (e.g. metadata-01.json)
+   * const folder = new FolderSpec("./data");
+   * const results = await folder.walk({
+   *   includeFiles: true,
+   *   includeDirs: false,
+   *   match: [/\-\d{2}\..*$/]
+   * });
+   * // Results: [
+   * //   FileSpec { path: "data/metadata-01.json" },
+   * //   FileSpec { path: "data/chapter-42.md" }
+   * // ]
+   */
+  async walk(opts: dfs.WalkOptions): Promise<BaseSpec[]> {
     const entries = await Array.fromAsync(dfs.walk(this._f, opts));
 
     return entries.map((entry) => fromWalkEntry(entry));
@@ -481,7 +476,7 @@ async walk(opts: dfs.WalkOptions): Promise<BaseSpec[]> {
 async function filesEqual(
   aFile: FileSpec,
   bFile: FileSpec,
-  opts: { checksum?: boolean } = { checksum: true }
+  opts: { checksum?: boolean } = { checksum: true },
 ): Promise<boolean> {
   const aSize = await aFile.getSize();
   const bSize = await bFile.getSize();

@@ -44,7 +44,7 @@ export function dateList(val: string, h: Integer = 0): DateRangeDef[] {
         t1 = dateStringToDate(p[1], h + 24);
       } else if (idx === ranges.length - 1) {
         t0 = dateStringToDate(range);
-        t1 = new Date(new Date().getTime() + 3600*1000); // now plus an hour
+        t1 = new Date(new Date().getTime() + 3600 * 1000); // now plus an hour
       } else {
         t0 = dateStringToDate(range);
         t1 = new Date(t0.getTime() + DAY);
