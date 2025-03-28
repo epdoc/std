@@ -14,7 +14,7 @@ describe('FSBytes', () => {
     test(`detects ${filename} correctly`, () => {
       const filePath = path.join(testFilesDir, filename);
       const buffer = fs.readFileSync(filePath);
-      const fsBytes = new FSBytes(buffer);
+      const fsBytes = new FSBytes(buffer as Uint8Array);
 
       expect(fsBytes.getType()).toBe(expectedType);
       expect(fsBytes.getCategory()).toBe(expectedCategory);
@@ -37,12 +37,12 @@ describe('FSBytes', () => {
 
   test('throws error for buffer smaller than 24 bytes', () => {
     const buffer = Buffer.from('too small');
-    expect(() => new FSBytes(buffer)).toThrow('Buffer must contain at least 24 bytes');
+    expect(() => new FSBytes(buffer as Uint8Array)).toThrow('Buffer must contain at least 24 bytes');
   });
 
   test('handles unknown file types', () => {
     const buffer = Buffer.alloc(24).fill('unknown content');
-    const fsBytes = new FSBytes(buffer);
+    const fsBytes = new FSBytes(buffer as Uint8Array);
     expect(fsBytes.getType()).toBeNull();
     expect(fsBytes.getCategory()).toBeNull();
   });

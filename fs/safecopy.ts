@@ -14,7 +14,13 @@ import { resolveType } from './util.ts';
  */
 export type FileConflictStrategy =
   | { type: 'renameWithTilde'; errorIfExists?: boolean }
-  | { type: 'renameWithNumber'; separator?: string; limit?: Integer; prefix: string; errorIfExists?: boolean }
+  | {
+    type: 'renameWithNumber';
+    separator?: string;
+    limit?: Integer;
+    prefix?: string;
+    errorIfExists?: boolean;
+  }
   | { type: 'overwrite'; errorIfExists?: boolean }
   | { type: 'skip'; errorIfExists?: boolean }
   | { type: 'error'; errorIfExists?: boolean };

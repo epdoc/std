@@ -269,7 +269,7 @@ describe('FSSpec Tests Part 1', () => {
     test('getPdfDate', () => {
       return Promise.resolve()
         .then((_resp) => {
-          return fileSpec(pwd, 'data', '.withdot/text alignment.pdf');
+          return fileSpec(pwd, 'data', '.withdot/text_alignment.pdf');
         })
         .then((resp) => {
           expect(resp instanceof FileSpec).toBe(true);
