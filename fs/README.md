@@ -36,7 +36,7 @@ Here's an example of how to use @epdoc/fs to read a JSON file:
 ```javascript
 import { fileSpec } from 'jsr:@epdoc/fs';
 // Check if a directory exists
-if (await fileSpec('~/.ssh').isDir()) {
+if (await folderSpec('~/.ssh').getIsFolder()) {
   console.log('SSH directory exists');
 }
 // Read a JSON file
