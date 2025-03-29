@@ -60,31 +60,6 @@ export type FsDeepCopyOpts = DeepCopyOpts & {
   includeUrl?: unknown;
 };
 
-// export type BackupOpts = Partial<{
-//   /** Do a simple backup by renaming the file with a `~` appended, overwriting unknown previous backups with this same name. If a string then append this string. */
-//   backup: boolean | string;
-//   /** If set and backup is not set, do a backup by renaming the file with a count appended to it's `basename`. If an integer, only allow this many counts to be tried. */
-//   index: boolean | Integer;
-//   /** Separator to uses before the index */
-//   sep: string;
-//   /** if backup and index are not set, and this is set, then overwrite the old file */
-//   overwrite: boolean;
-//   /** If true then throw an error if this file does not exist */
-//   errorOnNoSource: boolean;
-//   /** If true then throw an error if a backup could not be completed because this filename is taken. */
-//   errorOnExist: boolean;
-// }>;
-
-// export type SafeCopyOpts2 = BackupOpts &
-//   Partial<{
-//     /** Set to true to move the file rather than copy the file */
-//     move: boolean;
-//     /** Ensure the parent dest folder exists. Not used with #backup method. */
-//     ensureDir: boolean;
-//     /** don't actually move or copy the file, just execute the logic around it */
-//     test: boolean;
-//   }>;
-
 export type FSSpecCallback = (fs: BaseSpec) => Promise<unknown>;
 
 export type FSSortOpts = {

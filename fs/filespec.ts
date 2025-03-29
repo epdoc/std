@@ -442,7 +442,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
    */
   async deepReadJson(opts: FsDeepCopyOpts = {}): Promise<unknown> {
     const data = await this.readJson();
-    return this.deepCopy(data, opts);
+    return this.#deepCopy(data, opts);
   }
 
   /**
@@ -451,7 +451,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
    * @param {FsDeepCopyOpts} [options] - Options for the deep copy operation.
    * @returns {Promise<unknown>} A promise that resolves with the deeply copied and transformed data.
    */
-  private deepCopy(a: unknown, options?: FsDeepCopyOpts): Promise<unknown> {
+  #deepCopy(a: unknown, options?: FsDeepCopyOpts): Promise<unknown> {
     const opts: FsDeepCopyOpts = deepCopySetDefaultOpts(options);
     const urlTest = new RegExp(`^${opts.pre}(file|http|https):\/\/(.+)${opts.post}$`, 'i');
     if (opts.includeUrl && isNonEmptyString(a) && urlTest.test(a)) {
@@ -474,7 +474,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
         const result2: Dict = {};
         Object.keys(a).forEach((key) => {
           // @ts-ignore fight the type system latter
-          const job = this.deepCopy(a[key], opts).then((resp) => {
+          const job = this.#deepCopy(a[key], opts).then((resp) => {
             result2[key] = resp;
           });
           jobs.push(job);
@@ -539,7 +539,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
         if (!stats || !stats.exists()) {
           throw new FSError('File does not exist', { code: 'ENOENT', path: this._f });
         }
-        return this._getNewPath(opts);
+        return this.#getNewPath(opts);
       })
       .then((newPath: FilePath | undefined) => {
         if (isFilePath(newPath)) {
@@ -559,7 +559,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
       });
   }
 
-  private _getNewPath(opts: FileConflictStrategy): Promise<FilePath | undefined> {
+  #getNewPath(opts: FileConflictStrategy): Promise<FilePath | undefined> {
     return new Promise((resolve, reject) => {
       if (opts.type === fileConflictStrategyType.renameWithTilde) {
         resolve(this.path + '~'); // Changed to return string directly

@@ -33,7 +33,7 @@ function fromWalkEntry(entry: dfs.WalkEntry): FileSpec | FolderSpec | SymlinkSpe
 }
 
 /**
- * Create a new FolderSpec object.
+ * Factory function to create a new FolderSpec object.
  */
 export function folderSpec(...args: FSSpecParam): FolderSpec {
   return new FolderSpec(...args);
@@ -402,8 +402,8 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
   }
 
   /**
-   * Compare the files in two folders to see if they are identical. This is not
-   * a deep compare, and ignores subfolders.
+   * Shallow comparison of the files in two folders to see if they are
+   * identical. This is not a deep compare, and ignores subfolders.
    * @param folder
    * @param filter
    * @param opts
@@ -432,8 +432,8 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
   }
 
   /**
-   * Compare the files in two folders to see if they are identical. This is not
-   * a deep compare, and ignores subfolders.
+   * Shallow comparison of the files in two folders to see if they are
+   * identical. This is not a deep compare, and ignores subfolders.
    * @param folder
    * @param filter
    * @param opts

@@ -10,18 +10,20 @@ file type detection.
 
 ## Key Features
 
-1. Asynchronous file operations
-2. Directory management
+1. `FileSpec` for common file operations
+2. `FolderSpec` for common folder operations
 3. File type detection (including PDF, XML, JSON, and more)
-4. File comparison and checksums
+4. File and folder comparison and checksums
 5. JSON reading and writing with deep copy support
 6. Base64 encoding/decoding support
-7. Flexible sorting options for files and directories
-8. PDF metadata extraction
+7. File backup
+8. Flexible sorting options for files and directories
+9. Read or walk folder contents
+10. PDF metadata extraction
 
 ## Installation
 
-To install @epdoc/fsutil, run the following command in your project directory:
+To install @epdoc/fs, run the following command in your project directory:
 
 ```bash
 deno add jsr:@epdoc/fs
@@ -49,12 +51,16 @@ await fileSpec('source.txt').safeCopy('destination.txt');
 
 ### Main Classes
 
-- `FileSpec`: Core class for file system operations
+- `FileSpec`: Core class for file operations
   - Methods for file/directory operations (e.g., `isFile()`, `isDir()`, `getStats()`)
-  - File content operations (e.g., `readAsBuffer()`, `readAsString()`, `readJson()`)
-  - File manipulation (e.g., `write()`, `safeCopy()`, `backup()`)
-  - Directory operations (e.g., `getChildren()`, `getFiles()`, `getFolders()`)
-  - Sorting methods (e.g., `sortChildren()`, `sortFiles()`, `sortFilesBySize()`)
+  - File content operations (e.g., `readAsBytes()`, `readAsString()`, `readJson()`)
+  - File manipulation (e.g., `write()`, `safeCopy()`, `backup()`, `filesEqual()`)
+  - Date (e.g. `getPdfDate()`)
+
+- `FolderSpec`: Core class for folder operations
+  - Async directory operations (e.g., `getChildren()`, `getFiles()`, `getFolders()`, `walk()`)
+  - Sorting methods (e.g., `sortChildren()`, `sortByFilename()`, `sortFilesBySize()`)
+  - Shallow comparision (e.g. `compare()`, `getDiff()`)
 
 - `FSBytes`: Class for working with file bytes and detecting file types
   - Methods for file type detection (e.g., `getType()`, `getCategory()`)
@@ -66,42 +72,11 @@ await fileSpec('source.txt').safeCopy('destination.txt');
 ### Factory Functions
 
 - `fileSpec(path: string): FileSpec`: Creates an FileSpec instance for the given path
+- `folderSpec(path: string): FolderSpec`: Creates a FolderSpec instance for the given path
 - `fsbytes(buffer: Buffer): FSBytes`: Creates an FSBytes instance for the given buffer
-
-### Types and Interfaces
-
-- `FileType`: Enum for various file types
-- `FileCategory`: Enum for file categories
-- `FSSortOpts`: Interface for sorting options
-- `SafeCopyOpts`: Interface for safe copy options
-- `FileConflictStrategy`: Type for handling file conflicts
 
 For detailed API documentation and usage examples, please refer to the JSDoc comments in the source code of each class
 and function.
-
-## Development
-
-To set up the development environment:
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/epdoc/fsutil.git
-   ```
-2. Install dependencies:
-   ```bash
-   cd fsutil
-   npm install
-   ```
-3. Build the project:
-   ```bash
-   npm run build
-   ```
-4. Run tests:
-   ```bash
-   npm test
-   ```
-
-To check for the latest version of dependencies, use `npm-check -u` (must be installed globally).
 
 ## License
 
@@ -109,9 +84,10 @@ To check for the latest version of dependencies, use `npm-check -u` (must be ins
 
 ## Contributing
 
-Contributions are not whole heartedly welcome yet, as I am still developing this mostly for personal use! Please feel
-free to submit a Pull Request.
+Contributions are not whole heartedly welcome yet, as I am still developing this mostly for personal use! With this
+said, feel free to submit a Pull Request.
 
 ## Support
 
-If you encounter any problems or have any questions, please open an issue on the GitHub repository.
+If you encounter any problems or have any questions, please open an issue on the
+[GitHub repository](https://github.com/epdoc/std/issues).

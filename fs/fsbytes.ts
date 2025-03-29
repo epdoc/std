@@ -10,7 +10,7 @@ export class FSBytes {
   /**
    * The buffer containing the file's first 24 bytes.
    */
-  private _buffer: Uint8Array;
+  #buffer: Uint8Array;
 
   /**
    * Creates a new FSBytes instance with a provided buffer.
@@ -21,7 +21,7 @@ export class FSBytes {
     if (buffer.length < 24) {
       throw new Error('Buffer must contain at least 24 bytes');
     }
-    this._buffer = buffer.subarray(0, 24);
+    this.#buffer = buffer.subarray(0, 24);
   }
 
   /**
@@ -46,22 +46,22 @@ export class FSBytes {
    */
   public getType(): FileType | null {
     for (const [type, fileHeader] of FILE_HEADERS) {
-      if (this.matchesHeader(fileHeader as FileHeaderEntry)) {
+      if (this.#matchesHeader(fileHeader as FileHeaderEntry)) {
         switch (type) {
           case 'jpg':
           case 'jpeg':
-            return this.getJPEGType();
+            return this.#getJPEGType();
           case 'jp2':
           case 'j2k':
           case 'jpf':
-            return this.getJPEG2000Type();
+            return this.#getJPEG2000Type();
           case 'wav':
           case 'avi':
-            return this.getWavOrAviType();
+            return this.#getWavOrAviType();
           case 'mp4':
-            return this.getMP4Type();
+            return this.#getMP4Type();
           case 'webp':
-            return this.getWebPType();
+            return this.#getWebPType();
           default:
             return type;
         }
@@ -86,21 +86,21 @@ export class FSBytes {
     return null;
   }
 
-  private matchesHeader(fileHeader: FileHeaderEntry): boolean {
+  #matchesHeader(fileHeader: FileHeaderEntry): boolean {
     const { buffer, offset = 0 } = fileHeader;
     if (Array.isArray(buffer)) {
-      return buffer.some((buf) => this.startsWith(buf, offset));
+      return buffer.some((buf) => this.#startsWith(buf, offset));
     } else {
-      return this.startsWith(buffer, offset);
+      return this.#startsWith(buffer, offset);
     }
   }
 
-  private startsWith(buffer: Uint8Array, offset: number): boolean {
-    return equals(this._buffer.subarray(offset, offset + buffer.length), buffer);
+  #startsWith(buffer: Uint8Array, offset: number): boolean {
+    return equals(this.#buffer.subarray(offset, offset + buffer.length), buffer);
   }
 
-  private getJPEG2000Type(): FileType {
-    const ftypBox = this._buffer.subarray(20, 24).toString();
+  #getJPEG2000Type(): FileType {
+    const ftypBox = this.#buffer.subarray(20, 24).toString();
     switch (ftypBox) {
       case 'jp2 ':
         return 'jp2';
@@ -113,12 +113,12 @@ export class FSBytes {
     }
   }
 
-  private getJPEGType(): FileType | null {
-    const exifMarker = this._buffer.subarray(2, 4);
+  #getJPEGType(): FileType | null {
+    const exifMarker = this.#buffer.subarray(2, 4);
     return equals(exifMarker, new Uint8Array([0xff, 0xe1])) ? 'jpg' : 'jpeg';
   }
 
-  private getMP4Type(): FileType {
+  #getMP4Type(): FileType {
     throw new Error('Not implemented');
     //   const ftypStart = this._buffer.findIndex((element,index,array)=>{
     //     return element === 102
@@ -146,22 +146,22 @@ export class FSBytes {
     //   return 'mp4';
   }
 
-  private getWebPType(): FileType | null {
-    if (this._buffer.subarray(8, 12).toString() === 'WEBP') {
+  #getWebPType(): FileType | null {
+    if (this.#buffer.subarray(8, 12).toString() === 'WEBP') {
       return 'webp';
     }
     return null;
   }
 
-  private getWavOrAviType(): FileType | null {
+  #getWavOrAviType(): FileType | null {
     if (
-      this._buffer.subarray(0, 4).toString() === 'RIFF' &&
-      this._buffer.subarray(8, 12).toString() === 'WAVE'
+      this.#buffer.subarray(0, 4).toString() === 'RIFF' &&
+      this.#buffer.subarray(8, 12).toString() === 'WAVE'
     ) {
       return 'wav';
     } else if (
-      this._buffer.subarray(0, 4).toString() === 'RIFF' &&
-      this._buffer.subarray(8, 12).toString() === 'AVI '
+      this.#buffer.subarray(0, 4).toString() === 'RIFF' &&
+      this.#buffer.subarray(8, 12).toString() === 'AVI '
     ) {
       return 'avi';
     }
