@@ -1,22 +1,20 @@
 {
   "version": "4",
   "specifiers": {
+    "jsr:@epdoc/datetime@1.0.0": "1.0.0",
+    "jsr:@epdoc/type@1.0.2": "1.0.2",
     "jsr:@std/assert@*": "1.0.6",
     "jsr:@std/assert@1": "1.0.6",
+    "jsr:@std/assert@^1.0.12": "1.0.12",
     "jsr:@std/assert@^1.0.6": "1.0.6",
-    "jsr:@std/bytes@*": "1.0.4",
-    "jsr:@std/bytes@^1.0.2": "1.0.4",
-    "jsr:@std/bytes@^1.0.4": "1.0.4",
     "jsr:@std/bytes@^1.0.5": "1.0.5",
     "jsr:@std/expect@*": "1.0.4",
     "jsr:@std/fmt@*": "1.0.3",
-    "jsr:@std/fs@*": "1.0.4",
-    "jsr:@std/fs@1": "1.0.4",
-    "jsr:@std/fs@^1.0.4": "1.0.4",
+    "jsr:@std/fs@^1.0.15": "1.0.15",
     "jsr:@std/internal@^1.0.4": "1.0.4",
-    "jsr:@std/io@0.225": "0.225.0",
-    "jsr:@std/path@1": "1.0.6",
-    "jsr:@std/path@^1.0.6": "1.0.6",
+    "jsr:@std/internal@^1.0.6": "1.0.6",
+    "jsr:@std/io@~0.225.2": "0.225.2",
+    "jsr:@std/path@^1.0.8": "1.0.8",
     "jsr:@std/testing@*": "1.0.3",
     "npm:@types/node@*": "22.5.4",
     "npm:checksum@1": "1.0.0",
@@ -24,14 +22,23 @@
     "npm:pdf-lib@^1.17.1": "1.17.1"
   },
   "jsr": {
+    "@epdoc/datetime@1.0.0": {
+      "integrity": "d2d6e013fa71490fa089b002f5ec06544d9e26d13ea402eb2f748d8b3ae3c2f1"
+    },
+    "@epdoc/type@1.0.2": {
+      "integrity": "a8aca3181e49a9a195282731f55b15b3db0cda4099fc653dbd95587e4639fa9c"
+    },
     "@std/assert@1.0.6": {
       "integrity": "1904c05806a25d94fe791d6d883b685c9e2dcd60e4f9fc30f4fc5cf010c72207",
       "dependencies": [
-        "jsr:@std/internal"
+        "jsr:@std/internal@^1.0.4"
       ]
     },
-    "@std/bytes@1.0.4": {
-      "integrity": "11a0debe522707c95c7b7ef89b478c13fb1583a7cfb9a85674cd2cc2e3a28abc"
+    "@std/assert@1.0.12": {
+      "integrity": "08009f0926dda9cbd8bef3a35d3b6a4b964b0ab5c3e140a4e0351fbf34af5b9a",
+      "dependencies": [
+        "jsr:@std/internal@^1.0.6"
+      ]
     },
     "@std/bytes@1.0.5": {
       "integrity": "4465dd739d7963d964c809202ebea6d5c6b8e3829ef25c6a224290fbb8a1021e"
@@ -40,35 +47,38 @@
       "integrity": "97f68a445a9de0d9670200d2b7a19a7505a01b2cb390a983ba8d97d90ce30c4f",
       "dependencies": [
         "jsr:@std/assert@^1.0.6",
-        "jsr:@std/internal"
+        "jsr:@std/internal@^1.0.4"
       ]
     },
     "@std/fmt@1.0.3": {
       "integrity": "97765c16aa32245ff4e2204ecf7d8562496a3cb8592340a80e7e554e0bb9149f"
     },
-    "@std/fs@1.0.4": {
-      "integrity": "2907d32d8d1d9e540588fd5fe0ec21ee638134bd51df327ad4e443aaef07123c",
+    "@std/fs@1.0.15": {
+      "integrity": "c083fb479889d6440d768e498195c3fc499d426fbf9a6592f98f53884d1d3f41",
       "dependencies": [
-        "jsr:@std/path@^1.0.6"
+        "jsr:@std/path"
       ]
     },
     "@std/internal@1.0.4": {
       "integrity": "62e8e4911527e5e4f307741a795c0b0a9e6958d0b3790716ae71ce085f755422"
     },
-    "@std/io@0.225.0": {
-      "integrity": "c1db7c5e5a231629b32d64b9a53139445b2ca640d828c26bf23e1c55f8c079b3",
+    "@std/internal@1.0.6": {
+      "integrity": "9533b128f230f73bd209408bb07a4b12f8d4255ab2a4d22a1fd6d87304aca9a4"
+    },
+    "@std/io@0.225.2": {
+      "integrity": "3c740cd4ee4c082e6cfc86458f47e2ab7cb353dc6234d5e9b1f91a2de5f4d6c7",
       "dependencies": [
-        "jsr:@std/bytes@^1.0.2"
+        "jsr:@std/bytes"
       ]
     },
-    "@std/path@1.0.6": {
-      "integrity": "ab2c55f902b380cf28e0eec501b4906e4c1960d13f00e11cfbcd21de15f18fed"
+    "@std/path@1.0.8": {
+      "integrity": "548fa456bb6a04d3c1a1e7477986b6cffbce95102d0bb447c67c4ee70e0364be"
     },
     "@std/testing@1.0.3": {
       "integrity": "f98c2bee53860a5916727d7e7d3abe920dd6f9edace022e2d059f00d05c2cf42",
       "dependencies": [
         "jsr:@std/assert@^1.0.6",
-        "jsr:@std/internal"
+        "jsr:@std/internal@^1.0.4"
       ]
     }
   },
@@ -132,7 +142,7 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@std/assert@1"
+      "jsr:@std/assert@^1.0.12"
     ],
     "members": {
       "daterange": {
@@ -157,8 +167,8 @@
           "jsr:@epdoc/response@1.0.0",
           "jsr:@epdoc/type@1.0.2",
           "jsr:@std/bytes@^1.0.5",
-          "jsr:@std/fs@^1.0.4",
-          "jsr:@std/io@0.225",
+          "jsr:@std/fs@^1.0.15",
+          "jsr:@std/io@~0.225.2",
           "npm:checksum@1",
           "npm:pdf-lib@^1.17.1"
         ]

@@ -10,7 +10,7 @@
     "launch": "deno  --allow-env --allow-sys --allow-read --allow-write ./_tools/launchgen.ts"
   },
   "imports": {
-    "@std/assert": "jsr:@std/assert@1"
+    "@std/assert": "jsr:@std/assert@^1.0.12"
   },
   "fmt": {
     "singleQuote": true,
