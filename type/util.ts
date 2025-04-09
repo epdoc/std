@@ -458,7 +458,8 @@ export function asRegExp(val: unknown): RegExp | undefined {
 }
 
 /**
- * Converts arguments into an Error object.
+ * Converts arguments into an Error object. If there is more than one argument
+ * then the arguments are concatenated into a single error.
  * @param args - The arguments to convert.
  * @returns The resulting Error object.
  */
@@ -505,6 +506,10 @@ export interface ICodeError extends Error {
   code?: string;
 }
 
+/**
+ * Represents an error with an optional code. Unlike the default Error object,
+ * this class declares the code property.
+ */
 export class CodeError extends Error {
   code?: string | number;
 }

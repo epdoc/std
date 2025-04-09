@@ -3,22 +3,16 @@
   "specifiers": {
     "jsr:@epdoc/datetime@1.0.0": "1.0.0",
     "jsr:@epdoc/type@1.0.2": "1.0.2",
-    "jsr:@std/assert@*": "1.0.6",
-    "jsr:@std/assert@1": "1.0.6",
     "jsr:@std/assert@^1.0.12": "1.0.12",
-    "jsr:@std/assert@^1.0.6": "1.0.6",
     "jsr:@std/bytes@^1.0.5": "1.0.5",
-    "jsr:@std/expect@*": "1.0.4",
-    "jsr:@std/fmt@*": "1.0.3",
-    "jsr:@std/fs@^1.0.15": "1.0.15",
-    "jsr:@std/internal@^1.0.4": "1.0.4",
+    "jsr:@std/expect@*": "1.0.15",
+    "jsr:@std/fs@^1.0.15": "1.0.16",
     "jsr:@std/internal@^1.0.6": "1.0.6",
     "jsr:@std/io@~0.225.2": "0.225.2",
     "jsr:@std/path@^1.0.8": "1.0.8",
-    "jsr:@std/testing@*": "1.0.3",
-    "npm:@types/node@*": "22.5.4",
+    "jsr:@std/testing@*": "1.0.11",
+    "npm:@types/node@*": "22.12.0",
     "npm:checksum@1": "1.0.0",
-    "npm:pdf-lib@*": "1.17.1",
     "npm:pdf-lib@^1.17.1": "1.17.1"
   },
   "jsr": {
@@ -28,39 +22,27 @@
     "@epdoc/type@1.0.2": {
       "integrity": "a8aca3181e49a9a195282731f55b15b3db0cda4099fc653dbd95587e4639fa9c"
     },
-    "@std/assert@1.0.6": {
-      "integrity": "1904c05806a25d94fe791d6d883b685c9e2dcd60e4f9fc30f4fc5cf010c72207",
-      "dependencies": [
-        "jsr:@std/internal@^1.0.4"
-      ]
-    },
     "@std/assert@1.0.12": {
       "integrity": "08009f0926dda9cbd8bef3a35d3b6a4b964b0ab5c3e140a4e0351fbf34af5b9a",
       "dependencies": [
-        "jsr:@std/internal@^1.0.6"
+        "jsr:@std/internal"
       ]
     },
     "@std/bytes@1.0.5": {
       "integrity": "4465dd739d7963d964c809202ebea6d5c6b8e3829ef25c6a224290fbb8a1021e"
     },
-    "@std/expect@1.0.4": {
-      "integrity": "97f68a445a9de0d9670200d2b7a19a7505a01b2cb390a983ba8d97d90ce30c4f",
+    "@std/expect@1.0.15": {
+      "integrity": "eca360007b5a7f13dbfa1294224baee7fb98dcd460d8461fe64eeae302902945",
       "dependencies": [
-        "jsr:@std/assert@^1.0.6",
-        "jsr:@std/internal@^1.0.4"
+        "jsr:@std/assert",
+        "jsr:@std/internal"
       ]
     },
-    "@std/fmt@1.0.3": {
-      "integrity": "97765c16aa32245ff4e2204ecf7d8562496a3cb8592340a80e7e554e0bb9149f"
-    },
-    "@std/fs@1.0.15": {
-      "integrity": "c083fb479889d6440d768e498195c3fc499d426fbf9a6592f98f53884d1d3f41",
+    "@std/fs@1.0.16": {
+      "integrity": "81878f62b6eeda0bf546197fc3daa5327c132fee1273f6113f940784a468b036",
       "dependencies": [
         "jsr:@std/path"
       ]
-    },
-    "@std/internal@1.0.4": {
-      "integrity": "62e8e4911527e5e4f307741a795c0b0a9e6958d0b3790716ae71ce085f755422"
     },
     "@std/internal@1.0.6": {
       "integrity": "9533b128f230f73bd209408bb07a4b12f8d4255ab2a4d22a1fd6d87304aca9a4"
@@ -74,11 +56,11 @@
     "@std/path@1.0.8": {
       "integrity": "548fa456bb6a04d3c1a1e7477986b6cffbce95102d0bb447c67c4ee70e0364be"
     },
-    "@std/testing@1.0.3": {
-      "integrity": "f98c2bee53860a5916727d7e7d3abe920dd6f9edace022e2d059f00d05c2cf42",
+    "@std/testing@1.0.11": {
+      "integrity": "12b3db12d34f0f385a26248933bde766c0f8c5ad8b6ab34d4d38f528ab852f48",
       "dependencies": [
-        "jsr:@std/assert@^1.0.6",
-        "jsr:@std/internal@^1.0.4"
+        "jsr:@std/assert",
+        "jsr:@std/internal"
       ]
     }
   },
@@ -95,8 +77,8 @@
         "pako"
       ]
     },
-    "@types/node@22.5.4": {
-      "integrity": "sha512-FDuKUJQm/ju9fT/SeX/6+gBzoPzlVCzfzmGkwKvRHQVxi4BntVbyIwf6a4Xn62mrvndLiml6z/UBXIdEVjQLXg==",
+    "@types/node@22.12.0": {
+      "integrity": "sha512-Fll2FZ1riMjNmlmJOdAyY5pUbkftXslB5DgEzlIuNaiWhXd00FhWxVC/r4yV/4wBb9JfImTu+jiSvXTkJ7F/gA==",
       "dependencies": [
         "undici-types"
       ]
@@ -128,17 +110,12 @@
     "tslib@1.14.1": {
       "integrity": "sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg=="
     },
-    "undici-types@6.19.8": {
-      "integrity": "sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw=="
+    "undici-types@6.20.0": {
+      "integrity": "sha512-Ny6QZ2Nju20vw1SRHe3d9jVu6gJ+4e3+MMpqu7pqE5HT6WsTSlce++GQmK5UXS8mzV8DSYHrQH+Xrf2jVcuKNg=="
     },
     "wordwrap@0.0.3": {
       "integrity": "sha512-1tMA907+V4QmxV7dbRvb4/8MaRALK6q9Abid3ndMYnbyo8piisCmeONVqVSXqQA3KaP4SLt5b7ud6E2sqP8TFw=="
     }
-  },
-  "remote": {
-    "https://raw.githubusercontent.com/jpravetz/typeutil/master/lib/dict-util.ts": "86be89e635636a8b0f8b8d6a2f31e42726e3dd8d51de77648d1a0dcd4b585d30",
-    "https://raw.githubusercontent.com/jpravetz/typeutil/master/lib/util.ts": "16451c91ee5045f4e6bbe0ca6a37104ade41b199f0e94d800892c183456f412e",
-    "https://raw.githubusercontent.com/jpravetz/typeutil/master/mod.ts": "40a04f235374e261c2129126e550cff9772e2c7b9d06d4b6bc605b3102f0cdc7"
   },
   "workspace": {
     "dependencies": [
