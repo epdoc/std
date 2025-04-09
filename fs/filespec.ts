@@ -15,7 +15,6 @@ import {
 } from '@epdoc/type';
 import { assert } from '@std/assert';
 import * as dfs from '@std/fs';
-import checksum from 'checksum';
 import { Buffer } from 'node:buffer';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -26,11 +25,27 @@ import type { FolderSpec } from './folderspec.ts';
 import { FSBytes } from './fsbytes.ts';
 import { FSSpec, fsSpec } from './fsspec.ts';
 import type { FSStats } from './fsstats.ts';
-import { type FSSpecParam, type IRootableSpec, type ISafeCopyableSpec, resolvePathArgs } from './icopyable.ts';
-import { type FileConflictStrategy, fileConflictStrategyType, safeCopy, type SafeCopyOpts } from './safecopy.ts';
-import type { FilePath, FsDeepCopyOpts } from './types.ts';
-import { isFilePath } from './types.ts';
+import {
+  type FSSpecParam,
+  type IRootableSpec,
+  type ISafeCopyableSpec,
+  resolvePathArgs,
+} from './icopyable.ts';
+import {
+  type FileConflictStrategy,
+  fileConflictStrategyType,
+  safeCopy,
+  type SafeCopyOpts,
+} from './safecopy.ts';
+import {
+  DigestAlgorithm,
+  type DigestAlgorithmValues,
+  type FilePath,
+  type FsDeepCopyOpts,
+  isFilePath,
+} from './types.ts';
 import { joinContinuationLines } from './util.ts';
+const crypto = await import('node:crypto');
 
 const REG = {
   pdf: /\.pdf$/i,
@@ -41,6 +56,7 @@ const REG = {
   leadingDot: new RegExp(/^\./),
   BOM: new RegExp(/^\uFEFF/),
 };
+const BUFSIZE = 2 * 8192;
 
 /**
  * Create a new FSItem object.
@@ -53,7 +69,7 @@ export function fileSpec(...args: FSSpecParam): FileSpec {
  * An object representing a file system entry when it is known to be a file.
  */
 export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSpec {
-  // @ts-ignore this does get initialized
+  #file: Deno.FsFile | undefined;
 
   constructor(...args: FSSpecParam) {
     super();
@@ -209,6 +225,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
   async getBytes(length = 24): Promise<FSBytes> {
     const buf = new Uint8Array(length);
     const _numRead = await this.readBytes(buf, 0);
+    this.close();
     return new FSBytes(buf);
   }
 
@@ -242,20 +259,41 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
   }
 
   /**
-   * For files, calculate the checksum of this file
-   * @returns {Promise<string>} A promise that resolves with the checksum of the file.
+   * For files, calculate the checksum of this file using SHA1
+   * @returns {Promise<string>} A promise that resolves with the checksum of the file.'
+   * @deprecated - Use digest() instead
    */
   checksum(): Promise<string> {
-    return new Promise((resolve, reject) => {
-      // @ts-ignore too picky
-      checksum.file(this._f, (err, sum) => {
-        if (err) {
-          reject(asError(err, { path: this._f }));
-        } else {
-          resolve(sum as string);
+    return this.digest();
+  }
+
+  /**
+   * Generates a digest (hash) of the file's contents using the specified algorithm.
+   *
+   * @param type - The digest algorithm to use (e.g., 'sha1', 'sha256', 'md5'). Defaults to 'sha1'.
+   * @returns A promise that resolves to the hexadecimal representation of the digest.
+   */
+  async digest(type: DigestAlgorithmValues = DigestAlgorithm.sha1): Promise<string> {
+    const buf = new Uint8Array(BUFSIZE);
+
+    const hash = crypto.createHash(type);
+
+    let position = 0;
+    let bytesRead: number | null = 0;
+    try {
+      while (bytesRead !== null) {
+        bytesRead = await this.readBytes(buf, position, false);
+        if (bytesRead !== null) {
+          hash.update(buf.slice(0, bytesRead));
+          position += bytesRead;
         }
-      });
-    });
+      }
+      this.close();
+    } catch (error) {
+      this.close();
+      throw this.asError(error);
+    }
+    return hash.digest('hex');
   }
 
   /**
@@ -341,6 +379,18 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
     return false;
   }
 
+  async open(opts: { read?: boolean; write?: boolean }): Promise<Deno.FsFile> {
+    this.#file = await Deno.open(this._f, opts);
+    return this.#file;
+  }
+
+  close(): void {
+    if (this.#file) {
+      this.#file.close();
+      this.#file = undefined;
+    }
+  }
+
   /**
    * @param {Uint8Array} buffer - An Uint8Array of the length that is to be read
    * @param {Integer} [position=0] - The starting offset to read from the file
@@ -352,12 +402,22 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
    * const numberOfBytesRead = await fileSpec.read(buf,0);
    * ```
    */
-  async readBytes(buffer: Uint8Array, position: Integer = 0): Promise<number | null> {
+  async readBytes(buffer: Uint8Array, position: Integer = 0, close = false): Promise<number | null> {
     try {
-      const file = await Deno.open(this._f, { read: true });
-      await file.seek(position, Deno.SeekMode.Start);
-      return await file.read(buffer);
+      if (!this.#file) {
+        await this.open({ read: true });
+        assert(this.#file, 'File was not opened');
+      }
+      await this.#file.seek(position, Deno.SeekMode.Start);
+      const numRead = await this.#file.read(buffer);
+      if (close) {
+        this.close();
+      }
+      return numRead;
     } catch (err) {
+      if (close) {
+        this.close();
+      }
       throw asError(err, { path: this._f, cause: 'readBytes' });
     }
   }
@@ -594,7 +654,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
   async findAvailableIndexFilename(
     _limit: Integer = 32,
     sep: string = '-',
-    prefix: string = '',
+    prefix: string = ''
   ): Promise<FilePath | undefined> {
     let newFsDest: FileSpec | undefined;
     let count = 0;
@@ -606,5 +666,9 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
     if (!looking && newFsDest instanceof FileSpec) {
       return newFsDest.path;
     }
+  }
+
+  asError(error: unknown): FSError {
+    return new FSError(asError(error), { path: this._f });
   }
 }

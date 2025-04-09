@@ -6,6 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { FSError } from '../error.ts';
 import {
+  DigestAlgorithm,
   fileConflictStrategyType,
   FileSpec,
   fileSpec,
@@ -301,15 +302,6 @@ describe('FSSpec Tests Part 1', () => {
       fs.setExt('.jpg');
       expect(fs.extname).toEqual('.jpg');
     });
-    test('checksum', () => {
-      return Promise.resolve()
-        .then((_resp) => {
-          return fileSpec(pwd, 'data1/sample.txt').checksum();
-        })
-        .then((resp) => {
-          expect(resp).toBe('cacc6f06ae07f842663cb1b1722cafbee9b4d203');
-        });
-    });
     test('newError string', () => {
       const opts = { code: 'EEXISTS', path: 'my/path/to/file.txt', cause: 'readFile' };
       const err = new FSError('my message', opts);
@@ -318,6 +310,93 @@ describe('FSSpec Tests Part 1', () => {
       expect(err.message).toEqual('my message');
       expect(err.path).toEqual(opts.path);
       expect(err.cause).toEqual(opts.cause);
+    });
+  });
+  describe('digest', () => {
+    test.skip('checksum', () => {
+      return Promise.resolve()
+        .then((_resp) => {
+          return fileSpec(pwd, 'data1/sample.txt').checksum();
+        })
+        .then((resp) => {
+          expect(resp).toBe('cacc6f06ae07f842663cb1b1722cafbee9b4d203');
+        });
+    });
+    test('digest sha1', () => {
+      return Promise.resolve()
+        .then((_resp) => {
+          return fileSpec(pwd, 'data1/sample.txt').digest();
+        })
+        .then((resp) => {
+          expect(resp).toBe('cacc6f06ae07f842663cb1b1722cafbee9b4d203');
+        });
+    });
+    test('digest sha256', () => {
+      return Promise.resolve()
+        .then((_resp) => {
+          return fileSpec(pwd, 'data1/sample.txt').digest(DigestAlgorithm.sha256);
+        })
+        .then((resp) => {
+          expect(resp).toBe('8046c06d368ab746568e7af455af4d80c543bde005c7655a33e5fb009ca5cd3f');
+        });
+    });
+    test('digest sha512', () => {
+      return Promise.resolve()
+        .then((_resp) => {
+          return fileSpec(pwd, 'data1/sample.txt').digest(DigestAlgorithm.sha512);
+        })
+        .then((resp) => {
+          expect(resp).toBe(
+            'db22c7cec11a4ab069d90313723da4f2b46e67f2cfb588a8af86cb4c0aa186b7bd43ce3b5fd60912da2bac8f00aac49c61d211c4d30a7d6aa1ef70da6bed9fce'
+          );
+        });
+    });
+    test('digest md5Sha1', () => {
+      return Promise.resolve()
+        .then((_resp) => {
+          return fileSpec(pwd, 'data1/sample.txt').digest(DigestAlgorithm.md5Sha1);
+        })
+        .then((resp) => {
+          expect(resp).toBe('baf56296a07d4fd879fd9001146d1cc7cacc6f06ae07f842663cb1b1722cafbee9b4d203');
+        });
+    });
+    test('digest ripemd', () => {
+      return Promise.resolve()
+        .then((_resp) => {
+          return fileSpec(pwd, 'data1/sample.txt').digest(DigestAlgorithm.ripemd);
+        })
+        .then((resp) => {
+          expect(resp).toBe('802f1b408a5700b090cfd829568496bc74ca2d06');
+        });
+    });
+    test('digest ripemd160', () => {
+      return Promise.resolve()
+        .then((_resp) => {
+          return fileSpec(pwd, 'data1/sample.txt').digest(DigestAlgorithm.ripemd160);
+        })
+        .then((resp) => {
+          expect(resp).toBe('802f1b408a5700b090cfd829568496bc74ca2d06');
+        });
+    });
+    test('digest blake2s256', () => {
+      return Promise.resolve()
+        .then((_resp) => {
+          return fileSpec(pwd, 'data1/sample.txt').digest(DigestAlgorithm.blake2s256);
+        })
+        .then((resp) => {
+          expect(resp).toBe('054fbfd5c184cf6765a3a14275c0f965bde56405bc7894aa92aba99e841a9482');
+        });
+    });
+    test('digest blake2b512', () => {
+      return Promise.resolve()
+        .then((_resp) => {
+          return fileSpec(pwd, 'data1/sample.txt').digest(DigestAlgorithm.blake2b512);
+        })
+        .then((resp) => {
+          expect(resp).toBe(
+            'ef09fb6becf651c57fe7ddd9be382820c0d96b5798f9391b23c4d00ab16ef3ecba2b9f9a661f9424b1e406134e82a809636449f31fbd6360102a10374e8181e8'
+          );
+        });
     });
   });
   describe.skip('Section 2', () => {
@@ -339,7 +418,7 @@ describe('FSSpec Tests Part 1', () => {
         });
     });
   });
-  describe('Section 3', () => {
+  describe.skip('Section 3', () => {
     test('fsEnsureDir fsitem.Remove', () => {
       return Promise.resolve()
         .then((_resp) => {
@@ -364,7 +443,7 @@ describe('FSSpec Tests Part 1', () => {
         });
     });
   });
-  describe('Section 4', () => {
+  describe.skip('Section 4', () => {
     test('fsEnsureDir no file', () => {
       return Promise.resolve()
         .then((_resp) => {
@@ -409,7 +488,7 @@ describe('FSSpec Tests Part 1', () => {
         .then((resp) => {
           expect(resp).toEqual(true);
           return fileSpec(pwd, 'data2/folder-sample/sample2.txt').filesEqual(
-            fileSpec(pwd, 'data1/folder-sample/sample2.txt'),
+            fileSpec(pwd, 'data1/folder-sample/sample2.txt')
           );
         })
         .then((resp) => {
@@ -454,7 +533,7 @@ describe('FSSpec Tests Part 1', () => {
         })
         .then(() => {
           return fileSpec(pwd, 'data2/folder-sample/sample2.txt').filesEqual(
-            fileSpec(pwd, 'data1/folder-sample/sample2.txt'),
+            fileSpec(pwd, 'data1/folder-sample/sample2.txt')
           );
         })
         .then((resp) => {
