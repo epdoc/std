@@ -25,18 +25,8 @@ import type { FolderSpec } from './folderspec.ts';
 import { FSBytes } from './fsbytes.ts';
 import { FSSpec, fsSpec } from './fsspec.ts';
 import type { FSStats } from './fsstats.ts';
-import {
-  type FSSpecParam,
-  type IRootableSpec,
-  type ISafeCopyableSpec,
-  resolvePathArgs,
-} from './icopyable.ts';
-import {
-  type FileConflictStrategy,
-  fileConflictStrategyType,
-  safeCopy,
-  type SafeCopyOpts,
-} from './safecopy.ts';
+import { type FSSpecParam, type IRootableSpec, type ISafeCopyableSpec, resolvePathArgs } from './icopyable.ts';
+import { type FileConflictStrategy, fileConflictStrategyType, safeCopy, type SafeCopyOpts } from './safecopy.ts';
 import {
   DigestAlgorithm,
   type DigestAlgorithmValues,
@@ -654,7 +644,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
   async findAvailableIndexFilename(
     _limit: Integer = 32,
     sep: string = '-',
-    prefix: string = ''
+    prefix: string = '',
   ): Promise<FilePath | undefined> {
     let newFsDest: FileSpec | undefined;
     let count = 0;

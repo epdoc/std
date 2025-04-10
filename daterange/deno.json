@@ -5,7 +5,7 @@
     ".": "./mod.ts"
   },
   "imports": {
-    "@epdoc/datetime": "jsr:@epdoc/datetime@1.0.0",
-    "@epdoc/type": "jsr:@epdoc/type@1.0.3"
+    "@epdoc/datetime": "jsr:@epdoc/datetime@1.0.1",
+    "@epdoc/type": "jsr:@epdoc/type@1.0.4"
   }
 }

@@ -512,6 +512,11 @@ export interface ICodeError extends Error {
  */
 export class CodeError extends Error {
   code?: string | number;
+
+  constructor(msg: string, opts: Dict = {}) {
+    super(msg);
+    Object.assign(this, opts);
+  }
 }
 
 /**

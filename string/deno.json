@@ -6,6 +6,6 @@
   },
   "imports": {
     "@epdoc/datetime": "jsr:@epdoc/datetime@1.0.0",
-    "@epdoc/type": "jsr:@epdoc/type@1.0.3"
+    "@epdoc/type": "jsr:@epdoc/type@1.0.4"
   }
 }
