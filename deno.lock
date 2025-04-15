@@ -156,7 +156,7 @@
       },
       "fs": {
         "dependencies": [
-          "jsr:@epdoc/datetime@1.0.0",
+          "jsr:@epdoc/datetime@1.0.1",
           "jsr:@epdoc/response@1.0.0",
           "jsr:@epdoc/type@1.0.4",
           "jsr:@std/bytes@^1.0.5",

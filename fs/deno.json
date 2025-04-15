@@ -11,7 +11,7 @@
     "include": ["test/**/*.ts"]
   },
   "imports": {
-    "@epdoc/datetime": "jsr:@epdoc/datetime@1.0.0",
+    "@epdoc/datetime": "jsr:@epdoc/datetime@1.0.1",
     "@epdoc/type": "jsr:@epdoc/type@1.0.4",
     "@epdoc/response": "jsr:@epdoc/response@1.0.0",
     "@std/bytes": "jsr:@std/bytes@^1.0.5",
