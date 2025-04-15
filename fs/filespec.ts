@@ -14,8 +14,8 @@ import {
   pad,
 } from '@epdoc/type';
 import { assert } from '@std/assert';
+import { decodeBase64, encodeBase64 } from '@std/encoding';
 import * as dfs from '@std/fs';
-import { decodeBase64, encodeBase64 } from 'jsr:@std/encoding';
 import os from 'node:os';
 import path from 'node:path';
 import { BaseSpec } from './basespec.ts';
@@ -24,18 +24,8 @@ import type { FolderSpec } from './folderspec.ts';
 import { FSBytes } from './fsbytes.ts';
 import { FSSpec, fsSpec } from './fsspec.ts';
 import type { FSStats } from './fsstats.ts';
-import {
-  type FSSpecParam,
-  type IRootableSpec,
-  type ISafeCopyableSpec,
-  resolvePathArgs,
-} from './icopyable.ts';
-import {
-  type FileConflictStrategy,
-  fileConflictStrategyType,
-  safeCopy,
-  type SafeCopyOpts,
-} from './safecopy.ts';
+import { type FSSpecParam, type IRootableSpec, type ISafeCopyableSpec, resolvePathArgs } from './icopyable.ts';
+import { type FileConflictStrategy, fileConflictStrategyType, safeCopy, type SafeCopyOpts } from './safecopy.ts';
 import {
   DigestAlgorithm,
   type DigestAlgorithmValues,
@@ -44,8 +34,7 @@ import {
   isFilePath,
 } from './types.ts';
 import { joinContinuationLines } from './util.ts';
-import { Uint8Array_ } from '@std/bytes';
-const crypto = await import('node:crypto');
+import crypto from 'node:crypto';
 
 const REG = {
   pdf: /\.pdf$/i,
@@ -275,7 +264,6 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
    */
   async digest(type: DigestAlgorithmValues = DigestAlgorithm.sha1): Promise<string> {
     const buf = new Uint8Array(BUFSIZE);
-
     const hash = crypto.createHash(type);
 
     let position = 0;
@@ -422,23 +410,23 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
     }
   }
 
-/**
- * Reads the entire file as a Uint8Array. Can optionally decode base64-encoded content.
- * 
- * @param {('base64' | undefined)} [encoding] - If 'base64', decodes the file content from base64
- * @returns {Promise<Uint8Array>} A promise that resolves with the file contents as bytes
- * 
- * @example
- * // Read binary file
- * const bytes = await file.readAsBytes();
- * console.log(bytes); // Uint8Array [72, 101, 108, 108, 111]
- * 
- * // Read base64-encoded file
- * const base64File = await file.readAsBytes('base64');
- * // If file contains "SGVsbG8=" the result will be:
- * // Uint8Array [72, 101, 108, 108, 111] ("Hello" in ASCII)
- */
-async readAsBytes(encoding?: 'base64'): Promise<Uint8Array> {
+  /**
+   * Reads the entire file as a Uint8Array. Can optionally decode base64-encoded content.
+   *
+   * @param {('base64' | undefined)} [encoding] - If 'base64', decodes the file content from base64
+   * @returns {Promise<Uint8Array>} A promise that resolves with the file contents as bytes
+   *
+   * @example
+   * // Read binary file
+   * const bytes = await file.readAsBytes();
+   * console.log(bytes); // Uint8Array [72, 101, 108, 108, 111]
+   *
+   * // Read base64-encoded file
+   * const base64File = await file.readAsBytes('base64');
+   * // If file contains "SGVsbG8=" the result will be:
+   * // Uint8Array [72, 101, 108, 108, 111] ("Hello" in ASCII)
+   */
+  async readAsBytes(encoding?: 'base64'): Promise<Uint8Array> {
     try {
       if (encoding === 'base64') {
         const result = await Deno.readTextFile(this._f);
@@ -450,25 +438,25 @@ async readAsBytes(encoding?: 'base64'): Promise<Uint8Array> {
     }
   }
 
-/**
- * Reads the entire file as a string. Can optionally decode base64-encoded content.
- * 
- * @param {('base64' | undefined)} [encoding] - If 'base64', decodes the file content from base64 before converting to string
- * @returns {Promise<string>} A promise that resolves with the file contents as a string
- * 
- * @example
- * // Read text file
- * const text = await file.readAsString();
- * console.log(text); // e.g., "Hello World"
- * 
- * // Read base64-encoded file
- * const base64Text = await file.readAsString('base64');
- * // If file contains "SGVsbG8=" the result will be:
- * // "Hello"
- * 
- * @throws {FSError} If the file cannot be read or decoded
- */
-async readAsString(encoding?: 'base64'): Promise<string> {
+  /**
+   * Reads the entire file as a string. Can optionally decode base64-encoded content.
+   *
+   * @param {('base64' | undefined)} [encoding] - If 'base64', decodes the file content from base64 before converting to string
+   * @returns {Promise<string>} A promise that resolves with the file contents as a string
+   *
+   * @example
+   * // Read text file
+   * const text = await file.readAsString();
+   * console.log(text); // e.g., "Hello World"
+   *
+   * // Read base64-encoded file
+   * const base64Text = await file.readAsString('base64');
+   * // If file contains "SGVsbG8=" the result will be:
+   * // "Hello"
+   *
+   * @throws {FSError} If the file cannot be read or decoded
+   */
+  async readAsString(encoding?: 'base64'): Promise<string> {
     try {
       if (encoding === 'base64') {
         const encodedAsBase64 = await Deno.readTextFile(this._f);
@@ -719,7 +707,7 @@ async readAsString(encoding?: 'base64'): Promise<string> {
   async findAvailableIndexFilename(
     _limit: Integer = 32,
     sep: string = '-',
-    prefix: string = ''
+    prefix: string = '',
   ): Promise<FilePath | undefined> {
     let newFsDest: FileSpec | undefined;
     let count = 0;
