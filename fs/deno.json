@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/fs",
-  "version": "0.1.5",
+  "version": "0.2.5",
   "description": "File system entry wrapper",
   "exports": "./mod.ts",
   "tasks": {
@@ -16,6 +16,7 @@
     "@epdoc/response": "jsr:@epdoc/response@1.0.0",
     "@std/bytes": "jsr:@std/bytes@^1.0.5",
     "@std/crypto": "jsr:@std/crypto@^1.0.4",
+    "@std/encoding": "jsr:@std/encoding@^1.0.9",
     "@std/fs": "jsr:@std/fs@^1.0.15",
     "@std/io": "jsr:@std/io@^0.225.2",
     "pdf-lib": "npm:pdf-lib@^1.17.1"

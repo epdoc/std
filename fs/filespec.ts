@@ -15,8 +15,7 @@ import {
 } from '@epdoc/type';
 import { assert } from '@std/assert';
 import * as dfs from '@std/fs';
-import { Buffer } from 'node:buffer';
-import fs from 'node:fs';
+import { decodeBase64, encodeBase64 } from 'jsr:@std/encoding';
 import os from 'node:os';
 import path from 'node:path';
 import { BaseSpec } from './basespec.ts';
@@ -25,8 +24,18 @@ import type { FolderSpec } from './folderspec.ts';
 import { FSBytes } from './fsbytes.ts';
 import { FSSpec, fsSpec } from './fsspec.ts';
 import type { FSStats } from './fsstats.ts';
-import { type FSSpecParam, type IRootableSpec, type ISafeCopyableSpec, resolvePathArgs } from './icopyable.ts';
-import { type FileConflictStrategy, fileConflictStrategyType, safeCopy, type SafeCopyOpts } from './safecopy.ts';
+import {
+  type FSSpecParam,
+  type IRootableSpec,
+  type ISafeCopyableSpec,
+  resolvePathArgs,
+} from './icopyable.ts';
+import {
+  type FileConflictStrategy,
+  fileConflictStrategyType,
+  safeCopy,
+  type SafeCopyOpts,
+} from './safecopy.ts';
 import {
   DigestAlgorithm,
   type DigestAlgorithmValues,
@@ -35,6 +44,7 @@ import {
   isFilePath,
 } from './types.ts';
 import { joinContinuationLines } from './util.ts';
+import { Uint8Array_ } from '@std/bytes';
 const crypto = await import('node:crypto');
 
 const REG = {
@@ -412,24 +422,60 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
     }
   }
 
-  /**
-   * Reads the entire file as a Uint8Array.
-   * @returns {Promise<Uint8Array>} A promise that resolves with the file contents as a buffer.
-   */
-  async readAsBytes(): Promise<Uint8Array> {
+/**
+ * Reads the entire file as a Uint8Array. Can optionally decode base64-encoded content.
+ * 
+ * @param {('base64' | undefined)} [encoding] - If 'base64', decodes the file content from base64
+ * @returns {Promise<Uint8Array>} A promise that resolves with the file contents as bytes
+ * 
+ * @example
+ * // Read binary file
+ * const bytes = await file.readAsBytes();
+ * console.log(bytes); // Uint8Array [72, 101, 108, 108, 111]
+ * 
+ * // Read base64-encoded file
+ * const base64File = await file.readAsBytes('base64');
+ * // If file contains "SGVsbG8=" the result will be:
+ * // Uint8Array [72, 101, 108, 108, 111] ("Hello" in ASCII)
+ */
+async readAsBytes(encoding?: 'base64'): Promise<Uint8Array> {
     try {
+      if (encoding === 'base64') {
+        const result = await Deno.readTextFile(this._f);
+        return decodeBase64(result);
+      }
       return await Deno.readFile(this._f);
     } catch (err) {
       throw asError(err, { path: this._f, cause: 'readFile' });
     }
   }
 
-  /**
-   * Reads the entire file as a string.
-   * @returns {Promise<string>} A promise that resolves with the file contents as a string.
-   */
-  async readAsString(): Promise<string> {
+/**
+ * Reads the entire file as a string. Can optionally decode base64-encoded content.
+ * 
+ * @param {('base64' | undefined)} [encoding] - If 'base64', decodes the file content from base64 before converting to string
+ * @returns {Promise<string>} A promise that resolves with the file contents as a string
+ * 
+ * @example
+ * // Read text file
+ * const text = await file.readAsString();
+ * console.log(text); // e.g., "Hello World"
+ * 
+ * // Read base64-encoded file
+ * const base64Text = await file.readAsString('base64');
+ * // If file contains "SGVsbG8=" the result will be:
+ * // "Hello"
+ * 
+ * @throws {FSError} If the file cannot be read or decoded
+ */
+async readAsString(encoding?: 'base64'): Promise<string> {
     try {
+      if (encoding === 'base64') {
+        const encodedAsBase64 = await Deno.readTextFile(this._f);
+        const byteArray: Uint8Array = decodeBase64(encodedAsBase64);
+        const decoder = new TextDecoder();
+        return decoder.decode(byteArray);
+      }
       return await Deno.readTextFile(this._f);
     } catch (err) {
       throw asError(err, { path: this._f, cause: 'readTextFile' });
@@ -544,34 +590,63 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
    * @returns {Promise<void>} A promise that resolves when the write operation is complete.
    */
   async writeJson(data: unknown): Promise<void> {
-    const buf = Buffer.from(JSON.stringify(data, null, 2), 'utf8');
-    await fs.promises.writeFile(this._f, buf);
+    const text = JSON.stringify(data, null, 2);
+    await Deno.writeTextFile(this._f, text);
   }
 
   /**
-   * Writes base64-encoded data to the file.
-   * @param {string} data - The base64-encoded data to write.
-   * @returns {Promise<void>} A promise that resolves when the write operation is complete.
+   * Writes data as base64-encoded bytes to the file.
+   * @param {string | Uint8Array} data - The data to encode and write as base64
+   * @returns {Promise<void>} A promise that resolves when the write completes
+   *
+   * @example
+   * // Write string as base64
+   * await file.writeBase64('Hello world');
+   * // File contains: SGVsbG8gd29ybGQ=
+   *
+   * // Write binary data as base64
+   * const bytes = new Uint8Array([72, 101, 108, 108, 111]);
+   * await file.writeBase64(bytes);
+   * // File contains: SGVsbG8=
    */
-  writeBase64(data: string): Promise<void> {
-    return this.write(data, 'base64');
+  async writeBase64(data: string | Uint8Array | ArrayBuffer): Promise<void> {
+    const encoded = encodeBase64(data);
+    await this.write(encoded);
   }
 
   /**
-   * Writes data to the file with the specified encoding.
-   * @param {string | string[]} data - The data to write.
-   * @param {BufferEncoding} [type='utf8'] - The encoding to use.
-   * @returns {Promise<void>} A promise that resolves when the write operation is complete.
+   * Writes data to the file.
+   *
+   * @param {string | string[] | Uint8Array} data - The data to write:
+   *   - string: Text content with encoding
+   *   - string[]: Array of lines to join with newlines
+   *   - Uint8Array: Raw binary data
+   * @param {string} [type='utf8'] - Text encoding (ignored for Uint8Array)
+   * @returns {Promise<void>} Promise that resolves when write completes
+   *
+   * @example
+   * // Write text content
+   * await file.write('Hello world');
+   *
+   * // Write array of lines
+   * await file.write(['line 1', 'line 2']);
+   *
+   * // Write binary data
+   * const bytes = new Uint8Array([72, 101, 108, 108, 111]);
+   * await file.write(bytes);
    */
-  write(data: string | string[], type = 'utf8'): Promise<void> {
-    if (isArray(data)) {
-      data = data.join('\n');
+  async write(data: string | string[] | Uint8Array): Promise<void> {
+    try {
+      if (data instanceof Uint8Array) {
+        await Deno.writeFile(this._f, data);
+      } else {
+        const text = isArray(data) ? data.join('\n') : data;
+        await Deno.writeTextFile(this._f, text);
+      }
+    } catch (err) {
+      throw this.asError(err);
     }
-    // @ts-ignore fight the type daemons later. this should be looked at.
-    const buf = Buffer.from(data, type);
-    return fs.promises.writeFile(this._f, buf);
   }
-
   safeCopy(destFile: FilePath | FileSpec | FolderSpec | FSSpec, opts: SafeCopyOpts = {}): Promise<void> {
     return safeCopy(this, destFile, opts);
   }
@@ -644,7 +719,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
   async findAvailableIndexFilename(
     _limit: Integer = 32,
     sep: string = '-',
-    prefix: string = '',
+    prefix: string = ''
   ): Promise<FilePath | undefined> {
     let newFsDest: FileSpec | undefined;
     let count = 0;

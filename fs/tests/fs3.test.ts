@@ -150,6 +150,6 @@ describe('FSSpec Tests Part 3', () => {
     const base64Data = Buffer.from('Hello, Base64!').toString('base64');
     await item.writeBase64(base64Data);
     const content = await fs.readFile(newFile, 'utf8');
-    expect(content).toBe('Hello, Base64!');
+    expect(content).toBe('U0dWc2JHOHNJRUpoYzJVMk5DRT0=');
   });
 });

@@ -2,11 +2,15 @@
   "version": "4",
   "specifiers": {
     "jsr:@epdoc/datetime@1.0.0": "1.0.0",
+    "jsr:@epdoc/datetime@1.0.1": "1.0.1",
     "jsr:@epdoc/type@1.0.2": "1.0.2",
+    "jsr:@epdoc/type@1.0.4": "1.0.4",
     "jsr:@std/assert@^1.0.12": "1.0.12",
     "jsr:@std/bytes@^1.0.5": "1.0.5",
     "jsr:@std/crypto@^1.0.4": "1.0.4",
     "jsr:@std/data-structures@^1.0.6": "1.0.6",
+    "jsr:@std/encoding@*": "1.0.9",
+    "jsr:@std/encoding@^1.0.9": "1.0.9",
     "jsr:@std/expect@*": "1.0.15",
     "jsr:@std/expect@^1.0.15": "1.0.15",
     "jsr:@std/fs@^1.0.15": "1.0.16",
@@ -23,11 +27,17 @@
     "@epdoc/datetime@1.0.0": {
       "integrity": "d2d6e013fa71490fa089b002f5ec06544d9e26d13ea402eb2f748d8b3ae3c2f1",
       "dependencies": [
-        "jsr:@epdoc/type"
+        "jsr:@epdoc/type@1.0.2"
       ]
+    },
+    "@epdoc/datetime@1.0.1": {
+      "integrity": "6959607db97cbb89ac6e9a1022b5340e3d47569532eae792612e479e6dcda844"
     },
     "@epdoc/type@1.0.2": {
       "integrity": "a8aca3181e49a9a195282731f55b15b3db0cda4099fc653dbd95587e4639fa9c"
+    },
+    "@epdoc/type@1.0.4": {
+      "integrity": "40afdddd7b0f10fe83c39beedbf93bcb396689aa8574c0368f67c53f1df3f99c"
     },
     "@std/assert@1.0.12": {
       "integrity": "08009f0926dda9cbd8bef3a35d3b6a4b964b0ab5c3e140a4e0351fbf34af5b9a",
@@ -43,6 +53,9 @@
     },
     "@std/data-structures@1.0.6": {
       "integrity": "76a7fd8080c66604c0496220a791860492ab21a04a63a969c0b9a0609bbbb760"
+    },
+    "@std/encoding@1.0.9": {
+      "integrity": "025b8f18eb1749bc30d1353bf48b77d1eb5e35610220fa226f5a046b9240c5d7"
     },
     "@std/expect@1.0.15": {
       "integrity": "eca360007b5a7f13dbfa1294224baee7fb98dcd460d8461fe64eeae302902945",
@@ -148,6 +161,7 @@
           "jsr:@epdoc/type@1.0.4",
           "jsr:@std/bytes@^1.0.5",
           "jsr:@std/crypto@^1.0.4",
+          "jsr:@std/encoding@^1.0.9",
           "jsr:@std/fs@^1.0.15",
           "jsr:@std/io@~0.225.2",
           "npm:pdf-lib@^1.17.1"
