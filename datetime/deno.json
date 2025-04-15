@@ -3,7 +3,7 @@
   "version": "1.0.1",
   "exports": "./mod.ts",
   "imports": {
-    "@epdoc/type": "jsr:@epdoc/type@1.0.4",
+    "@epdoc/type": "jsr:@epdoc/type@^1.0.4",
     "@std/expect": "jsr:@std/expect@^1.0.15",
     "@std/testing": "jsr:@std/testing@^1.0.11"
   }
