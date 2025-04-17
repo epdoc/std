@@ -1,4 +1,4 @@
-import type { Dict, Integer } from '@epdoc/type';
+import type { Dict, Integer } from './dep.ts';
 import { expect } from 'jsr:@std/expect';
 import { describe, it } from 'jsr:@std/testing/bdd';
 import type { Seconds } from './mod.ts';

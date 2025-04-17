@@ -1,8 +1,8 @@
-import { compareDictValue, type Dict, isArray, isDict, isNumber, isRegExp, isString } from './dep/epdoc.ts';
+import { compareDictValue, type Dict, isArray, isDict, isNumber, isRegExp, isString } from './dep.ts';
 import os from 'node:os';
 import path from 'node:path';
 import { BaseSpec } from './basespec.ts';
-import { dfs } from './dep/deno.ts';
+import { dfs } from './dep.ts';
 import { FileSpec } from './filespec.ts';
 import { FSSpec } from './fsspec.ts';
 import { type FSSpecParam, type IRootableSpec, type ISafeCopyableSpec, resolvePathArgs } from './icopyable.ts';
@@ -44,6 +44,8 @@ export type FolderDiff = {
   added: FileName[];
   diff: FileName[];
 };
+
+export type WalkOptions = dfs.WalkOptions;
 
 /**
  * An object representing a file system entry, which may be either a file or a

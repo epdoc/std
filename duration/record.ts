@@ -1,4 +1,4 @@
-import { type Dict, isDict } from '@epdoc/type';
+import { type Dict, isDict } from './dep.ts';
 import * as Duration from './types.ts';
 
 export type DurationRecordOptions = Partial<{

@@ -1,4 +1,4 @@
-import type { Integer } from '@epdoc/type';
+import type { Integer } from './dep.ts';
 import type { Field } from './types.ts';
 
 /**

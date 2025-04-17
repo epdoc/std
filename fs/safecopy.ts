@@ -1,6 +1,6 @@
-import type { Integer } from './dep/epdoc.ts';
+import type { Integer } from './dep.ts';
 import path from 'node:path';
-import { dfs } from './dep/deno.ts';
+import { dfs } from './dep.ts';
 import { FSError } from './error.ts';
 import { FileSpec } from './filespec.ts';
 import { FolderSpec } from './folderspec.ts';

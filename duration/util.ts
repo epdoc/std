@@ -2,7 +2,7 @@ import type * as Format from './format.ts';
 import { DurationRecord } from './record.ts';
 import type * as Duration from './types.ts';
 // import { formatToParts } from './intl-duration-format.ts';
-import { type Integer, isDict, isInteger } from '@epdoc/type';
+import { type Integer, isDict, isInteger } from './dep.ts';
 import type { HrMilliseconds, Milliseconds } from './time-types.ts';
 
 const REG = {

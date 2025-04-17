@@ -1,4 +1,4 @@
-import type { Integer } from './dep/epdoc.ts';
+import type { Integer } from './dep.ts';
 
 const DAY = 24 * 3600 * 1000;
 const REG = {

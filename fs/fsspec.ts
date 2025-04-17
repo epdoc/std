@@ -1,7 +1,7 @@
-import { isArray } from '@epdoc/type';
 import os from 'node:os';
 import path from 'node:path';
 import { BaseSpec } from './basespec.ts';
+import { isArray } from './dep.ts';
 import { type FileSpec, fileSpec } from './filespec.ts';
 import { type FolderSpec, folderSpec } from './folderspec.ts';
 import { type FSSpecParam, type ICopyableSpec, type IRootableSpec, resolvePathArgs } from './icopyable.ts';

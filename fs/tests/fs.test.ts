@@ -1,5 +1,5 @@
-import { dateEx } from '../dep/epdoc.ts';
-import { isArray, isDate, isValidDate } from '../dep/epdoc.ts';
+import { dateEx } from '../dep.ts';
+import { isArray, isDate, isValidDate } from '../dep.ts';
 import { expect } from 'jsr:@std/expect';
 import { afterAll, beforeEach, describe, it, test } from 'jsr:@std/testing/bdd';
 import os from 'node:os';

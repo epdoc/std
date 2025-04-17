@@ -1,4 +1,4 @@
-import type { Dict, Integer } from './dep/epdoc.ts';
+import type { Dict, Integer } from './dep.ts';
 import {
   asError,
   deepCopy,
@@ -12,13 +12,13 @@ import {
   isRegExp,
   isString,
   pad,
-} from './dep/epdoc.ts';
+} from './dep.ts';
 import { assert } from '@std/assert';
 import crypto from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
 import { BaseSpec } from './basespec.ts';
-import { decodeBase64, dfs, encodeBase64 } from './dep/deno.ts';
+import { decodeBase64, dfs, encodeBase64 } from './dep.ts';
 import { FSError } from './error.ts';
 import type { FolderSpec } from './folderspec.ts';
 import { FSBytes } from './fsbytes.ts';

@@ -1,8 +1,6 @@
 import { expect } from 'jsr:@std/expect';
 import { describe, it } from 'jsr:@std/testing/bdd';
-// import * as Duration from '../lib/duration-types.ts';
 import { Duration, duration } from './mod.ts';
-// import * as Duration from '../lib/duration.ts';
 
 describe('duration-util', () => {
   describe('digital', () => {

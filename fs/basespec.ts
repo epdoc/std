@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { dfs } from './dep/deno.ts';
+import { dfs } from './dep.ts';
 import { FSStats } from './fsstats.ts';
 import type { FilePath, FolderPath } from './types.ts';
 

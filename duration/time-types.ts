@@ -1,4 +1,4 @@
-import { type Integer, isInteger } from '@epdoc/type';
+import { type Integer, isInteger } from './dep.ts';
 
 /**
  * Represents a duration in milliseconds.
