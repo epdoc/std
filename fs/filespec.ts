@@ -1,4 +1,4 @@
-import type { Dict, Integer } from '@epdoc/type';
+import type { Dict, Integer } from './dep/epdoc.ts';
 import {
   asError,
   deepCopy,
@@ -12,13 +12,13 @@ import {
   isRegExp,
   isString,
   pad,
-} from '@epdoc/type';
+} from './dep/epdoc.ts';
 import { assert } from '@std/assert';
-import { decodeBase64, encodeBase64 } from '@std/encoding';
-import * as dfs from '@std/fs';
+import crypto from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
 import { BaseSpec } from './basespec.ts';
+import { decodeBase64, dfs, encodeBase64 } from './dep/deno.ts';
 import { FSError } from './error.ts';
 import type { FolderSpec } from './folderspec.ts';
 import { FSBytes } from './fsbytes.ts';
@@ -34,7 +34,6 @@ import {
   isFilePath,
 } from './types.ts';
 import { joinContinuationLines } from './util.ts';
-import crypto from 'node:crypto';
 
 const REG = {
   pdf: /\.pdf$/i,
@@ -299,7 +298,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
    */
   getPdfDate(): Promise<Date | undefined> {
     let doc: unknown;
-    return import('pdf-lib')
+    return import('npm:pdf-lib@^1.17.1')
       .then(({ PDFDocument }) => {
         doc = PDFDocument;
         if (doc) {

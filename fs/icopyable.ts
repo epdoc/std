@@ -1,5 +1,5 @@
-import { StringEx } from '@epdoc/string';
-import { isString } from '@epdoc/type';
+import { StringEx } from 'jsr:@epdoc/string@0.1.0';
+import { isString } from './dep/epdoc.ts';
 import path from 'node:path';
 import { FileSpec } from './filespec.ts';
 import { FolderSpec } from './folderspec.ts';

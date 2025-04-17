@@ -1,4 +1,4 @@
-import type { Integer } from '@epdoc/type';
+import type { Integer } from './dep/epdoc.ts';
 
 const encoder = new TextEncoder();
 

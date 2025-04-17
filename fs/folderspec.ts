@@ -1,8 +1,8 @@
-import { compareDictValue, type Dict, isArray, isDict, isNumber, isRegExp, isString } from '@epdoc/type';
-import * as dfs from '@std/fs';
+import { compareDictValue, type Dict, isArray, isDict, isNumber, isRegExp, isString } from './dep/epdoc.ts';
 import os from 'node:os';
 import path from 'node:path';
 import { BaseSpec } from './basespec.ts';
+import { dfs } from './dep/deno.ts';
 import { FileSpec } from './filespec.ts';
 import { FSSpec } from './fsspec.ts';
 import { type FSSpecParam, type IRootableSpec, type ISafeCopyableSpec, resolvePathArgs } from './icopyable.ts';

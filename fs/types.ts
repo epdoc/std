@@ -1,4 +1,4 @@
-import { type DeepCopyOpts, type Integer, isNonEmptyString } from '@epdoc/type';
+import { type DeepCopyOpts, type Integer, isNonEmptyString } from './dep/epdoc.ts';
 import type { BaseSpec } from './basespec.ts';
 
 /**

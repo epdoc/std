@@ -1,6 +1,6 @@
-import type { Integer } from '@epdoc/type';
-import * as dfs from '@std/fs';
+import type { Integer } from './dep/epdoc.ts';
 import path from 'node:path';
+import { dfs } from './dep/deno.ts';
 import { FSError } from './error.ts';
 import { FileSpec } from './filespec.ts';
 import { FolderSpec } from './folderspec.ts';

@@ -1,5 +1,5 @@
-import type { ICodeError, ICodeErrorOptions } from '@epdoc/type';
-import { isError } from '@epdoc/type';
+import type { ICodeError, ICodeErrorOptions } from './dep/epdoc.ts';
+import { isError } from './dep/epdoc.ts';
 
 export interface FSErrorOptions extends ICodeErrorOptions {
   code?: string;

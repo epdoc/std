@@ -7,10 +7,22 @@ import { safe, safeApi } from './mod.ts';
 const pwd: string = import.meta.dirname as string;
 
 describe('safe', () => {
-  it('response', async () => {
-    const [error, data] = await safe(Deno.readTextFile(resolve(pwd, './deno.json')));
-    expect(error).toBeNull;
-    expect(data).toContain('"name": "@epdoc/response');
+  describe('response', () => {
+    it('normal', async () => {
+      const [error, data] = await safe(Deno.readTextFile(resolve(pwd, './deno.json')));
+      expect(error).toBeNull();
+      expect(data).toContain('"name": "@epdoc/response');
+    });
+    it('error', async () => {
+      const [error, data] = await safe(Deno.readTextFile(resolve(pwd, './deno.xyz')));
+      expect(error).toBeDefined();
+      expect(data).toBeNull();
+      if (error) {
+        expect(error.constructor.name).toBe('NotFound');
+        expect(error).toBeInstanceOf(Error);
+        expect(error.code).toEqual('ENOENT');
+      }
+    });
   });
   describe('api response', () => {
     it('normal', async () => {

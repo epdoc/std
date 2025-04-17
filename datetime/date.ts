@@ -1,4 +1,4 @@
-import * as Util from '@epdoc/type';
+import * as Util from './dep/epdoc.ts';
 
 export type Minutes = Util.Integer;
 
