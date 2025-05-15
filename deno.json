@@ -5,12 +5,11 @@
   },
   "license": "MIT",
   "tasks": {
-    "test": "deno test --allow-env --allow-sys --allow-read --allow-write",
-    "lint": "deno lint",
-    "launch": "deno  --allow-env --allow-sys --allow-read --allow-write ./_tools/launchgen.ts"
+    "test": "deno test -SERW",
+    "lint": "deno lint"
   },
   "imports": {
-    "@std/assert": "jsr:@std/assert@^1.0.12"
+    "@std/assert": "jsr:@std/assert@^1.0.13"
   },
   "fmt": {
     "singleQuote": true,
