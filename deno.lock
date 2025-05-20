@@ -1,6 +1,7 @@
 {
   "version": "5",
   "specifiers": {
+    "jsr:@epdoc/response@0.0.2": "0.0.2",
     "jsr:@epdoc/type@1.0.3": "1.0.3",
     "jsr:@std/assert@^1.0.12": "1.0.12",
     "jsr:@std/assert@^1.0.13": "1.0.13",
@@ -19,6 +20,12 @@
     "npm:pdf-lib@^1.17.1": "1.17.1"
   },
   "jsr": {
+    "@epdoc/response@0.0.2": {
+      "integrity": "22c72f226eadeb1dee7baa6dc3e1d18d8e73435c958f3997dfe86672de12e090",
+      "dependencies": [
+        "jsr:@std/assert@^1.0.12"
+      ]
+    },
     "@epdoc/type@1.0.3": {
       "integrity": "fec5a44cb1568c77e41ff2139e5503da9291d302ddf3443ed02dca68f7307045"
     },
