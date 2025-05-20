@@ -1,7 +1,7 @@
 import { assertEquals } from '@std/assert';
-import { tryCatch } from './trycatch.ts';
 import { describe, it } from 'jsr:@std/testing/bdd';
 import { delayPromise } from './dep.ts';
+import { wrap } from './catch-obj.ts';
 
 describe('tryCatch', () => {
   it('handles successful promises', async () => {
@@ -10,7 +10,7 @@ describe('tryCatch', () => {
     const promise = Promise.resolve(testData);
 
     // Execute
-    const result = await tryCatch(promise);
+    const result = await wrap(promise);
 
     // Verify
     assertEquals(result.error, null);
@@ -23,7 +23,7 @@ describe('tryCatch', () => {
     const promise = Promise.reject(new Error(errorMessage));
 
     // Execute
-    const result = await tryCatch(promise);
+    const result = await wrap(promise);
 
     // Verify
     assertEquals(result.data, null);
@@ -42,7 +42,7 @@ describe('tryCatch', () => {
     };
 
     // Execute
-    const result = await tryCatch(asyncFn());
+    const result = await wrap(asyncFn());
 
     // Verify
     assertEquals(result.data, null);
@@ -58,13 +58,13 @@ describe('tryCatch', () => {
     const objectPromise = Promise.resolve({ key: 'value' });
 
     // Execute & Verify
-    const numResult = await tryCatch(numberPromise);
+    const numResult = await wrap(numberPromise);
     assertEquals(numResult.data, 42);
 
-    const strResult = await tryCatch(stringPromise);
+    const strResult = await wrap(stringPromise);
     assertEquals(strResult.data, 'hello');
 
-    const objResult = await tryCatch(objectPromise);
+    const objResult = await wrap(objectPromise);
     assertEquals(objResult.data, { key: 'value' });
   });
 });

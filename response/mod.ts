@@ -1,3 +1,3 @@
 export * from './apires.ts';
-export * from './safe.ts';
-export * from './trycatch.ts';
+export * as catchAsArray from './catch-array.ts';
+export * as catchAsObj from './catch-obj.ts';

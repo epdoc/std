@@ -1,6 +1,6 @@
 # @epdoc/response
 
-A collection of TypeScript utilities for handling errors and response data for asynchronous operations.
+A collection of TypeScript utilities for handling throws and response data for asynchronous operations.
 
 ## Installation
 
@@ -15,12 +15,14 @@ deno add @epdoc/response
 This package provides two similar approaches to handle errors and response data from asynchronous operations. Both have
 variants that return timing information:
 
-#### Array-based: `safe()`
+#### Array-based: [catch-array.ts](./catch-array.ts)
 
 Uses tuples to handle success/error states:
 
 ```typescript
-const [error, result] = await safe(fetchData());
+import catchAsArray as safe from './mod.ts';
+
+const [error, result] = await safe.wrap(fetchData());
 if (error) {
   console.error('Failed:', error);
   return;
@@ -28,12 +30,14 @@ if (error) {
 console.log('Success:', result);
 ```
 
-#### Dictionary-based: `tryCatch()`
+#### Object-based: [catch-obj.ts](./catch-obj.ts)
 
 Uses object properties to handle success/error states:
 
 ```typescript
-const result = await tryCatch(fetchData());
+import catchAsObj as safe from './mod.ts';
+
+const result = await safe.wrap(fetchData());
 if (result.error) {
   console.error('Failed:', result.error);
   return;

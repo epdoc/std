@@ -2,19 +2,19 @@ import { FileSpec } from '@epdoc/fs';
 import { expect } from 'jsr:@std/expect';
 import { describe, it } from 'jsr:@std/testing/bdd';
 import { resolve } from 'node:path';
-import { safe, safeApi } from './mod.ts';
+import { catchAsArray as safe } from './mod.ts';
 
 const pwd: string = import.meta.dirname as string;
 
 describe('safe', () => {
   describe('response', () => {
     it('normal', async () => {
-      const [error, data] = await safe(Deno.readTextFile(resolve(pwd, './deno.json')));
-      expect(error).toBeNull();
-      expect(data).toContain('"name": "@epdoc/response');
+      const p: safe.Result<string> = await safe.wrap<string>(Deno.readTextFile(resolve(pwd, './deno.json')));
+      expect(p[0]).toBeNull();
+      expect(p[1]).toContain('"name": "@epdoc/response');
     });
     it('error', async () => {
-      const [error, data] = await safe(Deno.readTextFile(resolve(pwd, './deno.xyz')));
+      const [error, data] = await safe.wrap<string>(Deno.readTextFile(resolve(pwd, './deno.xyz')));
       expect(error).toBeDefined();
       expect(data).toBeNull();
       if (error) {
@@ -26,7 +26,7 @@ describe('safe', () => {
   });
   describe('api response', () => {
     it('normal', async () => {
-      const [error, data, duration] = await safeApi(Deno.readTextFile(resolve(pwd, './deno.json')));
+      const [error, data, duration] = await safe.twrap(Deno.readTextFile(resolve(pwd, './deno.json')));
       expect(error).toBeNull;
       expect(data).toContain('"name": "@epdoc/response');
       expect(duration).toBeGreaterThan(0);
@@ -34,7 +34,7 @@ describe('safe', () => {
     it('error', async () => {
       const path = resolve(pwd, './deno.xyz');
       const fs = new FileSpec(pwd, './deno.xyz');
-      const [error, data, duration] = await safeApi(fs.readAsString());
+      const [error, data, duration] = await safe.twrap(fs.readAsString());
       expect(error).toBeDefined();
       if (error) {
         expect(error).toBeInstanceOf(Error);
