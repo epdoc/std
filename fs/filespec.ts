@@ -357,10 +357,10 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
 
   protected async _equal(fs: FileSpec): Promise<boolean> {
     const exists1 = await this.getExists();
-    const exists2 = await this.getExists();
+    const exists2 = await fs.getExists();
     if (exists1 && exists2) {
-      const checksum1 = await this.checksum();
-      const checksum2 = await fs.checksum();
+      const checksum1 = await this.digest();
+      const checksum2 = await fs.digest();
       return checksum1 === checksum2;
     }
     return false;
