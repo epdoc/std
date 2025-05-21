@@ -582,7 +582,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
   }
 
   /**
-   * Writes data as base64-encoded bytes to the file.
+   * Encodes input as base64 and writes to the file.
    * @param {string | Uint8Array} data - The data to encode and write as base64
    * @returns {Promise<void>} A promise that resolves when the write completes
    *
