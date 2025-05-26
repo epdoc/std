@@ -346,7 +346,7 @@ describe('FSSpec Tests Part 1', () => {
         })
         .then((resp) => {
           expect(resp).toBe(
-            'db22c7cec11a4ab069d90313723da4f2b46e67f2cfb588a8af86cb4c0aa186b7bd43ce3b5fd60912da2bac8f00aac49c61d211c4d30a7d6aa1ef70da6bed9fce'
+            'db22c7cec11a4ab069d90313723da4f2b46e67f2cfb588a8af86cb4c0aa186b7bd43ce3b5fd60912da2bac8f00aac49c61d211c4d30a7d6aa1ef70da6bed9fce',
           );
         });
     });
@@ -393,7 +393,7 @@ describe('FSSpec Tests Part 1', () => {
         })
         .then((resp) => {
           expect(resp).toBe(
-            'ef09fb6becf651c57fe7ddd9be382820c0d96b5798f9391b23c4d00ab16ef3ecba2b9f9a661f9424b1e406134e82a809636449f31fbd6360102a10374e8181e8'
+            'ef09fb6becf651c57fe7ddd9be382820c0d96b5798f9391b23c4d00ab16ef3ecba2b9f9a661f9424b1e406134e82a809636449f31fbd6360102a10374e8181e8',
           );
         });
     });
@@ -499,7 +499,7 @@ describe('FSSpec Tests Part 1', () => {
         .then((resp) => {
           expect(resp).toEqual(true);
           return fileSpec(pwd, 'data2/folder-sample/sample2.txt').filesEqual(
-            fileSpec(pwd, 'data1/folder-sample/sample2.txt')
+            fileSpec(pwd, 'data1/folder-sample/sample2.txt'),
           );
         })
         .then((resp) => {
@@ -544,7 +544,7 @@ describe('FSSpec Tests Part 1', () => {
         })
         .then(() => {
           return fileSpec(pwd, 'data2/folder-sample/sample2.txt').filesEqual(
-            fileSpec(pwd, 'data1/folder-sample/sample2.txt')
+            fileSpec(pwd, 'data1/folder-sample/sample2.txt'),
           );
         })
         .then((resp) => {

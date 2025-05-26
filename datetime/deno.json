@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/datetime",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "exports": "./mod.ts",
   "tasks": {
     "test": "deno test -E date.test.ts"

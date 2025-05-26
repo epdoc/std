@@ -1,1 +1,1 @@
-export { asInt, type Integer, isInteger, isNumber, isValidDate, pad } from 'jsr:@epdoc/type@1.0.4';
+export { asInt, type Integer, isInteger, isNumber, isValidDate, pad } from 'jsr:@epdoc/type@1.1';

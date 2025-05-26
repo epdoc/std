@@ -1,13 +1,14 @@
-import type { ICodeError, ICodeErrorOptions } from './dep.ts';
+import type { IError } from './dep.ts';
 import { isError } from './dep.ts';
 
-export interface FSErrorOptions extends ICodeErrorOptions {
-  code?: string;
+export interface FSErrorOptions {
+  cause?: string;
+  code?: string | number;
   path?: string;
 }
 
-export class FSError extends Error implements ICodeError {
-  code: string | undefined;
+export class FSError extends Error implements IError {
+  code: string | number | undefined;
   path: string | undefined;
 
   constructor(err: string | Error, opts: FSErrorOptions = {}) {

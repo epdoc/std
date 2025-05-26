@@ -1,4 +1,4 @@
-import { asError, type CodeError } from './dep.ts';
+import { asError, type IError } from './dep.ts';
 
 /**
  * Represents a successful operation result containing data.
@@ -14,7 +14,7 @@ type Success<T> = {
  */
 type Failure = {
   data: null;
-  error: CodeError;
+  error: IError;
 };
 
 /**

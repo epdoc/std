@@ -463,8 +463,8 @@ export function asRegExp(val: unknown): RegExp | undefined {
  * @param args - The arguments to convert.
  * @returns The resulting Error object.
  */
-export function asError(...args: unknown[]): CodeError {
-  let err: CodeError | undefined;
+export function asError(...args: unknown[]): IError {
+  let err: Error | undefined;
   const msg: string[] = [];
   if (args.length) {
     let opts: Dict = {};
@@ -491,32 +491,24 @@ export function asError(...args: unknown[]): CodeError {
         err[key] = opts[key];
       });
     } else {
-      err = new CodeError(msg.join(' '), opts);
+      err = newError(msg.join(' '), opts);
     }
     return err;
   }
-  return new CodeError('Invalid Error error');
-}
-
-export interface ICodeErrorOptions extends ErrorOptions {
-  code?: string;
-}
-
-export interface ICodeError extends Error {
-  code?: string;
+  return newError('Invalid Error error');
 }
 
 /**
- * Represents an error with an optional code. Unlike the default Error object,
- * this class declares the code property.
+ * Reflects the fact that the js Error object actually has a code property.
  */
-export class CodeError extends Error {
+export interface IError extends Error {
   code?: string | number;
+}
 
-  constructor(msg: string, opts: Dict = {}) {
-    super(msg);
-    Object.assign(this, opts);
-  }
+function newError(msg: string, opts: Dict = {}): IError {
+  const result = new Error(msg);
+  Object.assign(result, opts);
+  return result;
 }
 
 /**

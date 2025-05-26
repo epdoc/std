@@ -8,7 +8,8 @@ consistency when determing type.
 The main set of utilities is in [util.ts](util.ts).
 
 A second set of utilities are exposed as methods on a DictUtil object from within [dictutil.ts](./dictutil.ts). These
-can be useful when handling properties of a dictionary-like object.
+can be useful when handling properties of a dictionary-like object. However these are subject to change and should not
+be used except in experiments.
 
 ## Installation
 

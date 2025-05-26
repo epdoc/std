@@ -1,10 +1,10 @@
-import { asError, type CodeError } from './dep.ts';
+import { asError, type IError } from './dep.ts';
 
 /**
  * Tuple type representing either an error or success response.
  * @template T The type of the successful result
  */
-export type Result<T> = [CodeError, null] | [null, T];
+export type Result<T> = [IError, null] | [null, T];
 
 /** Promise that resolves to a SafeResponse tuple */
 export type ResultPromise<T> = Promise<Result<T>>;
@@ -13,7 +13,7 @@ export type ResultPromise<T> = Promise<Result<T>>;
  * Tuple type representing either an error or success response with timing.
  * @template T The type of the successful result
  */
-export type ResultTimed<T> = [CodeError, null, number] | [null, T, number];
+export type ResultTimed<T> = [IError, null, number] | [null, T, number];
 
 /** Promise that resolves to a SafeApiResponse tuple */
 export type ResultTimedPromise<T> = Promise<ResultTimed<T>>;

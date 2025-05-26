@@ -1,9 +1,8 @@
 {
   "name": "@epdoc/string",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "exports": {
     ".": "./mod.ts"
   },
-  "imports": {
-  }
+  "imports": {}
 }
