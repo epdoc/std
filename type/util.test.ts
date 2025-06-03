@@ -15,6 +15,7 @@ import {
   isBoolean,
   isDate,
   isDefined,
+  isDict,
   isError,
   isFalse,
   isFunction,
@@ -213,7 +214,41 @@ describe('util', () => {
       expect(asString(Symbol('my symbol'))).toEqual('Symbol(my symbol)');
     });
   });
+  describe('isDict', () => {
+    it('should identify plain objects', () => {
+      expect(isDict({})).toBe(true);
+      expect(isDict({ key: 'value' })).toBe(true);
+    });
 
+    it('should reject non-object values', () => {
+      expect(isDict(null)).toBe(false);
+      expect(isDict(undefined)).toBe(false);
+      expect(isDict(42)).toBe(false);
+      expect(isDict('string')).toBe(false);
+      expect(isDict(true)).toBe(false);
+    });
+
+    it('should reject special objects', () => {
+      expect(isDict([])).toBe(false);
+      expect(isDict(new Date())).toBe(false);
+      expect(isDict(/regex/)).toBe(false);
+      expect(isDict(new Error())).toBe(false);
+    });
+
+    it('should reject class instances', () => {
+      class Test {}
+      expect(isDict(new Test())).toBe(false);
+    });
+
+    it('should reject functions', () => {
+      expect(isDict(() => {})).toBe(false);
+    });
+
+    it('should handle objects with null prototype', () => {
+      const obj = Object.create(null);
+      expect(isDict(obj)).toBe(false); // or true if you want to allow these
+    });
+  });
   describe('misc', () => {
     const _obj = {
       a: 'b',

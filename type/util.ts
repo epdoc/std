@@ -1,5 +1,7 @@
 /**
- * A dictionary type where keys are strings and values are unknown.
+ * A dictionary type where keys are strings and values are unknown. If you want
+ * keys to be PropertyKey, then look elsewhere or submit a pull request to add
+ * it as a separate type.
  */
 export type Dict = { [key: string]: unknown };
 
@@ -221,15 +223,16 @@ export function isDefined(val: unknown): boolean {
 }
 
 /**
- * Checks if the given value is a dictionary (object).
+ * Type guard for Dict type, where keys are all strings.
  * @param val - The value to check.
  * @returns True if the value is a dictionary, otherwise false.
  */
 export function isDict(val: unknown): val is Dict {
-  if (!isObject(val)) {
-    return false;
-  }
-  return true;
+  return (
+    val !== null &&
+    typeof val === 'object' &&
+    Object.getPrototypeOf(val) === Object.prototype
+  );
 }
 
 /**
