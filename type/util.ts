@@ -719,23 +719,95 @@ export type CompareResult = -1 | 0 | 1;
  * @param b - The second Dict to compare.
  * @param keys - The keys to use for comparison.
  * @returns The comparison result.
+ * @deprecated - Use compareValues instead
  */
 export function compareDictValue(a: Dict, b: Dict, ...keys: string[]): CompareResult {
-  for (let kdx = 0; kdx < keys.length; ++kdx) {
-    const key: string = keys[kdx];
-    if (
-      (typeof a[key] === 'number' && typeof b[key] === 'number') ||
-      (isString(a[key]) && isString(b[key]))
-    ) {
-      if (a[key] < b[key]) {
-        return -1;
+  return compareValues(a, b, ...keys);
+}
+
+/**
+ * Compares two values, `a` and `b`.
+ *
+ * It operates in two modes:
+ *
+ * 1.  **Object Property Comparison Mode:**
+ *     If `props` are provided (one or more property names) AND both `a` and `b`
+ *     are general objects (i.e., not arrays, Dates, RegExps, null, or primitives,
+ *     as determined by the `isObject` check), the function will compare
+ *     `a` and `b` based on these properties in the order specified.
+ *     - For each property, its values from `a` and `b` are compared directly
+ *       (as if calling `compareValues` on them without `props`).
+ *     - If a property's values are of different types (e.g., number vs. string) or
+ *       are not comparable (e.g., two functions), that property is skipped (treated as equal).
+ *     - The comparison stops at the first property that shows a difference.
+ *
+ * 2.  **Direct Value Comparison Mode:**
+ *     This mode is used if:
+ *     - No `props` are provided.
+ *     - `props` are provided, but `a` or `b` (or both) are not general objects
+ *       suitable for property-based comparison (e.g., if `a` is a number and `b` is a string,
+ *       or if `a` is an object but `b` is a Date). In this case, `props` are ignored.
+ *     In this mode:
+ *     - It directly compares `a` and `b` if they are both numbers, both strings, or both Dates.
+ *     - If `a` and `b` are of different types (e.g., number vs. string) or are not
+ *       both numbers, strings, or Dates (e.g., two functions, or a boolean and an object),
+ *       they are treated as equal for sorting purposes (returns 0), effectively skipping them.
+ *
+ * @param a - The first value to compare.
+ * @param b - The second value to compare.
+ * @param props - Optional. A list of string property keys to use for comparison
+ *                if `a` and `b` are both general objects.
+ * @returns
+ *   - `-1` if `a` is considered less than `b`.
+ *   - `1` if `a` is considered greater than `b`.
+ *   - `0` if `a` and `b` are considered equal, or if they/their properties are
+ *     of mismatched types or non-comparable types and thus skipped.
+ */
+export function compareValues(a: unknown, b: unknown, ...props: string[]): CompareResult {
+  // Mode 1: Object Property Comparison
+  // Check if props are provided and both a and b are general objects
+  if (props.length > 0 && isObject(a) && isObject(b)) {
+    for (const key of props) {
+      const valA = (a as Record<string, unknown>)[key];
+      const valB = (b as Record<string, unknown>)[key];
+
+      // Recursively call compareValues WITHOUT props for direct value comparison of properties
+      const propComparisonResult = compareValues(valA, valB);
+
+      if (propComparisonResult !== 0) {
+        return propComparisonResult; // Difference found, return immediately
       }
-      if (a[key] > b[key]) {
-        return 1;
-      }
+      // If propComparisonResult is 0, properties were equal or skipped, continue to next property
     }
+    return 0; // All specified properties were equal or skipped
+  } // Mode 2: Direct Value Comparison
+  // This block is reached if:
+  // - No props were provided.
+  // - Props were provided, but a or b (or both) are not general objects (e.g., primitives, Dates, arrays).
+  else {
+    if (isNumber(a) && isNumber(b)) {
+      if (a < b) return -1;
+      if (a > b) return 1;
+      return 0;
+    }
+    if (isString(a) && isString(b)) {
+      if (a < b) return -1;
+      if (a > b) return 1;
+      return 0;
+    }
+    if (isDate(a) && isDate(b)) {
+      const timeA = a.getTime();
+      const timeB = b.getTime();
+      if (timeA < timeB) return -1;
+      if (timeA > timeB) return 1;
+      return 0;
+    }
+
+    // If types mismatch for a and b, or if they are not number/string/Date,
+    // they are considered "equal" for sorting purposes by this comparison,
+    // meaning this pair doesn't define an order and should be skipped.
+    return 0;
   }
-  return 0;
 }
 
 /**

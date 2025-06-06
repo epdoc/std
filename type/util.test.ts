@@ -7,6 +7,7 @@ import {
   asString,
   camel2dash,
   compareDictValue,
+  compareValues,
   dash2camel,
   deepCopy,
   deepEquals,
@@ -496,6 +497,140 @@ describe('util', () => {
         expect(asFloat('32,222,456.55')).toEqual(32222456.55);
         expect(asFloat('32.222.456,55', { commaAsDecimal: true })).toEqual(32222456.55);
         expect(asFloat([])).toEqual(0);
+      });
+    });
+  });
+
+  describe('compareValues', () => {
+    const date1 = new Date('2023-01-01T00:00:00.000Z');
+    const date2 = new Date('2023-01-02T00:00:00.000Z');
+    const date3 = new Date('2023-01-01T00:00:00.000Z'); // same as date1
+
+    it('should compare numbers directly', () => {
+      expect(compareValues(1, 2)).toBe(-1);
+      expect(compareValues(2, 1)).toBe(1);
+      expect(compareValues(1, 1)).toBe(0);
+    });
+
+    it('should compare strings directly', () => {
+      expect(compareValues('a', 'b')).toBe(-1);
+      expect(compareValues('b', 'a')).toBe(1);
+      expect(compareValues('a', 'a')).toBe(0);
+    });
+
+    it('should compare Dates directly', () => {
+      expect(compareValues(date1, date2)).toBe(-1);
+      expect(compareValues(date2, date1)).toBe(1);
+      expect(compareValues(date1, date3)).toBe(0);
+    });
+
+    it('should return 0 for mixed types in direct comparison', () => {
+      expect(compareValues(1, 'a')).toBe(0);
+      expect(compareValues('a', 1)).toBe(0);
+      expect(compareValues(date1, 1)).toBe(0);
+      expect(compareValues(null, 1)).toBe(0);
+      expect(compareValues(undefined, 'a')).toBe(0);
+      expect(compareValues({}, [])).toBe(0);
+    });
+
+    it('should return 0 for unsupported types in direct comparison', () => {
+      expect(
+        compareValues(
+          () => {},
+          () => {},
+        ),
+      ).toBe(0);
+      expect(compareValues(Symbol('a'), Symbol('b'))).toBe(0);
+      expect(compareValues(true, false)).toBe(0); // Booleans are not explicitly supported for < >
+    });
+
+    describe('object property comparison', () => {
+      const objA = { name: 'Alice', age: 30, city: 'New York', joined: date1 };
+      const objB = { name: 'Bob', age: 25, city: 'New York', joined: date2 };
+      const objC = { name: 'Alice', age: 30, city: 'London', joined: date1 }; // Same name, age as A, diff city
+      const objD = { name: 'Alice', age: 30, city: 'New York', joined: date1 }; // Identical to A
+      const objE = { name: 'Alice', age: '30', city: 'New York' }; // Age is string
+      const objF = { name: 'Alice', city: 'New York' }; // Missing age
+
+      it('should compare objects by a single numeric property', () => {
+        expect(compareValues(objA, objB, 'age')).toBe(1); // 30 > 25
+        expect(compareValues(objB, objA, 'age')).toBe(-1); // 25 < 30
+      });
+
+      it('should compare objects by a single string property', () => {
+        expect(compareValues(objA, objB, 'name')).toBe(-1); // Alice < Bob
+        expect(compareValues(objB, objA, 'name')).toBe(1); // Bob > Alice
+      });
+
+      it('should compare objects by a single Date property', () => {
+        expect(compareValues(objA, objB, 'joined')).toBe(-1); // date1 < date2
+        expect(compareValues(objB, objA, 'joined')).toBe(1); // date2 > date1
+      });
+
+      it('should compare objects by multiple properties with precedence', () => {
+        // objA vs objC: name and age are same, city differs
+        expect(compareValues(objA, objC, 'name', 'age', 'city')).toBe(1); // New York > London
+        expect(compareValues(objC, objA, 'name', 'age', 'city')).toBe(-1); // London < New York
+
+        // objA vs objB: name differs first
+        expect(compareValues(objA, objB, 'name', 'age')).toBe(-1); // Alice < Bob
+      });
+
+      it('should return 0 if all specified properties are equal', () => {
+        expect(compareValues(objA, objD, 'name', 'age', 'city', 'joined')).toBe(0);
+      });
+
+      it('should skip properties with mismatched types', () => {
+        // Comparing objA.age (number) with objE.age (string)
+        expect(compareValues(objA, objE, 'age')).toBe(0); // Skipped
+        // If 'name' is compared first, it's equal, then 'age' is skipped
+        expect(compareValues(objA, objE, 'name', 'age', 'city')).toBe(0);
+      });
+
+      it('should skip properties missing in one object', () => {
+        // Comparing objA.age with objF (missing age)
+        expect(compareValues(objA, objF, 'age')).toBe(0); // Skipped
+        // If 'name' is compared first, it's equal, then 'age' is skipped
+        expect(compareValues(objA, objF, 'name', 'age', 'city')).toBe(0);
+      });
+
+      it('should return 0 if one of the items is not an object when props are provided', () => {
+        expect(compareValues(objA, null, 'name')).toBe(0);
+        expect(compareValues(null, objA, 'name')).toBe(0);
+        expect(compareValues(objA, 123, 'name')).toBe(0);
+        expect(compareValues('string', objA, 'name')).toBe(0);
+      });
+
+      it('should return 0 if props array is empty (falls back to direct object comparison)', () => {
+        expect(compareValues(objA, objB)).toBe(0); // No props, direct comparison of objects
+        expect(compareValues(objA, objB, ...[])).toBe(0); // Spread empty array
+      });
+
+      it('should handle objects with undefined or null property values', () => {
+        const objWithNull = { val: null };
+        const objWithUndefined = { val: undefined };
+        const objWithNumber = { val: 1 };
+
+        expect(compareValues(objWithNull, objWithNumber, 'val')).toBe(0); // null vs number -> skip
+        expect(compareValues(objWithUndefined, objWithNumber, 'val')).toBe(0); // undefined vs number -> skip
+        expect(compareValues(objWithNull, objWithUndefined, 'val')).toBe(0); // null vs undefined -> skip
+      });
+
+      it('should correctly compare when a property value is explicitly undefined', () => {
+        const o1 = { a: 1, b: undefined };
+        const o2 = { a: 1, b: 2 };
+        const o3 = { a: 1, b: undefined };
+
+        expect(compareValues(o1, o2, 'b')).toBe(0); // undefined vs number -> skip
+        expect(compareValues(o1, o2, 'a', 'b')).toBe(0); // a is equal, b is skipped
+
+        expect(compareValues(o1, o3, 'b')).toBe(0); // undefined vs undefined -> skip
+        expect(compareValues(o1, o3, 'a', 'b')).toBe(0); // a is equal, b is skipped
+      });
+
+      it('should return 0 for non-existent properties', () => {
+        expect(compareValues(objA, objB, 'nonExistentProp')).toBe(0);
+        expect(compareValues(objA, objB, 'name', 'nonExistentProp')).toBe(-1); // 'name' determines outcome
       });
     });
   });
