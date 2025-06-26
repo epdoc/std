@@ -835,6 +835,10 @@ function _isSet(a: unknown): boolean {
  * Delays a promise for a specified number of milliseconds.
  * @param ms - The number of milliseconds to delay.
  * @returns A promise that resolves after the delay.
+ * @example
+ * ```typescript
+ * await delayPromise(1000); // Pauses execution for 1 second
+ * ```
  */
 export function delayPromise(ms: number): Promise<void> {
   return new Promise((resolve) => {
@@ -848,6 +852,10 @@ export function delayPromise(ms: number): Promise<void> {
  * Converts a camelCase string to kebab-case.
  * @param str - The string to convert.
  * @returns The converted string in kebab-case.
+ * @example
+ * ```typescript
+ * camel2dash('myStringHere'); // Returns 'my-string-here'
+ * ```
  */
 export function camel2dash(str: string): string {
   return str.replace(REGEX.camel2dash, '$1-$2').toLowerCase();
@@ -859,6 +867,10 @@ export function camel2dash(str: string): string {
  * Converts a camelCase string to kebab-case (deprecated).
  * @param str - The string to convert.
  * @returns The converted string in kebab-case.
+ * @example
+ * ```typescript
+ * camelToDash('oldFunction'); // Returns 'old-function'
+ * ```
  * @deprecated
  */
 export function camelToDash(str: string): string {
@@ -869,6 +881,10 @@ export function camelToDash(str: string): string {
  * Converts a kebab-case string to camelCase.
  * @param str - The string to convert.
  * @returns The converted string in camelCase.
+ * @example
+ * ```typescript
+ * dash2camel('my-string-here'); // Returns 'myStringHere'
+ * ```
  */
 export function dash2camel(str: string): string {
   return str.replace(REGEX.dash2camel, function (k) {
@@ -880,6 +896,10 @@ export function dash2camel(str: string): string {
  * Converts a snake_case string to a capitalized string.
  * @param str - The string to convert.
  * @returns The converted capitalized string.
+ * @example
+ * ```typescript
+ * underscoreCapitalize('my_string_here'); // Returns 'My String Here'
+ * ```
  */
 export function underscoreCapitalize(str: string): string {
   return str
