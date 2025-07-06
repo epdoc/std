@@ -1,11 +1,14 @@
 # @epdoc/daterange
 
-A Deno module for parsing flexible date range strings and managing collections of date ranges. It's particularly well-suited for command-line applications where users need to specify time periods for operations like data fetching or report generation.
+A Deno module for parsing flexible date range strings and managing collections of date ranges. It's particularly
+well-suited for command-line applications where users need to specify time periods for operations like data fetching or
+report generation.
 
 ## Key Features
 
 - **Flexible Parsing**: The `dateList` function parses a wide variety of date and range formats from a single string.
-- **Range Management**: The `DateRanges` class provides utilities for working with collections of date ranges, like checking if a date falls within the specified periods.
+- **Range Management**: The `DateRanges` class provides utilities for working with collections of date ranges, like
+  checking if a date falls within the specified periods.
 - **CLI Ready**: Includes a ready-to-use command-line tool (`cli.ts`) for quick parsing and testing.
 
 ## Installation
@@ -18,7 +21,8 @@ deno add jsr:@epdoc/daterange
 
 ### Parsing Date Strings with `dateList`
 
-The core of the module is the `dateList` function. It takes a string of comma-separated date specifications and returns an array of `DateRangeDef` objects. This is ideal for processing command-line arguments.
+The core of the module is the `dateList` function. It takes a string of comma-separated date specifications and returns
+an array of `DateRangeDef` objects. This is ideal for processing command-line arguments.
 
 ```typescript
 import { dateList } from 'jsr:@epdoc/daterange';
@@ -37,16 +41,16 @@ This will produce an array of date range objects, each with an `after` and `befo
 
 The parser is very flexible, making it easy for users to specify dates on the command line:
 
-| Format | Example | Description |
-| --- | --- | --- |
-| Year | `2025` | The entire year of 2025. |
-| Month | `202502` | The entire month of February 2025. |
-| Day | `20250215` | The entire day of Feb 15, 2025. |
-| Precise Timestamp | `20250215103000` | A specific point in time. |
-| Closed Range | `20250101-20250110` | From the start of Jan 1 to the end of Jan 10. |
-| Open-Ended (After) | `20250101-` | From the start of Jan 1 onwards. |
-| Open-Ended (Before)| `-20250101` | Any time before the end of Jan 1. |
-| Comma-Separated | `2024,202501-202503` | A list of multiple, separate ranges. |
+| Format              | Example              | Description                                   |
+| ------------------- | -------------------- | --------------------------------------------- |
+| Year                | `2025`               | The entire year of 2025.                      |
+| Month               | `202502`             | The entire month of February 2025.            |
+| Day                 | `20250215`           | The entire day of Feb 15, 2025.               |
+| Precise Timestamp   | `20250215103000`     | A specific point in time.                     |
+| Closed Range        | `20250101-20250110`  | From the start of Jan 1 to the end of Jan 10. |
+| Open-Ended (After)  | `20250101-`          | From the start of Jan 1 onwards.              |
+| Open-Ended (Before) | `-20250101`          | Any time before the end of Jan 1.             |
+| Comma-Separated     | `2024,202501-202503` | A list of multiple, separate ranges.          |
 
 - When only the year, month, day is specified, times are zeroed to the beginning and end of the day (0h to 24h)
 - When only the year, month is specified, times are zeroed to the beginning and end of the month, also at 0h and 24h.
@@ -72,7 +76,8 @@ console.log(dateRanges.isDateInRange(date2)); // false
 
 ### Command-Line Tool
 
-A command-line interface is included to demonstrate the functionality. You can use it to parse date strings directly from your terminal.
+A command-line interface is included to demonstrate the functionality. You can use it to parse date strings directly
+from your terminal.
 
 ```sh
 # Run the CLI with a few date specifications

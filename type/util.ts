@@ -3,7 +3,7 @@
  * keys to be PropertyKey, then look elsewhere or submit a pull request to add
  * it as a separate type.
  */
-export type Dict = { [key: string]: unknown };
+export type Dict = Record<string, unknown>;
 
 /**
  * Regular expression definitions for various patterns.
@@ -223,33 +223,90 @@ export function isDefined(val: unknown): boolean {
 }
 
 /**
- * Type guard for Dict type, where keys are all strings.
- * @param val - The value to check.
- * @returns True if the value is a dictionary, otherwise false.
+ * Type guard to check if a value is a plain JavaScript object,
+ * meaning it's an object created by `{}` or `new Object()`,
+ * or by `Object.create(null)`.
+ * It specifically excludes arrays, functions, Dates, RegExps,
+ * and instances of custom classes.
+ *
+ * @param val The unknown value to check.
+ * @returns True if the value is a plain object, false otherwise.
  */
 export function isDict(val: unknown): val is Dict {
-  return (
-    val !== null &&
-    typeof val === 'object' &&
-    Object.getPrototypeOf(val) === Object.prototype
-  );
+  // 1. Check for null and ensure it's an object
+  if (val === null || typeof val !== 'object') {
+    return false;
+  }
+
+  // 2. Exclude arrays
+  if (Array.isArray(val)) {
+    return false;
+  }
+
+  // 3. Exclude Dates, RegExps, and other built-in object types
+  // You could add more checks here if needed, e.g., val instanceof Date
+  if (val instanceof Date || val instanceof RegExp) {
+    return false;
+  }
+
+  // 4. Check for plain object prototype. This will exclude class instances.
+  // This also means objects created with Object.create(null) will return false.
+  const proto = Object.getPrototypeOf(val);
+  return proto === Object.prototype || proto === null; // proto === null handles Object.create(null)
 }
 
 /**
  * Represents a regular expression definition with pattern and optional flags.
  */
-export type RegExpDef = {
-  pattern: string;
-  flags?: string;
-};
+export type RegExpDef =
+  | { pattern: string; flags?: string; regex?: never }
+  | { regex: string; flags?: string; pattern?: never };
 
 /**
- * Checks if the given value is a valid RegExp definition.
- * @param val - The value to check.
- * @returns True if the value is a valid RegExp definition, otherwise false.
+ * Type guard to check if an unknown value is a valid RegExpDef object.
+ * It ensures that the value is an object with either a non-empty 'pattern'
+ * or a non-empty 'regex' property (but not both).
+ *
+ * @param {unknown} val The value to check.
+ * @returns {val is RegExpDef} True if the value conforms to the RegExpDef type, false otherwise.
  */
-export function isRegExpDef(val: unknown): val is RegExp {
-  return isDict(val) && isNonEmptyString(val.pattern);
+export function isRegExpDef(val: unknown): val is RegExpDef {
+  // First, ensure it's a dictionary-like object
+  if (!isDict(val)) {
+    return false;
+  }
+
+  const asDict = val as Record<string, unknown>; // Cast for easier property access
+
+  const hasPattern = Object.prototype.hasOwnProperty.call(asDict, 'pattern');
+  const hasRegex = Object.prototype.hasOwnProperty.call(asDict, 'regex');
+  const hasFlags = Object.prototype.hasOwnProperty.call(asDict, 'flags');
+
+  // Must have exactly one of 'pattern' or 'regex'
+  if (!(hasPattern || hasRegex) || (hasPattern && hasRegex)) {
+    return false;
+  }
+
+  // Check the 'pattern' property if it exists
+  if (hasPattern) {
+    if (!isNonEmptyString(asDict.pattern)) {
+      return false;
+    }
+  }
+
+  // Check the 'regex' property if it exists
+  if (hasRegex) {
+    if (!isNonEmptyString(asDict.regex)) {
+      return false;
+    }
+  }
+
+  // If flags exist, ensure they are a string
+  if (hasFlags && typeof asDict.flags !== 'string') {
+    return false;
+  }
+
+  return true;
 }
 
 /**
@@ -443,21 +500,106 @@ export function asString(data: unknown, isProperty = false): string {
 }
 
 /**
- * Converts a value to a RegExp or an object with pattern and flags properties.
- * @param val - The value to convert.
- * @returns The converted RegExp or undefined if conversion fails.
+ * Safely casts an unknown value to a Date object.
+ * If the value cannot be cast to a valid Date, it attempts to cast `defVal`.
+ * If both fail, it returns null.
+ *
+ * @param {unknown} value The value to attempt to cast to a Date. Can be a Date object,
+ * a number (milliseconds since epoch), a string (parsable by Date constructor),
+ * or an array of numbers representing Date constructor arguments (e.g., [year, monthIndex, day]).
+ * @param {unknown} [defVal] An optional default value to return if `value` cannot be
+ * cast to a valid Date. This default value will also be attempted to be cast to a valid Date.
+ * @returns {Date | null} A valid Date object if casting is successful for `value` or `defVal`,
+ * otherwise null.
  */
-export function asRegExp(val: unknown): RegExp | undefined {
-  if (isRegExp(val)) {
-    return val;
-  } else if (isDict(val) && isString(val.pattern)) {
-    const keys: string[] = Object.keys(val);
-    if (isString(val.flags) && keys.length === 2) {
-      return new RegExp(val.pattern, val.flags);
-    } else if (keys.length === 1) {
-      return new RegExp(val.pattern);
+export function asDate(value: unknown, defVal?: unknown): Date | null {
+  // Helper function to attempt casting and validation,
+  // returning a valid Date or null.
+  const tryCast = (val: unknown): Date | null => {
+    // Case 1: Already a Date object
+    if (val instanceof Date) {
+      if (isNaN(val.getTime())) return null; // Invalid Date object
+      return val;
+    }
+
+    // Case 2: String (custom format or standard parsable)
+    if (typeof val === 'string') {
+      const date = new Date(val);
+      if (isNaN(date.getTime())) return null; // Invalid standard string
+      return date;
+    }
+
+    // Case 3: Number (milliseconds since epoch)
+    if (typeof val === 'number') {
+      const date = new Date(val);
+      if (isNaN(date.getTime())) return null; // Invalid number
+      return date;
+    }
+
+    // Case 4: Array of arguments (e.g., [year, month, day])
+    if (Array.isArray(val)) {
+      // Ensure all elements in the array are numbers for the Date constructor
+      if (val.every((arg) => typeof arg === 'number')) {
+        const date = Reflect.construct(Date, val as number[]) as Date;
+        if (isNaN(date.getTime())) return null; // Array results in invalid date
+        return date;
+      }
+      return null; // Array contains non-numbers
+    }
+
+    return null; // Not a convertible type
+  };
+
+  // First, try to cast the primary `value`.
+  const primaryDate = tryCast(value);
+  if (primaryDate !== null) {
+    return primaryDate;
+  }
+
+  // If the primary `value` didn't yield a valid date,
+  // and `defVal` is provided, try to cast `defVal`.
+  if (defVal !== undefined) {
+    const defaultDate = tryCast(defVal);
+    if (defaultDate !== null) {
+      return defaultDate;
     }
   }
+
+  // If both attempts fail, return null.
+  return null;
+}
+
+/**
+ * Converts a value to a RegExp object.
+ * It handles native RegExp objects, and objects conforming to RegExpDef (with 'pattern' or 'regex' and optional 'flags').
+ *
+ * @param {unknown} val The value to convert.
+ * @returns {RegExp | undefined} The converted RegExp object, or undefined if conversion fails.
+ */
+export function asRegExp(val: unknown): RegExp | undefined {
+  // Case 1: Value is already a RegExp object
+  if (isRegExp(val)) {
+    return val;
+  }
+
+  // Case 2: Value is a RegExpDef object
+  if (isRegExpDef(val)) {
+    const patternString: string | undefined = val.pattern ? val.pattern : val.regex;
+
+    if (isNonEmptyString(patternString)) {
+      // Create and return the RegExp object
+      try {
+        return new RegExp(patternString, val.flags);
+      } catch (_e) {
+        // Catch potential errors if the pattern or flags are invalid for RegExp constructor
+        // console.warn('Failed to create RegExp from RegExpDef:', e, 'Input:', val);
+        return undefined;
+      }
+    }
+  }
+
+  // Case 3: Value is neither a RegExp nor a valid RegExpDef.
+  return undefined;
 }
 
 /**

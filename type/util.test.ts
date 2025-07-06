@@ -2,6 +2,7 @@ import { expect } from 'jsr:@std/expect';
 import { describe, it } from 'jsr:@std/testing/bdd';
 import {
   asBoolean,
+  asDate,
   asFloat,
   asInt,
   asString,
@@ -191,6 +192,81 @@ describe('util', () => {
     });
   });
 
+  describe('asDate', () => {
+    it('should return a valid Date object if value is a valid Date', () => {
+      const d = new Date();
+      expect(asDate(d)).toEqual(d);
+    });
+
+    it('should return null if value is an invalid Date object', () => {
+      const d = new Date('invalid date');
+      expect(asDate(d)).toBeNull();
+    });
+
+    it('should return a valid Date from a number (milliseconds)', () => {
+      const timestamp = 1672531200000; // 2023-01-01T00:00:00.000Z
+      const d = new Date(timestamp);
+      expect(asDate(timestamp)).toEqual(d);
+    });
+
+    it('should return a valid Date from a valid date string', () => {
+      const dateString = '2023-01-01T00:00:00.000Z';
+      const d = new Date(dateString);
+      expect(asDate(dateString)).toEqual(d);
+    });
+
+    it('should return null for an invalid date string', () => {
+      const dateString = 'not a date';
+      expect(asDate(dateString)).toBeNull();
+    });
+
+    it('should return a valid Date from an array of numbers', () => {
+      const dateArray = [2023, 0, 1]; // Jan 1, 2023
+      const d = new Date(2023, 0, 1);
+      expect(asDate(dateArray)).toEqual(d);
+    });
+
+    it('should return a valid Date from a full array of numbers', () => {
+      const dateArray = [2023, 0, 1, 10, 30, 0]; // Jan 1, 2023, 10:30:00
+      const d = new Date(2023, 0, 1, 10, 30, 0);
+      expect(asDate(dateArray)).toEqual(d);
+    });
+
+    it('should return null for an array with non-number elements', () => {
+      const dateArray = [2023, 'January', 1];
+      // @ts-ignore for test purposes
+      expect(asDate(dateArray)).toBeNull();
+    });
+
+    it('should return null for an array of numbers that results in an invalid date', () => {
+      const dateArray = [NaN];
+      expect(asDate(dateArray)).toBeNull();
+    });
+
+    it('should return null for other types', () => {
+      expect(asDate({})).toBeNull();
+      expect(asDate(null)).toBeNull();
+      expect(asDate(undefined)).toBeNull();
+      expect(asDate(() => {})).toBeNull();
+    });
+
+    it('should use defVal if the primary value is invalid', () => {
+      const defDate = new Date();
+      expect(asDate('invalid', defDate)).toEqual(defDate);
+      expect(asDate(null, '2023-01-01')).toEqual(new Date('2023-01-01'));
+      expect(asDate(undefined, [2023, 0, 1])).toEqual(new Date(2023, 0, 1));
+    });
+
+    it('should return null if both primary value and defVal are invalid', () => {
+      expect(asDate('invalid', 'also invalid')).toBeNull();
+      expect(asDate(null, new Date('invalid'))).toBeNull();
+    });
+
+    it('should return null if primary value is invalid and no defVal is provided', () => {
+      expect(asDate('invalid')).toBeNull();
+    });
+  });
+
   describe('strings', () => {
     it('isNonEmptyString', () => {
       const s = 'my string';
@@ -247,7 +323,7 @@ describe('util', () => {
 
     it('should handle objects with null prototype', () => {
       const obj = Object.create(null);
-      expect(isDict(obj)).toBe(false); // or true if you want to allow these
+      expect(isDict(obj)).toBe(true); // or true if you want to allow these
     });
   });
   describe('misc', () => {
