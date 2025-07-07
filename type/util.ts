@@ -1,9 +1,4 @@
-/**
- * A dictionary type where keys are strings and values are unknown. If you want
- * keys to be PropertyKey, then look elsewhere or submit a pull request to add
- * it as a separate type.
- */
-export type Dict = Record<string, unknown>;
+import type { Dict, Integer, RegExpDef } from './types.ts';
 
 /**
  * Regular expression definitions for various patterns.
@@ -49,11 +44,6 @@ export function isString(val: unknown): val is string {
 export function isNumber(val: unknown): val is number {
   return typeof val === 'number' && !isNaN(val);
 }
-
-/**
- * Represents an integer type.
- */
-export type Integer = number;
 
 /**
  * Checks if the given value is an integer.
@@ -254,13 +244,6 @@ export function isDict(val: unknown): val is Dict {
   const proto = Object.getPrototypeOf(val);
   return proto === Object.prototype || proto === null; // proto === null handles Object.create(null)
 }
-
-/**
- * Represents a regular expression definition with pattern and optional flags.
- */
-export type RegExpDef =
-  | { pattern: string; flags?: string; regex?: never }
-  | { regex: string; flags?: string; pattern?: never };
 
 /**
  * Type guard to check if an unknown value is a valid RegExpDef object.
@@ -490,11 +473,9 @@ export function asString(data: unknown, isProperty = false): string {
   } else if (data instanceof Error) {
     return data.stack!;
   } else if (typeof data === 'object') {
-    return `{${
-      Object.entries(data)
-        .map(([k, v]) => `"${k}":${asString(v, true)}`)
-        .join(',')
-    }}`;
+    return `{${Object.entries(data)
+      .map(([k, v]) => `"${k}":${asString(v, true)}`)
+      .join(',')}}`;
   }
   return 'undefined';
 }

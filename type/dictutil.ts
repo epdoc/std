@@ -1,32 +1,5 @@
-import {
-  asBoolean,
-  asFloat,
-  asInt,
-  asRegExp,
-  hasValue,
-  type Integer,
-  isArray,
-  isBoolean,
-  isDate,
-  isDefined,
-  isDict,
-  isEmpty,
-  isError,
-  isFunction,
-  isInteger,
-  isNonEmptyArray,
-  isNonEmptyString,
-  isNull,
-  isNumber,
-  isObject,
-  isPosInteger,
-  isPosNumber,
-  isRegExp,
-  isRegExpDef,
-  isString,
-  isValidDate,
-  isWholeNumber,
-} from './util.ts';
+import * as _ from './util.ts'
+import type { Integer } from './types.ts'
 
 const REGEX = {
   typeSplit: new RegExp(/\s*[,\|]{1}\s*/),
@@ -105,7 +78,7 @@ export class DictUtil {
     if (p && p.length) {
       for (let i = 0, n = p.length; i < n; ++i) {
         const k = p[i];
-        if (val && isDict(val) && k in val) {
+        if (val && _.isDict(val) && k in val) {
           val = val[k];
         } else {
           if (this._opts.throw) {
@@ -130,7 +103,7 @@ export class DictUtil {
     if (!this._opts.src) {
       return 'object';
     }
-    if (isString(this._opts.src)) {
+    if (_.isString(this._opts.src)) {
       return this._opts.src;
     }
     return this._opts.src.toString();
@@ -170,12 +143,12 @@ export class DictUtil {
   protected static resolvePath(...path: (string | string[])[]): string[] {
     let a: string[] = [];
     path.forEach((arg) => {
-      if (isString(arg)) {
+      if (_.isString(arg)) {
         arg = arg.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
         arg = arg.replace(/^\./, ''); // strip a leading dot
         const args = arg.split('.');
         a = [...a, ...args];
-      } else if (isArray(arg)) {
+      } else if (_.isArray(arg)) {
         a = [...a, ...arg];
       }
     });
@@ -188,7 +161,7 @@ export class DictUtil {
    * @returns The converted boolean value.
    */
   asBoolean(defval = false): boolean {
-    return asBoolean(this._val, defval);
+    return _.asBoolean(this._val, defval);
   }
 
   /**
@@ -197,7 +170,7 @@ export class DictUtil {
    * @returns The converted integer value.
    */
   asInt(defVal = 0): Integer {
-    return asInt(this._val, defVal);
+    return _.asInt(this._val, defVal);
   }
 
   /**
@@ -207,7 +180,7 @@ export class DictUtil {
    * @returns The converted float value.
    */
   asFloat(defVal: number = 0, commaAsDecimal = false): number {
-    return asFloat(this._val, { def: defVal, commaAsDecimal: commaAsDecimal });
+    return _.asFloat(this._val, { def: defVal, commaAsDecimal: commaAsDecimal });
   }
 
   /**
@@ -223,7 +196,7 @@ export class DictUtil {
    * @returns The converted RegExp or undefined if conversion fails.
    */
   asRegExp(): RegExp | undefined {
-    return asRegExp(this._val);
+    return _.asRegExp(this._val);
   }
 
   /**
@@ -231,7 +204,7 @@ export class DictUtil {
    * @returns True if the value is a dictionary, otherwise false.
    */
   isDict(): boolean {
-    return isDict(this._val);
+    return _.isDict(this._val);
   }
 
   /**
@@ -239,7 +212,7 @@ export class DictUtil {
    * @returns True if the value is a boolean, otherwise false.
    */
   isBoolean(): boolean {
-    return isBoolean(this._val);
+    return _.isBoolean(this._val);
   }
 
   /**
@@ -247,7 +220,7 @@ export class DictUtil {
    * @returns True if the value is a string, otherwise false.
    */
   isString(): boolean {
-    return isString(this._val);
+    return _.isString(this._val);
   }
 
   /**
@@ -255,7 +228,7 @@ export class DictUtil {
    * @returns True if the value is a number, otherwise false.
    */
   isNumber(): boolean {
-    return isNumber(this._val);
+    return _.isNumber(this._val);
   }
 
   /**
@@ -263,7 +236,7 @@ export class DictUtil {
    * @returns True if the value is a positive number, otherwise false.
    */
   isPosNumber(): boolean {
-    return isPosNumber(this._val);
+    return _.isPosNumber(this._val);
   }
 
   /**
@@ -271,7 +244,7 @@ export class DictUtil {
    * @returns True if the value is an integer, otherwise false.
    */
   isInteger(): boolean {
-    return isInteger(this._val);
+    return _.isInteger(this._val);
   }
 
   /**
@@ -279,7 +252,7 @@ export class DictUtil {
    * @returns True if the value is a positive integer, otherwise false.
    */
   isPosInteger(): boolean {
-    return isPosInteger(this._val);
+    return _.isPosInteger(this._val);
   }
 
   /**
@@ -287,7 +260,7 @@ export class DictUtil {
    * @returns True if the value is a whole number, otherwise false.
    */
   isWholeNumber(): boolean {
-    return isWholeNumber(this._val);
+    return _.isWholeNumber(this._val);
   }
 
   /**
@@ -295,7 +268,7 @@ export class DictUtil {
    * @returns True if the value is a non-empty string, otherwise false.
    */
   isNonEmptyString(): boolean {
-    return isNonEmptyString(this._val);
+    return _.isNonEmptyString(this._val);
   }
 
   /**
@@ -303,7 +276,7 @@ export class DictUtil {
    * @returns True if the value is a function, otherwise false.
    */
   isFunction(): boolean {
-    return isFunction(this._val);
+    return _.isFunction(this._val);
   }
 
   /**
@@ -311,7 +284,7 @@ export class DictUtil {
    * @returns True if the value is a Date, otherwise false.
    */
   isDate(): boolean {
-    return isDate(this._val);
+    return _.isDate(this._val);
   }
 
   /**
@@ -319,7 +292,7 @@ export class DictUtil {
    * @returns True if the value is a valid Date, otherwise false.
    */
   isValidDate(): boolean {
-    return isValidDate(this._val);
+    return _.isValidDate(this._val);
   }
 
   /**
@@ -327,7 +300,7 @@ export class DictUtil {
    * @returns True if the value is an array, otherwise false.
    */
   isArray(): boolean {
-    return isArray(this._val);
+    return _.isArray(this._val);
   }
 
   /**
@@ -335,7 +308,7 @@ export class DictUtil {
    * @returns True if the value is a non-empty array, otherwise false.
    */
   isNonEmptyArray(): boolean {
-    return isNonEmptyArray(this._val);
+    return _.isNonEmptyArray(this._val);
   }
 
   /**
@@ -343,7 +316,7 @@ export class DictUtil {
    * @returns True if the value is a RegExp, otherwise false.
    */
   isRegExp(): boolean {
-    return isRegExp(this._val);
+    return _.isRegExp(this._val);
   }
 
   /**
@@ -351,7 +324,7 @@ export class DictUtil {
    * @returns True if the value is a valid RegExp definition, otherwise false.
    */
   isRegExpDef(): boolean {
-    return isRegExpDef(this._val);
+    return _.isRegExpDef(this._val);
   }
 
   /**
@@ -359,7 +332,7 @@ export class DictUtil {
    * @returns True if the value is null, otherwise false.
    */
   isNull(): boolean {
-    return isNull(this._val);
+    return _.isNull(this._val);
   }
 
   /**
@@ -367,7 +340,7 @@ export class DictUtil {
    * @returns True if the value is defined, otherwise false.
    */
   isDefined(): boolean {
-    return isDefined(this._val);
+    return _.isDefined(this._val);
   }
 
   /**
@@ -375,7 +348,7 @@ export class DictUtil {
    * @returns True if the value has a value, otherwise false.
    */
   hasValue(): boolean {
-    return hasValue(this._val);
+    return _.hasValue(this._val);
   }
 
   /**
@@ -383,7 +356,7 @@ export class DictUtil {
    * @returns True if the value is empty, otherwise false.
    */
   isEmpty(): boolean {
-    return isEmpty(this._val);
+    return _.isEmpty(this._val);
   }
 
   /**
@@ -391,7 +364,7 @@ export class DictUtil {
    * @returns True if the value is an Error, otherwise false.
    */
   isError(): boolean {
-    return isError(this._val);
+    return _.isError(this._val);
   }
 
   /**
@@ -399,7 +372,7 @@ export class DictUtil {
    * @returns True if the value is an object, otherwise false.
    */
   isObject(): boolean {
-    return isObject(this._val);
+    return _.isObject(this._val);
   }
 
   /**
@@ -413,11 +386,11 @@ export class DictUtil {
     let ts: unknown[] = [];
 
     for (const t of types) {
-      if (isNonEmptyString(t)) {
+      if (_.isNonEmptyString(t)) {
         ts = [...ts, ...t.trim().split(REGEX.typeSplit)];
-      } else if (isArray(t)) {
+      } else if (_.isArray(t)) {
         for (const t1 of t) {
-          if (isNonEmptyString(t1)) {
+          if (_.isNonEmptyString(t1)) {
             ts = [...ts, ...(t1 as string).split(REGEX.typeSplit)];
           }
         }
@@ -425,7 +398,7 @@ export class DictUtil {
     }
     const ts2 = [];
     for (const t of ts) {
-      if (isString(t)) {
+      if (_.isString(t)) {
         const s = t.trim();
         if (s.length) {
           ts2.push(s);
@@ -436,7 +409,7 @@ export class DictUtil {
     for (const t of ts2) {
       const fn = 'is' + t.charAt(0).toUpperCase() + t.slice(1);
       // @ts-ignore XXX
-      if (isFunction(this[fn])) {
+      if (_.isFunction(this[fn])) {
         // @ts-ignore XXX
         if (this[fn](v)) {
           return true;
