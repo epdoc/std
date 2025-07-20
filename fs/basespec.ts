@@ -284,6 +284,7 @@ export abstract class BaseSpec {
   /**
    * Removes this file or folder.
    * @param {Deno.RemoveOptions} options - Options for removing the file or folder.
+   * @param {boolean} options.recursive - Recursively remove items if this is a folder.
    * @returns {Promise<void>} - A promise that resolves when the file or folder is removed.
    */
   remove(options: Deno.RemoveOptions = {}): Promise<void> {
