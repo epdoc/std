@@ -11,11 +11,11 @@ const REGEX = {
   allUppercase: new RegExp(/([A-Z])/, 'g'),
   firstCapitalize: new RegExp(/^([a-z])/),
   allCapitalize: new RegExp(/(\_[a-z])/, 'gi'),
-  tr: new RegExp(/^\[tr\](.+)$/),
+  tr: new RegExp(/^[\[]tr[\]](.+)$/),
   html: new RegExp(/[&<>"'\/]/, 'g'),
-  instr: new RegExp(/^\[([^\]]+)\](.*)$/),
+  instr: new RegExp(/^[\[]([^\]]+)[\]](.*)$/),
   camel2dash: new RegExp(/([a-z0-9])([A-Z])/, 'g'),
-  dash2camel: new RegExp(/-([a-z])/, 'g'),
+  dash2camel: new RegExp(/-(.)/, 'g'),
 };
 
 /**
@@ -165,6 +165,42 @@ export function isNonEmptyArray(val: unknown): val is unknown[] {
  */
 export function isStringArray(val: unknown): val is string[] {
   return Array.isArray(val) && val.every((v) => typeof v === 'string');
+}
+
+/**
+ * Checks if the given value is a Set.
+ * @param val - The value to check.
+ * @returns True if the value is a Set, otherwise false.
+ */
+export function isSet(val: unknown): val is Set<unknown> {
+  return val instanceof Set;
+}
+
+/**
+ * Checks if the given value is a non-empty Set.
+ * @param val - The value to check.
+ * @returns True if the value is a non-empty Set, otherwise false.
+ */
+export function isNonEmptySet(val: unknown): val is Set<unknown> {
+  return val instanceof Set && val.size > 0;
+}
+
+/**
+ * Checks if the given value is a Map.
+ * @param val - The value to check.
+ * @returns True if the value is a Map, otherwise false.
+ */
+export function isMap(val: unknown): val is Map<unknown, unknown> {
+  return val instanceof Map;
+}
+
+/**
+ * Checks if the given value is a non-empty Map.
+ * @param val - The value to check.
+ * @returns True if the value is a non-empty Map, otherwise false.
+ */
+export function isNonEmptyMap(val: unknown): val is Map<unknown, unknown> {
+  return val instanceof Map && val.size > 0;
 }
 
 /**
@@ -747,6 +783,18 @@ export function deepCopy(a: unknown, options?: DeepCopyOpts): unknown {
     }
   } else if (a instanceof Date || a instanceof RegExp) {
     return a;
+  } else if (a instanceof Set) {
+    const result = new Set();
+    for (const b of a) {
+      result.add(deepCopy(b, opts));
+    }
+    return result;
+  } else if (a instanceof Map) {
+    const result = new Map();
+    for (const [k, v] of a) {
+      result.set(deepCopy(k, opts), deepCopy(v, opts));
+    }
+    return result;
   } else if (Array.isArray(a)) {
     const result = [];
     for (const b of a) {
@@ -794,40 +842,73 @@ export function deepCopySetDefaultOpts(opts?: DeepCopyOpts): DeepCopyOpts {
  * @returns True if the values are equal, otherwise false.
  */
 export function deepEquals(a: unknown, b: unknown): boolean {
-  const aSet = _isSet(a);
-  const bSet = _isSet(b);
-  if (!aSet && !bSet) {
+  if (a === b) {
     return true;
   }
-  if (!aSet || !bSet) {
-    return false;
+
+  if (a && b && typeof a === 'object' && typeof b === 'object') {
+    if (a.constructor !== b.constructor) {
+      return false;
+    }
+
+    if (a instanceof Date && b instanceof Date) {
+      return a.getTime() === b.getTime();
+    }
+
+    if (a instanceof RegExp && b instanceof RegExp) {
+      return a.toString() === b.toString();
+    }
+
+    if (a instanceof Set && b instanceof Set) {
+      if (a.size !== b.size) {
+        return false;
+      }
+      const aValues = [...a].sort();
+      const bValues = [...b].sort();
+      return deepEquals(aValues, bValues);
+    }
+
+    if (a instanceof Map && b instanceof Map) {
+      if (a.size !== b.size) {
+        return false;
+      }
+      for (const [key, value] of a) {
+        if (!b.has(key) || !deepEquals(value, b.get(key))) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    if (Array.isArray(a) && Array.isArray(b)) {
+      if (a.length !== b.length) {
+        return false;
+      }
+      for (let i = 0; i < a.length; i++) {
+        if (!deepEquals(a[i], b[i])) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    if (isDict(a) && isDict(b)) {
+      const keysA = Object.keys(a);
+      const keysB = Object.keys(b);
+
+      if (keysA.length !== keysB.length) {
+        return false;
+      }
+
+      for (const key of keysA) {
+        if (!keysB.includes(key) || !deepEquals((a as Dict)[key], (b as Dict)[key])) {
+          return false;
+        }
+      }
+      return true;
+    }
   }
-  if (a === b || (a as object).valueOf() === (b as object).valueOf()) {
-    return true;
-  }
-  if (Array.isArray(a) && Array.isArray(b) && a.length !== b.length) {
-    return false;
-  }
-  // if they are dates, they must had equal valueOf
-  if (a instanceof Date) {
-    return false;
-  }
-  // if they are strictly equal, they both need to be object at least
-  if (!(a instanceof Object)) {
-    return false;
-  }
-  if (!(b instanceof Object)) {
-    return false;
-  }
-  // recursive object equality check
-  const ka = Object.keys(a);
-  const kb = Object.keys(b);
-  if (kb.length === ka.length) {
-    return ka.every((k) => {
-      // @ts-ignore XXX fix this later
-      return deepEquals(a[k], b[k]);
-    });
-  }
+
   return false;
 }
 
@@ -931,27 +1012,6 @@ export function compareValues(a: unknown, b: unknown, ...props: string[]): Compa
     // meaning this pair doesn't define an order and should be skipped.
     return 0;
   }
-}
-
-/**
- * Checks if a value is considered a set (not null, undefined, or empty).
- * @param a - The value to check.
- * @returns True if the value is a set, otherwise false.
- */
-function _isSet(a: unknown): boolean {
-  if (a === null || a === undefined) {
-    return false;
-  }
-  if (Array.isArray(a) && !a.length) {
-    return false;
-  }
-  if (a instanceof Date) {
-    return true;
-  }
-  if (a instanceof Object && !Object.keys(a).length) {
-    return false;
-  }
-  return true;
 }
 
 /**
