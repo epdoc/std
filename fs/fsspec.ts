@@ -1,3 +1,4 @@
+import { fromFileUrl } from 'jsr:@std/path@^1.1.1/from-file-url';
 import os from 'node:os';
 import path from 'node:path';
 import { BaseSpec } from './basespec.ts';
@@ -8,7 +9,6 @@ import { type FSSpecParam, type ICopyableSpec, type IRootableSpec, resolvePathAr
 import { safeCopy, type SafeCopyOpts } from './safecopy.ts';
 import { type SymlinkSpec, symlinkSpec } from './symspec.ts';
 import type { FilePath, FolderPath } from './types.ts';
-import { fromFileUrl } from 'jsr:@std/path/from-file-url';
 
 /**
  * Create a new FSItem object.

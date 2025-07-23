@@ -1,8 +1,8 @@
-import { compareDictValue, type Dict, isArray, isDict, isNumber, isRegExp, isString } from './dep.ts';
+import { fromFileUrl } from 'jsr:@std/path@^1.1.1/from-file-url';
 import os from 'node:os';
 import path from 'node:path';
 import { BaseSpec } from './basespec.ts';
-import { dfs } from './dep.ts';
+import { compareValues, dfs, type Dict, isArray, isDict, isNumber, isRegExp, isString } from './dep.ts';
 import { FileSpec } from './filespec.ts';
 import { FSSpec } from './fsspec.ts';
 import { type FSSpecParam, type IRootableSpec, type ISafeCopyableSpec, resolvePathArgs } from './icopyable.ts';
@@ -31,8 +31,6 @@ function fromWalkEntry(entry: dfs.WalkEntry): FileSpec | FolderSpec | SymlinkSpe
   }
   return new FSSpec(entry.path).setDirEntry(entry);
 }
-
-import { fromFileUrl } from 'jsr:@std/path/from-file-url';
 
 /**
  * Factory function to create a new FolderSpec object.
@@ -407,7 +405,7 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
    */
   static sortByFilename(items: (FileSpec | FolderSpec)[]): (FileSpec | FolderSpec)[] {
     return items.sort((a, b) => {
-      return compareDictValue(a as unknown as Dict, b as unknown as Dict, 'filename');
+      return compareValues(a as unknown as Dict, b as unknown as Dict, 'filename');
     });
   }
 
@@ -419,7 +417,7 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
     return items
       .filter((item) => item instanceof FileSpec)
       .sort((a, b) => {
-        return compareDictValue(a as unknown as Dict, b as unknown as Dict, 'size');
+        return compareValues(a as unknown as Dict, b as unknown as Dict, 'size');
       });
   }
 
