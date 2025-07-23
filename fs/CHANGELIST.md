@@ -1,6 +1,6 @@
 # Changelist
 
-## 0.2.10
+## 0.2.11
 
 - Added `fromMeta` static method to `FSSpec`, `FileSpec`, and `FolderSpec` to create paths relative to the current
   module.

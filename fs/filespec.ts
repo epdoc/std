@@ -1,8 +1,17 @@
+import { assert } from '@std/assert';
+import { fromFileUrl } from 'jsr:@std/path@^1.1.1/from-file-url';
+import crypto from 'node:crypto';
+import os from 'node:os';
+import path from 'node:path';
+import { BaseSpec } from './basespec.ts';
 import type { Dict, Integer } from './dep.ts';
 import {
   asError,
+  decodeBase64,
   deepCopy,
   deepCopySetDefaultOpts,
+  dfs,
+  encodeBase64,
   isArray,
   isDict,
   isInteger,
@@ -13,12 +22,6 @@ import {
   isString,
   pad,
 } from './dep.ts';
-import { assert } from '@std/assert';
-import crypto from 'node:crypto';
-import os from 'node:os';
-import path from 'node:path';
-import { BaseSpec } from './basespec.ts';
-import { decodeBase64, dfs, encodeBase64 } from './dep.ts';
 import { FSError } from './error.ts';
 import type { FolderSpec } from './folderspec.ts';
 import { FSBytes } from './fsbytes.ts';
@@ -45,8 +48,6 @@ const REG = {
   BOM: new RegExp(/^\uFEFF/),
 };
 const BUFSIZE = 2 * 8192;
-
-import { fromFileUrl } from 'jsr:@std/path/from-file-url';
 
 /**
  * Create a new FSItem object.
