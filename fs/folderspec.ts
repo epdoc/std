@@ -32,6 +32,8 @@ function fromWalkEntry(entry: dfs.WalkEntry): FileSpec | FolderSpec | SymlinkSpe
   return new FSSpec(entry.path).setDirEntry(entry);
 }
 
+import { fromFileUrl } from 'jsr:@std/path/from-file-url';
+
 /**
  * Factory function to create a new FolderSpec object.
  */
@@ -76,6 +78,24 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
   constructor(...args: FSSpecParam) {
     super();
     this._f = resolvePathArgs(...args);
+  }
+
+  /**
+   * Creates a new FolderSpec from a file URL, typically from `import.meta.url`.
+   * This allows for creating paths relative to the current module.
+   *
+   * @param {string} metaUrl - The `import.meta.url` of the calling module.
+   * @param {...string[]} paths - Additional path segments to join.
+   * @returns {FolderSpec} A new FolderSpec instance.
+   *
+   * @example
+   * // Assuming this code is in /path/to/your/project/src/app.ts
+   * const dataFolder = FolderSpec.fromMeta(import.meta.url, '../data');
+   * // dataFolder.path will be /path/to/your/project/data
+   */
+  public static fromMeta(metaUrl: string, ...paths: string[]): FolderSpec {
+    const dir = path.dirname(fromFileUrl(metaUrl));
+    return new FolderSpec(path.join(dir, ...paths));
   }
 
   /**

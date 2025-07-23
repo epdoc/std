@@ -2,12 +2,12 @@ import { expect } from 'jsr:@std/expect';
 import { afterAll, beforeAll, describe, test } from 'jsr:@std/testing/bdd';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import { fileSpec, folderSpec, FSSpec, fsSpec } from '../mod.ts';
+import { fileSpec, FolderSpec, folderSpec, FSSpec, fsSpec } from '../mod.ts';
 
-const pwd: string = import.meta.dirname as string;
+const READONLY = FolderSpec.fromMeta(import.meta.url, './readonly');
 
-describe('FSSpec Tests Part 2', () => {
-  const testDir = path.join(pwd, 'test-fsitem');
+describe('FSSpec, FileSpec, FolderSpec', () => {
+  const testDir = path.join(READONLY.path, 'test-fsitem');
   const testFile = path.join(testDir, 'test.txt');
   const testJson = path.join(testDir, 'test.json');
 
@@ -21,11 +21,11 @@ describe('FSSpec Tests Part 2', () => {
     await fs.rm(testDir, { recursive: true, force: true });
   });
 
-  test('testdir exists', async () => {
+  test('getExists() returns true for a test directory', async () => {
     expect(await fsSpec(testDir).getExists()).toBe(true);
   });
 
-  test('fsitem factory function creates FSItem instance', () => {
+  test('fsSpec() factory function creates FSSpec instance', () => {
     const item = fsSpec(testFile);
     expect(item).toBeInstanceOf(FSSpec);
   });
@@ -35,12 +35,12 @@ describe('FSSpec Tests Part 2', () => {
     expect(item.filename).toBe('test.txt');
   });
 
-  test('dirname getter for fileSpecreturns correct directory name', () => {
+  test('dirname getter for FileSpec returns correct directory name', () => {
     const item = fileSpec(testFile);
     expect(item.dirname).toBe(testDir);
   });
 
-  test('dirname getter for foderSpec returns correct directory name', () => {
+  test('dirname getter for FolderSpec returns correct directory name', () => {
     const item = folderSpec(testFile);
     expect(item.dirname).toBe(testDir);
   });
@@ -96,7 +96,7 @@ describe('FSSpec Tests Part 2', () => {
     expect(txtItem.isExtType('txt', 'json')).toBe(true);
   });
 
-  test('add method correctly joins paths', () => {
+  test('add() correctly joins paths', () => {
     const item = fileSpec(testDir).add('subdir', 'file.txt');
     expect(item.path).toBe(path.join(testDir, 'subdir', 'file.txt'));
     return item.getIsFile().then((resp) => {
@@ -104,19 +104,19 @@ describe('FSSpec Tests Part 2', () => {
     });
   });
 
-  test('readAsString reads file content correctly', async () => {
+  test('readAsString() reads file content correctly', async () => {
     const item = fileSpec(testFile);
     const content = await item.readAsString();
     expect(content).toBe('Hello, World!');
   });
 
-  test('readJson reads and parses JSON correctly', async () => {
+  test('readJson() reads and parses JSON correctly', async () => {
     const item = fileSpec(testJson);
     const content = await item.readJson();
     expect(content).toEqual({ key: 'value' });
   });
 
-  test('write writes content to file correctly', async () => {
+  test('write() writes content to file correctly', async () => {
     const newFile = path.join(testDir, 'new.txt');
     const item = fileSpec(newFile);
     await item.write('New content');
@@ -124,7 +124,7 @@ describe('FSSpec Tests Part 2', () => {
     expect(content).toBe('New content');
   });
 
-  test('writeJson writes JSON to file correctly', async () => {
+  test('writeJson() writes JSON to file correctly', async () => {
     const newFile = path.join(testDir, 'new.json');
     const item = fileSpec(newFile);
     await item.writeJson({ newKey: 'newValue' });

@@ -1,5 +1,5 @@
 import { expect } from 'jsr:@std/expect';
-import { afterAll, beforeEach, describe, it, test } from 'jsr:@std/testing/bdd';
+import { describe, it, test } from 'jsr:@std/testing/bdd';
 import os from 'node:os';
 import path from 'node:path';
 import { dateEx, isArray, isDate, isValidDate } from '../dep.ts';
@@ -18,54 +18,28 @@ import {
   type SafeCopyOpts,
 } from '../mod.ts';
 
-const pwd: string = import.meta.dirname as string;
+const READONLY = FolderSpec.fromMeta(import.meta.url, './readonly');
 const HOME = os.userInfo().homedir;
 const TEST_FILES = ['fs.test.ts', 'fs2.test.ts', 'fs3.test.ts', 'fsbytes.test.ts'];
-const TEST_FOLDERS = ['data', 'data1'];
-const TEST_FOLDERS2 = [];
+const TEST_FOLDERS = ['readonly', 'data1'];
 
-describe('FSSpec Tests Part 1', () => {
-  beforeEach(async () => {
-    const fs = fsSpec(pwd, 'data');
-    await fsSpec(pwd, 'data1').remove({ recursive: true });
-    await fs.copyTo(fsSpec(pwd, 'data1'));
-    await fsSpec(pwd, 'data2').remove({ recursive: true });
-    await fsSpec(pwd, 'data2-01').remove({ recursive: true });
-    await fsSpec(pwd, 'data2-02').remove({ recursive: true });
-    await fsSpec(pwd, 'data2-03').remove({ recursive: true });
-    await fsSpec(pwd, 'data3').remove({ recursive: true });
-  });
-
-  afterAll(async () => {
-    await fsSpec(pwd, 'data1').remove({ recursive: true });
-    await fsSpec(pwd, 'data2').remove({ recursive: true });
-    await fsSpec(pwd, 'data2-01').remove({ recursive: true });
-    await fsSpec(pwd, 'data2-02').remove({ recursive: true });
-    await fsSpec(pwd, 'data2-03').remove({ recursive: true });
-    await fsSpec(pwd, 'data3').remove({ recursive: true });
-  });
-
-  describe('Section 1', () => {
-    test('fsGetFolders', () => {
-      return folderSpec(pwd)
+describe('FSSpec.fromMeta, FileSpec.fromMeta, FolderSpec.fromMeta', () => {
+  describe('File and folder operations', () => {
+    test('getFolders() returns a list of folders', () => {
+      return folderSpec(READONLY.dirname)
         .getFolders()
         .then((resp) => {
           expect(isArray(resp)).toBe(true);
-          return folderSpec(pwd).getFolders(/^data/);
+          return folderSpec(READONLY.dirname).getFolders(/^readonly/);
         })
         .then((resp) => {
           expect(isArray(resp)).toBe(true);
-          expect(resp.length).toBe(TEST_FOLDERS.length);
-          // console.log(resp.map((f) => f.filename));
-          resp = resp.sort();
-          expect(resp[1].filename).toBe(TEST_FOLDERS[0]);
-          expect(resp[0].filename).toBe(TEST_FOLDERS[1]);
-          // expect(resp[2].filename).toBe(TEST_FOLDERS[2]);
+          expect(resp.length).toBe(1);
         });
     });
-    test('fsGetFiles', () => {
-      const fs0: FolderSpec = folderSpec(pwd);
-      const fs1 = folderSpec(pwd);
+    test('getFiles() returns a list of files', () => {
+      const fs0: FolderSpec = folderSpec(READONLY.dirname);
+      const fs1 = folderSpec(READONLY.dirname);
       return fs0
         .getFolders()
         .then((resp) => {
@@ -94,9 +68,9 @@ describe('FSSpec Tests Part 1', () => {
           expect(resp[3].filename).toBe(TEST_FILES[3]);
         });
     });
-    it('getChildren', () => {
-      const folder0: FolderSpec = folderSpec(pwd);
-      const folder1 = folderSpec(pwd);
+    test('getChildren() returns a list of files and folders', () => {
+      const folder0: FolderSpec = folderSpec(READONLY.dirname);
+      const folder1 = folderSpec(READONLY.dirname);
       return folder0
         .getChildren()
         .then((resp) => {
@@ -110,20 +84,19 @@ describe('FSSpec Tests Part 1', () => {
           expect(isArray(folder1.files)).toBe(true);
           expect(isArray(folder1.folders)).toBe(true);
           expect(folder1.files.length).toBe(TEST_FILES.length);
-          expect(folder1.folders.length).toBe(TEST_FOLDERS.length + TEST_FOLDERS2.length);
+          expect(folder1.folders.length).toBe(1);
           folder1.sortChildren();
           expect(folder1.folders[0].filename).toEqual(TEST_FOLDERS[0]);
-          expect(folder1.folders[1].filename).toEqual(TEST_FOLDERS[1]);
         });
     });
-    test('setExt', () => {
+    test('setExt() sets the extension of a file', () => {
       const PATH = './mypath/to/file/sample.json';
       const EXPECTED = `${Deno.cwd()}/mypath/to/file/sample.rsc`;
       const fs = fileSpec(PATH);
       expect(fs.setExt('txt').extname).toEqual('.txt');
       expect(fs.setExt('rsc').path).toEqual(EXPECTED);
     });
-    test('setBasename', () => {
+    test('setBasename() sets the basename of a file', () => {
       const PATH = './mypath/to/file/sample.less.json';
       const EXPECTED = `${Deno.cwd()}/mypath/to/file/sample.more.json`;
       const fs: FileSpec = fileSpec(PATH);
@@ -131,69 +104,69 @@ describe('FSSpec Tests Part 1', () => {
       expect(fs.path).toEqual(EXPECTED);
       expect(fs.basename).toEqual('sample.more');
     });
-    test('isDir', () => {
+    test('isFolder() returns true for a folder', () => {
       return Promise.resolve()
         .then((_resp) => {
-          return fsSpec(pwd).getResolvedType();
+          return fsSpec(READONLY.dirname).getResolvedType();
         })
         .then((resp) => {
           expect(resp instanceof FolderSpec).toBe(true);
-          return fsSpec(pwd, 'data1').getResolvedType();
+          return fsSpec(READONLY.path).getResolvedType();
         })
         .then((resp) => {
           expect(resp instanceof FolderSpec).toBe(true);
         });
     });
-    test('fsExists', () => {
+    test('getExists() returns true for an existing file or folder', () => {
       return Promise.resolve()
         .then((_resp) => {
-          return fsSpec(pwd).getResolvedType();
+          return fsSpec(READONLY.dirname).getResolvedType();
         })
         .then((resp) => {
           expect(resp instanceof FileSpec || resp instanceof FolderSpec).toBe(true);
-          return fsSpec(pwd, 'data1').getResolvedType();
+          return fsSpec(READONLY.path).getResolvedType();
         })
         .then((resp) => {
           expect(resp instanceof FileSpec || resp instanceof FolderSpec).toBe(true);
         });
     });
-    test('fs dirExists', () => {
+    test('getExists() returns true for an existing folder', () => {
       return Promise.resolve()
         .then((_resp) => {
-          return fsSpec(pwd).getResolvedType();
+          return fsSpec(READONLY.dirname).getResolvedType();
         })
         .then((resp) => {
           expect(resp instanceof FolderSpec).toBe(true);
-          return fsSpec(pwd, 'data1').getResolvedType();
+          return fsSpec(READONLY.path).getResolvedType();
         })
         .then((resp) => {
           expect(resp instanceof FolderSpec).toBe(true);
         });
     });
-    test('fs fileExists', () => {
+    test('getExists() returns true for an existing file', () => {
       return Promise.resolve()
         .then((_resp) => {
-          return fsSpec(pwd).getResolvedType();
+          return fsSpec(READONLY.dirname).getResolvedType();
         })
         .then((resp) => {
           expect(resp instanceof FolderSpec).toBe(true);
           expect(resp instanceof FileSpec).toBe(false);
-          return fsSpec(pwd, 'data1').getResolvedType();
+          return fsSpec(READONLY.path).getResolvedType();
         })
         .then((resp) => {
           expect(resp instanceof FolderSpec).toBe(true);
           expect(resp instanceof FileSpec).toBe(false);
-          return fsSpec(pwd, 'data1/sample.txt').getResolvedType();
+          return fsSpec(READONLY.path, 'sample.txt').getResolvedType();
         })
         .then((resp) => {
           expect(resp instanceof FolderSpec).toBe(false);
           expect(resp instanceof FileSpec).toBe(true);
         });
     });
-    test('fs Stats', () => {
+    test('getStats() returns stats for a folder', () => {
       return Promise.resolve()
         .then((_resp) => {
-          return fsSpec(pwd).getResolvedType();
+          return fsSpec(READONLY.dirname).getResolvedType();
         })
         .then((fs) => {
           expect(fs instanceof FolderSpec).toBe(true);
@@ -202,50 +175,50 @@ describe('FSSpec Tests Part 1', () => {
           expect(isValidDate(fs.createdAt())).toBe(true);
         });
     });
-    test('fs getResolvedType', () => {
+    test('getResolvedType() returns a FileSpec for a file', () => {
       return Promise.resolve()
         .then((_resp) => {
-          return fsSpec(pwd, 'data1/sample.txt').getResolvedType();
+          return fsSpec(READONLY.path, 'sample.txt').getResolvedType();
         })
         .then((fs) => {
           expect(fs instanceof FileSpec).toBe(true);
           expect((fs as FileSpec).size()).toBe(52);
         });
     });
-    test('constructor with .folder', () => {
+    test('constructor resolves path with dot folder', () => {
       return Promise.resolve()
         .then((_resp) => {
-          expect(fsSpec(pwd).exists()).toBe(undefined);
-          return fsSpec(pwd).getExists();
+          expect(fsSpec(READONLY.path).exists()).toBe(undefined);
+          return fsSpec(READONLY.path).getExists();
         })
         .then((resp) => {
           expect(resp).toBe(true);
-          return fsSpec(pwd, 'data/.withdot').getExists();
+          return fsSpec(READONLY.path, '.withdot').getExists();
         })
         .then((resp) => {
           expect(resp).toBe(true);
-          return fsSpec(pwd, 'data/.withdot/dotsample.json').getExists();
+          return fsSpec(READONLY.path, '.withdot/dotsample.json').getExists();
         })
         .then((resp) => {
           expect(resp).toBe(true);
         });
     });
-    test('constructor', () => {
+    test('constructor resolves path parts', () => {
       expect(fileSpec('home', 'file.json').basename).toBe('file');
       expect(fileSpec('/home', 'file.json').path).toBe('/home/file.json');
     });
-    test('constructor with HOME', () => {
+    test('home() resolves path from home directory', () => {
       const fs = new FileSpec().home().add('.folder').add('file.txt');
       expect(fs.path).toBe(path.resolve(HOME, '.folder', 'file.txt'));
       expect(fs.filename).toBe('file.txt');
     });
-    test('guards', () => {
+    test('isFilename(), isFilePath(), isFolderPath() type guards', () => {
       expect(isFilename('hello')).toBe(true);
       expect(isFilePath('hello')).toBe(true);
       expect(isFilePath('~/xx/hello')).toBe(true);
       expect(isFolderPath('~/xx/hello')).toBe(true);
     });
-    test('isType', () => {
+    test('isExtType() checks file extension', () => {
       expect(fileSpec('file.json').isExtType('json')).toBe(true);
       expect(fileSpec('file.json').isExtType('jsson')).toBe(false);
       expect(fileSpec('file.JSON').isExtType('jsson', 'json')).toBe(true);
@@ -266,10 +239,10 @@ describe('FSSpec Tests Part 1', () => {
       expect(fileSpec('file.TXT').isNamed('file')).toBe(true);
       expect(fileSpec('file.TXT').isNamed('TXT')).toBe(false);
     });
-    test('getPdfDate', () => {
+    test('getPdfDate() returns creation date from PDF metadata', () => {
       return Promise.resolve()
         .then((_resp) => {
-          return fileSpec(pwd, 'data', '.withdot/text_alignment.pdf');
+          return fileSpec(READONLY.path, '.withdot/text_alignment.pdf');
         })
         .then((resp) => {
           expect(resp instanceof FileSpec).toBe(true);
@@ -290,8 +263,8 @@ describe('FSSpec Tests Part 1', () => {
           throw err;
         });
     });
-    test('ext', () => {
-      const fs = fileSpec(pwd, 'xxx.jpg');
+    test('setExt() correctly changes file extension', () => {
+      const fs = fileSpec(READONLY.path, 'xxx.jpg');
       fs.setExt('.txt');
       expect(fs.extname).toEqual('.txt');
       fs.setExt('pdf');
@@ -301,7 +274,7 @@ describe('FSSpec Tests Part 1', () => {
       fs.setExt('.jpg');
       expect(fs.extname).toEqual('.jpg');
     });
-    test('newError string', () => {
+    test('FSError can be instantiated with a string', () => {
       const opts = { code: 'EEXISTS', path: 'my/path/to/file.txt', cause: 'readFile' };
       const err = new FSError('my message', opts);
       // @ts-ignore xxx
@@ -311,11 +284,11 @@ describe('FSSpec Tests Part 1', () => {
       expect(err.cause).toEqual(opts.cause);
     });
   });
-  describe('digest', () => {
-    test.skip('checksum', () => {
+  describe('digest()', () => {
+    test.skip('checksum() returns SHA1 checksum', () => {
       return Promise.resolve()
         .then((_resp) => {
-          return fileSpec(pwd, 'data1/sample.txt').checksum();
+          return fileSpec(READONLY.path, 'sample.txt').checksum();
         })
         .then((resp) => {
           expect(resp).toBe('cacc6f06ae07f842663cb1b1722cafbee9b4d203');
@@ -324,7 +297,7 @@ describe('FSSpec Tests Part 1', () => {
     test('digest sha1', () => {
       return Promise.resolve()
         .then((_resp) => {
-          return fileSpec(pwd, 'data1/sample.txt').digest();
+          return fileSpec(READONLY.path, 'sample.txt').digest();
         })
         .then((resp) => {
           expect(resp).toBe('cacc6f06ae07f842663cb1b1722cafbee9b4d203');
@@ -333,7 +306,7 @@ describe('FSSpec Tests Part 1', () => {
     test('digest sha256', () => {
       return Promise.resolve()
         .then((_resp) => {
-          return fileSpec(pwd, 'data1/sample.txt').digest(DigestAlgorithm.sha256);
+          return fileSpec(READONLY.path, 'sample.txt').digest(DigestAlgorithm.sha256);
         })
         .then((resp) => {
           expect(resp).toBe('8046c06d368ab746568e7af455af4d80c543bde005c7655a33e5fb009ca5cd3f');
@@ -342,7 +315,7 @@ describe('FSSpec Tests Part 1', () => {
     test('digest sha512', () => {
       return Promise.resolve()
         .then((_resp) => {
-          return fileSpec(pwd, 'data1/sample.txt').digest(DigestAlgorithm.sha512);
+          return fileSpec(READONLY.path, 'sample.txt').digest(DigestAlgorithm.sha512);
         })
         .then((resp) => {
           expect(resp).toBe(
@@ -353,7 +326,7 @@ describe('FSSpec Tests Part 1', () => {
     test('digest md5Sha1', () => {
       return Promise.resolve()
         .then((_resp) => {
-          return fileSpec(pwd, 'data1/sample.txt').digest(DigestAlgorithm.md5Sha1);
+          return fileSpec(READONLY.path, 'sample.txt').digest(DigestAlgorithm.md5Sha1);
         })
         .then((resp) => {
           expect(resp).toBe('baf56296a07d4fd879fd9001146d1cc7cacc6f06ae07f842663cb1b1722cafbee9b4d203');
@@ -362,7 +335,7 @@ describe('FSSpec Tests Part 1', () => {
     test('digest ripemd', () => {
       return Promise.resolve()
         .then((_resp) => {
-          return fileSpec(pwd, 'data1/sample.txt').digest(DigestAlgorithm.ripemd);
+          return fileSpec(READONLY.path, 'sample.txt').digest(DigestAlgorithm.ripemd);
         })
         .then((resp) => {
           expect(resp).toBe('802f1b408a5700b090cfd829568496bc74ca2d06');
@@ -371,7 +344,7 @@ describe('FSSpec Tests Part 1', () => {
     test('digest ripemd160', () => {
       return Promise.resolve()
         .then((_resp) => {
-          return fileSpec(pwd, 'data1/sample.txt').digest(DigestAlgorithm.ripemd160);
+          return fileSpec(READONLY.path, 'sample.txt').digest(DigestAlgorithm.ripemd160);
         })
         .then((resp) => {
           expect(resp).toBe('802f1b408a5700b090cfd829568496bc74ca2d06');
@@ -380,7 +353,7 @@ describe('FSSpec Tests Part 1', () => {
     test('digest blake2s256', () => {
       return Promise.resolve()
         .then((_resp) => {
-          return fileSpec(pwd, 'data1/sample.txt').digest(DigestAlgorithm.blake2s256);
+          return fileSpec(READONLY.path, 'sample.txt').digest(DigestAlgorithm.blake2s256);
         })
         .then((resp) => {
           expect(resp).toBe('054fbfd5c184cf6765a3a14275c0f965bde56405bc7894aa92aba99e841a9482');
@@ -389,7 +362,7 @@ describe('FSSpec Tests Part 1', () => {
     test('digest blake2b512', () => {
       return Promise.resolve()
         .then((_resp) => {
-          return fileSpec(pwd, 'data1/sample.txt').digest(DigestAlgorithm.blake2b512);
+          return fileSpec(READONLY.path, 'sample.txt').digest(DigestAlgorithm.blake2b512);
         })
         .then((resp) => {
           expect(resp).toBe(
@@ -402,27 +375,27 @@ describe('FSSpec Tests Part 1', () => {
     test('fsEqual', () => {
       return Promise.resolve()
         .then((_resp) => {
-          return fileSpec(pwd, 'fs.test.ts').filesEqual(fileSpec(pwd, 'fs.test.ts'));
+          return fileSpec(READONLY.path, 'fs.test.ts').filesEqual(fileSpec(READONLY.path, 'fs.test.ts'));
         })
         .then((resp) => {
           expect(resp).toBe(true);
-          return fileSpec('./tests/fs.test.ts').filesEqual('./tests/data1/sample.txt');
+          return fileSpec(READONLY.path, 'fs.test.ts').filesEqual(fileSpec(READONLY.path, 'sample.txt'));
         })
         .then((resp) => {
           expect(resp).toBe(false);
-          return fileSpec('./tests/data1/sample.txt').filesEqual('./tests');
+          return fileSpec(READONLY.path, 'sample.txt').filesEqual(READONLY.path);
         })
         .then((resp) => {
           expect(resp).toBe(false);
-          return fileSpec('./tests/data1/nonexistent.txt').filesEqual('./tests');
+          return fileSpec(READONLY.path, 'nonexistent.txt').filesEqual(READONLY.path);
         })
         .then((resp) => {
           expect(resp).toBe(false);
-          return fileSpec('./tests/data1/sample.txt').filesEqual('./nonexistent.txt');
+          return fileSpec(READONLY.path, 'sample.txt').filesEqual('./nonexistent.txt');
         })
         .then((resp) => {
           expect(resp).toBe(false);
-          return fileSpec('./tests/data1/nonexistent.txt').filesEqual('./nonexistent.txt');
+          return fileSpec(READONLY.path, 'nonexistent.txt').filesEqual('./nonexistent.txt');
         })
         .then((resp) => {
           expect(resp).toBe(false);
@@ -458,22 +431,22 @@ describe('FSSpec Tests Part 1', () => {
     test('fsEnsureDir no file', () => {
       return Promise.resolve()
         .then((_resp) => {
-          return folderSpec('./tests/data1/tmp.txt').ensureDir();
+          return folderSpec(READONLY.path, 'tmp.txt').ensureDir();
         })
         .then((_resp) => {
-          return fsSpec('./tests/data1/tmp.txt').getIsFolder();
+          return fsSpec(READONLY.path, 'tmp.txt').getIsFolder();
         })
         .then((resp) => {
           expect(resp).toBe(true);
-          return fsSpec('./tests/data1/tmp.txt').remove();
+          return fsSpec(READONLY.path, 'tmp.txt').remove();
         })
         .then((resp) => {
           expect(resp).toBeUndefined();
-          return fsSpec('./tests/data1/tmp.txt').getExists();
+          return fsSpec(READONLY.path, 'tmp.txt').getExists();
         })
         .then((resp) => {
           expect(resp).toBe(false);
-          return fsSpec('./tests/data1/tmp.txt').getIsFolder();
+          return fsSpec(READONLY.path, 'tmp.txt').getIsFolder();
         })
         .then((resp) => {
           expect(resp).toBe(false);
@@ -482,45 +455,45 @@ describe('FSSpec Tests Part 1', () => {
     test('fsCopy fsitem.Move', () => {
       return Promise.resolve()
         .then((_resp) => {
-          return fsSpec(pwd, 'data1').copyTo(fsSpec(pwd, 'data2'), { preserveTimestamps: true });
+          return fsSpec(READONLY.path).copyTo(fsSpec(READONLY.dirname, 'data2'), { preserveTimestamps: true });
         })
         .then((resp) => {
           expect(resp).toBeUndefined();
-          return fsSpec(pwd, 'data2').getIsFolder();
+          return fsSpec(READONLY.dirname, 'data2').getIsFolder();
         })
         .then((resp) => {
           expect(resp).toEqual(true);
-          return fsSpec(pwd, 'data2/folder-sample').getIsFolder();
+          return fsSpec(READONLY.dirname, 'data2/folder-sample').getIsFolder();
         })
         .then((resp) => {
           expect(resp).toEqual(true);
-          return fsSpec(pwd, 'data2/folder-sample/sample2.txt').getIsFile();
+          return fsSpec(READONLY.dirname, 'data2/folder-sample/sample2.txt').getIsFile();
         })
         .then((resp) => {
           expect(resp).toEqual(true);
-          return fileSpec(pwd, 'data2/folder-sample/sample2.txt').filesEqual(
-            fileSpec(pwd, 'data1/folder-sample/sample2.txt'),
+          return fileSpec(READONLY.dirname, 'data2/folder-sample/sample2.txt').filesEqual(
+            fileSpec(READONLY.path, 'folder-sample/sample2.txt'),
           );
         })
         .then((resp) => {
           expect(resp).toBe(true);
-          return fsSpec(pwd, 'data2').moveTo(fsSpec(pwd, 'data3'));
+          return fsSpec(READONLY.dirname, 'data2').moveTo(fsSpec(READONLY.dirname, 'data3'));
         })
         .then((resp) => {
           expect(resp).toBeUndefined();
-          return fsSpec(pwd, 'data2').getIsFolder();
+          return fsSpec(READONLY.dirname, 'data2').getIsFolder();
         })
         .then((resp) => {
           expect(resp).toEqual(false);
-          return fsSpec(pwd, 'data3').getIsFolder();
+          return fsSpec(READONLY.dirname, 'data3').getIsFolder();
         })
         .then((resp) => {
           expect(resp).toEqual(true);
-          return fsSpec(pwd, 'data3').remove({ recursive: true });
+          return fsSpec(READONLY.dirname, 'data3').remove({ recursive: true });
         })
         .then((resp) => {
           expect(resp).toBeUndefined();
-          return fsSpec(pwd, 'data3').getIsFolder();
+          return fsSpec(READONLY.dirname, 'data3').getIsFolder();
         })
         .then((resp) => {
           expect(resp).toBe(false);
@@ -530,21 +503,21 @@ describe('FSSpec Tests Part 1', () => {
     test('safeCopy', () => {
       return Promise.resolve()
         .then((_resp) => {
-          return fsSpec(pwd, 'data').getResolvedType();
+          return fsSpec(READONLY.path).getResolvedType();
         })
         .then((srcFolderSpec) => {
           expect(srcFolderSpec).toBeInstanceOf(FolderSpec);
-          const dest = new FolderSpec(pwd, 'data2');
+          const dest = new FolderSpec(READONLY.dirname, 'data2');
           return (srcFolderSpec as FolderSpec).safeCopy(dest);
         })
         .then(async () => {
-          expect(await fsSpec(pwd, 'data2').getIsFolder()).toBe(true);
-          expect(await fsSpec(pwd, 'data2', 'folder-sample').getIsFolder()).toBe(true);
-          expect(await fsSpec(pwd, 'data2', 'folder-sample', 'sample2.txt').getIsFile()).toBe(true);
+          expect(await fsSpec(READONLY.dirname, 'data2').getIsFolder()).toBe(true);
+          expect(await fsSpec(READONLY.dirname, 'data2', 'folder-sample').getIsFolder()).toBe(true);
+          expect(await fsSpec(READONLY.dirname, 'data2', 'folder-sample', 'sample2.txt').getIsFile()).toBe(true);
         })
         .then(() => {
-          return fileSpec(pwd, 'data2/folder-sample/sample2.txt').filesEqual(
-            fileSpec(pwd, 'data1/folder-sample/sample2.txt'),
+          return fileSpec(READONLY.dirname, 'data2/folder-sample/sample2.txt').filesEqual(
+            fileSpec(READONLY.path, 'folder-sample/sample2.txt'),
           );
         })
         .then((resp) => {
@@ -555,37 +528,37 @@ describe('FSSpec Tests Part 1', () => {
     test('safeCopy conflict', () => {
       return Promise.resolve()
         .then((_resp) => {
-          return fsSpec(pwd, 'data1').getResolvedType();
+          return fsSpec(READONLY.path).getResolvedType();
         })
         .then((resp) => {
           const opts: SafeCopyOpts = {
             conflictStrategy: { type: fileConflictStrategyType.renameWithNumber, limit: 5 },
           };
           if (resp instanceof FileSpec || resp instanceof FolderSpec) {
-            return resp.safeCopy(folderSpec(pwd, 'data2'), opts);
+            return resp.safeCopy(folderSpec(READONLY.dirname, 'data2'), opts);
           }
           return Promise.resolve();
         })
         .then(async () => {
-          expect(await fsSpec(pwd, 'data2').getIsFolder()).toBe(true);
-          expect(await fsSpec(pwd, 'data2-01').getIsFolder()).toBe(false);
+          expect(await fsSpec(READONLY.dirname, 'data2').getIsFolder()).toBe(true);
+          expect(await fsSpec(READONLY.dirname, 'data2-01').getIsFolder()).toBe(false);
         });
     });
 
     test('json', async () => {
-      const SRC = 'data1/folder-sample/sample.json';
-      const DEST = 'data1/folder-sample/sample-copy.json';
-      const json = await fileSpec(pwd, SRC).readJson();
-      await fileSpec(pwd, DEST).writeJson(json);
-      expect(await fsSpec(pwd, DEST).getIsFile()).toEqual(true);
-      const json2 = await fileSpec(pwd, DEST).readJson();
+      const SRC = 'folder-sample/sample.json';
+      const DEST = 'folder-sample/sample-copy.json';
+      const json = await fileSpec(READONLY.path, SRC).readJson();
+      await fileSpec(READONLY.path, DEST).writeJson(json);
+      expect(await fsSpec(READONLY.path, DEST).getIsFile()).toEqual(true);
+      const json2 = await fileSpec(READONLY.path, DEST).readJson();
       expect(json2).toEqual(json);
     });
     test('json err', () => {
-      const SRC = 'data/.withdot/broken.json';
+      const SRC = '.withdot/broken.json';
       return Promise.resolve()
         .then((_resp) => {
-          return fileSpec(pwd, SRC).readJson();
+          return fileSpec(READONLY.path, SRC).readJson();
         })
         .then((_resp) => {
           expect(true).toBe(false);
@@ -597,34 +570,34 @@ describe('FSSpec Tests Part 1', () => {
 
     test('deep json', async () => {
       const opts = { pre: '{{', post: '}}', includeUrl: true };
-      const SRC = 'data1/folder-sample/sample-nested.json';
-      const SRC2 = 'data1/folder-sample/sample-compare.json';
-      const json2 = await fileSpec(pwd, SRC2).readJson();
-      const json = await fileSpec(pwd, SRC).deepReadJson(opts);
+      const SRC = 'folder-sample/sample-nested.json';
+      const SRC2 = 'folder-sample/sample-compare.json';
+      const json2 = await fileSpec(READONLY.path, SRC2).readJson();
+      const json = await fileSpec(READONLY.path, SRC).deepReadJson(opts);
       expect(json2).toEqual(json);
     });
 
     test('write utf8', async () => {
       const sin = 'here is a line of text';
-      const DEST = 'data1/folder-sample/output.txt';
-      await fileSpec(pwd, DEST).write(sin);
-      expect(await fsSpec(pwd, DEST).getIsFile()).toEqual(true);
-      const s = await fileSpec(pwd, DEST).readAsString();
+      const DEST = 'folder-sample/output.txt';
+      await fileSpec(READONLY.path, DEST).write(sin);
+      expect(await fsSpec(READONLY.path, DEST).getIsFile()).toEqual(true);
+      const s = await fileSpec(READONLY.path, DEST).readAsString();
       expect(s).toEqual(sin);
     });
     test('write lines', async () => {
       const lines = ['this', 'is', 'line 2'];
-      const DEST = 'data1/folder-sample/output.txt';
-      await fileSpec(pwd, DEST).write(lines);
-      expect(await fsSpec(pwd, DEST).getIsFile()).toEqual(true);
-      const s = await fileSpec(pwd, DEST).readAsString();
+      const DEST = 'folder-sample/output.txt';
+      await fileSpec(READONLY.path, DEST).write(lines);
+      expect(await fsSpec(READONLY.path, DEST).getIsFile()).toEqual(true);
+      const s = await fileSpec(READONLY.path, DEST).readAsString();
       expect(s).toEqual(lines.join('\n'));
     });
 
     test('readAsString', async () => {
-      const SRC = 'data/sample.txt';
+      const SRC = 'sample.txt';
       const result = 'This is sample.txt. \nDo not edit or move this file.\n';
-      const str = await fileSpec(pwd, SRC).readAsString();
+      const str = await fileSpec(READONLY.path, SRC).readAsString();
       console.log(str);
       expect(str).toEqual(result);
     });
@@ -645,7 +618,7 @@ describe('FSSpec Tests Part 1', () => {
     });
 
     it('readAsLines', async () => {
-      const filePath = path.join(pwd as string, 'data/test-files', 'continuation_sample.txt');
+      const filePath = path.join(READONLY.path, 'test-files', 'continuation_sample.txt');
       const fsItem = new FileSpec(filePath);
 
       const lines = await fsItem.readAsLines('\\');

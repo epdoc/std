@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/fs",
-  "version": "0.2.9",
+  "version": "0.2.10",
   "description": "File system entry wrapper",
   "exports": "./mod.ts",
   "tasks": {
@@ -14,6 +14,6 @@
     "exclude": ["tests/*/*.*"]
   },
   "fmt": {
-    "exclude": ["tests/data/**/*.*"]
+    "exclude": ["tests/readonly/**/*.*"]
   }
 }

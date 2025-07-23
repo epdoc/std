@@ -8,6 +8,7 @@ import { type FSSpecParam, type ICopyableSpec, type IRootableSpec, resolvePathAr
 import { safeCopy, type SafeCopyOpts } from './safecopy.ts';
 import { type SymlinkSpec, symlinkSpec } from './symspec.ts';
 import type { FilePath, FolderPath } from './types.ts';
+import { fromFileUrl } from 'jsr:@std/path/from-file-url';
 
 /**
  * Create a new FSItem object.
@@ -31,6 +32,24 @@ export class FSSpec extends BaseSpec implements ICopyableSpec, IRootableSpec {
   constructor(...args: FSSpecParam) {
     super();
     this._f = resolvePathArgs(...args);
+  }
+
+  /**
+   * Creates a new FSSpec from a file URL, typically from `import.meta.url`.
+   * This allows for creating paths relative to the current module.
+   *
+   * @param {string} metaUrl - The `import.meta.url` of the calling module.
+   * @param {...string[]} paths - Additional path segments to join.
+   * @returns {FSSpec} A new FSSpec instance.
+   *
+   * @example
+   * // Assuming this code is in /path/to/your/project/src/app.ts
+   * const configFile = FSSpec.fromMeta(import.meta.url, '../data/config.json');
+   * // configFile.path will be /path/to/your/project/data/config.json
+   */
+  public static fromMeta(metaUrl: string, ...paths: string[]): FSSpec {
+    const dir = path.dirname(fromFileUrl(metaUrl));
+    return new FSSpec(path.join(dir, ...paths));
   }
 
   /**

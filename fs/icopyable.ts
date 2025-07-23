@@ -8,7 +8,10 @@ import type { SymlinkSpec } from './symspec.ts';
 import type { FilePath } from './types.ts';
 
 const ERR_STR = StringEx(
-  'Invalid FSSpec resolve path argument, constructor can only include ${type} as a first and only parameter',
+  'Invalid FSSpec resolve path argument, a ${type} must be the first argument to the constructor',
+);
+const ERR_FILE_STR = StringEx(
+  'Invalid FSSpec resolve path argument, a ${type} must be the only argument to the constructor',
 );
 
 export interface ICopyableSpec {
@@ -42,7 +45,7 @@ export function resolvePathArgs(...args: FSSpecParam): string {
       parts.push(item.path);
     } else if (item instanceof FileSpec) {
       if (args.length !== 1) {
-        throw new Error(ERR_STR.replace({ type: 'FileSpec' }));
+        throw new Error(ERR_FILE_STR.replace({ type: 'FileSpec' }));
       }
       parts.push(item.path);
     } else if (isString(item)) {
