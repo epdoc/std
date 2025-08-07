@@ -69,29 +69,29 @@ describe('deep', () => {
   });
 
   describe('deepCopy', () => {
-    const obj = {
-      a: 'b',
-      c: '{home}/hello/world',
-      e: 4,
-      f: [{ a: '{home}/hello/world' }],
-      g: { pattern: 'serial$', flags: 'i' },
-      h: { pattern: '(a|bc)' },
-    };
-    const obj1 = {
-      a: 'b',
-      c: '<{home}>/hello/world',
-      e: 4,
-      f: [{ a: '<{home}>/hello/world' }],
-      g: { pattern: 'serial$', flags: 'i' },
-      h: { pattern: '(a|bc)' },
-    };
+    // const obj = {
+    //   a: 'b',
+    //   c: '{home}/hello/world',
+    //   e: 4,
+    //   f: [{ a: '{home}/hello/world' }],
+    //   g: { pattern: 'serial$', flags: 'i' },
+    //   h: { pattern: '(a|bc)' },
+    // };
+    // const obj1 = {
+    //   a: 'b',
+    //   c: '<{home}>/hello/world',
+    //   e: 4,
+    //   f: [{ a: '<{home}>/hello/world' }],
+    //   g: { pattern: 'serial$', flags: 'i' },
+    //   h: { pattern: '(a|bc)' },
+    // };
     it('deepCopy handles arrays of primitives and objects', () => {
       const arr: Array<number | { a: number }> = [1, 2, { a: 3 }];
       const copy = deepCopy(arr) as typeof arr;
       expect(copy).not.toBe(arr);
       expect(copy).toEqual(arr);
       // Only mutate if the element is an object with property 'a'
-      arr.forEach((item, idx) => {
+      arr.forEach((_item, idx) => {
         if (typeof copy[idx] === 'object' && copy[idx] !== null && 'a' in copy[idx]!) {
           (copy[idx] as { a: number }).a = 99;
         }

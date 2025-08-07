@@ -1,5 +1,9 @@
 # Changelist
 
+## 0.2.13
+
+- Added generics when reading JSON files.
+
 ## 0.2.12
 
 - Added `fromMeta` static method to `FSSpec`, `FileSpec`, and `FolderSpec` to create paths relative to the current

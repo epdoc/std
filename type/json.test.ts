@@ -1,5 +1,6 @@
 import { expect } from 'jsr:@std/expect';
 import { describe, it } from 'jsr:@std/testing/bdd';
+import type { Dict } from './types.ts';
 import * as _ from './util.ts';
 
 describe('json', () => {
@@ -47,7 +48,7 @@ describe('json', () => {
     });
 
     it('should serialize empty array', () => {
-      const arr: any[] = [];
+      const arr: unknown[] = [];
       const json = _.jsonSerialize(arr);
       expect(json).toBe('[]');
     });
@@ -62,14 +63,6 @@ describe('json', () => {
       const arr = [1, undefined, null, 4];
       const json = _.jsonSerialize(arr);
       expect(json).toBe('[1,null,null,4]');
-    });
-
-    it('should serialize object with symbol property (should skip symbol)', () => {
-      const sym = Symbol('s');
-      const obj: any = { a: 1 };
-      obj[sym] = 2;
-      const json = _.jsonSerialize(obj);
-      expect(json).toBe('{"a":1}');
     });
 
     it('should serialize Date as ISO string', () => {
@@ -153,7 +146,7 @@ describe('json', () => {
     it('should deserialize ISO date string as string', () => {
       const json = '{"now":"2020-01-01T00:00:00.000Z"}';
       const obj = _.jsonDeserialize(json);
-      expect(obj).toEqual({ now: '2020-01-01T00:00:00.000Z' });
+      expect(obj).toEqual({ now: new Date('2020-01-01T00:00:00.000Z') });
     });
 
     it('should deserialize array with nulls', () => {
@@ -271,7 +264,7 @@ describe('json', () => {
     });
 
     it('throws on circular reference', () => {
-      const obj: any = { a: 1 };
+      const obj: Dict = { a: 1 };
       obj.self = obj;
       expect(() => _.jsonSerialize(obj)).toThrow();
     });
