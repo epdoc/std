@@ -1,3 +1,4 @@
+import { decodeAscii85, encodeAscii85 } from 'jsr:@std/encoding/ascii85';
 import type { Dict, Integer, RegExpDef } from './types.ts';
 
 /**
@@ -16,6 +17,7 @@ const REGEX = {
   instr: new RegExp(/^[\[]([^\]]+)[\]](.*)$/),
   camel2dash: new RegExp(/([a-z0-9])([A-Z])/, 'g'),
   dash2camel: new RegExp(/-(.)/, 'g'),
+  isISODate: new RegExp(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/),
 };
 
 /**
@@ -246,6 +248,20 @@ export function isNullOrUndefined(val: unknown): boolean {
  */
 export function isDefined(val: unknown): boolean {
   return val !== undefined;
+}
+
+/**
+ * Type guard to check if a value is a Record<string, string>.
+ * @param val - The value to check.
+ * @returns True if the value is a Record<string, string>, otherwise false.
+ */
+export function isRecordStringString(val: unknown): val is Record<string, string> {
+  if (typeof val !== 'object' || val === null || Array.isArray(val)) return false;
+  const keys = Object.keys(val);
+  for (const key of keys) {
+    if (typeof (val as Record<string, unknown>)[key] !== 'string') return false;
+  }
+  return true;
 }
 
 /**
@@ -745,7 +761,7 @@ export type DeepCopyFn = (a: unknown, opts: DeepCopyOpts) => unknown;
  * Options for deep copying an object.
  */
 export type DeepCopyOpts = {
-  replace?: Dict;
+  replace?: Record<string, string>;
   detectRegExp?: boolean;
   pre?: string;
   post?: string;
@@ -779,21 +795,7 @@ export function deepCopy(a: unknown, options?: DeepCopyOpts): unknown {
     return a;
   } else if (typeof a === 'string') {
     if (opts.replace) {
-      let r = a;
-      if (isDict(opts.replace)) {
-        Object.keys(opts.replace).forEach((b) => {
-          const m: string = opts.pre + b + opts.post;
-          if (r.includes(m)) {
-            // @ts-ignore replacement string have special replacement patterns, so use a function to return the raw string
-            r = r.replace(m, () => {
-              // @ts-ignore we want to allow an undefined value
-              return opts.replace[b];
-            });
-            // r = r.replace(m, opts.replace[b]);
-          }
-        });
-      }
-      return r;
+      return msub(a, opts.replace, opts.pre!, opts.post!);
     } else {
       return a;
     }
@@ -834,6 +836,36 @@ export function deepCopy(a: unknown, options?: DeepCopyOpts): unknown {
 }
 
 /**
+ * Performs string substitution similar to JavaScript template strings.
+ * Replaces all occurrences of `${key}` (or custom delimiters) in `s` with values from `replace`.
+ * Does not use eval, so is safe for user input.
+ *
+ * @param s - The input string.
+ * @param replace - The dictionary of replacements.
+ * @param pre - The prefix for a placeholder (default: '${').
+ * @param post - The suffix for a placeholder (default: '}').
+ * @returns The substituted string.
+ */
+export function msub(
+  s: string,
+  replace: Record<string, string> = {},
+  pre = '${',
+  post = '}',
+): string {
+  if (!isRecordStringString(replace) || !isNonEmptyString(pre) || !isNonEmptyString(post)) {
+    return s;
+  }
+  // Build a global regex for ${key}
+  const escapedPre = pre.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const escapedPost = post.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const pattern = new RegExp(`${escapedPre}(.*?)${escapedPost}`, 'g');
+  return s.replace(
+    pattern,
+    (_match, key) => Object.prototype.hasOwnProperty.call(replace, key) ? replace[key] : _match,
+  );
+}
+
+/**
  * Sets default options for deep copying.
  * @param opts - The options to set defaults for.
  * @returns The options with defaults set.
@@ -849,6 +881,101 @@ export function deepCopySetDefaultOpts(opts?: DeepCopyOpts): DeepCopyOpts {
     opts.post = '}';
   }
   return opts;
+}
+
+/**
+ * Options for deep copy and serialization.
+ * @typedef {object} DeepCopyOpts
+ * @property {boolean | Dict} [replace] - If set, replaces keys/values in strings using pre/post delimiters.
+ * @property {string} [pre='${'] - Prefix for string replacements (default: '${').
+ * @property {string} [post='}'] - Suffix for string replacements (default: '}').
+ * @property {boolean} [detectRegExp=false] - If true, RegExp objects are serialized as {regex, flags}.
+ */
+
+/**
+ * Serializes a JavaScript value to a JSON string, preserving special types.
+ * Supports Uint8Array, Date, Set, Map, RegExp, and custom string replacements.
+ *
+ * @param {unknown} value - The value to serialize.
+ * @param {DeepCopyOpts} [opts] - Serialization options.
+ * @returns {string} The serialized JSON string.
+ */
+export function jsonSerialize(value: unknown, opts: DeepCopyOpts = {}, space?: string | number): string {
+  opts = deepCopySetDefaultOpts(opts);
+  const replacer = (_key: string, val: unknown) => {
+    // String replacement
+    if (typeof val === 'string' && opts.replace) {
+      return msub(val, opts.replace, opts.pre!, opts.post!);
+    }
+    if (val instanceof Uint8Array) {
+      return { __filter: ['ASCII85Decode', 'Uint8Array'], data: encodeAscii85(val) };
+    }
+    // Date's get preconverted to ISO strings
+    // if (val instanceof Date) {
+    //   return { __type: 'Date', value: val.toISOString() };
+    // }
+    // Set
+    if (val instanceof Set) {
+      return { __filter: 'Set', data: Array.from(val) };
+    }
+    // Map
+    if (val instanceof Map) {
+      return { __filter: 'Map', data: Array.from(val.entries()) };
+    }
+    // RegExp
+    if (val instanceof RegExp) {
+      return { __filter: 'RegExp', regex: val.source, flags: val.flags };
+    }
+    return val;
+  };
+  return JSON.stringify(value, replacer, space);
+}
+
+/**
+ * Deserializes a JSON string produced by jsonSerialize, restoring special types.
+ * If DeepCopyOpts.detectRegExp is true, also detects RegExp objects serialized as {regex, flags}.
+ *
+ * @param {string} json - The JSON string to deserialize.
+ * @param {DeepCopyOpts} [opts] - Deserialization options (e.g., detectRegExp).
+ * @returns {unknown} The restored value.
+ */
+export function jsonDeserialize<T = unknown>(json: string, opts: DeepCopyOpts = {}): T {
+  opts = deepCopySetDefaultOpts(opts);
+  return JSON.parse(json, (_key, val) => {
+    if (val) {
+      if (typeof val === 'object' && '__filter' in val) {
+        const filters = Array.isArray(val.__filter) ? val.__filter : [val.__filter];
+        let result = val.data;
+        for (const filter of filters) {
+          if (filter === 'ASCII85Decode' && isString(result)) {
+            result = decodeAscii85(result);
+          } else if (filter === 'Uint8Array') {
+            result = new Uint8Array(result);
+          } else if (filter === 'Set' && Array.isArray(result)) {
+            result = new Set(result);
+          } else if (filter === 'Map' && Array.isArray(result)) {
+            result = new Map(result);
+          } else if (filter === 'RegExp' && isString(val.regex)) {
+            result = new RegExp(val.regex, val.flags || '');
+          }
+        }
+        if (opts.detectRegExp && isDict(val) && (val.regex || val.pattern)) {
+          result = asRegExp(val);
+        }
+        return result;
+      }
+      if (typeof val === 'string') {
+        // String replacement if opts.replace is set
+        if (opts.replace) {
+          return msub(val, opts.replace, opts.pre, opts.post);
+        }
+        if (REGEX.isISODate.test(val)) {
+          return new Date(val);
+        }
+      }
+    }
+    return val;
+  }) as T;
 }
 
 /**

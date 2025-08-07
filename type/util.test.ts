@@ -7,11 +7,7 @@ import {
   asInt,
   asString,
   camel2dash,
-  compareDictValue,
-  compareValues,
   dash2camel,
-  deepCopy,
-  deepEquals,
   hasValue,
   isArray,
   isBoolean,
@@ -35,9 +31,8 @@ import {
   isTrue,
   isValidDate,
   isWholeNumber,
-  omit,
+  msub,
   pad,
-  pick,
   underscoreCapitalize,
 } from './util.ts';
 
@@ -409,131 +404,6 @@ describe('util', () => {
       expect(isError(() => {})).toBe(false);
     });
 
-    describe('compare', () => {
-      const a = { a: 'boo', c: 'd', e: 4 };
-      const b = { a: 'boo', c: 'd', e: 4 };
-      const c = { a: 'ba', c: 'd', e: 4 };
-      const d = { a: 'boo', c: 'e', e: 4 };
-      it('compare equals', () => {
-        expect(compareDictValue(a, b, 'a')).toBe(0);
-        expect(compareDictValue(a, b, 'c')).toBe(0);
-        expect(compareDictValue(a, b, 'e')).toBe(0);
-        expect(compareDictValue(a, b, 'f')).toBe(0);
-        expect(compareDictValue(a, b, 'a', 'c', 'e')).toBe(0);
-      });
-      it('compare not equal a', () => {
-        expect(compareDictValue(a, c, 'a')).toBe(1);
-        expect(compareDictValue(a, c, 'c')).toBe(0);
-        expect(compareDictValue(a, c, 'e')).toBe(0);
-        expect(compareDictValue(a, c, 'f')).toBe(0);
-        expect(compareDictValue(a, c, 'a', 'c', 'e')).toBe(1);
-      });
-      it('compare not equal b', () => {
-        expect(compareDictValue(a, d, 'a')).toBe(0);
-        expect(compareDictValue(a, d, 'c')).toBe(-1);
-        expect(compareDictValue(a, d, 'e')).toBe(0);
-        expect(compareDictValue(a, d, 'f')).toBe(0);
-        expect(compareDictValue(a, d, 'a', 'c', 'e')).toBe(-1);
-      });
-    });
-    describe('deep', () => {
-      const obj = {
-        a: 'b',
-        c: 'd',
-        e: 4,
-      };
-      it('pick and deepEquals', () => {
-        const result1 = deepEquals(pick(obj, 'a', 'e'), { a: 'b', e: 4 });
-        expect(result1).toBe(true);
-        const result2 = deepEquals(pick(obj, 'a', 'e'), { a: 'b', e: 5 });
-        expect(result2).toBe(false);
-        // @ts-ignore this is okay
-        const result3 = deepEquals(pick(obj, ['a', 'c']), { a: 'b', c: 'd' });
-        expect(result3).toBe(true);
-      });
-
-      it('omit and deepEquals', () => {
-        const result1 = deepEquals(omit(obj, 'a', 'e'), { c: 'd' });
-        expect(result1).toBe(true);
-        const result2 = deepEquals(omit(obj, 'e'), { a: 'b', c: 'd' });
-        expect(result2).toBe(true);
-        // @ts-ignore this is okay
-        const result3 = deepEquals(omit(obj, ['a', 'c']), { e: 4 });
-        expect(result3).toBe(true);
-        const result4 = deepEquals(omit(obj, 'e'), { a: 'b', c: 'f' });
-        expect(result4).toBe(false);
-      });
-    });
-
-    describe('deepCopy', () => {
-      const obj = {
-        a: 'b',
-        c: '{home}/hello/world',
-        e: 4,
-        f: [{ a: '{home}/hello/world' }],
-        g: { pattern: 'serial$', flags: 'i' },
-        h: { pattern: '(a|bc)' },
-      };
-      const obj1 = {
-        a: 'b',
-        c: '<{home}>/hello/world',
-        e: 4,
-        f: [{ a: '<{home}>/hello/world' }],
-        g: { pattern: 'serial$', flags: 'i' },
-        h: { pattern: '(a|bc)' },
-      };
-      const obj2 = {
-        a: 'b',
-        c: 'well$$$/hello/world',
-        e: 4,
-        f: [{ a: 'well$$$/hello/world' }],
-        g: { pattern: 'serial$', flags: 'i' },
-        h: { pattern: '(a|bc)' },
-      };
-      const obj3 = {
-        a: 'b',
-        c: 'well$$$/hello/world',
-        e: 4,
-        f: [{ a: 'well$$$/hello/world' }],
-        g: /serial$/i,
-        h: /(a|bc)/,
-      };
-      const replace = { home: 'well$$$' };
-      it('no replace', () => {
-        const result1 = deepCopy(obj);
-        const isEqual1: boolean = deepEquals(obj, result1);
-        expect(isEqual1).toBe(true);
-      });
-      it('replace', () => {
-        const result2 = deepCopy(obj, { replace: replace });
-        const isEqual2: boolean = deepEquals(obj, result2);
-        expect(isEqual2).toBe(false);
-        expect(result2).toEqual(obj2);
-        const isEqual3: boolean = deepEquals(obj2, result2);
-        expect(isEqual3).toBe(true);
-      });
-      it('replace change delimiter', () => {
-        const result1 = deepCopy(obj1, {
-          replace: replace,
-          pre: '<{',
-          post: '}>',
-        });
-        const isEqual2: boolean = deepEquals(obj, result1);
-        expect(isEqual2).toBe(false);
-        expect(result1).toEqual(obj2);
-        const isEqual3: boolean = deepEquals(obj2, result1);
-        expect(isEqual3).toBe(true);
-      });
-      it('regexp', () => {
-        const result3 = deepCopy(obj, { replace: replace, detectRegExp: true });
-        expect(result3).toEqual(obj3);
-        const isEqual4: boolean = deepEquals(obj, result3);
-        expect(isEqual4).toBe(false);
-        const isEqual5: boolean = deepEquals(obj3, result3);
-        expect(isEqual5).toBe(true);
-      });
-    });
-
     describe('translate', () => {
       it('camel2dash', () => {
         expect(camel2dash('myStringHere')).toEqual('my-string-here');
@@ -576,138 +446,30 @@ describe('util', () => {
       });
     });
   });
-
-  describe('compareValues', () => {
-    const date1 = new Date('2023-01-01T00:00:00.000Z');
-    const date2 = new Date('2023-01-02T00:00:00.000Z');
-    const date3 = new Date('2023-01-01T00:00:00.000Z'); // same as date1
-
-    it('should compare numbers directly', () => {
-      expect(compareValues(1, 2)).toBe(-1);
-      expect(compareValues(2, 1)).toBe(1);
-      expect(compareValues(1, 1)).toBe(0);
+  describe('msub', () => {
+    it('replaces simple keys', () => {
+      expect(msub('Hello ${name}!', { name: 'World' })).toBe('Hello World!');
     });
-
-    it('should compare strings directly', () => {
-      expect(compareValues('a', 'b')).toBe(-1);
-      expect(compareValues('b', 'a')).toBe(1);
-      expect(compareValues('a', 'a')).toBe(0);
+    it('leaves unknown keys unchanged', () => {
+      expect(msub('Hello ${name}!', {})).toBe('Hello ${name}!');
     });
-
-    it('should compare Dates directly', () => {
-      expect(compareValues(date1, date2)).toBe(-1);
-      expect(compareValues(date2, date1)).toBe(1);
-      expect(compareValues(date1, date3)).toBe(0);
+    it('works with custom delimiters', () => {
+      expect(msub('Hello <<name>>!', { name: 'World' }, '<<', '>>')).toBe('Hello World!');
     });
-
-    it('should return 0 for mixed types in direct comparison', () => {
-      expect(compareValues(1, 'a')).toBe(0);
-      expect(compareValues('a', 1)).toBe(0);
-      expect(compareValues(date1, 1)).toBe(0);
-      expect(compareValues(null, 1)).toBe(0);
-      expect(compareValues(undefined, 'a')).toBe(0);
-      expect(compareValues({}, [])).toBe(0);
+    it('replaces multiple occurrences', () => {
+      expect(msub('${a} and ${a}', { a: 'x' })).toBe('x and x');
     });
-
-    it('should return 0 for unsupported types in direct comparison', () => {
-      expect(
-        compareValues(
-          () => {},
-          () => {},
-        ),
-      ).toBe(0);
-      expect(compareValues(Symbol('a'), Symbol('b'))).toBe(0);
-      expect(compareValues(true, false)).toBe(0); // Booleans are not explicitly supported for < >
+    it('works with adjacent keys', () => {
+      expect(msub('${a}${b}', { a: 'x', b: 'y' })).toBe('xy');
     });
-
-    describe('object property comparison', () => {
-      const objA = { name: 'Alice', age: 30, city: 'New York', joined: date1 };
-      const objB = { name: 'Bob', age: 25, city: 'New York', joined: date2 };
-      const objC = { name: 'Alice', age: 30, city: 'London', joined: date1 }; // Same name, age as A, diff city
-      const objD = { name: 'Alice', age: 30, city: 'New York', joined: date1 }; // Identical to A
-      const objE = { name: 'Alice', age: '30', city: 'New York' }; // Age is string
-      const objF = { name: 'Alice', city: 'New York' }; // Missing age
-
-      it('should compare objects by a single numeric property', () => {
-        expect(compareValues(objA, objB, 'age')).toBe(1); // 30 > 25
-        expect(compareValues(objB, objA, 'age')).toBe(-1); // 25 < 30
-      });
-
-      it('should compare objects by a single string property', () => {
-        expect(compareValues(objA, objB, 'name')).toBe(-1); // Alice < Bob
-        expect(compareValues(objB, objA, 'name')).toBe(1); // Bob > Alice
-      });
-
-      it('should compare objects by a single Date property', () => {
-        expect(compareValues(objA, objB, 'joined')).toBe(-1); // date1 < date2
-        expect(compareValues(objB, objA, 'joined')).toBe(1); // date2 > date1
-      });
-
-      it('should compare objects by multiple properties with precedence', () => {
-        // objA vs objC: name and age are same, city differs
-        expect(compareValues(objA, objC, 'name', 'age', 'city')).toBe(1); // New York > London
-        expect(compareValues(objC, objA, 'name', 'age', 'city')).toBe(-1); // London < New York
-
-        // objA vs objB: name differs first
-        expect(compareValues(objA, objB, 'name', 'age')).toBe(-1); // Alice < Bob
-      });
-
-      it('should return 0 if all specified properties are equal', () => {
-        expect(compareValues(objA, objD, 'name', 'age', 'city', 'joined')).toBe(0);
-      });
-
-      it('should skip properties with mismatched types', () => {
-        // Comparing objA.age (number) with objE.age (string)
-        expect(compareValues(objA, objE, 'age')).toBe(0); // Skipped
-        // If 'name' is compared first, it's equal, then 'age' is skipped
-        expect(compareValues(objA, objE, 'name', 'age', 'city')).toBe(0);
-      });
-
-      it('should skip properties missing in one object', () => {
-        // Comparing objA.age with objF (missing age)
-        expect(compareValues(objA, objF, 'age')).toBe(0); // Skipped
-        // If 'name' is compared first, it's equal, then 'age' is skipped
-        expect(compareValues(objA, objF, 'name', 'age', 'city')).toBe(0);
-      });
-
-      it('should return 0 if one of the items is not an object when props are provided', () => {
-        expect(compareValues(objA, null, 'name')).toBe(0);
-        expect(compareValues(null, objA, 'name')).toBe(0);
-        expect(compareValues(objA, 123, 'name')).toBe(0);
-        expect(compareValues('string', objA, 'name')).toBe(0);
-      });
-
-      it('should return 0 if props array is empty (falls back to direct object comparison)', () => {
-        expect(compareValues(objA, objB)).toBe(0); // No props, direct comparison of objects
-        expect(compareValues(objA, objB, ...[])).toBe(0); // Spread empty array
-      });
-
-      it('should handle objects with undefined or null property values', () => {
-        const objWithNull = { val: null };
-        const objWithUndefined = { val: undefined };
-        const objWithNumber = { val: 1 };
-
-        expect(compareValues(objWithNull, objWithNumber, 'val')).toBe(0); // null vs number -> skip
-        expect(compareValues(objWithUndefined, objWithNumber, 'val')).toBe(0); // undefined vs number -> skip
-        expect(compareValues(objWithNull, objWithUndefined, 'val')).toBe(0); // null vs undefined -> skip
-      });
-
-      it('should correctly compare when a property value is explicitly undefined', () => {
-        const o1 = { a: 1, b: undefined };
-        const o2 = { a: 1, b: 2 };
-        const o3 = { a: 1, b: undefined };
-
-        expect(compareValues(o1, o2, 'b')).toBe(0); // undefined vs number -> skip
-        expect(compareValues(o1, o2, 'a', 'b')).toBe(0); // a is equal, b is skipped
-
-        expect(compareValues(o1, o3, 'b')).toBe(0); // undefined vs undefined -> skip
-        expect(compareValues(o1, o3, 'a', 'b')).toBe(0); // a is equal, b is skipped
-      });
-
-      it('should return 0 for non-existent properties', () => {
-        expect(compareValues(objA, objB, 'nonExistentProp')).toBe(0);
-        expect(compareValues(objA, objB, 'name', 'nonExistentProp')).toBe(-1); // 'name' determines outcome
-      });
+    it('returns original string if no replacements', () => {
+      expect(msub('no keys here', { a: 'x' })).toBe('no keys here');
+    });
+    it('handles empty string', () => {
+      expect(msub('', { a: 'x' })).toBe('');
+    });
+    it('handles missing delimiters gracefully', () => {
+      expect(msub('Hello ${name}!', { name: 'World' }, '', '')).toBe('Hello ${name}!');
     });
   });
 });

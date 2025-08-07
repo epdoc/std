@@ -530,10 +530,10 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
    * Reads the file as JSON and parses it.
    * @returns {Promise<unknown>} A promise that resolves with the parsed JSON content.
    */
-  async readJson(): Promise<unknown> {
+  async readJson<T = unknown>(): Promise<T> {
     try {
       const s = await Deno.readTextFile(this._f);
-      return JSON.parse(s);
+      return JSON.parse(s) as T;
     } catch (err) {
       throw asError(err, { path: this._f, cause: 'readJson' });
     }
@@ -558,9 +558,9 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
    * // Recursively load and merge referenced files
    * const data = await file.deepReadJson({ includeUrl: true });
    */
-  async deepReadJson(opts: FsDeepCopyOpts = {}): Promise<unknown> {
+  async deepReadJson<T = unknown>(opts: FsDeepCopyOpts = {}): Promise<T> {
     const data = await this.readJson();
-    return this.#deepCopy(data, opts);
+    return this.#deepCopy(data, opts) as T;
   }
 
   /**
