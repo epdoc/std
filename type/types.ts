@@ -3,14 +3,12 @@
  */
 export type Integer = number;
 
-
 /**
  * A dictionary type where keys are strings and values are unknown. If you want
  * keys to be PropertyKey, then look elsewhere or submit a pull request to add
  * it as a separate type.
  */
 export type Dict = Record<string, unknown>;
-
 
 /**
  * Constructs a type where exactly one property from a set of keys `K`
@@ -50,10 +48,9 @@ export type Dict = Record<string, unknown>;
  * // Error: 'otherProp' is not a valid key
  * // const invalidMessage3: Message = { otherProp: 'value' };
  */
-export type ExactlyOne<T, K extends keyof T = keyof T> = K extends keyof T ?
-    // For each key K, create an object with that key required
-    // and all other keys from T mapped to `never` (making them forbidden).
-    Pick<T, K> & Partial<Record<Exclude<keyof T, K>, never>>
+export type ExactlyOne<T, K extends keyof T = keyof T> = K extends keyof T // For each key K, create an object with that key required
+  // and all other keys from T mapped to `never` (making them forbidden).
+  ? Pick<T, K> & Partial<Record<Exclude<keyof T, K>, never>>
   : never;
 
 /**
@@ -62,4 +59,3 @@ export type ExactlyOne<T, K extends keyof T = keyof T> = K extends keyof T ?
 export type RegExpDef =
   | { pattern: string; flags?: string; regex?: never }
   | { regex: string; flags?: string; pattern?: never };
-

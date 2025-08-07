@@ -509,9 +509,11 @@ export function asString(data: unknown, isProperty = false): string {
   } else if (data instanceof Error) {
     return data.stack!;
   } else if (typeof data === 'object') {
-    return `{${Object.entries(data)
-      .map(([k, v]) => `"${k}":${asString(v, true)}`)
-      .join(',')}}`;
+    return `{${
+      Object.entries(data)
+        .map(([k, v]) => `"${k}":${asString(v, true)}`)
+        .join(',')
+    }}`;
   }
   return 'undefined';
 }
@@ -750,10 +752,24 @@ export type DeepCopyOpts = {
 };
 
 /**
- * Performs a deep copy of an object, optionally replacing strings.
- * @param a - The object to copy.
- * @param options - Options for the deep copy.
- * @returns The new copied object.
+ * Performs a deep copy of the provided value, with advanced options for transformation.
+ *
+ * This function is unique in that it supports:
+ *   - Deep cloning of objects, arrays, and primitives.
+ *   - Optional transformation or replacement of values during the copy.
+ *   - Preserving RegExp, Date, and other special objects if specified.
+ *
+ * @param {unknown} value - The value to deep copy.
+ * @param {object} [options] - Options for the deep copy operation:
+ *   @param {boolean} [options.replace=Dict] - If set, replaces keys with values throughout `a`.
+ *   @param {string} [options.pre='{'] - Prefix string for detecting replacement strings in string values.
+ *   @param {string} [options.post='}'] - Suffix string for detecting replacement strings in string values.
+ *   @param {boolean} [options.detectRegExp=false] - If true, detects and reconstructs RegExp objects from plain objects using asRegExp.
+ * @returns {unknown} The deeply copied value, possibly transformed.
+ *
+ * @example
+ * // Deep copy with transformation
+ * const result = deepCopy(obj, { transform: (v) => typeof v === 'string' ? v.toUpperCase() : v });
  */
 export function deepCopy(a: unknown, options?: DeepCopyOpts): unknown {
   const opts: DeepCopyOpts = deepCopySetDefaultOpts(options);

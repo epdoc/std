@@ -541,8 +541,22 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
 
   /**
    * Reads the file as JSON, parses it, and performs a deep copy with optional transformations.
-   * @param {FsDeepCopyOpts} [opts={}] - Options for the deep copy operation.
+   *
+   * This method is unique in that it allows you to deeply clone and transform JSON data
+   * as it is read from disk, supporting advanced options such as recursive file inclusion,
+   * RegExp detection, and custom transformation hooks.
+   *
+   * @param {FsDeepCopyOpts} [options] - Options for the deep copy operation:
+   *   @param {boolean} [options.replace=Dict] - If set, replaces keys with values throughout `a`.
+   *   @param {string} [options.pre='{'] - Prefix string for detecting replacement strings and URLs in string values.
+   *   @param {string} [options.post='}'] - Suffix string for detecting replacement strings and URLs in string values.
+   *   @param {boolean} [options.includeUrl=false] - Recursively loads and merges JSON from URLs or file paths found in string values.
+   *   @param {boolean} [options.detectRegExp=false] - If true, detects and reconstructs RegExp objects from plain objects using asRegExp.
    * @returns {Promise<unknown>} A promise that resolves with the deeply copied and transformed JSON content.
+   *
+   * @example
+   * // Recursively load and merge referenced files
+   * const data = await file.deepReadJson({ includeUrl: true });
    */
   async deepReadJson(opts: FsDeepCopyOpts = {}): Promise<unknown> {
     const data = await this.readJson();
@@ -551,9 +565,24 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
 
   /**
    * Performs a deep copy of the given data with optional transformations.
+   *
+   * This function is unique in that it supports:
+   *   - Recursively loading and merging JSON from URLs or file paths found in string values.
+   *   - Detecting and reconstructing RegExp objects from plain objects.
+   *   - Custom transformation or replacement of values during the copy.
+   *
    * @param {unknown} a - The data to deep copy.
-   * @param {FsDeepCopyOpts} [options] - Options for the deep copy operation.
+   * @param {FsDeepCopyOpts} [options] - Options for the deep copy operation:
+   *   @param {boolean} [options.replace=Dict] - If set, replaces keys with values throughout `a`.
+   *   @param {string} [options.pre='{'] - Prefix string for detecting replacement strings and URLs in string values.
+   *   @param {string} [options.post='}'] - Suffix string for detecting replacement strings and URLs in string values.
+   *   @param {boolean} [options.includeUrl=false] - Recursively loads and merges JSON from URLs or file paths found in string values.
+   *   @param {boolean} [options.detectRegExp=false] - If true, detects and reconstructs RegExp objects from plain objects using asRegExp.
    * @returns {Promise<unknown>} A promise that resolves with the deeply copied and transformed data.
+   *
+   * @example
+   * // Deep copy with RegExp detection
+   * const copy = await file.#deepCopy(obj, { detectRegExp: true });
    */
   #deepCopy(a: unknown, options?: FsDeepCopyOpts): Promise<unknown> {
     const opts: FsDeepCopyOpts = deepCopySetDefaultOpts(options);
