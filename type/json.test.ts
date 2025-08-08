@@ -1,5 +1,6 @@
 import { expect } from 'jsr:@std/expect';
 import { describe, it } from 'jsr:@std/testing/bdd';
+import stripJsonComments from './strip-comments.ts';
 import type { Dict } from './types.ts';
 import * as _ from './util.ts';
 
@@ -267,6 +268,59 @@ describe('json', () => {
       const obj: Dict = { a: 1 };
       obj.self = obj;
       expect(() => _.jsonSerialize(obj)).toThrow();
+    });
+  });
+  describe('stripJsonComments', () => {
+    it('removes single-line comments', () => {
+      const jsonc = `
+      {
+        // this is a comment
+        "a": 1 // another comment
+      }
+    `;
+      const stripped = stripJsonComments(jsonc);
+      expect(stripped).not.toContain('//');
+      expect(JSON.parse(stripped)).toEqual({ a: 1 });
+    });
+
+    it('removes multi-line comments', () => {
+      const jsonc = `
+      {
+        /* this is a
+           multi-line comment */
+        "b": 2
+      }
+    `;
+      const stripped = stripJsonComments(jsonc);
+      expect(stripped).not.toContain('/*');
+      expect(JSON.parse(stripped)).toEqual({ b: 2 });
+    });
+
+    it('handles comments and trailing commas', () => {
+      const jsonc = `
+      {
+        "a": 1, // comment
+        "b": 2, /* another comment */
+      }
+    `;
+      const stripped = stripJsonComments(jsonc);
+      // Remove trailing commas for valid JSON.parse
+      const clean = stripped.replace(/,(\s*[}\]])/g, '$1');
+      expect(JSON.parse(clean)).toEqual({ a: 1, b: 2 });
+    });
+
+    it('does not remove comment-like content in strings', () => {
+      const jsonc = `
+      {
+        "str": "// not a comment",
+        "str2": "/* not a comment */"
+      }
+    `;
+      const stripped = stripJsonComments(jsonc);
+      expect(JSON.parse(stripped)).toEqual({
+        str: '// not a comment',
+        str2: '/* not a comment */',
+      });
     });
   });
 });

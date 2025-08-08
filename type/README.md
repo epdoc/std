@@ -31,3 +31,7 @@ console.log('val is a boolean?', isBoolean(val) ? 'yes' : 'no');
 ## License
 
 This library is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
+
+The functionality to support stripping comments from JSONC files is ported from
+[sindresorhus/strip-json-comments](https://github.com/sindresorhus/strip-json-comments/blob/main/readme.md) which is
+also licensed under the MIT license.

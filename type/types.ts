@@ -11,6 +11,11 @@ export type Integer = number;
 export type Dict = Record<string, unknown>;
 
 /**
+ * Result of a comparison between two Dict objects.
+ */
+export type CompareResult = -1 | 0 | 1;
+
+/**
  * Constructs a type where exactly one property from a set of keys `K`
  * in type `T` is required to be present. All other properties from `T`
  * are forbidden.
@@ -59,3 +64,45 @@ export type ExactlyOne<T, K extends keyof T = keyof T> = K extends keyof T // Fo
 export type RegExpDef =
   | { pattern: string; flags?: string; regex?: never }
   | { regex: string; flags?: string; pattern?: never };
+
+/**
+ * Options for converting a value to a float.
+ */
+export type AsFloatOpts = {
+  def?: number;
+  commaAsDecimal?: boolean;
+};
+
+/**
+ * Function type for deep copying an object.
+ */
+export type DeepCopyFn = (a: unknown, opts: DeepCopyOpts) => unknown;
+
+/**
+ * Options for deep copying an object.
+ */
+export type DeepCopyOpts = {
+  replace?: Record<string, string>;
+  detectRegExp?: boolean;
+  pre?: string;
+  post?: string;
+};
+
+export type JsonDeserializeOpts = DeepCopyOpts & {
+  stripComments?: StripJsonCommentsOpts;
+};
+
+export type StripJsonCommentsOpts = {
+  /**
+   * If true, whitespace characters in comments will be replaced with a single space.
+   * If false, comments will be removed without replacing them with spaces.
+   * Defaults to true.
+   */
+  whitespace?: boolean;
+
+  /**
+   * If true, trailing commas in arrays and objects will be removed.
+   * Defaults to false.
+   */
+  trailingCommas?: boolean;
+};

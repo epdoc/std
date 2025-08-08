@@ -1,5 +1,14 @@
 import { decodeAscii85, encodeAscii85 } from 'jsr:@std/encoding@^1.0.10/ascii85';
-import type { Dict, Integer, RegExpDef } from './types.ts';
+import stripJsonComments from './strip-comments.ts';
+import type {
+  AsFloatOpts,
+  CompareResult,
+  DeepCopyOpts,
+  Dict,
+  Integer,
+  JsonDeserializeOpts,
+  RegExpDef,
+} from './types.ts';
 
 /**
  * Regular expression definitions for various patterns.
@@ -445,14 +454,6 @@ export function asBoolean(val: unknown, defval = false): boolean {
 }
 
 /**
- * Options for converting a value to a float.
- */
-export type AsFloatOpts = {
-  def?: number;
-  commaAsDecimal?: boolean;
-};
-
-/**
  * Converts a value to a float, handling thousands separators.
  * @param val - The value to convert.
  * @param opts - Options for conversion.
@@ -753,21 +754,6 @@ export function roundNumber(num: number, dec: number = 3): number {
 }
 
 /**
- * Function type for deep copying an object.
- */
-export type DeepCopyFn = (a: unknown, opts: DeepCopyOpts) => unknown;
-
-/**
- * Options for deep copying an object.
- */
-export type DeepCopyOpts = {
-  replace?: Record<string, string>;
-  detectRegExp?: boolean;
-  pre?: string;
-  post?: string;
-};
-
-/**
  * Performs a deep copy of the provided value, with advanced options for transformation.
  *
  * This function is unique in that it supports:
@@ -870,9 +856,9 @@ export function msub(
  * @param opts - The options to set defaults for.
  * @returns The options with defaults set.
  */
-export function deepCopySetDefaultOpts(opts?: DeepCopyOpts): DeepCopyOpts {
+export function deepCopySetDefaultOpts<T extends DeepCopyOpts = DeepCopyOpts>(opts?: T): T {
   if (!opts) {
-    opts = {};
+    opts = {} as T;
   }
   if (!opts.pre) {
     opts.pre = '{';
@@ -939,8 +925,11 @@ export function jsonSerialize(value: unknown, opts: DeepCopyOpts = {}, space?: s
  * @param {DeepCopyOpts} [opts] - Deserialization options (e.g., detectRegExp).
  * @returns {unknown} The restored value.
  */
-export function jsonDeserialize<T = unknown>(json: string, opts: DeepCopyOpts = {}): T {
-  opts = deepCopySetDefaultOpts(opts);
+export function jsonDeserialize<T = unknown>(json: string, opts: JsonDeserializeOpts = {}): T {
+  opts = deepCopySetDefaultOpts<JsonDeserializeOpts>(opts);
+  if (opts.stripComments) {
+    json = stripJsonComments(json, opts.stripComments);
+  }
   return JSON.parse(json, (_key, val) => {
     if (val) {
       if (typeof val === 'object' && '__filter' in val) {
@@ -1054,11 +1043,6 @@ export function deepEquals(a: unknown, b: unknown): boolean {
 
   return false;
 }
-
-/**
- * Result of a comparison between two Dict objects.
- */
-export type CompareResult = -1 | 0 | 1;
 
 /**
  * Compares two Dict objects using specified keys.

@@ -1,7 +1,9 @@
+import { isNonEmptyString } from './dep.ts';
 import { FileSpec } from './filespec.ts';
 import { FolderSpec } from './folderspec.ts';
 import { FSSpec } from './fsspec.ts';
 import { SymlinkSpec } from './symspec.ts';
+import type { FileName, FilePath, FolderPath } from './types.ts';
 
 /**
  * Joins continuation lines in a string array.
@@ -40,4 +42,34 @@ export function resolveType(
     return file.getResolvedType();
   }
   return new FSSpec(file).getResolvedType();
+}
+
+/**
+ * Type guard checks if the given value is a valid file name.
+ *
+ * @param {unknown} val The value to check.
+ * @returns True if the value is a non-empty string, false otherwise.
+ */
+export function isFilename(val: unknown): val is FileName {
+  return isNonEmptyString(val);
+}
+
+/**
+ * Type guard checks if the given value is a valid folder path.
+ *
+ * @param val The value to check.
+ * @returns True if the value is a non-empty string, false otherwise.
+ */
+export function isFolderPath(val: unknown): val is FolderPath {
+  return isNonEmptyString(val);
+}
+
+/**
+ * Type guard checks if the given value is a valid file path.
+ *
+ * @param val The value to check.
+ * @returns True if the value is a non-empty string, false otherwise.
+ */
+export function isFilePath(val: unknown): val is FilePath {
+  return isNonEmptyString(val);
 }

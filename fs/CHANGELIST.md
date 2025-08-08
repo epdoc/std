@@ -1,5 +1,9 @@
 # Changelist
 
+## 0.2.15
+
+- Added JSONC read support.
+
 ## 0.2.14
 
 - Fixed bug in `FileSpec.fromMeta()`.

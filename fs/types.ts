@@ -1,5 +1,5 @@
-import { type DeepCopyOpts, type Integer, isNonEmptyString } from './dep.ts';
 import type { BaseSpec } from './basespec.ts';
+import type { DeepCopyOpts, Integer } from './dep.ts';
 
 /**
  * Represents a file path.
@@ -25,36 +25,6 @@ export type FileExt = string;
  * Represents a folder name.
  */
 export type FolderName = string;
-
-/**
- * Type guard checks if the given value is a valid file name.
- *
- * @param {unknown} val The value to check.
- * @returns True if the value is a non-empty string, false otherwise.
- */
-export function isFilename(val: unknown): val is FileName {
-  return isNonEmptyString(val);
-}
-
-/**
- * Type guard checks if the given value is a valid folder path.
- *
- * @param val The value to check.
- * @returns True if the value is a non-empty string, false otherwise.
- */
-export function isFolderPath(val: unknown): val is FolderPath {
-  return isNonEmptyString(val);
-}
-
-/**
- * Type guard checks if the given value is a valid file path.
- *
- * @param val The value to check.
- * @returns True if the value is a non-empty string, false otherwise.
- */
-export function isFilePath(val: unknown): val is FilePath {
-  return isNonEmptyString(val);
-}
 
 export type FsDeepCopyOpts = DeepCopyOpts & {
   includeUrl?: unknown;

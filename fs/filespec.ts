@@ -21,6 +21,7 @@ import {
   isRegExp,
   isString,
   pad,
+  stripJsonComments,
 } from './dep.ts';
 import { FSError } from './error.ts';
 import type { FolderSpec } from './folderspec.ts';
@@ -29,19 +30,14 @@ import { FSSpec, fsSpec } from './fsspec.ts';
 import type { FSStats } from './fsstats.ts';
 import { type FSSpecParam, type IRootableSpec, type ISafeCopyableSpec, resolvePathArgs } from './icopyable.ts';
 import { type FileConflictStrategy, fileConflictStrategyType, safeCopy, type SafeCopyOpts } from './safecopy.ts';
-import {
-  DigestAlgorithm,
-  type DigestAlgorithmValues,
-  type FilePath,
-  type FsDeepCopyOpts,
-  isFilePath,
-} from './types.ts';
-import { joinContinuationLines } from './util.ts';
+import { DigestAlgorithm, type DigestAlgorithmValues, type FilePath, type FsDeepCopyOpts } from './types.ts';
+import { isFilePath, joinContinuationLines } from './util.ts';
 
 const REG = {
   pdf: /\.pdf$/i,
   xml: /\.xml$/i,
   json: /\.json$/i,
+  jsonc: /\.jsonc$/i,
   txt: /\.(txt|text)$/i,
   lineSeparator: new RegExp(/\r?\0?\n/),
   leadingDot: new RegExp(/^\./),
@@ -218,6 +214,15 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
 
   isJson(): boolean {
     return REG.json.test(this.extname);
+  }
+
+  /**
+   * Tests the extension to see if this is a JSONC file.
+   * @returns {boolean} True if the extension indicates this is a JSONC file.
+   */
+
+  isJsonc(): boolean {
+    return REG.jsonc.test(this.extname);
   }
 
   /**
@@ -532,6 +537,10 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
   async readJson<T = unknown>(): Promise<T> {
     try {
       const s = await Deno.readTextFile(this._f);
+      if (this.isJsonc()) {
+        // If the file is JSONC, strip comments before parsing
+        return JSON.parse(stripJsonComments(s, { trailingCommas: true })) as T;
+      }
       return JSON.parse(s) as T;
     } catch (err) {
       throw asError(err, { path: this._f, cause: 'readJson' });
@@ -539,19 +548,25 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
   }
 
   /**
-   * Reads the file as JSON, parses it, and performs a deep copy with optional transformations.
+   * Reads the file as JSON, parses it, and performs a deep copy with optional transformations. If
+   * the file is JSONC, comments are stripped before parsing.
    *
-   * This method is unique in that it allows you to deeply clone and transform JSON data
-   * as it is read from disk, supporting advanced options such as recursive file inclusion,
-   * RegExp detection, and custom transformation hooks.
+   * This method is unique in that it allows you to deeply clone and transform JSON data as it is
+   * read from disk, supporting advanced options such as recursive file inclusion, RegExp detection,
+   * and custom transformation hooks.
    *
    * @param {FsDeepCopyOpts} [options] - Options for the deep copy operation:
    *   @param {boolean} [options.replace=Dict] - If set, replaces keys with values throughout `a`.
-   *   @param {string} [options.pre='{'] - Prefix string for detecting replacement strings and URLs in string values.
-   *   @param {string} [options.post='}'] - Suffix string for detecting replacement strings and URLs in string values.
-   *   @param {boolean} [options.includeUrl=false] - Recursively loads and merges JSON from URLs or file paths found in string values.
-   *   @param {boolean} [options.detectRegExp=false] - If true, detects and reconstructs RegExp objects from plain objects using asRegExp.
-   * @returns {Promise<unknown>} A promise that resolves with the deeply copied and transformed JSON content.
+   *   @param {string} [options.pre='{'] - Prefix string for detecting replacement strings and URLs
+   *   in string values.
+   *   @param {string} [options.post='}'] - Suffix string for detecting replacement strings and URLs
+   *   in string values.
+   *   @param {boolean} [options.includeUrl=false] - Recursively loads and merges JSON from URLs or
+   *   file paths found in string values.
+   *   @param {boolean} [options.detectRegExp=false] - If true, detects and reconstructs RegExp
+   *   objects from plain objects using asRegExp.
+   * @returns {Promise<unknown>} A promise that resolves with the deeply copied and transformed JSON
+   * content.
    *
    * @example
    * // Recursively load and merge referenced files
