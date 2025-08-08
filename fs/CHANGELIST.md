@@ -1,5 +1,9 @@
 # Changelist
 
+## 0.2.14
+
+- Fixed bug in `FileSpec.fromMeta()`.
+
 ## 0.2.13
 
 - Added generics when reading JSON files.

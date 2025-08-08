@@ -175,4 +175,41 @@ describe('FSSpec, FileSpec, FolderSpec', () => {
       expect(results.length).toBe(2);
     });
   });
+
+  // ...existing code...
+
+  describe('FileSpec.fromMeta', () => {
+    test('creates a FileSpec from a file URL and relative path', () => {
+      const metaUrl = import.meta.url;
+      const relPath = './test.txt';
+      const file = FileSpec.fromMeta(metaUrl, relPath);
+      expect(file).toBeInstanceOf(FileSpec);
+      expect(file.filename).toBe('test.txt');
+      expect(file.path.endsWith('test.txt')).toBe(true);
+    });
+
+    test('creates a FileSpec from a file URL and absolute path', () => {
+      const metaUrl = import.meta.url;
+      const absPath = path.resolve('somefile.json');
+      const file = FileSpec.fromMeta(metaUrl, absPath);
+      expect(file).toBeInstanceOf(FileSpec);
+      expect(file.path.endsWith('somefile.json')).toBe(true);
+    });
+
+    test('throws if metaUrl is not a file URL', () => {
+      expect(() => {
+        FileSpec.fromMeta('http://example.com', './foo.txt');
+      }).toThrow();
+    });
+
+    test('returns correct dirname and filename', () => {
+      const metaUrl = import.meta.url;
+      const relPath = './test.txt';
+      const file = FileSpec.fromMeta(metaUrl, relPath);
+      expect(typeof file.dirname).toBe('string');
+      expect(file.filename).toBe('test.txt');
+    });
+  });
+
+  // ...existing
 });

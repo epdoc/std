@@ -81,8 +81,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
    * // configFile.path will be /path/to/your/project/data/config.json
    */
   public static fromMeta(metaUrl: string, ...paths: string[]): FileSpec {
-    const dir = path.dirname(fromFileUrl(metaUrl));
-    return new FileSpec(path.join(dir, ...paths));
+    return new FileSpec(path.resolve(fromFileUrl(metaUrl), ...paths));
   }
 
   /**
