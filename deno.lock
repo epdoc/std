@@ -263,13 +263,6 @@
   "workspace": {
     "dependencies": [
       "jsr:@std/assert@^1.0.13"
-    ],
-    "members": {
-      "fs": {
-        "dependencies": [
-          "npm:sindresorhus@^3.0.2"
-        ]
-      }
-    }
+    ]
   }
 }

@@ -15,8 +15,5 @@
   },
   "fmt": {
     "exclude": ["tests/readonly/**/*.*"]
-  },
-  "imports": {
-    "sindresorhus": "npm:sindresorhus@^3.0.2"
   }
 }

@@ -554,6 +554,15 @@ describe('FSSpec.fromMeta, FileSpec.fromMeta, FolderSpec.fromMeta', () => {
       const json2 = await fileSpec(READONLY.path, DEST).readJson();
       expect(json2).toEqual(json);
     });
+    test('json', async () => {
+      const SRC = 'folder-sample/sample.jsonc';
+      const DEST = 'folder-sample/sample-copy.json';
+      const json = await fileSpec(READONLY.path, SRC).readJson();
+      await fileSpec(READONLY.path, DEST).writeJson(json);
+      expect(await fsSpec(READONLY.path, DEST).getIsFile()).toEqual(true);
+      const json2 = await fileSpec(READONLY.path, DEST).readJson();
+      expect(json2).toEqual(json);
+    });
     test('json err', () => {
       const SRC = '.withdot/broken.json';
       return Promise.resolve()
