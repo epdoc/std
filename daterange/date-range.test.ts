@@ -1,7 +1,7 @@
 import { dateEx } from '@epdoc/datetime';
 import { expect } from 'jsr:@std/expect';
 import { describe, test } from 'jsr:@std/testing/bdd';
-import { dateList, type DateRangeDef, dateStringToDate } from './mod.ts';
+import { dateList, type DateRangeDef, DateRanges, dateRanges, dateStringToDate } from './mod.ts';
 
 function expectDate(
   date: Date | undefined,
@@ -171,6 +171,33 @@ describe('date-range', () => {
       // Second range: all of 2026
       expectDate(d[1].after, { year: 2026, month: 0, day: 1 });
       expectDate(d[1].before, { year: 2027, month: 0, day: 1 });
+    });
+  });
+
+  describe('dateRanges', () => {
+    test('should return a DateRanges object', () => {
+      const dr = dateRanges('2025');
+      expect(dr).toBeInstanceOf(DateRanges);
+    });
+
+    test('should contain the correct ranges for a complex string', () => {
+      const dr = dateRanges('202501-202502,2026');
+      const ranges = dr.ranges;
+      expect(ranges).toBeInstanceOf(Array);
+      expect(ranges.length).toBe(2);
+
+      // First range: Jan-Feb 2025
+      expectDate(ranges[0].after, { year: 2025, month: 0, day: 1 });
+      expectDate(ranges[0].before, { year: 2025, month: 2, day: 1 });
+      // Second range: all of 2026
+      expectDate(ranges[1].after, { year: 2026, month: 0, day: 1 });
+      expectDate(ranges[1].before, { year: 2027, month: 0, day: 1 });
+    });
+
+    test('should handle empty string input', () => {
+      const dr = dateRanges('');
+      expect(dr).toBeInstanceOf(DateRanges);
+      expect(dr.ranges.length).toBe(0);
     });
   });
 });

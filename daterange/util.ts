@@ -1,3 +1,4 @@
+import { DateRanges } from './date-ranges.ts';
 import type { Integer } from './dep.ts';
 
 const DAY_MS = 24 * 3600 * 1000;
@@ -73,6 +74,37 @@ export function dateList(val: string, h: Integer = 0): DateRangeDef[] {
     result.push({ after, before });
   }
   return result;
+}
+
+/**
+ * Converts a string representation of date ranges into a `DateRanges` object. This
+ * function supports various date string formats and range specifications.
+ *
+ * Supported single date formats:
+ * - `YYYY`: Represents the entire year. `after` is Jan 1st, `before` is Jan 1st of the next year.
+ * - `YYYYMM`: Represents the entire month. `after` is the 1st day of the month, `before` is the 1st
+ *   day of the next month.
+ * - `YYYYMMDD`: Represents the entire day. `after` is the start of the day, `before` is the start
+ *   of the next day.
+ * - `YYYYMMDDhh`, `YYYYMMDDhhmm`, `YYYYMMDDhhmmss`: Represents a precise point in time.
+ *
+ * Supported range formats (separated by '-'):
+ * - `start-end`: Both `start` and `end` can be any of the above formats. The `before` date for the
+ *   `end` part of the range is calculated to include the entire specified period. For example,
+ *   `20250101-20250102` includes all of Jan 1 and Jan 2. A mixed-format range like
+ *   `2025010113-20250102` starts at 13:00 on Jan 1 and includes all of Jan 2.
+ * - `start-`: Open-ended range, `before` is `undefined`.
+ * - `-end`: Open-ended range, `after` is `undefined`.
+ *
+ * Multiple ranges can be specified by separating them with commas (e.g., "2025,202601-202603").
+ * @param {string} val - A string containing date ranges separated by commas.
+ * @param {number} h - The hour of the day, in local time, to use for zeroing to the beginning or
+ * end of a day, when not specified in the definitions. This naturally defaults to 0h.
+ * @returns {DateRanges} An object containing an array of date ranges.
+ */
+export function dateRanges(val: string, h: Integer = 0): DateRanges {
+  const defs = dateList(val, h);
+  return new DateRanges(defs);
 }
 
 /**
