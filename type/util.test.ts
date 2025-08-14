@@ -1,5 +1,6 @@
 import { expect } from 'jsr:@std/expect';
 import { describe, it } from 'jsr:@std/testing/bdd';
+import type { ExactlyOne, SingleDigitChar, SingleLetterChar, SingleLowerCaseChar, SingleUpperCaseChar } from './types.ts';
 import {
   asBoolean,
   asDate,
@@ -38,7 +39,7 @@ import {
 
 describe('util', () => {
   describe('number', () => {
-    Deno.test('isNumber', () => {
+    it('isNumber', () => {
       expect(isNumber(4)).toBe(true);
       expect(isNumber(NaN)).toBe(false);
       expect(isNumber({})).toBe(false);
@@ -470,6 +471,88 @@ describe('util', () => {
     });
     it('handles missing delimiters gracefully', () => {
       expect(msub('Hello ${name}!', { name: 'World' }, '', '')).toBe('Hello ${name}!');
+    });
+  });
+
+  describe('Type Utilities', () => {
+    describe('SingleLetterChar', () => {
+      it('should accept single-character strings', () => {
+        const valid: SingleLetterChar = 'a';
+        const validNumber: SingleLetterChar = 'Z';
+        const validSymbol: SingleLetterChar = 'c';
+        expect(valid).toBe('a');
+        expect(validNumber).toBe('Z');
+        expect(validSymbol).toBe('c');
+      });
+    });
+
+    describe('SingleUpperCaseChar', () => {
+      it('should accept single upper case character strings', () => {
+        const valid: SingleUpperCaseChar = 'A';
+        const valid2: SingleUpperCaseChar = 'Z';
+        expect(valid).toBe('A');
+        expect(valid2).toBe('Z');
+      });
+    });
+
+    describe('SingleLowerCaseChar', () => {
+      it('should accept single lower case character strings', () => {
+        const valid: SingleLowerCaseChar = 'a';
+        const valid2: SingleLowerCaseChar = 'z';
+        expect(valid).toBe('a');
+        expect(valid2).toBe('z');
+      });
+    });
+
+    describe('SingleDigit', () => {
+      it('should accept single digit strings', () => {
+        const valid: SingleDigitChar = '0';
+        const valid2: SingleDigitChar = '9';
+        expect(valid).toBe('0');
+        expect(valid2).toBe('9');
+      });
+    });
+
+    describe('ExactlyOne<T>', () => {
+      it('should require exactly one property from the union', () => {
+        type TestUnion = { a: number } | { b: string } | { c: boolean };
+        const valid: ExactlyOne<TestUnion> = { a: 1 };
+        const validAlt: ExactlyOne<TestUnion> = { b: 'test' };
+        expect(Object.keys(valid).length).toBe(1);
+        expect(Object.keys(validAlt).length).toBe(1);
+      });
+
+      it('should work with nested object types', () => {
+        type ComplexUnion =
+          | { meta: { id: string } }
+          | { config: { enabled: boolean } };
+
+        const valid: ExactlyOne<ComplexUnion> = { meta: { id: '123' } };
+        const validAlt: ExactlyOne<ComplexUnion> = {
+          config: { enabled: true },
+        };
+        expect(Object.keys(valid).length).toBe(1);
+        expect(Object.keys(validAlt).length).toBe(1);
+      });
+
+      it('should enforce runtime single-key checks', () => {
+        const isExactlyOne = (obj: object) => Object.keys(obj).length === 1;
+
+        expect(isExactlyOne({ a: 1 })).toBe(true);
+        expect(isExactlyOne({})).toBe(false);
+        expect(isExactlyOne({ a: 1, b: 2 })).toBe(false);
+      });
+    });
+
+    describe('Integration', () => {
+      it('should compose SingleLetterChar with ExactlyOne', () => {
+        type CharOption = { charA: 'a' } | { charB: 'b' };
+
+        const valid: ExactlyOne<CharOption> = { charA: 'a' };
+        const valid2: ExactlyOne<CharOption> = { charB: 'b' };
+        expect(valid.charA).toBe('a');
+        expect(valid2.charB).toBe('b');
+      });
     });
   });
 });
