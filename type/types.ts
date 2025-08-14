@@ -58,6 +58,10 @@ export type ExactlyOne<T, K extends keyof T = keyof T> = K extends keyof T // Fo
   ? Pick<T, K> & Partial<Record<Exclude<keyof T, K>, never>>
   : never;
 
+export type SingleChar = `${string}` extends `${infer First}${infer Rest}` ? Rest extends '' ? `${First}` // Exactly 1 character
+  : never // More than 1 character
+  : never; // Empty string
+
 /**
  * Represents a regular expression definition with pattern and optional flags.
  */
