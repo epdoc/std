@@ -1,3 +1,7 @@
+/**
+ * This module contains types for formatting durations.
+ * @module
+ */
 import type { Integer } from '@epdoc/type';
 import type { Field } from './duration/types.ts';
 
@@ -11,8 +15,17 @@ export type Style = 'long' | 'short' | 'narrow' | 'digital';
  * Display options for Intl.DurationFormat
  */
 export type Display = 'auto' | 'always';
+/**
+ * Options for displaying days.
+ */
 export type Days = 'long' | 'short' | 'narrow';
+/**
+ * Options for displaying hours, minutes, and seconds.
+ */
 export type HMS = 'long' | 'short' | 'narrow' | '2-digit' | 'numeric';
+/**
+ * Options for displaying milliseconds.
+ */
 export type MS = 'long' | 'short' | 'narrow' | 'fractional';
 
 /**

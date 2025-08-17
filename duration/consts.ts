@@ -1,5 +1,16 @@
+/**
+ * This file contains constants for time measurements and ratios.
+ * @module
+ */
+
+/**
+ * The number of seconds in a solar year.
+ */
 export const SECONDS_PER_SOLAR_YEAR = ((365 * 24 + 5) * 60 + 48) * 60 + 46;
 
+/**
+ * A record of time measurements in milliseconds.
+ */
 export const Measures: Record<string, number> = {
   // years: SECONDS_PER_YEAR * 1000,
   // months: Math.floor((SECONDS_PER_YEAR * 1000) / 12),
@@ -13,6 +24,9 @@ export const Measures: Record<string, number> = {
   nanoseconds: 1 / 1000000,
 } as const;
 
+/**
+ * A record of time ratios.
+ */
 export const Ratios: Record<string, number> = {
   // years: SECONDS_PER_YEAR * 1000,
   // months: Math.floor((SECONDS_PER_YEAR * 1000) / 12),

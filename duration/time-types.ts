@@ -1,3 +1,7 @@
+/**
+ * This module contains type definitions for time-related values.
+ * @module
+ */
 import type { Integer } from '@epdoc/type';
 
 /**
@@ -25,6 +29,15 @@ export type EpochMilliseconds = Integer;
  */
 export type EpochSeconds = Integer;
 
+/**
+ * Represents a duration in minutes.
+ */
 export type Minutes = number;
+/**
+ * Represents a duration in seconds.
+ */
 export type Seconds = number;
+/**
+ * Represents a duration in high resolution seconds.
+ */
 export type HrSeconds = number;

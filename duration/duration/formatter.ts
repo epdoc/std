@@ -1,3 +1,7 @@
+/**
+ * A class for formatting durations into strings.
+ * @module
+ */
 import type * as Format from '../format.ts';
 import type { HrMilliseconds, Milliseconds } from '../time-types.ts';
 import { DurationRecord } from './record.ts';
@@ -52,16 +56,16 @@ const DEFAULT: Record<Format.Style, Format.Options> = {
   },
 };
 
-export class DurationUtil {
+/**
+ * A class for formatting durations into strings.
+ */
+export class DurationFormatter {
   // @ts-ignore it gets initialized when it's first used, if not previously initialized
   protected _opts: Duration.Options;
 
   /**
-   * Construct a new `DurationUtil` instance. If `formatting` is not a
-   * `FormatMsName` then will initialize formatting with default `:` format.
-   * @param {Milliseconds} ms - The duration we are outputing. We use the absolute value.
-   * @param {FormatMsOptions | FormatMsName} formatting - Defines the format.
-   * @see options
+   * Construct a new `DurationFormatter` instance.
+   * @param {Format.Options} format - Defines the format.
    */
   constructor(format?: Format.Options) {
     if (format) {
@@ -69,22 +73,39 @@ export class DurationUtil {
     }
   }
 
+  /**
+   * Use digital formatting.
+   */
   get digital(): this {
     return this.style('digital');
   }
 
+  /**
+   * Use narrow formatting.
+   */
   get narrow(): this {
     return this.style('narrow');
   }
 
+  /**
+   * Use short formatting.
+   */
   get short(): this {
     return this.style('short');
   }
 
+  /**
+   * Use long formatting.
+   */
   get long(): this {
     return this.style('long');
   }
 
+  /**
+   * Set the style of the format.
+   * @param {Format.Style} style - The style to use.
+   * @returns {this}
+   */
   style(style: Format.Style): this {
     if (DEFAULT[style]) {
       this._opts = Object.assign({}, DEFAULT[style]);
@@ -92,26 +113,51 @@ export class DurationUtil {
     return this;
   }
 
+  /**
+   * Set the number of fractional digits to display.
+   * @param {Integer} digits - The number of digits.
+   * @returns {this}
+   */
   fractionalDigits(digits: Integer): this {
     this._opts.fractionalDigits = digits;
     return this;
   }
 
+  /**
+   * Set the number of fractional digits to display.
+   * @param {Integer} digits - The number of digits.
+   * @returns {this}
+   */
   digits(digits: Integer): this {
     this._opts.fractionalDigits = digits;
     return this;
   }
 
+  /**
+   * Set the separator to use between parts of the formatted string.
+   * @param {string} val - The separator string.
+   * @returns {this}
+   */
   separator(val: string): this {
     this._opts.separator = val;
     return this;
   }
 
+  /**
+   * Set the maximum unit to display.
+   * @param {Duration.Field} field - The maximum unit.
+   * @returns {this}
+   */
   max(field: Duration.Field): this {
     this._opts.maxDisplay = field;
     return this;
   }
 
+  /**
+   * Set the minimum unit to display.
+   * @param {Duration.Field} field - The minimum unit.
+   * @returns {this}
+   */
   min(field: Duration.Field): this {
     this._opts.minDisplay = field;
     return this;
@@ -130,6 +176,11 @@ export class DurationUtil {
     return this;
   }
 
+  /**
+   * Apply a set of format options to the current options.
+   * @param {Format.Options} format - The options to apply.
+   * @returns {this}
+   */
   public apply(format?: Format.Options): this {
     if (!isDict(this._opts)) {
       this._opts = Object.assign({}, DEFAULT.digital, format);
@@ -139,6 +190,11 @@ export class DurationUtil {
     return this;
   }
 
+  /**
+   * Format a duration into a string.
+   * @param {Milliseconds | HrMilliseconds} ms - The duration to format.
+   * @returns {string} The formatted string.
+   */
   public format(ms: Milliseconds | HrMilliseconds): string {
     if (!isDict(this._opts)) {
       this._opts = Object.assign({}, DEFAULT.digital);

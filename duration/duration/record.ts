@@ -1,8 +1,15 @@
+/**
+ * A class for representing a duration of time as a record of time units.
+ * @module
+ */
 import { type Dict, isDict } from '@epdoc/type';
 import * as Time from '../consts.ts';
 import { Fields } from './consts.ts';
 import type * as Duration from './types.ts';
 
+/**
+ * A class for representing a duration of time as a record of time units.
+ */
 export class DurationRecord {
   protected _ms: number = 0;
   days: number = 0;
@@ -14,6 +21,10 @@ export class DurationRecord {
   nanoseconds: number = 0;
   // [key: string]: Integer;
 
+  /**
+   * Construct a new `DurationRecord` instance.
+   * @param {number | Duration.RecordOptions} arg - The duration in milliseconds or a record of time units.
+   */
   constructor(arg: number | Duration.RecordOptions) {
     if (typeof arg === 'number') {
       if (arg < 0) {
@@ -50,15 +61,31 @@ export class DurationRecord {
     }
   }
 
+  /**
+   * Set the value of a field.
+   * @param {Duration.Field} field - The field to set.
+   * @param {number} value - The value to set.
+   */
   setField(field: Duration.Field, value: number) {
     // @ts-ignore this is a valid index
     this[field] = value;
   }
+
+  /**
+   * Get the value of a field.
+   * @param {Duration.Field} field - The field to get.
+   * @returns {number} The value of the field.
+   */
   getField(field: Duration.Field): number {
     // @ts-ignore this is a valid index
     return this[field];
   }
 
+  /**
+   * Prune the record to a minimum unit.
+   * @param {Duration.Field} minFieldName - The minimum unit to keep.
+   * @returns {this}
+   */
   public pruneMin(minFieldName?: Duration.Field): this {
     // Minimize upwards into fractional values
     if (minFieldName) {
@@ -81,6 +108,11 @@ export class DurationRecord {
     return this;
   }
 
+  /**
+   * Prune the record to a maximum unit.
+   * @param {Duration.Field} maxFieldName - The maximum unit to keep.
+   * @returns {this}
+   */
   public pruneMax(maxFieldName?: Duration.Field): this {
     // Maximize downwards into integer values
     if (maxFieldName) {
@@ -98,6 +130,10 @@ export class DurationRecord {
     return this;
   }
 
+  /**
+   * Check if the duration is zero.
+   * @returns {boolean} True if the duration is zero, false otherwise.
+   */
   isZero(): boolean {
     return (
       this.days === 0 &&
@@ -110,6 +146,10 @@ export class DurationRecord {
     );
   }
 
+  /**
+   * Convert the record to a plain object.
+   * @returns {Dict} The record as a plain object.
+   */
   public toTime(): Dict {
     return {
       days: this.days,
