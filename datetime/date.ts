@@ -1,4 +1,4 @@
-import { asInt, type Integer, isInteger, isNumber, isValidDate, pad } from './dep.ts';
+import { _, type Integer } from '@epdoc/type';
 
 export type Minutes = Integer;
 
@@ -28,6 +28,10 @@ export type GoogleSheetsDate = number;
  */
 export function dateEx(...args: unknown[]): DateEx {
   return new DateEx(args);
+}
+
+function isMinutes(val: unknown): val is Minutes {
+  return _.isInteger(val);
 }
 
 /**
@@ -63,7 +67,7 @@ export class DateEx {
    * @param val Minutes or a string of the form '-06:00' or '+06:00'.
    */
   tz(val: Minutes | ISOTZ): this {
-    this._tz = isInteger(val) ? val : DateEx.tzParse(val);
+    this._tz = isMinutes(val) ? val : DateEx.tzParse(val as ISOTZ);
     return this;
   }
 
@@ -94,7 +98,7 @@ export class DateEx {
    */
   withTz(val?: Minutes | ISOTZ): this {
     let offset: Minutes = 0;
-    if (isInteger(val)) {
+    if (isMinutes(val)) {
       offset = val - this._date.getTimezoneOffset();
     } else if (DateEx.isIsoTz(val)) {
       offset = (DateEx.tzParse(val) as Minutes) - this._date.getTimezoneOffset();
@@ -114,21 +118,21 @@ export class DateEx {
    */
   public toISOLocalString(showMs: boolean = true): string {
     this.validate();
-    const tzOffset: Minutes = isInteger(this._tz) ? this._tz : this._date.getTimezoneOffset();
+    const tzOffset: Minutes = _.isInteger(this._tz) ? this._tz as Minutes : this._date.getTimezoneOffset();
     const d: Date = new Date(this._date.getTime() - tzOffset * 60000);
     let s = String(d.getUTCFullYear()) +
       '-' +
-      pad(d.getUTCMonth() + 1, 2) +
+      _.pad(d.getUTCMonth() + 1, 2) +
       '-' +
-      pad(d.getUTCDate(), 2) +
+      _.pad(d.getUTCDate(), 2) +
       'T' +
-      pad(d.getUTCHours(), 2) +
+      _.pad(d.getUTCHours(), 2) +
       ':' +
-      pad(d.getUTCMinutes(), 2) +
+      _.pad(d.getUTCMinutes(), 2) +
       ':' +
-      pad(d.getUTCSeconds(), 2);
+      _.pad(d.getUTCSeconds(), 2);
     if (showMs !== false) {
-      s += '.' + pad(d.getMilliseconds(), 3);
+      s += '.' + _.pad(d.getMilliseconds(), 3);
     }
     s += DateEx.tzFormat(tzOffset);
     return s;
@@ -138,7 +142,7 @@ export class DateEx {
    * Validate whether the date is a valid Date object.
    */
   private validate() {
-    if (!isValidDate(this._date)) {
+    if (!_.isValidDate(this._date)) {
       throw new Error(INVALID_DATE_STRING);
     }
   }
@@ -151,7 +155,7 @@ export class DateEx {
    * @returns
    */
   format(format: string): string {
-    const tzOffset: Minutes = isNumber(this._tz) ? this._tz : this._date.getTimezoneOffset();
+    const tzOffset: Minutes = isMinutes(this._tz) ? this._tz : this._date.getTimezoneOffset();
     const d: Date = new Date(this._date.getTime() - tzOffset * 60000);
     return DateEx.formatInternal(d, format);
   }
@@ -164,12 +168,12 @@ export class DateEx {
     let f = String(format);
     f = f
       .replace('yyyy', String(d.getUTCFullYear()))
-      .replace('MM', pad(d.getUTCMonth() + 1, 2))
-      .replace('dd', pad(d.getUTCDate(), 2))
-      .replace('HH', pad(d.getUTCHours(), 2))
-      .replace('mm', pad(d.getUTCMinutes(), 2))
-      .replace('ss', pad(d.getUTCSeconds(), 2))
-      .replace('SSS', pad(d.getUTCMilliseconds(), 3));
+      .replace('MM', _.pad(d.getUTCMonth() + 1, 2))
+      .replace('dd', _.pad(d.getUTCDate(), 2))
+      .replace('HH', _.pad(d.getUTCHours(), 2))
+      .replace('mm', _.pad(d.getUTCMinutes(), 2))
+      .replace('ss', _.pad(d.getUTCSeconds(), 2))
+      .replace('SSS', _.pad(d.getUTCMilliseconds(), 3));
     return f;
   }
 
@@ -205,7 +209,7 @@ export class DateEx {
     if (m === 0) {
       return 'Z';
     }
-    return (m < 0 ? '+' : '-') + pad(Math.floor(Math.abs(m) / 60), 2) + ':' + pad(Math.abs(m) % 60, 2);
+    return (m < 0 ? '+' : '-') + _.pad(Math.floor(Math.abs(m) / 60), 2) + ':' + _.pad(Math.abs(m) % 60, 2);
   }
 
   /**
@@ -220,7 +224,7 @@ export class DateEx {
         return 0;
       } else if (p.length > 4) {
         const pol = p[3] === '-' ? 1 : -1;
-        const result = asInt(p[4]) * 60 + asInt(p[5]);
+        const result = _.asInt(p[4]) * 60 + _.asInt(p[5]);
         return result ? pol * result : result;
       }
     }
@@ -238,9 +242,9 @@ export class DateEx {
         return 0;
       } else if (p.length > 3) {
         const pol = p[2] === '-' ? 1 : -1;
-        let val = asInt(p[3]) * 60;
+        let val = _.asInt(p[3]) * 60;
         if (p.length > 3) {
-          val += asInt(p[4]);
+          val += _.asInt(p[4]);
         }
         return val ? pol * val : val;
       }
@@ -264,12 +268,12 @@ export class DateEx {
     if (p) {
       const tzOffset: Minutes | undefined = DateEx.pdfTzParse(p[7]);
       return new DateEx(
-        asInt(p[1]),
-        asInt(p[2]) - 1,
-        asInt(p[3]),
-        asInt(p[4]),
-        asInt(p[5]),
-        asInt(p[6]),
+        _.asInt(p[1]),
+        _.asInt(p[2]) - 1,
+        _.asInt(p[3]),
+        _.asInt(p[4]),
+        _.asInt(p[5]),
+        _.asInt(p[6]),
       ).withTz(tzOffset);
     }
   }

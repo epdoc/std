@@ -1,9 +1,12 @@
 {
   "name": "@epdoc/datetime",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "exports": "./mod.ts",
   "tasks": {
     "test": "deno test -E date.test.ts"
   },
-  "imports": {}
+  "imports": {
+    "@epdoc/type": "jsr:@epdoc/type@^1.1.9",
+    "@std/expect": "jsr:@std/expect@^1.0.17"
+  }
 }

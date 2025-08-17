@@ -1,7 +1,7 @@
-import { describe, it } from 'jsr:@std/testing/bdd';
+import { pad } from '@epdoc/type';
 import { expect } from 'jsr:@std/expect@^1.0.15';
+import { describe, it } from 'jsr:@std/testing/bdd';
 import { stringToDate } from './util.ts';
-import { pad } from '../type/util.ts';
 
 describe('pad', () => {
   it('should pad single digit numbers', () => {

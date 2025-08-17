@@ -1,7 +1,7 @@
+import { expect } from '@std/expect';
 import { describe, it } from 'jsr:@std/testing/bdd';
 import process from 'node:process';
 import { DateEx, dateEx } from './date.ts';
-import { expect } from 'jsr:@std/expect@^1.0.15';
 
 // TODO: remove skip when deno date is fixed
 
