@@ -1,5 +1,5 @@
+import type { Integer } from '@epdoc/type';
 import { DateRanges } from './date-ranges.ts';
-import type { Integer } from './dep.ts';
 
 const DAY_MS = 24 * 3600 * 1000;
 

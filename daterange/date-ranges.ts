@@ -1,4 +1,5 @@
-import { dateEx, isNonEmptyArray, isValidDate } from './dep.ts';
+import { dateEx } from '@epdoc/datetime';
+import { isNonEmptyArray, isValidDate } from '@epdoc/type';
 import type { DateRangeDef } from './util.ts';
 
 /**
