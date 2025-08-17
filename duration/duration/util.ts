@@ -1,26 +1,15 @@
-import type * as Format from './format.ts';
+import type * as Format from '../format.ts';
+import type { HrMilliseconds, Milliseconds } from '../time-types.ts';
 import { DurationRecord } from './record.ts';
 import type * as Duration from './types.ts';
 // import { formatToParts } from './intl-duration-format.ts';
-import { type Integer, isDict, isInteger } from './dep.ts';
-import type { HrMilliseconds, Milliseconds } from './time-types.ts';
+import { type Integer, isDict, isInteger } from '@epdoc/type';
 
 const REG = {
   isSepWhitespace: /^[,\s]+$/,
   isNumeric: new RegExp(/^(integer|decimal|fraction)$/),
   isLeadingZero: new RegExp(/^0\d$/),
 };
-
-/**
- * Construct a new `DurationUtil` instance. If `formatting` is not a
- * `FormatMsName` then will initialize formatting with default `:` format.
- * @param {Milliseconds} ms - The duration we are outputing. We use the absolute value.
- * @param {FormatMsOptions | FormatMsName} formatting - Defines the format.
- * @see options
- */
-export function durationUtil(format?: Format.Options): DurationUtil {
-  return new DurationUtil(format);
-}
 
 const DEFAULT: Record<Format.Style, Format.Options> = {
   digital: {
@@ -61,12 +50,6 @@ const DEFAULT: Record<Format.Style, Format.Options> = {
     fractionalDigits: 3,
     separator: ' ',
   },
-};
-
-export type DurationPart = {
-  type: 'literal' | 'integer' | 'unit' | 'decimal' | 'fraction';
-  value: string;
-  unit?: Duration.Field;
 };
 
 export class DurationUtil {
@@ -173,7 +156,7 @@ export class DurationUtil {
     return this.formatLong(time);
   }
 
-  protected formatToParts(time: DurationRecord, opts: Format.Options): DurationPart[] {
+  protected formatToParts(time: DurationRecord, opts: Format.Options): Duration.Part[] {
     // @ts-ignore DurationFormat is not yet in TS
     return new Intl.DurationFormat('en', opts ? opts : this._opts).formatToParts(time);
   }
@@ -194,9 +177,9 @@ export class DurationUtil {
       }
     }
 
-    const parts: DurationPart[] = this.formatToParts(time, opts);
+    const parts: Duration.Part[] = this.formatToParts(time, opts);
     const result: string[] = [];
-    parts.forEach((part: DurationPart) => {
+    parts.forEach((part: Duration.Part) => {
       if (part.type === 'literal' && typeof part.unit !== 'string') {
         // @ts-ignore separator is defined
         result.push(opts.separator);
@@ -225,11 +208,11 @@ export class DurationUtil {
         }
       }
     }
-    const parts: DurationPart[] = this.formatToParts(time, opts);
+    const parts: Duration.Part[] = this.formatToParts(time, opts);
 
     // Remove leading zeros from seconds and minutes if needed
     if (bRemoveSecondsLeadingZero || bRemoveMinutesLeadingZero) {
-      parts.forEach((part: DurationPart) => {
+      parts.forEach((part: Duration.Part) => {
         if (
           bRemoveSecondsLeadingZero &&
           part.unit === 'second' &&
@@ -256,13 +239,13 @@ export class DurationUtil {
       opts.hours = 'numeric';
       opts.hoursDisplay = 'auto';
     }
-    const parts: DurationPart[] = this.formatToParts(time, opts);
+    const parts: Duration.Part[] = this.formatToParts(time, opts);
     return this._formatDigital(parts);
   }
 
-  protected _formatDigital(parts: DurationPart[]): string {
+  protected _formatDigital(parts: Duration.Part[]): string {
     const result: string[] = [];
-    parts.forEach((part: DurationPart) => {
+    parts.forEach((part: Duration.Part) => {
       if (part.unit && REG.isNumeric.test(part.type)) {
         if (part.unit === 'day') {
           result.push(part.value);
@@ -292,9 +275,9 @@ export class DurationUtil {
     return result.join('');
   }
 
-  protected emitParts(parts: DurationPart[]): void {
+  protected emitParts(parts: Duration.Part[]): void {
     const result: string[] = [];
-    parts.forEach((part: DurationPart) => {
+    parts.forEach((part: Duration.Part) => {
       // result.push(JSON.stringify(part).replaceAll('"', "'"));
       result.push(JSON.stringify(part).replaceAll('"', "'"));
     });

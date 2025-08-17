@@ -1,5 +1,5 @@
-import type { Integer } from './dep.ts';
-import type { Field } from './types.ts';
+import type { Integer } from '@epdoc/type';
+import type { Field } from './duration/types.ts';
 
 /**
  * Styles for Intl.DurationFormat.

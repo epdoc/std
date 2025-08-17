@@ -1,15 +1,7 @@
-import { type Dict, isDict } from './dep.ts';
-import * as Duration from './types.ts';
-
-export type DurationRecordOptions = Partial<{
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
-  milliseconds: number;
-  microseconds: number;
-  nanoseconds: number;
-}>;
+import { type Dict, isDict } from '@epdoc/type';
+import * as Time from '../consts.ts';
+import { Fields } from './consts.ts';
+import type * as Duration from './types.ts';
 
 export class DurationRecord {
   protected _ms: number = 0;
@@ -22,7 +14,7 @@ export class DurationRecord {
   nanoseconds: number = 0;
   // [key: string]: Integer;
 
-  constructor(arg: number | DurationRecordOptions) {
+  constructor(arg: number | Duration.RecordOptions) {
     if (typeof arg === 'number') {
       if (arg < 0) {
         this._ms = -arg;
@@ -31,15 +23,15 @@ export class DurationRecord {
       }
 
       // Duration.Fields.forEach((field) => {
-      //   this.setField(field, Math.floor(this._ms / Duration.TIME[field]) % Duration.RATIO[field]);
+      //   this.setField(field, Math.floor(this._ms / Time.Measures[field]) % Time.Ratios[field]);
       // });
-      this.days = Math.floor(this._ms / Duration.TIME.days);
-      this.hours = Math.floor(this._ms / Duration.TIME.hours) % Duration.RATIO.hours;
-      this.minutes = Math.floor(this._ms / Duration.TIME.minutes) % Duration.RATIO.minutes;
-      this.seconds = Math.floor(this._ms / Duration.TIME.seconds) % Duration.RATIO.seconds;
-      this.milliseconds = Math.floor(this._ms) % Duration.RATIO.milliseconds;
-      this.microseconds = Math.floor(this._ms * 1000) % Duration.RATIO.microseconds;
-      this.nanoseconds = Math.floor(this._ms * 1000000) % Duration.RATIO.nanoseconds;
+      this.days = Math.floor(this._ms / Time.Measures.days);
+      this.hours = Math.floor(this._ms / Time.Measures.hours) % Time.Ratios.hours;
+      this.minutes = Math.floor(this._ms / Time.Measures.minutes) % Time.Ratios.minutes;
+      this.seconds = Math.floor(this._ms / Time.Measures.seconds) % Time.Ratios.seconds;
+      this.milliseconds = Math.floor(this._ms) % Time.Ratios.milliseconds;
+      this.microseconds = Math.floor(this._ms * 1000) % Time.Ratios.microseconds;
+      this.nanoseconds = Math.floor(this._ms * 1000000) % Time.Ratios.nanoseconds;
     } else if (isDict(arg)) {
       this.days = arg.days ?? 0;
       this.hours = arg.hours ?? 0;
@@ -48,13 +40,13 @@ export class DurationRecord {
       this.milliseconds = arg.milliseconds ?? 0;
       this.microseconds = arg.microseconds ?? 0;
       this.nanoseconds = arg.nanoseconds ?? 0;
-      this._ms = this.days * Duration.TIME.days +
-        this.hours * Duration.TIME.hours +
-        this.minutes * Duration.TIME.minutes +
-        this.seconds * Duration.TIME.seconds +
-        this.milliseconds * Duration.TIME.milliseconds +
-        this.microseconds * Duration.TIME.microseconds +
-        this.nanoseconds * Duration.TIME.nanoseconds;
+      this._ms = this.days * Time.Measures.days +
+        this.hours * Time.Measures.hours +
+        this.minutes * Time.Measures.minutes +
+        this.seconds * Time.Measures.seconds +
+        this.milliseconds * Time.Measures.milliseconds +
+        this.microseconds * Time.Measures.microseconds +
+        this.nanoseconds * Time.Measures.nanoseconds;
     }
   }
 
@@ -70,19 +62,19 @@ export class DurationRecord {
   public pruneMin(minFieldName?: Duration.Field): this {
     // Minimize upwards into fractional values
     if (minFieldName) {
-      const minFieldTime = Duration.TIME[minFieldName];
+      const minFieldTime = Time.Measures[minFieldName];
       // let remainder = 0;
-      Duration.Fields.reverse().forEach((fieldName) => {
-        const fieldTime = Duration.TIME[fieldName];
-        // const fieldRatio = Duration.RATIO[fieldName];
+      Fields.reverse().forEach((fieldName) => {
+        const fieldTime = Time.Measures[fieldName];
+        // const fieldTime.Ratios = Time.Ratios[fieldName];
         // const fieldValue = this.getField(fieldName);
         if (fieldTime < minFieldTime) {
-          // remainder = this.getField(fieldName) * fieldRatio;
+          // remainder = this.getField(fieldName) * fieldTime.Ratios;
           this.setField(fieldName, 0);
-          // } else if (false && fieldTime === minFieldTime && remainder > 0) {
-          //   this.setField(fieldName, fieldValue + remainder * fieldRatio);
+          // } else if (false && fieldTime.Measures === minFieldTime.Measures && remainder > 0) {
+          //   this.setField(fieldName, fieldValue + remainder * fieldTime.Ratios);
         } else if (fieldTime === minFieldTime) {
-          this.setField(fieldName, (this._ms / Duration.TIME[minFieldName]) % Duration.RATIO[minFieldName]);
+          this.setField(fieldName, (this._ms / Time.Measures[minFieldName]) % Time.Ratios[minFieldName]);
         }
       });
     }
@@ -92,9 +84,9 @@ export class DurationRecord {
   public pruneMax(maxFieldName?: Duration.Field): this {
     // Maximize downwards into integer values
     if (maxFieldName) {
-      const maxFieldTime = Duration.TIME[maxFieldName];
-      Duration.Fields.forEach((fieldName) => {
-        const fieldTime = Duration.TIME[fieldName];
+      const maxFieldTime = Time.Measures[maxFieldName];
+      Fields.forEach((fieldName) => {
+        const fieldTime = Time.Measures[fieldName];
         const fieldValue = this.getField(fieldName);
         if (fieldTime > maxFieldTime && fieldValue > 0) {
           // @ts-ignore this is a valid index

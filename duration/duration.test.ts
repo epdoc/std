@@ -1,6 +1,8 @@
 import { expect } from 'jsr:@std/expect';
 import { describe, it } from 'jsr:@std/testing/bdd';
-import { Duration, duration } from './mod.ts';
+import * as Time from './consts.ts';
+import * as Duration from './duration/mod.ts';
+import { duration } from './utils.ts';
 
 describe('duration-util', () => {
   describe('digital', () => {
@@ -28,7 +30,7 @@ describe('duration-util', () => {
       expect(new Duration.Util().digital.fractionalDigits(7).format(n)).toEqual('00:03.4543458');
       expect(new Duration.Util().digital.fractionalDigits(1).format(n)).toEqual('00:03.4');
       expect(new Duration.Util().digital.fractionalDigits(2).format(n)).toEqual('00:03.45');
-      n += 3 * Duration.TIME.minutes;
+      n += 3 * Time.Measures.minutes;
       expect(new Duration.Util().digital.fractionalDigits(6).format(n)).toEqual('03:03.454345');
       expect(new Duration.Util().digital.fractionalDigits(9).format(n)).toEqual('03:03.454345898');
       expect(new Duration.Util().digital.fractionalDigits(7).format(n)).toEqual('03:03.4543458');
@@ -54,11 +56,11 @@ describe('duration-util', () => {
       expect(new Duration.Util().narrow.fractionalDigits(7).format(n)).toEqual('3.4543458s');
       expect(new Duration.Util().narrow.fractionalDigits(1).format(n)).toEqual('3.4s');
       expect(new Duration.Util().narrow.fractionalDigits(2).format(n)).toEqual('3.45s');
-      n += 3 * Duration.TIME.minutes;
+      n += 3 * Time.Measures.minutes;
       expect(new Duration.Util().narrow.fractionalDigits(9).format(n)).toEqual('3m03.454345898s');
       expect(new Duration.Util().narrow.fractionalDigits(7).format(n)).toEqual('3m03.4543458s');
       expect(new Duration.Util().narrow.fractionalDigits(1).format(n)).toEqual('3m03.4s');
-      n += 8 * Duration.TIME.hours;
+      n += 8 * Time.Measures.hours;
       expect(new Duration.Util().narrow.fractionalDigits(9).format(n)).toEqual('8h03m03.454345898s');
       expect(new Duration.Util().narrow.fractionalDigits(7).format(n)).toEqual('8h03m03.4543458s');
       expect(new Duration.Util().narrow.fractionalDigits(1).format(n)).toEqual('8h03m03.4s');
@@ -86,7 +88,7 @@ describe('duration-util', () => {
       );
       expect(formatter.digits(1).format(n)).toEqual('3 seconds, 454 milliseconds');
       expect(formatter.digits(2).format(n)).toEqual('3 seconds, 454 milliseconds');
-      n += 3 * Duration.TIME.minutes;
+      n += 3 * Time.Measures.minutes;
       expect(formatter.digits(9).format(n)).toEqual(
         '3 minutes, 3 seconds, 454 milliseconds, 345 microseconds, 898 nanoseconds',
       );
@@ -94,7 +96,7 @@ describe('duration-util', () => {
         '3 minutes, 3 seconds, 454 milliseconds, 345 microseconds, 898 nanoseconds',
       );
       expect(formatter.digits(1).format(n)).toEqual('3 minutes, 3 seconds, 454 milliseconds');
-      n += 8 * Duration.TIME.hours;
+      n += 8 * Time.Measures.hours;
       expect(formatter.digits(9).format(n)).toEqual(
         '8 hours, 3 minutes, 3 seconds, 454 milliseconds, 345 microseconds, 898 nanoseconds',
       );
@@ -118,11 +120,11 @@ describe('duration-util', () => {
       expect(formatter.digits(7).format(n)).toEqual('3 sec 454 ms 345 μs 898 ns');
       expect(formatter.digits(1).format(n)).toEqual('3 sec 454 ms');
       expect(formatter.digits(2).format(n)).toEqual('3 sec 454 ms');
-      n += 3 * Duration.TIME.minutes;
+      n += 3 * Time.Measures.minutes;
       expect(formatter.digits(9).format(n)).toEqual('3 min 3 sec 454 ms 345 μs 898 ns');
       expect(formatter.digits(7).format(n)).toEqual('3 min 3 sec 454 ms 345 μs 898 ns');
       expect(formatter.digits(1).format(n)).toEqual('3 min 3 sec 454 ms');
-      n += 8 * Duration.TIME.hours;
+      n += 8 * Time.Measures.hours;
       expect(formatter.digits(9).format(n)).toEqual('8 hr 3 min 3 sec 454 ms 345 μs 898 ns');
       expect(formatter.digits(7).format(n)).toEqual('8 hr 3 min 3 sec 454 ms 345 μs 898 ns');
       expect(formatter.digits(1).format(n)).toEqual('8 hr 3 min 3 sec 454 ms');

@@ -6,5 +6,7 @@
   "tasks": {
     "test": "deno test --allow-env"
   },
-  "imports": {}
+  "imports": {
+    "@epdoc/type": "jsr:@epdoc/type@^1.1.9"
+  }
 }
