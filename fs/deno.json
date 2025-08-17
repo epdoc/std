@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/fs",
-  "version": "0.2.15",
+  "version": "0.2.16",
   "description": "File system entry wrapper",
   "exports": "./mod.ts",
   "tasks": {
@@ -8,12 +8,28 @@
     "test1": "deno test --allow-env --allow-sys --allow-read --allow-write tests/fs.test.ts"
   },
   "tests": {
-    "include": ["test/**/*.ts"]
+    "include": [
+      "test/**/*.ts"
+    ]
   },
   "lint": {
-    "exclude": ["tests/*/*.*"]
+    "exclude": [
+      "tests/*/*.*"
+    ]
   },
   "fmt": {
-    "exclude": ["tests/readonly/**/*.*"]
+    "exclude": [
+      "tests/readonly/**/*.*"
+    ]
+  },
+  "imports": {
+    "@epdoc/datetime": "jsr:@epdoc/datetime@^1.0.6",
+    "@epdoc/response": "jsr:@epdoc/response@^0.1.1",
+    "@epdoc/string": "jsr:@epdoc/string@^0.1.1",
+    "@epdoc/type": "jsr:@epdoc/type@^1.1.9",
+    "@std/bytes": "jsr:@std/bytes@^1.0.6",
+    "@std/encoding": "jsr:@std/encoding@^1.0.10",
+    "@std/fs": "jsr:@std/fs@^1.0.19",
+    "@std/path": "jsr:@std/path@^1.1.2"
   }
 }

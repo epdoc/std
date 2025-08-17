@@ -1,28 +1,12 @@
+import { _, type Dict, type Integer, stripJsonComments } from '@epdoc/type';
+import * as dfs from '@std/fs';
 import { assert } from '@std/assert';
-import { fromFileUrl } from 'jsr:@std/path@^1.1.1/from-file-url';
+import { decodeBase64, encodeBase64 } from '@std/encoding';
+import { fromFileUrl } from '@std/path';
 import crypto from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
 import { BaseSpec } from './basespec.ts';
-import type { Dict, Integer } from './dep.ts';
-import {
-  asError,
-  decodeBase64,
-  deepCopy,
-  deepCopySetDefaultOpts,
-  dfs,
-  encodeBase64,
-  isArray,
-  isDict,
-  isInteger,
-  isNonEmptyArray,
-  isNonEmptyString,
-  isObject,
-  isRegExp,
-  isString,
-  pad,
-  stripJsonComments,
-} from './dep.ts';
 import { FSError } from './error.ts';
 import type { FolderSpec } from './folderspec.ts';
 import { FSBytes } from './fsbytes.ts';
@@ -126,7 +110,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
   }
 
   add(...args: string[]): FileSpec {
-    if (args.length === 1 && isArray(args[0])) {
+    if (args.length === 1 && _.isArray(args[0])) {
       return new FileSpec(path.resolve(this._f, ...args[0]));
     }
     return new FileSpec(path.resolve(this._f, ...args));
@@ -157,11 +141,11 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
   isExtType(...type: (RegExp | string)[]): boolean {
     const lowerCaseExt = this.extname.toLowerCase().replace(/^\./, '');
     for (const entry of type) {
-      if (isRegExp(entry)) {
+      if (_.isRegExp(entry)) {
         if (entry.test(lowerCaseExt)) {
           return true;
         }
-      } else if (isString(entry)) {
+      } else if (_.isString(entry)) {
         if (entry.toLowerCase() === lowerCaseExt) {
           return true;
         }
@@ -345,7 +329,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
         return Promise.reject(new Error('No creation date found'));
       })
       .catch((err) => {
-        throw asError(err, { path: this._f, cause: 'getPdfDate' });
+        throw _.asError(err, { path: this._f, cause: 'getPdfDate' });
       });
   }
 
@@ -430,7 +414,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
       if (close) {
         this.close();
       }
-      throw asError(err, { path: this._f, cause: 'readBytes' });
+      throw _.asError(err, { path: this._f, cause: 'readBytes' });
     }
   }
 
@@ -458,7 +442,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
       }
       return await Deno.readFile(this._f);
     } catch (err) {
-      throw asError(err, { path: this._f, cause: 'readFile' });
+      throw _.asError(err, { path: this._f, cause: 'readFile' });
     }
   }
 
@@ -490,7 +474,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
       }
       return await Deno.readTextFile(this._f);
     } catch (err) {
-      throw asError(err, { path: this._f, cause: 'readTextFile' });
+      throw _.asError(err, { path: this._f, cause: 'readTextFile' });
     }
   }
 
@@ -526,7 +510,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
         return lines;
       }
     } catch (err) {
-      throw asError(err, { path: this._f, cause: 'readAsLines' });
+      throw _.asError(err, { path: this._f, cause: 'readAsLines' });
     }
   }
 
@@ -543,7 +527,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
       }
       return JSON.parse(s) as T;
     } catch (err) {
-      throw asError(err, { path: this._f, cause: 'readJson' });
+      throw _.asError(err, { path: this._f, cause: 'readJson' });
     }
   }
 
@@ -599,11 +583,11 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
    * const copy = await file.#deepCopy(obj, { detectRegExp: true });
    */
   #deepCopy(a: unknown, options?: FsDeepCopyOpts): Promise<unknown> {
-    const opts: FsDeepCopyOpts = deepCopySetDefaultOpts(options);
+    const opts: FsDeepCopyOpts = _.deepCopySetDefaultOpts(options);
     const urlTest = new RegExp(`^${opts.pre}(file|http|https):\/\/(.+)${opts.post}$`, 'i');
-    if (opts.includeUrl && isNonEmptyString(a) && urlTest.test(a)) {
+    if (opts.includeUrl && _.isNonEmptyString(a) && urlTest.test(a)) {
       const p: string[] | null = a.match(urlTest);
-      if (isNonEmptyArray(p) && isFilePath(p[2])) {
+      if (_.isNonEmptyArray(p) && isFilePath(p[2])) {
         const fs = new FileSpec(this.dirname, p[2]);
         return fs.deepReadJson(opts).then((resp) => {
           return Promise.resolve(resp);
@@ -611,10 +595,10 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
       } else {
         return Promise.resolve(a);
       }
-    } else if (isObject(a)) {
+    } else if (_.isObject(a)) {
       // @ts-ignore xxx
       const re: RegExp = opts && opts.detectRegExp ? asRegExp(a) : undefined;
-      if (re && isDict(a)) {
+      if (re && _.isDict(a)) {
         return Promise.resolve(re);
       } else {
         const jobs: unknown[] = [];
@@ -631,7 +615,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
         });
       }
     } else {
-      return Promise.resolve(deepCopy(a, opts));
+      return Promise.resolve(_.deepCopy(a, opts));
     }
   }
 
@@ -691,7 +675,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
       if (data instanceof Uint8Array) {
         await Deno.writeFile(this._f, data);
       } else {
-        const text = isArray(data) ? data.join('\n') : data;
+        const text = _.isArray(data) ? data.join('\n') : data;
         await Deno.writeTextFile(this._f, text);
       }
     } catch (err) {
@@ -740,7 +724,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
       if (opts.type === fileConflictStrategyType.renameWithTilde) {
         resolve(this.path + '~'); // Changed to return string directly
       } else if (opts.type === fileConflictStrategyType.renameWithNumber) {
-        const limit = isInteger(opts.limit) ? opts.limit : 32;
+        const limit = _.isInteger(opts.limit) ? opts.limit : 32;
         this.findAvailableIndexFilename(limit, opts.separator, opts.prefix).then((resp) => {
           if (!resp && opts.errorIfExists) {
             reject(new FSError('File exists', { code: 'EEXIST', path: this._f }));
@@ -776,7 +760,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
     let count = 0;
     let looking = true;
     while (looking) {
-      newFsDest = fileSpec(this.dirname, this.basename + sep + prefix + pad(++count, 2) + this.extname);
+      newFsDest = fileSpec(this.dirname, this.basename + sep + prefix + _.pad(++count, 2) + this.extname);
       looking = await newFsDest.getExists();
     }
     if (!looking && newFsDest instanceof FileSpec) {
@@ -785,6 +769,6 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
   }
 
   asError(error: unknown): FSError {
-    return new FSError(asError(error), { path: this._f });
+    return new FSError(_.asError(error), { path: this._f });
   }
 }

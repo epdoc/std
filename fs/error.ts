@@ -1,5 +1,4 @@
-import type { IError } from './dep.ts';
-import { isError } from './dep.ts';
+import { type IError, isError } from '@epdoc/type';
 
 export interface FSErrorOptions {
   cause?: string;

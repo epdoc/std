@@ -1,8 +1,9 @@
+import { dateEx } from '@epdoc/datetime';
+import { isArray, isDate, isValidDate } from '@epdoc/type';
 import { expect } from 'jsr:@std/expect';
 import { describe, it, test } from 'jsr:@std/testing/bdd';
 import os from 'node:os';
 import path from 'node:path';
-import { dateEx, isArray, isDate, isValidDate } from '../dep.ts';
 import { FSError } from '../error.ts';
 import {
   DigestAlgorithm,

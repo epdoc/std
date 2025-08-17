@@ -1,8 +1,9 @@
-import { fromFileUrl } from 'jsr:@std/path@^1.1.1/from-file-url';
+import { _, type Dict } from '@epdoc/type';
+import * as dfs from '@std/fs';
+import { fromFileUrl } from '@std/path';
 import os from 'node:os';
 import path from 'node:path';
 import { BaseSpec } from './basespec.ts';
-import { compareValues, dfs, type Dict, isArray, isDict, isNumber, isRegExp, isString } from './dep.ts';
 import { FileSpec } from './filespec.ts';
 import { FSSpec } from './fsspec.ts';
 import { type FSSpecParam, type IRootableSpec, type ISafeCopyableSpec, resolvePathArgs } from './icopyable.ts';
@@ -184,7 +185,7 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
   }
 
   add(...args: string[]): FolderSpec {
-    if (args.length === 1 && isArray(args[0])) {
+    if (args.length === 1 && _.isArray(args[0])) {
       return new FolderSpec(path.resolve(this._f, ...args[0]));
     }
     return new FolderSpec(path.resolve(this._f, ...args));
@@ -323,9 +324,9 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
   getChildren(options: GetChildrenOpts = { levels: 1 }): Promise<BaseSpec[]> {
     const opts: GetChildrenOpts = {
       match: options.match,
-      levels: isNumber(options.levels) ? options.levels - 1 : 0,
+      levels: _.isNumber(options.levels) ? options.levels - 1 : 0,
       callback: options.callback,
-      sort: isDict(options.sort) ? options.sort : {},
+      sort: _.isDict(options.sort) ? options.sort : {},
     };
     const all: BaseSpec[] = [];
     this._folders = [];
@@ -339,9 +340,9 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
           const fs = fromDirEntry(this.path, entry);
           let bMatch = false;
           if (opts.match) {
-            if (isString(opts.match) && entry.name === opts.match) {
+            if (_.isString(opts.match) && entry.name === opts.match) {
               bMatch = true;
-            } else if (isRegExp(opts.match) && opts.match.test(entry.name)) {
+            } else if (_.isRegExp(opts.match) && opts.match.test(entry.name)) {
               bMatch = true;
             }
           } else {
@@ -370,7 +371,7 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
       })
       .then((_resp) => {
         this._haveReadFolderContents = true;
-        if (isDict(opts.sort)) {
+        if (_.isDict(opts.sort)) {
           this.sortChildren(opts.sort);
         }
         return Promise.resolve(all);
@@ -405,7 +406,7 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
    */
   static sortByFilename(items: (FileSpec | FolderSpec)[]): (FileSpec | FolderSpec)[] {
     return items.sort((a, b) => {
-      return compareValues(a as unknown as Dict, b as unknown as Dict, 'filename');
+      return _.compareValues(a as unknown as Dict, b as unknown as Dict, 'filename');
     });
   }
 
@@ -417,7 +418,7 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
     return items
       .filter((item) => item instanceof FileSpec)
       .sort((a, b) => {
-        return compareValues(a as unknown as Dict, b as unknown as Dict, 'size');
+        return _.compareValues(a as unknown as Dict, b as unknown as Dict, 'size');
       });
   }
 

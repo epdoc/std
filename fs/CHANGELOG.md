@@ -1,5 +1,9 @@
 # Changelist
 
+## [0.2.16] - 2025-08-17
+
+- Moved dependencies to `deno.json`, where they should be.
+
 ## 0.2.15
 
 - Added JSONC read support.

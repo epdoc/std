@@ -1,4 +1,4 @@
-import { isNonEmptyString } from './dep.ts';
+import { isNonEmptyString } from '@epdoc/type';
 import { FileSpec } from './filespec.ts';
 import { FolderSpec } from './folderspec.ts';
 import { FSSpec } from './fsspec.ts';

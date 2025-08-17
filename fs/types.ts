@@ -1,5 +1,5 @@
+import type { DeepCopyOpts, Integer } from '@epdoc/type';
 import type { BaseSpec } from './basespec.ts';
-import type { DeepCopyOpts, Integer } from './dep.ts';
 
 /**
  * Represents a file path.
