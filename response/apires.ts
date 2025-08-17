@@ -1,5 +1,5 @@
 import { assert } from '@std/assert';
-import { isError, isNull, isString } from './dep.ts';
+import { isError, isNull, isString } from '@epdoc/type';
 
 const NO_RESPONSE_DATA = 'No response data';
 

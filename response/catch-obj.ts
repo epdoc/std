@@ -1,4 +1,4 @@
-import { asError, type IError } from './dep.ts';
+import { asError, type IError } from '@epdoc/type';
 
 /**
  * Represents a successful operation result containing data.

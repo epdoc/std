@@ -1,6 +1,12 @@
 import { expect } from 'jsr:@std/expect';
 import { describe, it } from 'jsr:@std/testing/bdd';
-import type { ExactlyOne, SingleDigitChar, SingleLetterChar, SingleLowerCaseChar, SingleUpperCaseChar } from './types.ts';
+import type {
+  ExactlyOne,
+  SingleDigitChar,
+  SingleLetterChar,
+  SingleLowerCaseChar,
+  SingleUpperCaseChar,
+} from './types.ts';
 import {
   asBoolean,
   asDate,

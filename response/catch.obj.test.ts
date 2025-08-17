@@ -1,6 +1,6 @@
 import { assertEquals } from '@std/assert';
 import { describe, it } from 'jsr:@std/testing/bdd';
-import { delayPromise } from './dep.ts';
+import { delayPromise } from '@epdoc/type';
 import { wrap } from './catch-obj.ts';
 
 describe('tryCatch', () => {
