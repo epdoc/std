@@ -521,7 +521,7 @@ describe('util', () => {
 
     describe('ExactlyOne<T>', () => {
       it('should require exactly one property from the union', () => {
-        type TestUnion = { a: number } | { b: string } | { c: boolean };
+        type TestUnion = { a?: number; b?: string; c?: boolean };
         const valid: ExactlyOne<TestUnion> = { a: 1 };
         const validAlt: ExactlyOne<TestUnion> = { b: 'test' };
         expect(Object.keys(valid).length).toBe(1);
@@ -529,9 +529,10 @@ describe('util', () => {
       });
 
       it('should work with nested object types', () => {
-        type ComplexUnion =
-          | { meta: { id: string } }
-          | { config: { enabled: boolean } };
+        type ComplexUnion = {
+          meta?: { id: string };
+          config?: { enabled: boolean };
+        };
 
         const valid: ExactlyOne<ComplexUnion> = { meta: { id: '123' } };
         const validAlt: ExactlyOne<ComplexUnion> = {
@@ -550,14 +551,73 @@ describe('util', () => {
       });
     });
 
-    describe('Integration', () => {
-      it('should compose SingleLetterChar with ExactlyOne', () => {
-        type CharOption = { charA: 'a' } | { charB: 'b' };
+    describe('ExactlyOne<T>', () => {
+      it('should allow exactly one property', () => {
+        type Foo = {
+          a?: number;
+          b?: string;
+          c?: boolean;
+        };
 
-        const valid: ExactlyOne<CharOption> = { charA: 'a' };
-        const valid2: ExactlyOne<CharOption> = { charB: 'b' };
-        expect(valid.charA).toBe('a');
-        expect(valid2.charB).toBe('b');
+        const valid1: ExactlyOne<Foo> = { a: 1 };
+        const valid2: ExactlyOne<Foo> = { b: 'hello' };
+        const valid3: ExactlyOne<Foo> = { c: true };
+
+        expect(valid1.a).toBe(1);
+        expect(valid2.b).toBe('hello');
+        expect(valid3.c).toBe(true);
+      });
+
+      it('should not allow more than one property', () => {
+        type Foo = {
+          a?: number;
+          b?: string;
+          c?: boolean;
+        };
+
+        // @ts-expect-error Type '{ a: number; b: string; }' is not assignable to type 'ExactlyOne<Foo>'.
+        const invalid1: ExactlyOne<Foo> = { a: 1, b: 'hello' };
+
+        // @ts-expect-error Type '{ a: number; c: boolean; }' is not assignable to type 'ExactlyOne<Foo>'.
+        const invalid2: ExactlyOne<Foo> = { a: 1, c: true };
+
+        expect(invalid1).toBeDefined();
+        expect(invalid2).toBeDefined();
+      });
+
+      it('should not allow zero properties', () => {
+        type Foo = {
+          a?: number;
+          b?: string;
+          c?: boolean;
+        };
+
+        // @ts-expect-error Type '{}' is not assignable to type 'ExactlyOne<Foo>'.
+        const invalid: ExactlyOne<Foo> = {};
+
+        expect(invalid).toBeDefined();
+      });
+
+      it('should work with a complex key and RegExp value', () => {
+        type SrcFile = {
+          'attachment.filename': RegExp;
+          'attachment.basename': RegExp;
+          'attachment.ext': RegExp;
+        };
+
+        const valid: ExactlyOne<SrcFile> = { 'attachment.filename': /.pdf$/i };
+        expect(valid['attachment.filename']).toEqual(/.pdf$/i);
+
+        // @ts-expect-error we are testing for the presence of errors
+        const invalid1: ExactlyOne<SrcFile> = {
+          'attachment.filename': /.pdf$/i,
+          'attachment.basename': /test/,
+        };
+        expect(invalid1).toBeDefined();
+
+        // @ts-expect-error we are testing for the presence of errors
+        const invalid2: ExactlyOne<SrcFile> = {};
+        expect(invalid2).toBeDefined();
       });
     });
   });

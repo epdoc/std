@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.10] - 2025-08-18
+
+- Fixed `ExactlyOne` type definition
+
 ## 1.1.7
 
 - Added stripJsonComments capability for reading JSON files. There is no roundtrip support.

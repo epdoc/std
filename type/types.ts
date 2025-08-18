@@ -53,12 +53,10 @@ export type CompareResult = -1 | 0 | 1;
  * // Error: 'otherProp' is not a valid key
  * // const invalidMessage3: Message = { otherProp: 'value' };
  */
-export type ExactlyOne<T, U = T> = T extends object
-  ? (U extends object ? keyof T extends keyof U ? keyof U extends keyof T ? T
-      : never
-    : never
-    : never)
-  : never;
+
+export type ExactlyOne<T, K extends keyof T = keyof T> = {
+  [P in K]: { [Q in P]: T[P] } & { [Q in Exclude<K, P>]?: never };
+}[K];
 
 export type SingleLowerCaseChar =
   | 'a'
