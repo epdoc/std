@@ -935,33 +935,32 @@ export function jsonDeserialize<T = unknown>(json: string, opts: JsonDeserialize
 
   const reviver = (_key: string, val: unknown) => {
     // First, handle the special `__filter` objects
-    if (isDict(val) && '__filter' in val && hasValue(val.data)) {
-      const filters = Array.isArray(val.__filter) ? val.__filter : [val.__filter];
-      let result = val.data;
-
-      // Apply filters in order
-      for (const filter of filters) {
-        if (filter === 'ASCII85Decode' && isString(result)) {
-          // The result of this decode is already a Uint8Array, so no need for a subsequent filter
-          result = decodeAscii85(result);
-        } else if (filter === 'Set' && isArray(result)) {
-          result = new Set(result);
-        } else if (filter === 'Map' && isArray(result)) {
-          result = new Map(result as Iterable<readonly [unknown, unknown]>);
-        } else if (filter === 'RegExp' && isString(val.regex)) {
-          // Re-create RegExp from source and flags
-          try {
-            result = new RegExp(val.regex, (val.flags as string) || '');
-          } catch {
-            result = null; // Return null on a bad RegExp pattern
-          }
+    if (isDict(val) && '__filter' in val) {
+      // Check for RegExp first, as it's a special case that doesn't use the `data` property from the source file.
+      if (val.__filter === 'RegExp' && isString((val as Dict).regex)) {
+        try {
+          return new RegExp((val as Dict).regex as string, ((val as Dict).flags as string) || '');
+        } catch {
+          return null;
         }
       }
-      if (opts.detectRegExp && isDict(val) && (val.regex || val.pattern)) {
-        result = asRegExp(val);
-      }
 
-      return result;
+      if (hasValue(val.data)) {
+        const filters = Array.isArray(val.__filter) ? val.__filter : [val.__filter];
+        let result = val.data;
+
+        // Apply filters in order
+        for (const filter of filters) {
+          if (filter === 'ASCII85Decode' && isString(result)) {
+            result = decodeAscii85(result);
+          } else if (filter === 'Set' && isArray(result)) {
+            result = new Set(result);
+          } else if (filter === 'Map' && isArray(result)) {
+            result = new Map(result as Iterable<readonly [unknown, unknown]>);
+          }
+        }
+        return result;
+      }
     }
 
     if (typeof val === 'string') {

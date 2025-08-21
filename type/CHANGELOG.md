@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.11] - 2025-08-21
+
+- Bug fixes to jsonSerialize/deserialize.
+- Changed names of types Single* removing 'Single' (eg. is now ).
+- Added type HexCHar.
+
 ## [1.1.10] - 2025-08-18
 
 - Fixed `ExactlyOne` type definition
