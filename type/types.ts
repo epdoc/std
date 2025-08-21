@@ -58,7 +58,7 @@ export type ExactlyOne<T, K extends keyof T = keyof T> = {
   [P in K]: { [Q in P]: T[P] } & { [Q in Exclude<K, P>]?: never };
 }[K];
 
-export type SingleLowerCaseChar =
+export type LowerCaseChar =
   | 'a'
   | 'b'
   | 'c'
@@ -85,7 +85,7 @@ export type SingleLowerCaseChar =
   | 'x'
   | 'y'
   | 'z';
-export type SingleUpperCaseChar =
+export type UpperCaseChar =
   | 'A'
   | 'B'
   | 'C'
@@ -112,8 +112,10 @@ export type SingleUpperCaseChar =
   | 'X'
   | 'Y'
   | 'Z';
-export type SingleLetterChar = SingleLowerCaseChar | SingleUpperCaseChar;
-export type SingleDigitChar = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
+export type LetterChar = LowerCaseChar | UpperCaseChar;
+export type DigitChar = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
+
+export type HexChar = DigitChar | 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'A' | 'B' | 'C' | 'D' | 'E' | 'F';
 
 /**
  * Represents a regular expression definition with pattern and optional flags.

@@ -232,14 +232,14 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug datetime/util.test.ts",
+      "name": "Debug response/apires.test.ts",
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "deno",
       "runtimeArgs": [
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/std/datetime/util.test.ts"
+        "/Users/jpravetz/dev/@epdoc/std/response/apires.test.ts"
       ],
       "attachSimplePort": 9229,
       "console": "integratedTerminal",
@@ -250,14 +250,14 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug type/util.test.ts",
+      "name": "Debug datetime/util.test.ts",
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "deno",
       "runtimeArgs": [
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/std/type/util.test.ts"
+        "/Users/jpravetz/dev/@epdoc/std/datetime/util.test.ts"
       ],
       "attachSimplePort": 9229,
       "console": "integratedTerminal",
@@ -286,14 +286,14 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug response/apires.test.ts",
+      "name": "Debug response/catch.array.test.ts",
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "deno",
       "runtimeArgs": [
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/std/response/apires.test.ts"
+        "/Users/jpravetz/dev/@epdoc/std/response/catch.array.test.ts"
       ],
       "attachSimplePort": 9229,
       "console": "integratedTerminal",
@@ -304,14 +304,14 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug response/catch.array.test.ts",
+      "name": "Debug type/util.test.ts",
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "deno",
       "runtimeArgs": [
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/std/response/catch.array.test.ts"
+        "/Users/jpravetz/dev/@epdoc/std/type/util.test.ts"
       ],
       "attachSimplePort": 9229,
       "console": "integratedTerminal",
@@ -376,14 +376,14 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug type/json.test.ts",
+      "name": "Debug response/catch.obj.test.ts",
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "deno",
       "runtimeArgs": [
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/std/type/json.test.ts"
+        "/Users/jpravetz/dev/@epdoc/std/response/catch.obj.test.ts"
       ],
       "attachSimplePort": 9229,
       "console": "integratedTerminal",
@@ -394,14 +394,14 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug response/catch.obj.test.ts",
+      "name": "Debug type/json.test.ts",
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "deno",
       "runtimeArgs": [
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/std/response/catch.obj.test.ts"
+        "/Users/jpravetz/dev/@epdoc/std/type/json.test.ts"
       ],
       "attachSimplePort": 9229,
       "console": "integratedTerminal",

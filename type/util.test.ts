@@ -1,12 +1,6 @@
 import { expect } from 'jsr:@std/expect';
 import { describe, it } from 'jsr:@std/testing/bdd';
-import type {
-  ExactlyOne,
-  SingleDigitChar,
-  SingleLetterChar,
-  SingleLowerCaseChar,
-  SingleUpperCaseChar,
-} from './types.ts';
+import type { DigitChar, ExactlyOne, LetterChar, LowerCaseChar, UpperCaseChar } from './types.ts';
 import {
   asBoolean,
   asDate,
@@ -481,39 +475,39 @@ describe('util', () => {
   });
 
   describe('Type Utilities', () => {
-    describe('SingleLetterChar', () => {
+    describe('LetterChar', () => {
       it('should accept single-character strings', () => {
-        const valid: SingleLetterChar = 'a';
-        const validNumber: SingleLetterChar = 'Z';
-        const validSymbol: SingleLetterChar = 'c';
+        const valid: LetterChar = 'a';
+        const validNumber: LetterChar = 'Z';
+        const validSymbol: LetterChar = 'c';
         expect(valid).toBe('a');
         expect(validNumber).toBe('Z');
         expect(validSymbol).toBe('c');
       });
     });
 
-    describe('SingleUpperCaseChar', () => {
+    describe('UpperCaseChar', () => {
       it('should accept single upper case character strings', () => {
-        const valid: SingleUpperCaseChar = 'A';
-        const valid2: SingleUpperCaseChar = 'Z';
+        const valid: UpperCaseChar = 'A';
+        const valid2: UpperCaseChar = 'Z';
         expect(valid).toBe('A');
         expect(valid2).toBe('Z');
       });
     });
 
-    describe('SingleLowerCaseChar', () => {
+    describe('LowerCaseChar', () => {
       it('should accept single lower case character strings', () => {
-        const valid: SingleLowerCaseChar = 'a';
-        const valid2: SingleLowerCaseChar = 'z';
+        const valid: LowerCaseChar = 'a';
+        const valid2: LowerCaseChar = 'z';
         expect(valid).toBe('a');
         expect(valid2).toBe('z');
       });
     });
 
-    describe('SingleDigit', () => {
+    describe('Digit', () => {
       it('should accept single digit strings', () => {
-        const valid: SingleDigitChar = '0';
-        const valid2: SingleDigitChar = '9';
+        const valid: DigitChar = '0';
+        const valid2: DigitChar = '9';
         expect(valid).toBe('0');
         expect(valid2).toBe('9');
       });

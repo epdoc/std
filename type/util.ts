@@ -880,49 +880,51 @@ export function deepCopySetDefaultOpts<T extends DeepCopyOpts = DeepCopyOpts>(op
 
 /**
  * Serializes a JavaScript value to a JSON string, preserving special types.
- * Supports Uint8Array, Date, Set, Map, RegExp, and custom string replacements.
+ * Supports Uint8Array, Set, Map, and RegExp. Also handles string replacements.
  *
  * @param {unknown} value - The value to serialize.
- * @param {DeepCopyOpts} [opts] - Serialization options.
+ * @param {DeepCopyOpts} [options] - Serialization options.
  * @returns {string} The serialized JSON string.
  */
-export function jsonSerialize(value: unknown, opts: DeepCopyOpts = {}, space?: string | number): string {
-  opts = deepCopySetDefaultOpts(opts);
+export function jsonSerialize(value: unknown, options: DeepCopyOpts | null = null, space?: string | number): string {
+  const opts = deepCopySetDefaultOpts(options ?? undefined);
+
   const replacer = (_key: string, val: unknown) => {
-    // String replacement
-    if (typeof val === 'string' && opts.replace) {
-      return msub(val, opts.replace, opts.pre!, opts.post!);
+    // String replacement before other checks to ensure placeholders are processed
+    if (isString(val) && opts.replace) {
+      val = msub(val, opts.replace, opts.pre!, opts.post!);
     }
+
+    // Check for special types after potential string replacement
     if (val instanceof Uint8Array) {
-      return { __filter: ['ASCII85Decode', 'Uint8Array'], data: encodeAscii85(val) };
+      return { __filter: ['ASCII85Decode'], data: encodeAscii85(val) };
     }
-    // Date's get preconverted to ISO strings
-    // if (val instanceof Date) {
-    //   return { __type: 'Date', value: val.toISOString() };
-    // }
-    // Set
+
     if (val instanceof Set) {
       return { __filter: 'Set', data: Array.from(val) };
     }
-    // Map
+
     if (val instanceof Map) {
       return { __filter: 'Map', data: Array.from(val.entries()) };
     }
-    // RegExp
+
     if (val instanceof RegExp) {
       return { __filter: 'RegExp', regex: val.source, flags: val.flags };
     }
+
+    // Pass through Dates and other types as-is for default JSON.stringify behavior
     return val;
   };
+
   return JSON.stringify(value, replacer, space);
 }
 
 /**
  * Deserializes a JSON string produced by jsonSerialize, restoring special types.
- * If DeepCopyOpts.detectRegExp is true, also detects RegExp objects serialized as {regex, flags}.
+ * It uses a custom reviver function with JSON.parse.
  *
  * @param {string} json - The JSON string to deserialize.
- * @param {DeepCopyOpts} [opts] - Deserialization options (e.g., detectRegExp).
+ * @param {JsonDeserializeOpts} [opts] - Deserialization options.
  * @returns {unknown} The restored value.
  */
 export function jsonDeserialize<T = unknown>(json: string, opts: JsonDeserializeOpts = {}): T {
@@ -930,41 +932,55 @@ export function jsonDeserialize<T = unknown>(json: string, opts: JsonDeserialize
   if (opts.stripComments) {
     json = stripJsonComments(json, opts.stripComments);
   }
-  return JSON.parse(json, (_key, val) => {
-    if (val) {
-      if (typeof val === 'object' && '__filter' in val) {
-        const filters = Array.isArray(val.__filter) ? val.__filter : [val.__filter];
-        let result = val.data;
-        for (const filter of filters) {
-          if (filter === 'ASCII85Decode' && isString(result)) {
-            result = decodeAscii85(result);
-          } else if (filter === 'Uint8Array') {
-            result = new Uint8Array(result);
-          } else if (filter === 'Set' && Array.isArray(result)) {
-            result = new Set(result);
-          } else if (filter === 'Map' && Array.isArray(result)) {
-            result = new Map(result);
-          } else if (filter === 'RegExp' && isString(val.regex)) {
-            result = new RegExp(val.regex, val.flags || '');
+
+  const reviver = (_key: string, val: unknown) => {
+    // First, handle the special `__filter` objects
+    if (isDict(val) && '__filter' in val && hasValue(val.data)) {
+      const filters = Array.isArray(val.__filter) ? val.__filter : [val.__filter];
+      let result = val.data;
+
+      // Apply filters in order
+      for (const filter of filters) {
+        if (filter === 'ASCII85Decode' && isString(result)) {
+          // The result of this decode is already a Uint8Array, so no need for a subsequent filter
+          result = decodeAscii85(result);
+        } else if (filter === 'Set' && isArray(result)) {
+          result = new Set(result);
+        } else if (filter === 'Map' && isArray(result)) {
+          result = new Map(result as Iterable<readonly [unknown, unknown]>);
+        } else if (filter === 'RegExp' && isString(val.regex)) {
+          // Re-create RegExp from source and flags
+          try {
+            result = new RegExp(val.regex, (val.flags as string) || '');
+          } catch {
+            result = null; // Return null on a bad RegExp pattern
           }
         }
-        if (opts.detectRegExp && isDict(val) && (val.regex || val.pattern)) {
-          result = asRegExp(val);
-        }
-        return result;
       }
-      if (typeof val === 'string') {
-        // String replacement if opts.replace is set
-        if (opts.replace) {
-          return msub(val, opts.replace, opts.pre, opts.post);
-        }
-        if (REGEX.isISODate.test(val)) {
-          return new Date(val);
-        }
+      if (opts.detectRegExp && isDict(val) && (val.regex || val.pattern)) {
+        result = asRegExp(val);
       }
+
+      return result;
     }
+
+    if (typeof val === 'string') {
+      let s = val;
+      // String replacement if opts.replace is set
+      if (opts.replace) {
+        s = msub(s, opts.replace, opts.pre, opts.post);
+      }
+      if (REGEX.isISODate.test(s)) {
+        return new Date(s);
+      }
+      return s;
+    }
+
+    // Pass other values through
     return val;
-  }) as T;
+  };
+
+  return JSON.parse(json, reviver) as T;
 }
 
 /**

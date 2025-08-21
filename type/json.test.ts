@@ -192,8 +192,8 @@ describe('json', () => {
 
     it('serializes and deserializes RegExp with detectRegExp', () => {
       const re = /abc/gi;
-      const json = _.jsonSerialize(re, { detectRegExp: true });
-      const restored = _.jsonDeserialize<typeof re>(json, { detectRegExp: true });
+      const json = _.jsonSerialize(re);
+      const restored = _.jsonDeserialize<typeof re>(json);
       expect(restored instanceof RegExp).toBe(true);
       expect(restored.source).toBe('abc');
       expect(restored.flags).toBe('gi');
