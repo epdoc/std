@@ -18,6 +18,7 @@ import {
   isError,
   isFalse,
   isFunction,
+  isHexString,
   isInteger,
   isIntegerInRange,
   isNonEmptyString,
@@ -28,6 +29,7 @@ import {
   isPosNumber,
   isRegExp,
   isRegExpDef,
+  isString,
   isStringArray,
   isTrue,
   isValidDate,
@@ -264,6 +266,12 @@ describe('util', () => {
   });
 
   describe('strings', () => {
+    it('isString', () => {
+      expect(isString('my string')).toBe(true);
+      expect(isString('')).toBe(true);
+      expect(isString(null)).toBe(false);
+      expect(isString(4)).toBe(false);
+    });
     it('isNonEmptyString', () => {
       const s = 'my string';
       expect(isNonEmptyString(s)).toBe(true);
@@ -285,6 +293,20 @@ describe('util', () => {
       expect(asString(new Error('my error'))).toContain('Error: my error');
       expect(asString(new Date())).toEqual('{}');
       expect(asString(Symbol('my symbol'))).toEqual('Symbol(my symbol)');
+    });
+    it('isHexString', () => {
+      expect(isHexString('my string')).toBe(false);
+      expect(isHexString('')).toBe(false);
+      expect(isHexString('', 0)).toBe(false);
+      expect(isHexString('', 2)).toBe(false);
+      expect(isHexString(null)).toBe(false);
+      expect(isHexString(4)).toBe(false);
+      expect(isHexString('a3e45DD')).toBe(true);
+      expect(isHexString('a3e45DD', 7)).toBe(true);
+      expect(isHexString('a3e45DD', 0)).toBe(false);
+      expect(isHexString('a3e45DD', 8)).toBe(false);
+      expect(isHexString('a3e45DFD', 8)).toBe(true);
+      expect(isHexString('a3e45DD', 1)).toBe(false);
     });
   });
   describe('isDict', () => {

@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.12] - 2025-08-21
+
+- Added `isHexString` unit test
+
 ## [1.1.11] - 2025-08-21
 
 - Bug fixes to jsonSerialize/deserialize.

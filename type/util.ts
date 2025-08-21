@@ -17,6 +17,7 @@ const REGEX = {
   isTrue: new RegExp(/^(true|yes|on)$/, 'i'),
   isFalse: new RegExp(/^(false|no|off)$/, 'i'),
   customElement: new RegExp(/CustomElement$/),
+  allHex: new RegExp(/^[0-9a-fA-F]+$/),
   firstUppercase: new RegExp(/(^[A-Z])/),
   allUppercase: new RegExp(/([A-Z])/, 'g'),
   firstCapitalize: new RegExp(/^([a-z])/),
@@ -45,6 +46,31 @@ export function isBoolean(val: unknown): val is boolean {
  */
 export function isString(val: unknown): val is string {
   return typeof val === 'string';
+}
+
+/**
+ * Checks if the given value is a non-empty string.
+ * @param val - The value to check.
+ * @returns True if the value is a non-empty string, otherwise false.
+ */
+export function isNonEmptyString(val: unknown): val is string {
+  return typeof val === 'string' && val.length > 0;
+}
+
+/**
+ * Checks if the given value is a hexadecimal string.
+ * @param val - The value to check.
+ * @param len - Optional. If provided, checks if the hexadecimal string has this exact length.
+ * @returns True if the value is a hexadecimal string (and optionally of the specified length), otherwise false.
+ */
+export function isHexString<T extends string>(val: unknown, len?: Integer): val is T {
+  if (typeof val !== 'string') {
+    return false;
+  }
+  if (isInteger(len) && val.length !== len) {
+    return false;
+  }
+  return REGEX.allHex.test(val);
 }
 
 /**
@@ -112,15 +138,6 @@ export function isNumberInRange(val: unknown, min: number, max: number): val is 
  */
 export function isPosNumber(val: unknown): val is number {
   return typeof val === 'number' && !isNaN(val) && val > 0;
-}
-
-/**
- * Checks if the given value is a non-empty string.
- * @param val - The value to check.
- * @returns True if the value is a non-empty string, otherwise false.
- */
-export function isNonEmptyString(val: unknown): val is string {
-  return typeof val === 'string' && val.length > 0;
 }
 
 /**
