@@ -2,7 +2,10 @@
 
 ## [0.2.17] - 2025-08-23
 
-- Resolve unhandles project rejection in safeCopy.\nModified `backup` and `safeCopyFile` to correctly handle all file conflict strategies, preventing unhandled promise rejections.\nAdded new fs4.test.ts to test changes.
+- Resolve unhandles project rejection in `safeCopy`.
+- Modified `backup` and `safeCopyFile` to correctly handle all file conflict strategies, preventing unhandled promise
+  rejections.
+- Added new `fs4.test.ts` to test changes.
 
 ## [0.2.16] - 2025-08-17
 
