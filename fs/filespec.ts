@@ -693,30 +693,27 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
    * @returns {Promise<FilePath | undefined>} - Path to file if file was backed
    * up, or true if the file didn't exist
    */
-  backup(opts: FileConflictStrategy = { type: 'renameWithTilde', errorIfExists: false }): Promise<FilePath> {
-    return this.getStats()
-      .then((stats: FSStats) => {
-        if (!stats || !stats.exists()) {
-          throw new FSError('File does not exist', { code: 'ENOENT', path: this._f });
-        }
-        return this.#getNewPath(opts);
-      })
-      .then((newPath: FilePath | undefined) => {
-        if (isFilePath(newPath)) {
-          return this.moveTo(newPath, { overwrite: true })
-            .then(() => {
-              return Promise.resolve(newPath);
-            })
-            .catch((err) => {
-              if (err instanceof Error) {
-                throw err;
-              }
-              throw new FSError(String(err), { code: 'ENOENT', path: this._f });
-            });
-        } else {
-          throw new FSError(`New path ${newPath} is not a file path`, { cause: 'backup', path: this._f });
-        }
-      });
+  async backup(
+    opts: FileConflictStrategy = { type: 'renameWithTilde', errorIfExists: false },
+  ): Promise<FilePath | undefined> {
+    const stats: FSStats = await this.getStats();
+    if (!stats || !stats.exists()) {
+      throw new FSError('File does not exist', { code: 'ENOENT', path: this._f });
+    }
+    const newPath: FilePath | undefined = await this.#getNewPath(opts);
+    if (isFilePath(newPath)) {
+      return this.moveTo(newPath, { overwrite: true })
+        .then(() => {
+          return Promise.resolve(newPath);
+        })
+        .catch((err) => {
+          if (err instanceof Error) {
+            throw err;
+          }
+          throw new FSError(String(err), { code: 'ENOENT', path: this._f });
+        });
+    }
+    return Promise.resolve(undefined);
   }
 
   #getNewPath(opts: FileConflictStrategy): Promise<FilePath | undefined> {

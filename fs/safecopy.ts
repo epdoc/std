@@ -139,7 +139,10 @@ export async function safeCopyFile(
     const destExists = await fsDest.getExists();
     if (destExists) {
       // Handle existing destination file
-      await fsDest.backup(options.conflictStrategy);
+      const p: FilePath | undefined = await fsDest.backup(options.conflictStrategy);
+      if (p === undefined) {
+        return;
+      }
     } else {
       await fsDest.ensureParentDir();
     }
