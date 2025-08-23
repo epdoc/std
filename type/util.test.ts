@@ -4,12 +4,14 @@ import type { DigitChar, ExactlyOne, LetterChar, LowerCaseChar, UpperCaseChar } 
 import {
   asBoolean,
   asDate,
+  asError,
   asFloat,
   asInt,
   asString,
   camel2dash,
   dash2camel,
   hasValue,
+  IError,
   isArray,
   isBoolean,
   isDate,
@@ -635,6 +637,71 @@ describe('util', () => {
         const invalid2: ExactlyOne<SrcFile> = {};
         expect(invalid2).toBeDefined();
       });
+    });
+  });
+  describe('asError', () => {
+    it('should return an Error object when passed a string', () => {
+      const err = asError('This is an error');
+      expect(err).toBeInstanceOf(Error);
+      expect(err.message).toBe('This is an error');
+    });
+
+    it('should return the first Error object when passed an Error', () => {
+      const originalError = new Error('Original error');
+      const err = asError(originalError);
+      expect(err).toBe(originalError);
+    });
+
+    it('should combine multiple arguments into a single error message', () => {
+      const originalError = new Error('DB Error');
+      const err = asError('Failed to save user:', originalError);
+      expect(err.message).toBe('Failed to save user: DB Error');
+      expect(err).toBe(originalError);
+    });
+
+    it('should correctly combine messages from multiple Error objects', () => {
+      const err1 = new Error('First error');
+      const err2 = new Error('Second error');
+      const err = asError(err1, err2);
+      expect(err.message).toBe('First error Second error');
+      expect(err).toBe(err1);
+    });
+
+    it('should handle Symbol arguments without throwing', () => {
+      const sym = Symbol('test symbol');
+      const err = asError('A symbol was thrown:', sym);
+      expect(err).toBeInstanceOf(Error);
+      expect(err.message).toBe('A symbol was thrown: Symbol(test symbol)');
+    });
+
+    it('should handle null and undefined arguments', () => {
+      const err = asError('Error with null:', null, 'and undefined:', undefined);
+      expect(err).toBeInstanceOf(Error);
+      expect(err.message).toBe('Error with null: null and undefined: undefined');
+    });
+
+    it('should use a plain object as options and not part of the message', () => {
+      const err = asError('Error with object:', { a: 1 });
+      expect(err).toBeInstanceOf(Error);
+      expect(err.message).toBe('Error with object:');
+      // @ts-ignore we are testing
+      expect((err as IError).a).toBe(1);
+    });
+
+    it('should create a default error when called with no arguments', () => {
+      const err = asError();
+      expect(err).toBeInstanceOf(Error);
+      expect(err.message).toBe('Invalid Error error');
+    });
+
+    it('should handle a mix of arguments including multiple errors and options', () => {
+      const err1 = new Error('Error 1');
+      const err2 = new Error('Error 2');
+      const err = asError('Prefix', err1, 'middle', err2, { code: 500 });
+      expect(err).toBeInstanceOf(Error);
+      expect(err.message).toBe('Prefix Error 1 middle Error 2');
+      expect((err as IError).code).toBe(500);
+      expect(err).toBe(err1);
     });
   });
 });

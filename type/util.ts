@@ -671,7 +671,7 @@ export function asError(...args: unknown[]): IError {
         if (!err) {
           err = arg;
         }
-        msg.push(err.message);
+        msg.push(arg.message); // <-- Logic bug fixed
       } else if (isString(arg)) {
         msg.push(arg);
       } else if (isDict(arg)) {
@@ -681,9 +681,8 @@ export function asError(...args: unknown[]): IError {
       }
     });
     if (err instanceof Error) {
-      if (args.length > 1) {
-        err.message = msg.join(' ');
-      }
+      // The message is a combination of all arguments
+      err.message = msg.join(' ');
       Object.keys(opts).forEach((key) => {
         // @ts-ignore add our own properties anyway
         err[key] = opts[key];

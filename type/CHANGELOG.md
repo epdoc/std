@@ -1,5 +1,9 @@
 # Changelog for @epdoc/type
 
+## [1.1.13] - 2025-08-23
+
+- Improved robustness of `asError` utility and added unit tests
+
 ## [1.1.12] - 2025-08-21
 
 - Added `isHexString` and to unit tests
