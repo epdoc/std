@@ -1,7 +1,12 @@
 {
   "version": "5",
   "specifiers": {
+    "jsr:@epdoc/datetime@^1.0.6": "1.0.7",
+    "jsr:@epdoc/datetime@^1.0.7": "1.0.7",
+    "jsr:@epdoc/response@~0.1.2": "0.1.2",
+    "jsr:@epdoc/string@~0.1.1": "0.1.1",
     "jsr:@epdoc/type@1.0.3": "1.0.3",
+    "jsr:@epdoc/type@^1.1.13": "1.1.13",
     "jsr:@epdoc/type@^1.1.9": "1.1.9",
     "jsr:@std/assert@^1.0.13": "1.0.14",
     "jsr:@std/assert@^1.0.14": "1.0.14",
@@ -12,13 +17,10 @@
     "jsr:@std/encoding@^1.0.10": "1.0.10",
     "jsr:@std/encoding@^1.0.9": "1.0.10",
     "jsr:@std/expect@*": "1.0.17",
-    "jsr:@std/expect@^1.0.15": "1.0.17",
     "jsr:@std/expect@^1.0.17": "1.0.17",
     "jsr:@std/fmt@*": "1.0.8",
-    "jsr:@std/fs@^1.0.15": "1.0.19",
     "jsr:@std/fs@^1.0.19": "1.0.19",
     "jsr:@std/internal@^1.0.10": "1.0.10",
-    "jsr:@std/internal@^1.0.7": "1.0.10",
     "jsr:@std/internal@^1.0.9": "1.0.10",
     "jsr:@std/path@^1.1.1": "1.1.2",
     "jsr:@std/path@^1.1.2": "1.1.2",
@@ -27,11 +29,32 @@
     "npm:pdf-lib@^1.17.1": "1.17.1"
   },
   "jsr": {
+    "@epdoc/datetime@1.0.7": {
+      "integrity": "29b3d9c518809048dc4fdc227653b90297cc439378cc9bb161b72ff79d7f5c0b"
+    },
+    "@epdoc/response@0.1.2": {
+      "integrity": "15d5e538cf19860843394abe65d952bf7a2e87c898cb5367e254ea01d23da931",
+      "dependencies": [
+        "jsr:@std/assert@^1.0.14"
+      ]
+    },
+    "@epdoc/string@0.1.1": {
+      "integrity": "66bbabd6fdbe0bca8342f4dbdcd4927e744cf7a393d0ceb853c1566f7b19b4b2",
+      "dependencies": [
+        "jsr:@std/assert@^1.0.13"
+      ]
+    },
     "@epdoc/type@1.0.3": {
       "integrity": "fec5a44cb1568c77e41ff2139e5503da9291d302ddf3443ed02dca68f7307045"
     },
     "@epdoc/type@1.1.9": {
       "integrity": "6f246ed57e7e8d7572751aec5217731cedffc03f425e31ac7c399b4af7128cc7",
+      "dependencies": [
+        "jsr:@std/encoding@^1.0.10"
+      ]
+    },
+    "@epdoc/type@1.1.13": {
+      "integrity": "d16485bc4b48c026a30122a3ec2b0235d577d6a31f9b2ada78d3bca1a4740eb3",
       "dependencies": [
         "jsr:@std/encoding@^1.0.10"
       ]
@@ -56,13 +79,6 @@
     },
     "@std/encoding@1.0.10": {
       "integrity": "8783c6384a2d13abd5e9e87a7ae0520a30e9f56aeeaa3bdf910a3eaaf5c811a1"
-    },
-    "@std/expect@1.0.16": {
-      "integrity": "ceeef6dda21f256a5f0f083fcc0eaca175428b523359a9b1d9b3a1df11cc7391",
-      "dependencies": [
-        "jsr:@std/assert@^1.0.13",
-        "jsr:@std/internal@^1.0.7"
-      ]
     },
     "@std/expect@1.0.17": {
       "integrity": "316b47dd65c33e3151344eb3267bf42efba17d1415425f07ed96185d67fc04d9",
@@ -257,10 +273,10 @@
       },
       "fs": {
         "dependencies": [
-          "jsr:@epdoc/datetime@^1.0.6",
-          "jsr:@epdoc/response@~0.1.1",
+          "jsr:@epdoc/datetime@^1.0.7",
+          "jsr:@epdoc/response@~0.1.2",
           "jsr:@epdoc/string@~0.1.1",
-          "jsr:@epdoc/type@^1.1.9",
+          "jsr:@epdoc/type@^1.1.13",
           "jsr:@std/bytes@^1.0.6",
           "jsr:@std/encoding@^1.0.10",
           "jsr:@std/fs@^1.0.19",
