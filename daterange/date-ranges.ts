@@ -1,6 +1,6 @@
-import { dateEx } from '@epdoc/datetime';
+import { DateEx, dateEx, type ISOTZ } from '@epdoc/datetime';
 import { isNonEmptyArray, isValidDate } from '@epdoc/type';
-import type { DateRangeDef } from './util.ts';
+import type { DateRangeDef, DateRangeJSON } from './types.ts';
 
 /**
  * Represents a collection of date ranges.
@@ -80,6 +80,21 @@ export class DateRanges {
    */
   hasRanges(): boolean {
     return isNonEmptyArray(this._ranges);
+  }
+
+  toJSON(): DateRangeJSON[] {
+    const result: DateRangeJSON[] = [];
+    this._ranges.forEach((range) => {
+      const obj: { after?: ISOTZ; before?: ISOTZ } = {};
+      if (range.after) {
+        obj.after = new DateEx(range.after).toISOLocalString();
+      }
+      if (range.before) {
+        obj.before = new DateEx(range.before).toISOLocalString();
+      }
+      result.push(obj);
+    });
+    return result;
   }
 
   toString(): string {

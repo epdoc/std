@@ -3,7 +3,7 @@
 import { parseArgs } from 'jsr:@std/cli/parse-args';
 import { dateEx } from '../../datetime/date.ts';
 import { asInt } from '../../type/util.ts';
-import { dateList, type DateRangeDef } from '../util.ts';
+import { dateList, type DateRangeDef } from '../mod.ts';
 
 /**
  * A command-line tool to parse date range strings.

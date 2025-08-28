@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/daterange",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "exports": {
     ".": "./mod.ts"
   },
@@ -8,7 +8,7 @@
     "test": "deno test date-range.test.ts"
   },
   "imports": {
-    "@epdoc/datetime": "jsr:@epdoc/datetime@^1.0.6",
-    "@epdoc/type": "jsr:@epdoc/type@^1.1.9"
+    "@epdoc/datetime": "jsr:@epdoc/datetime@^1.0.7",
+    "@epdoc/type": "jsr:@epdoc/type@^1.1.13"
   }
 }

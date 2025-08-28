@@ -1,19 +1,8 @@
 import type { Integer } from '@epdoc/type';
 import { DateRanges } from './date-ranges.ts';
+import type { DateRangeDef } from './types.ts';
 
 const DAY_MS = 24 * 3600 * 1000;
-
-/**
- * Represents a definition of a date range with optional before and after dates.
- * @typedef {Object} DateRangeDef
- * @property {Date} [before] - The end datetime of the range.
- * @property {Date} [after] - The start datetime of the range.
- */
-
-export type DateRangeDef = {
-  before?: Date;
-  after?: Date;
-};
 
 /**
  * Converts a string representation of date ranges into an array of `DateRangeDef` objects. This

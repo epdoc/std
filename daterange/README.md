@@ -1,116 +1,131 @@
-# @epdoc/daterange
+# Date Range
 
-A Deno module for parsing flexible date range strings and managing collections of date ranges. It's particularly
-well-suited for command-line applications where users need to specify time periods for operations like data fetching or
-report generation.
-
-## Key Features
-
-- **Flexible Parsing**: The `dateList` function parses a wide variety of date and range formats from a single string.
-- **Range Management**: The `DateRanges` class provides utilities for working with collections of date ranges, like
-  checking if a date falls within the specified periods.
-- **CLI Ready**: Includes a ready-to-use command-line tool (`cli.ts`) for quick parsing and testing.
+Utilities for creating and managing date ranges, intended for command line use.
 
 ## Installation
 
-```bash
-deno add jsr:@epdoc/daterange
-```
+This is a Deno module. You can import it directly into your project.
 
 ## Usage
 
-### Parsing Date Strings with `dateList`
-
-The core of the module is the `dateList` function. It takes a string of comma-separated date specifications and returns
-an array of `DateRangeDef` objects. This is ideal for processing command-line arguments.
+Import the necessary functions from the module:
 
 ```typescript
-import { dateList } from 'jsr:@epdoc/daterange';
-
-// A complex string with multiple range types
-const spec = '2025, 202601-202603, 20270101, 20280101-';
-
-const ranges = dateList(spec);
-
-console.log(JSON.stringify(ranges, null, 2));
+import { dateRanges } from 'jsr:@epdoc/std/daterange';
 ```
 
-This will produce an array of date range objects, each with an `after` and `before` property.
+### Creating Date Ranges
 
-### Supported Formats
-
-The parser is very flexible, making it easy for users to specify dates on the command line:
-
-| Format              | Example              | Description                                   |
-| ------------------- | -------------------- | --------------------------------------------- |
-| Year                | `2025`               | The entire year of 2025.                      |
-| Month               | `202502`             | The entire month of February 2025.            |
-| Day                 | `20250215`           | The entire day of Feb 15, 2025.               |
-| Precise Timestamp   | `20250215103000`     | A specific point in time.                     |
-| Closed Range        | `20250101-20250110`  | From the start of Jan 1 to the end of Jan 10. |
-| Open-Ended (After)  | `20250101-`          | From the start of Jan 1 onwards.              |
-| Open-Ended (Before) | `-20250101`          | Any time before the end of Jan 1.             |
-| Comma-Separated     | `2024,202501-202503` | A list of multiple, separate ranges.          |
-
-- When only the year, month, day is specified, times are zeroed to the beginning and end of the day (0h to 24h)
-- When only the year, month is specified, times are zeroed to the beginning and end of the month, also at 0h and 24h.
-- When only the year specified, times are zeroed to the beginning and end of the year.
-
-### Working with `DateRanges`
-
-The `DateRanges` class can be used to work with the output from `dateList`.
+The `dateRanges` function creates a `DateRanges` object from a string. The string can contain one or more date ranges,
+separated by commas.
 
 ```typescript
-import { dateList, DateRanges } from 'jsr:@epdoc/daterange';
-
-const ranges = dateList('20250115-20250120');
-const dateRanges = new DateRanges(ranges);
-
-// Check if a date is within the specified ranges
-const date1 = new Date('2025-01-17T12:00:00');
-console.log(dateRanges.isDateInRange(date1)); // true
-
-const date2 = new Date('2025-01-22T12:00:00');
-console.log(dateRanges.isDateInRange(date2)); // false
+const dr = dateRanges('20250101-20250131,20250301-20250331');
 ```
 
-### Command-Line Tool
+### Supported Date Formats
 
-A command-line interface is included to demonstrate the functionality. You can use it to parse date strings directly
-from your terminal.
+The following date formats are supported:
 
-```sh
-# Run the CLI with a few date specifications
-deno run --allow-env jsr:@epdoc/daterange/cli 2025 202601-20260215
+- `YYYY`: Represents the entire year.
+- `YYYYMM`: Represents the entire month.
+- `YYYYMMDD`: Represents the entire day.
+- `YYYYMMDDhh`: Represents a specific hour.
+- `YYYYMMDDhhmm`: Represents a specific minute.
+- `YYYYMMDDhhmmss`: Represents a specific second.
+
+### Supported Range Formats
+
+The following range formats are supported:
+
+- `start-end`: A closed range. `start` and `end` can be any of the supported date formats.
+- `start-`: An open-ended range with no end date.
+- `-end`: An open-ended range with no start date.
+
+### Using the `DateRanges` Object
+
+The `dateRanges` function returns a `DateRanges` object, which has the following methods:
+
+- `isDateInRange(date: Date): boolean`: Checks if a given date is within any of the defined date ranges.
+- `hasRanges(): boolean`: Returns `true` if there are any date ranges defined.
+- `toJSON()`: Returns a JSON representation of the date ranges.
+- `toString()`: Returns a string representation of the date ranges.
+
+### Examples
+
+Here are some examples of how to use the `dateRanges` function:
+
+```typescript
+import { dateRanges } from 'jsr:@epdoc/std/daterange';
+
+// A single day
+const dr1 = dateRanges('20250101');
+console.log(dr1.toString());
+// from 2025/01/01 00:00:00 to 2025/01/02 00:00:00
+
+// A range of days
+const dr2 = dateRanges('20250101-20250105');
+console.log(dr2.toString());
+// from 2025/01/01 00:00:00 to 2025/01/06 00:00:00
+
+// Multiple ranges
+const dr3 = dateRanges('202501,202503-202504');
+console.log(dr3.toString());
+// from 2025/01/01 00:00:00 to 2025/02/01 00:00:00, from 2025/03/01 00:00:00 to 2025/05/01 00:00:00
+
+// Open-ended range
+const dr4 = dateRanges('20250101-');
+console.log(dr4.toString());
+// from 2025/01/01 00:00:00 to now
+
+// Check if a date is in a range
+const dr5 = dateRanges('20250101-20250131');
+const date = new Date('2025-01-15');
+console.log(dr5.isDateInRange(date));
+// true
+
+// Get JSON representation
+const dr6 = dateRanges('20250101-20250102');
+console.log(JSON.stringify(dr6.toJSON(), null, 2));
+// [
+//   {
+//     "after": "2025-01-01T00:00:00.000-06:00",
+//     "before": "2025-01-03T00:00:00.000-06:00"
+//   }
+// ]
 ```
 
-**Output:**
+## Command-Line Interface (CLI)
+
+This module also includes a command-line interface for parsing date range strings.
+
+### Usage
+
+```bash
+deno run --allow-env examples/cli.ts [options] <date-spec...>
+```
+
+### Options
+
+- `-h, --hour <hour>`: The default hour to use for dates (default: 0).
+
+### Example
+
+```bash
+deno run --allow-env examples/cli.ts -h 8 "20240701-20240710" "20240801"
+```
+
+This will output:
 
 ```json
 [
   {
-    "after": "2025-01-01T00:00:00.000-06:00",
-    "before": "2026-01-01T00:00:00.000-06:00"
+    "after": "2024-07-01T08:00:00.000-06:00",
+    "before": "2024-07-11T08:00:00.000-06:00"
   },
   {
-    "after": "2026-01-01T00:00:00.000-06:00",
-    "before": "2026-02-16T00:00:00.000-06:00"
+    "after": "2024-08-01T08:00:00.000-06:00",
+    "before": "2024-08-02T08:00:00.000-06:00"
   }
 ]
 ```
-
-You can also specify a default hour for date boundaries with the `-h` or `--hour` flag.
-
-```sh
-deno run --allow-env jsr:@epdoc/daterange/cli --hour=9 20250301
-```
-
-## API
-
-- [`dateList(spec: string, hour?: number): DateRangeDef[]`](./util.ts#L46)
-- `DateRanges`
-- `dateStringToDate(s: string, h?: number): Date`
-
-## License
-
-MIT

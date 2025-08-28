@@ -1,4 +1,4 @@
-import { dateEx } from '@epdoc/datetime';
+import { DateEx, dateEx } from '@epdoc/datetime';
 import { expect } from 'jsr:@std/expect';
 import { describe, test } from 'jsr:@std/testing/bdd';
 import { dateList, type DateRangeDef, DateRanges, dateRanges, dateStringToDate } from './mod.ts';
@@ -198,6 +198,58 @@ describe('date-range', () => {
       const dr = dateRanges('');
       expect(dr).toBeInstanceOf(DateRanges);
       expect(dr.ranges.length).toBe(0);
+    });
+  });
+
+  describe('toJSON', () => {
+    const s0 = '20250115';
+    const s1 = '20250116';
+    const iso0 = new DateEx(dateStringToDate(s0)).toISOLocalString();
+    const iso1 = new DateEx(dateStringToDate('20250117')).toISOLocalString();
+    test('should correctly serialize a single range', () => {
+      const dr = dateRanges(`${s0}-${s1}`);
+      const json = dr.toJSON();
+      expect(json).toEqual([{ after: iso0, before: iso1 }]);
+    });
+
+    test('should correctly serialize a range with only an after date', () => {
+      const dr = dateRanges(`${s0}-`);
+      const json = dr.toJSON();
+      expect(json).toEqual([{ after: iso0 }]);
+    });
+
+    test('should correctly serialize a range with only a before date', () => {
+      const dr = dateRanges(`-${s1}`);
+      const json = dr.toJSON();
+      expect(json).toEqual([{ before: iso1 }]);
+    });
+
+    test('should correctly serialize multiple ranges', () => {
+      const s0 = '202501';
+      const s1 = '202502';
+      const s2 = '2026';
+      const iso0 = new DateEx(dateStringToDate(s0 + '01')).toISOLocalString();
+      const iso1 = new DateEx(dateStringToDate('20250301')).toISOLocalString();
+      const iso2 = new DateEx(dateStringToDate('20260101')).toISOLocalString();
+      const iso3 = new DateEx(dateStringToDate('20270101')).toISOLocalString();
+      const dr = dateRanges(`${s0}-${s1},${s2}`);
+      const json = dr.toJSON();
+      expect(json).toEqual([
+        {
+          after: iso0,
+          before: iso1,
+        },
+        {
+          after: iso2,
+          before: iso3,
+        },
+      ]);
+    });
+
+    test('should return an empty array for an empty DateRanges object', () => {
+      const dr = dateRanges('');
+      const json = dr.toJSON();
+      expect(json).toEqual([]);
     });
   });
 });
