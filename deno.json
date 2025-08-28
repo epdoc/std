@@ -6,7 +6,8 @@
   "license": "MIT",
   "tasks": {
     "test": "deno test -SERW",
-    "lint": "deno lint"
+    "lint": "deno lint",
+    "docs": "deno run -A _scripts/gen_docs.ts"
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@^1.0.14"

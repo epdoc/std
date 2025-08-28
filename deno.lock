@@ -1,7 +1,6 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@epdoc/datetime@^1.0.6": "1.0.7",
     "jsr:@epdoc/datetime@^1.0.7": "1.0.7",
     "jsr:@epdoc/response@~0.1.2": "0.1.2",
     "jsr:@epdoc/string@~0.1.1": "0.1.1",
@@ -22,6 +21,7 @@
     "jsr:@std/fs@^1.0.19": "1.0.19",
     "jsr:@std/internal@^1.0.10": "1.0.10",
     "jsr:@std/internal@^1.0.9": "1.0.10",
+    "jsr:@std/path@*": "1.1.2",
     "jsr:@std/path@^1.1.1": "1.1.2",
     "jsr:@std/path@^1.1.2": "1.1.2",
     "jsr:@std/testing@*": "1.0.15",
@@ -256,8 +256,8 @@
     "members": {
       "daterange": {
         "dependencies": [
-          "jsr:@epdoc/datetime@^1.0.6",
-          "jsr:@epdoc/type@^1.1.9"
+          "jsr:@epdoc/datetime@^1.0.7",
+          "jsr:@epdoc/type@^1.1.13"
         ]
       },
       "datetime": {

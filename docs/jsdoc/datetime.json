@@ -1,0 +1,1152 @@
+{
+  "version": 1,
+  "nodes": [
+    {
+      "name": "Minutes",
+      "isDefault": false,
+      "location": {
+        "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/date.ts",
+        "line": 3,
+        "col": 0,
+        "byteIndex": 48
+      },
+      "declarationKind": "export",
+      "kind": "typeAlias",
+      "typeAliasDef": {
+        "tsType": {
+          "repr": "Integer",
+          "kind": "typeRef",
+          "typeRef": {
+            "typeParams": null,
+            "typeName": "Integer"
+          }
+        },
+        "typeParams": []
+      }
+    },
+    {
+      "name": "ISOTZ",
+      "isDefault": false,
+      "location": {
+        "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/date.ts",
+        "line": 12,
+        "col": 0,
+        "byteIndex": 322
+      },
+      "declarationKind": "export",
+      "kind": "typeAlias",
+      "typeAliasDef": {
+        "tsType": {
+          "repr": "string",
+          "kind": "keyword",
+          "keyword": "string"
+        },
+        "typeParams": []
+      }
+    },
+    {
+      "name": "PDFTZ",
+      "isDefault": false,
+      "location": {
+        "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/date.ts",
+        "line": 13,
+        "col": 0,
+        "byteIndex": 350
+      },
+      "declarationKind": "export",
+      "kind": "typeAlias",
+      "typeAliasDef": {
+        "tsType": {
+          "repr": "string",
+          "kind": "keyword",
+          "keyword": "string"
+        },
+        "typeParams": []
+      }
+    },
+    {
+      "name": "JulianDay",
+      "isDefault": false,
+      "location": {
+        "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/date.ts",
+        "line": 18,
+        "col": 0,
+        "byteIndex": 498
+      },
+      "declarationKind": "export",
+      "jsDoc": {
+        "doc": "An integer value representing the Julian Day.",
+        "tags": [
+          {
+            "kind": "see",
+            "doc": "[Julian day](https://en.wikipedia.org/wiki/Julian_day)"
+          }
+        ]
+      },
+      "kind": "typeAlias",
+      "typeAliasDef": {
+        "tsType": {
+          "repr": "Integer",
+          "kind": "typeRef",
+          "typeRef": {
+            "typeParams": null,
+            "typeName": "Integer"
+          }
+        },
+        "typeParams": []
+      }
+    },
+    {
+      "name": "GoogleSheetsDate",
+      "isDefault": false,
+      "location": {
+        "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/date.ts",
+        "line": 22,
+        "col": 0,
+        "byteIndex": 629
+      },
+      "declarationKind": "export",
+      "jsDoc": {
+        "doc": "A floating point number representing date and time, suitable for use in Google Sheets."
+      },
+      "kind": "typeAlias",
+      "typeAliasDef": {
+        "tsType": {
+          "repr": "number",
+          "kind": "keyword",
+          "keyword": "number"
+        },
+        "typeParams": []
+      }
+    },
+    {
+      "name": "dateEx",
+      "isDefault": false,
+      "location": {
+        "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/date.ts",
+        "line": 29,
+        "col": 0,
+        "byteIndex": 747
+      },
+      "declarationKind": "export",
+      "jsDoc": {
+        "doc": "Calls and returns `new DateUtil(date)`.",
+        "tags": [
+          {
+            "kind": "param",
+            "name": "date"
+          },
+          {
+            "kind": "return"
+          }
+        ]
+      },
+      "kind": "function",
+      "functionDef": {
+        "params": [
+          {
+            "kind": "rest",
+            "arg": {
+              "kind": "identifier",
+              "name": "args",
+              "optional": false,
+              "tsType": null
+            },
+            "tsType": {
+              "repr": "",
+              "kind": "array",
+              "array": {
+                "repr": "unknown",
+                "kind": "keyword",
+                "keyword": "unknown"
+              }
+            }
+          }
+        ],
+        "returnType": {
+          "repr": "DateEx",
+          "kind": "typeRef",
+          "typeRef": {
+            "typeParams": null,
+            "typeName": "DateEx"
+          }
+        },
+        "hasBody": true,
+        "isAsync": false,
+        "isGenerator": false,
+        "typeParams": []
+      }
+    },
+    {
+      "name": "DateEx",
+      "isDefault": false,
+      "location": {
+        "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/date.ts",
+        "line": 40,
+        "col": 0,
+        "byteIndex": 964
+      },
+      "declarationKind": "export",
+      "jsDoc": {
+        "doc": "A wrapper for a javascript `Date` object."
+      },
+      "kind": "class",
+      "classDef": {
+        "isAbstract": false,
+        "constructors": [
+          {
+            "jsDoc": {
+              "doc": "Create a DateUtil object, which is a wrapper for a javascript `Date` object.",
+              "tags": [
+                {
+                  "kind": "param",
+                  "name": "date",
+                  "doc": "Optional Date object, or a string or number that can be used\nwith the Date constructor method. If undefined then uses the value of `new Date()`."
+                }
+              ]
+            },
+            "accessibility": null,
+            "hasBody": true,
+            "name": "constructor",
+            "params": [
+              {
+                "kind": "rest",
+                "arg": {
+                  "kind": "identifier",
+                  "name": "args",
+                  "optional": false,
+                  "tsType": null
+                },
+                "tsType": {
+                  "repr": "",
+                  "kind": "array",
+                  "array": {
+                    "repr": "unknown",
+                    "kind": "keyword",
+                    "keyword": "unknown"
+                  }
+                }
+              }
+            ],
+            "location": {
+              "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/date.ts",
+              "line": 49,
+              "col": 2,
+              "byteIndex": 1313
+            }
+          }
+        ],
+        "properties": [
+          {
+            "tsType": {
+              "repr": "Date",
+              "kind": "typeRef",
+              "typeRef": {
+                "typeParams": null,
+                "typeName": "Date"
+              }
+            },
+            "readonly": false,
+            "accessibility": "protected",
+            "optional": false,
+            "isAbstract": false,
+            "isStatic": false,
+            "name": "_date",
+            "location": {
+              "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/date.ts",
+              "line": 41,
+              "col": 2,
+              "byteIndex": 988
+            }
+          },
+          {
+            "tsType": {
+              "repr": "",
+              "kind": "union",
+              "union": [
+                {
+                  "repr": "Minutes",
+                  "kind": "typeRef",
+                  "typeRef": {
+                    "typeParams": null,
+                    "typeName": "Minutes"
+                  }
+                },
+                {
+                  "repr": "undefined",
+                  "kind": "keyword",
+                  "keyword": "undefined"
+                }
+              ]
+            },
+            "readonly": false,
+            "accessibility": "protected",
+            "optional": false,
+            "isAbstract": false,
+            "isStatic": false,
+            "name": "_tz",
+            "location": {
+              "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/date.ts",
+              "line": 42,
+              "col": 2,
+              "byteIndex": 1013
+            }
+          }
+        ],
+        "indexSignatures": [],
+        "methods": [
+          {
+            "jsDoc": {
+              "doc": "Set the timezone to use when outputting as a string, eg. with\ntoISOLocaleString(). A positive value of 360 is equivalent to '-06:00'.",
+              "tags": [
+                {
+                  "kind": "param",
+                  "name": "val",
+                  "doc": "Minutes or a string of the form '-06:00' or '+06:00'."
+                }
+              ]
+            },
+            "accessibility": null,
+            "optional": false,
+            "isAbstract": false,
+            "isStatic": false,
+            "name": "tz",
+            "kind": "method",
+            "functionDef": {
+              "params": [
+                {
+                  "kind": "identifier",
+                  "name": "val",
+                  "optional": false,
+                  "tsType": {
+                    "repr": "",
+                    "kind": "union",
+                    "union": [
+                      {
+                        "repr": "Minutes",
+                        "kind": "typeRef",
+                        "typeRef": {
+                          "typeParams": null,
+                          "typeName": "Minutes"
+                        }
+                      },
+                      {
+                        "repr": "ISOTZ",
+                        "kind": "typeRef",
+                        "typeRef": {
+                          "typeParams": null,
+                          "typeName": "ISOTZ"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "returnType": {
+                "repr": "this",
+                "kind": "this",
+                "this": true
+              },
+              "hasBody": true,
+              "isAsync": false,
+              "isGenerator": false,
+              "typeParams": []
+            },
+            "location": {
+              "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/date.ts",
+              "line": 69,
+              "col": 2,
+              "byteIndex": 2004
+            }
+          },
+          {
+            "accessibility": null,
+            "optional": false,
+            "isAbstract": false,
+            "isStatic": false,
+            "name": "getTz",
+            "kind": "method",
+            "functionDef": {
+              "params": [],
+              "returnType": {
+                "repr": "",
+                "kind": "union",
+                "union": [
+                  {
+                    "repr": "Minutes",
+                    "kind": "typeRef",
+                    "typeRef": {
+                      "typeParams": null,
+                      "typeName": "Minutes"
+                    }
+                  },
+                  {
+                    "repr": "undefined",
+                    "kind": "keyword",
+                    "keyword": "undefined"
+                  }
+                ]
+              },
+              "hasBody": true,
+              "isAsync": false,
+              "isGenerator": false,
+              "typeParams": []
+            },
+            "location": {
+              "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/date.ts",
+              "line": 74,
+              "col": 2,
+              "byteIndex": 2129
+            }
+          },
+          {
+            "accessibility": null,
+            "optional": false,
+            "isAbstract": false,
+            "isStatic": false,
+            "name": "date",
+            "kind": "getter",
+            "functionDef": {
+              "params": [],
+              "returnType": {
+                "repr": "Date",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "Date"
+                }
+              },
+              "hasBody": true,
+              "isAsync": false,
+              "isGenerator": false,
+              "typeParams": []
+            },
+            "location": {
+              "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/date.ts",
+              "line": 78,
+              "col": 2,
+              "byteIndex": 2188
+            }
+          },
+          {
+            "jsDoc": {
+              "doc": "When using a Date constructor that does not allow the tz to be specified,\nand the date was, for example, created using localtime, call tz() with the\noffset, and then adjustForTz() to adjust the Date object.\n",
+              "tags": [
+                {
+                  "kind": "example",
+                  "doc": "```ts\nimport { dateEx } from '@epdoc/datetime';\n\nconst d = new Date(2024,1,1,11,59,59);\nconst d2 = dateEx(d).withTz(360).date;\nassertStrictEquals(d2.toISOString(), '2024-01-01T11:59:59.000Z');\n```\nNote that val '-06:00' `ISOTZ` equals 360 `Minutes`, and '+06:00' equals -360.\n   });"
+                },
+                {
+                  "kind": "param",
+                  "name": "val",
+                  "doc": "If not specified, then use local timezone."
+                }
+              ]
+            },
+            "accessibility": null,
+            "optional": false,
+            "isAbstract": false,
+            "isStatic": false,
+            "name": "withTz",
+            "kind": "method",
+            "functionDef": {
+              "params": [
+                {
+                  "kind": "identifier",
+                  "name": "val",
+                  "optional": true,
+                  "tsType": {
+                    "repr": "",
+                    "kind": "union",
+                    "union": [
+                      {
+                        "repr": "Minutes",
+                        "kind": "typeRef",
+                        "typeRef": {
+                          "typeParams": null,
+                          "typeName": "Minutes"
+                        }
+                      },
+                      {
+                        "repr": "ISOTZ",
+                        "kind": "typeRef",
+                        "typeRef": {
+                          "typeParams": null,
+                          "typeName": "ISOTZ"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "returnType": {
+                "repr": "this",
+                "kind": "this",
+                "this": true
+              },
+              "hasBody": true,
+              "isAsync": false,
+              "isGenerator": false,
+              "typeParams": []
+            },
+            "location": {
+              "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/date.ts",
+              "line": 99,
+              "col": 2,
+              "byteIndex": 2871
+            }
+          },
+          {
+            "jsDoc": {
+              "doc": "Output the date in the form '2016-05-01T11:49:21-07:00'. This differs from\n`Date.toISOString` which always uses UTC in the output. The timezone used\nis set by the tz() method or defaults to the local timezone of the machine.",
+              "tags": [
+                {
+                  "kind": "param",
+                  "name": "showMs",
+                  "doc": "Set to false to hide (truncate) milliseconds"
+                },
+                {
+                  "kind": "return"
+                }
+              ]
+            },
+            "accessibility": "public",
+            "optional": false,
+            "isAbstract": false,
+            "isStatic": false,
+            "name": "toISOLocalString",
+            "kind": "method",
+            "functionDef": {
+              "params": [
+                {
+                  "kind": "assign",
+                  "left": {
+                    "kind": "identifier",
+                    "name": "showMs",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "keyword": "boolean"
+                    }
+                  },
+                  "right": "true",
+                  "tsType": null
+                }
+              ],
+              "returnType": {
+                "repr": "string",
+                "kind": "keyword",
+                "keyword": "string"
+              },
+              "hasBody": true,
+              "isAsync": false,
+              "isGenerator": false,
+              "typeParams": []
+            },
+            "location": {
+              "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/date.ts",
+              "line": 119,
+              "col": 2,
+              "byteIndex": 3594
+            }
+          },
+          {
+            "jsDoc": {
+              "doc": "Validate whether the date is a valid Date object."
+            },
+            "accessibility": "private",
+            "optional": false,
+            "isAbstract": false,
+            "isStatic": false,
+            "name": "validate",
+            "kind": "method",
+            "functionDef": {
+              "params": [],
+              "returnType": {
+                "repr": "void",
+                "kind": "keyword",
+                "keyword": "void"
+              },
+              "hasBody": true,
+              "isAsync": false,
+              "isGenerator": false,
+              "typeParams": []
+            },
+            "location": {
+              "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/date.ts",
+              "line": 144,
+              "col": 2,
+              "byteIndex": 4335
+            }
+          },
+          {
+            "jsDoc": {
+              "doc": "Format the date using the supplied format string. Will use the local\ntimezone when outputing the time. Call tz() to override this value.\nFormat strings are yyyy, MM, dd, HH, mm, ss and SSS.",
+              "tags": [
+                {
+                  "kind": "param",
+                  "name": "format"
+                },
+                {
+                  "kind": "return"
+                }
+              ]
+            },
+            "accessibility": null,
+            "optional": false,
+            "isAbstract": false,
+            "isStatic": false,
+            "name": "format",
+            "kind": "method",
+            "functionDef": {
+              "params": [
+                {
+                  "kind": "identifier",
+                  "name": "format",
+                  "optional": false,
+                  "tsType": {
+                    "repr": "string",
+                    "kind": "keyword",
+                    "keyword": "string"
+                  }
+                }
+              ],
+              "returnType": {
+                "repr": "string",
+                "kind": "keyword",
+                "keyword": "string"
+              },
+              "hasBody": true,
+              "isAsync": false,
+              "isGenerator": false,
+              "typeParams": []
+            },
+            "location": {
+              "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/date.ts",
+              "line": 157,
+              "col": 2,
+              "byteIndex": 4701
+            }
+          },
+          {
+            "accessibility": null,
+            "optional": false,
+            "isAbstract": false,
+            "isStatic": false,
+            "name": "formatUTC",
+            "kind": "method",
+            "functionDef": {
+              "params": [
+                {
+                  "kind": "identifier",
+                  "name": "format",
+                  "optional": false,
+                  "tsType": {
+                    "repr": "string",
+                    "kind": "keyword",
+                    "keyword": "string"
+                  }
+                }
+              ],
+              "returnType": {
+                "repr": "string",
+                "kind": "keyword",
+                "keyword": "string"
+              },
+              "hasBody": true,
+              "isAsync": false,
+              "isGenerator": false,
+              "typeParams": []
+            },
+            "location": {
+              "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/date.ts",
+              "line": 163,
+              "col": 2,
+              "byteIndex": 4952
+            }
+          },
+          {
+            "accessibility": "private",
+            "optional": false,
+            "isAbstract": false,
+            "isStatic": true,
+            "name": "formatInternal",
+            "kind": "method",
+            "functionDef": {
+              "params": [
+                {
+                  "kind": "identifier",
+                  "name": "d",
+                  "optional": false,
+                  "tsType": {
+                    "repr": "Date",
+                    "kind": "typeRef",
+                    "typeRef": {
+                      "typeParams": null,
+                      "typeName": "Date"
+                    }
+                  }
+                },
+                {
+                  "kind": "identifier",
+                  "name": "format",
+                  "optional": false,
+                  "tsType": {
+                    "repr": "string",
+                    "kind": "keyword",
+                    "keyword": "string"
+                  }
+                }
+              ],
+              "returnType": {
+                "repr": "string",
+                "kind": "keyword",
+                "keyword": "string"
+              },
+              "hasBody": true,
+              "isAsync": false,
+              "isGenerator": false,
+              "typeParams": []
+            },
+            "location": {
+              "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/date.ts",
+              "line": 167,
+              "col": 2,
+              "byteIndex": 5049
+            }
+          },
+          {
+            "jsDoc": {
+              "doc": "Get the Julian Day.",
+              "tags": [
+                {
+                  "kind": "return",
+                  "doc": "A number which is the Julian Day"
+                },
+                {
+                  "kind": "see",
+                  "doc": "[Julian day](https://en.wikipedia.org/wiki/Julian_day)"
+                }
+              ]
+            },
+            "accessibility": "public",
+            "optional": false,
+            "isAbstract": false,
+            "isStatic": false,
+            "name": "julianDate",
+            "kind": "method",
+            "functionDef": {
+              "params": [],
+              "returnType": {
+                "repr": "JulianDay",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "JulianDay"
+                }
+              },
+              "hasBody": true,
+              "isAsync": false,
+              "isGenerator": false,
+              "typeParams": []
+            },
+            "location": {
+              "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/date.ts",
+              "line": 185,
+              "col": 2,
+              "byteIndex": 5677
+            }
+          },
+          {
+            "accessibility": null,
+            "optional": false,
+            "isAbstract": false,
+            "isStatic": true,
+            "name": "isIsoTz",
+            "kind": "method",
+            "functionDef": {
+              "params": [
+                {
+                  "kind": "identifier",
+                  "name": "val",
+                  "optional": false,
+                  "tsType": {
+                    "repr": "unknown",
+                    "kind": "keyword",
+                    "keyword": "unknown"
+                  }
+                }
+              ],
+              "returnType": {
+                "repr": "val is \u001b[0m\u001b[38;5;12mISOTZ\u001b[0m",
+                "kind": "typePredicate",
+                "typePredicate": {
+                  "asserts": false,
+                  "param": {
+                    "type": "identifier",
+                    "name": "val"
+                  },
+                  "type": {
+                    "repr": "ISOTZ",
+                    "kind": "typeRef",
+                    "typeRef": {
+                      "typeParams": null,
+                      "typeName": "ISOTZ"
+                    }
+                  }
+                }
+              },
+              "hasBody": true,
+              "isAsync": false,
+              "isGenerator": false,
+              "typeParams": []
+            },
+            "location": {
+              "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/date.ts",
+              "line": 190,
+              "col": 2,
+              "byteIndex": 5806
+            }
+          },
+          {
+            "jsDoc": {
+              "tags": [
+                {
+                  "kind": "param",
+                  "name": "m"
+                },
+                {
+                  "kind": "return"
+                },
+                {
+                  "kind": "deprecated",
+                  "doc": "Use tzFormat method instead"
+                }
+              ]
+            },
+            "accessibility": "public",
+            "optional": false,
+            "isAbstract": false,
+            "isStatic": true,
+            "name": "tz",
+            "kind": "method",
+            "functionDef": {
+              "params": [
+                {
+                  "kind": "identifier",
+                  "name": "m",
+                  "optional": false,
+                  "tsType": {
+                    "repr": "Minutes",
+                    "kind": "typeRef",
+                    "typeRef": {
+                      "typeParams": null,
+                      "typeName": "Minutes"
+                    }
+                  }
+                }
+              ],
+              "returnType": {
+                "repr": "string",
+                "kind": "keyword",
+                "keyword": "string"
+              },
+              "hasBody": true,
+              "isAsync": false,
+              "isGenerator": false,
+              "typeParams": []
+            },
+            "location": {
+              "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/date.ts",
+              "line": 199,
+              "col": 2,
+              "byteIndex": 6002
+            }
+          },
+          {
+            "jsDoc": {
+              "doc": "Format a timezone offset as a string",
+              "tags": [
+                {
+                  "kind": "param",
+                  "name": "m",
+                  "doc": "Minutes"
+                },
+                {
+                  "kind": "return",
+                  "doc": "string of the form '-06:00'"
+                }
+              ]
+            },
+            "accessibility": "public",
+            "optional": false,
+            "isAbstract": false,
+            "isStatic": true,
+            "name": "tzFormat",
+            "kind": "method",
+            "functionDef": {
+              "params": [
+                {
+                  "kind": "identifier",
+                  "name": "m",
+                  "optional": false,
+                  "tsType": {
+                    "repr": "Minutes",
+                    "kind": "typeRef",
+                    "typeRef": {
+                      "typeParams": null,
+                      "typeName": "Minutes"
+                    }
+                  }
+                }
+              ],
+              "returnType": {
+                "repr": "string",
+                "kind": "keyword",
+                "keyword": "string"
+              },
+              "hasBody": true,
+              "isAsync": false,
+              "isGenerator": false,
+              "typeParams": []
+            },
+            "location": {
+              "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/date.ts",
+              "line": 208,
+              "col": 2,
+              "byteIndex": 6197
+            }
+          },
+          {
+            "jsDoc": {
+              "doc": "Parse a timezone offset in the form '-06:00' and return 360.",
+              "tags": [
+                {
+                  "kind": "param",
+                  "name": "val"
+                },
+                {
+                  "kind": "return",
+                  "doc": "Minutes of timezone offset"
+                }
+              ]
+            },
+            "accessibility": "public",
+            "optional": false,
+            "isAbstract": false,
+            "isStatic": true,
+            "name": "tzParse",
+            "kind": "method",
+            "functionDef": {
+              "params": [
+                {
+                  "kind": "identifier",
+                  "name": "val",
+                  "optional": false,
+                  "tsType": {
+                    "repr": "ISOTZ",
+                    "kind": "typeRef",
+                    "typeRef": {
+                      "typeParams": null,
+                      "typeName": "ISOTZ"
+                    }
+                  }
+                }
+              ],
+              "returnType": {
+                "repr": "",
+                "kind": "union",
+                "union": [
+                  {
+                    "repr": "Minutes",
+                    "kind": "typeRef",
+                    "typeRef": {
+                      "typeParams": null,
+                      "typeName": "Minutes"
+                    }
+                  },
+                  {
+                    "repr": "undefined",
+                    "kind": "keyword",
+                    "keyword": "undefined"
+                  }
+                ]
+              },
+              "hasBody": true,
+              "isAsync": false,
+              "isGenerator": false,
+              "typeParams": []
+            },
+            "location": {
+              "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/date.ts",
+              "line": 220,
+              "col": 2,
+              "byteIndex": 6535
+            }
+          },
+          {
+            "jsDoc": {
+              "doc": "Parse a timezone offset in the form '-06:00' and return 360.",
+              "tags": [
+                {
+                  "kind": "param",
+                  "name": "val"
+                },
+                {
+                  "kind": "return",
+                  "doc": "Minutes of timezone offset"
+                }
+              ]
+            },
+            "accessibility": "public",
+            "optional": false,
+            "isAbstract": false,
+            "isStatic": true,
+            "name": "pdfTzParse",
+            "kind": "method",
+            "functionDef": {
+              "params": [
+                {
+                  "kind": "identifier",
+                  "name": "val",
+                  "optional": false,
+                  "tsType": {
+                    "repr": "PDFTZ",
+                    "kind": "typeRef",
+                    "typeRef": {
+                      "typeParams": null,
+                      "typeName": "PDFTZ"
+                    }
+                  }
+                }
+              ],
+              "returnType": {
+                "repr": "",
+                "kind": "union",
+                "union": [
+                  {
+                    "repr": "Minutes",
+                    "kind": "typeRef",
+                    "typeRef": {
+                      "typeParams": null,
+                      "typeName": "Minutes"
+                    }
+                  },
+                  {
+                    "repr": "undefined",
+                    "kind": "keyword",
+                    "keyword": "undefined"
+                  }
+                ]
+              },
+              "hasBody": true,
+              "isAsync": false,
+              "isGenerator": false,
+              "typeParams": []
+            },
+            "location": {
+              "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/date.ts",
+              "line": 238,
+              "col": 2,
+              "byteIndex": 7073
+            }
+          },
+          {
+            "jsDoc": {
+              "doc": "Get the date in a Google Sheets value",
+              "tags": [
+                {
+                  "kind": "return",
+                  "doc": "A number which is the date with a value suitable for use in Google\nSheets"
+                }
+              ]
+            },
+            "accessibility": "public",
+            "optional": false,
+            "isAbstract": false,
+            "isStatic": false,
+            "name": "googleSheetsDate",
+            "kind": "method",
+            "functionDef": {
+              "params": [],
+              "returnType": {
+                "repr": "GoogleSheetsDate",
+                "kind": "typeRef",
+                "typeRef": {
+                  "typeParams": null,
+                  "typeName": "GoogleSheetsDate"
+                }
+              },
+              "hasBody": true,
+              "isAsync": false,
+              "isGenerator": false,
+              "typeParams": []
+            },
+            "location": {
+              "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/date.ts",
+              "line": 259,
+              "col": 2,
+              "byteIndex": 7667
+            }
+          },
+          {
+            "accessibility": null,
+            "optional": false,
+            "isAbstract": false,
+            "isStatic": true,
+            "name": "fromPdfDate",
+            "kind": "method",
+            "functionDef": {
+              "params": [
+                {
+                  "kind": "identifier",
+                  "name": "s",
+                  "optional": false,
+                  "tsType": {
+                    "repr": "string",
+                    "kind": "keyword",
+                    "keyword": "string"
+                  }
+                }
+              ],
+              "returnType": {
+                "repr": "",
+                "kind": "union",
+                "union": [
+                  {
+                    "repr": "DateEx",
+                    "kind": "typeRef",
+                    "typeRef": {
+                      "typeParams": null,
+                      "typeName": "DateEx"
+                    }
+                  },
+                  {
+                    "repr": "undefined",
+                    "kind": "keyword",
+                    "keyword": "undefined"
+                  }
+                ]
+              },
+              "hasBody": true,
+              "isAsync": false,
+              "isGenerator": false,
+              "typeParams": []
+            },
+            "location": {
+              "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/date.ts",
+              "line": 266,
+              "col": 2,
+              "byteIndex": 7949
+            }
+          }
+        ],
+        "extends": null,
+        "implements": [],
+        "typeParams": [],
+        "superTypeParams": []
+      }
+    }
+  ]
+}
