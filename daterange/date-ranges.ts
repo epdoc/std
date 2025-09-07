@@ -97,6 +97,53 @@ export class DateRanges {
     return result;
   }
 
+  /**
+   * Converts the date ranges to a human-editable string format that is in local time.
+   * @returns
+   */
+  toEditableString(): string {
+    const isStart = (d: Date) => {
+      return d.getHours() === 0 && d.getMinutes() === 0 && d.getSeconds() === 0 && d.getMilliseconds() === 0;
+    };
+
+    const format = (d: Date, isBefore: boolean) => {
+      if (isBefore) {
+        if (d.getHours() === 23 && d.getMinutes() === 59 && d.getSeconds() === 59 && d.getMilliseconds() === 999) {
+          return dateEx(d).format('yyyyMMdd');
+        }
+      } else {
+        if (isStart(d)) {
+          return dateEx(d).format('yyyyMMdd');
+        }
+      }
+      return dateEx(d).format('yyyyMMddHHmmss');
+    };
+
+    const strs: string[] = [];
+    this._ranges.forEach((range) => {
+      let s = '';
+      if (range.after) {
+        s = format(range.after, false) + '-';
+      }
+      if (range.before) {
+        if (!range.after) {
+          s += '-';
+        }
+        let d = range.before;
+        if (isStart(d)) {
+          d = new Date(d.getTime() - 1);
+        }
+        s += format(d, true);
+      }
+      strs.push(s);
+    });
+    return strs.join(',');
+  }
+
+  /**
+   * Converts the date ranges to a human-readable string format that uses local time.
+   * @returns
+   */
   toString(): string {
     const s: string[] = [];
     this._ranges.forEach((range) => {

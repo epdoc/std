@@ -252,4 +252,69 @@ describe('date-range', () => {
       expect(json).toEqual([]);
     });
   });
+
+  describe('toEditableString', () => {
+    test('should correctly serialize a single range', () => {
+      const dr = dateRanges('20250115-20250116');
+      expect(dr.toEditableString()).toBe('20250115-20250116');
+    });
+
+    test('should correctly serialize a range with only an after date', () => {
+      const dr = dateRanges('20250115-');
+      expect(dr.toEditableString()).toBe('20250115-');
+    });
+
+    test('should correctly serialize a range with only a before date', () => {
+      const dr = dateRanges('-20250116');
+      expect(dr.toEditableString()).toBe('-20250116');
+    });
+
+    test('should correctly serialize multiple ranges', () => {
+      const dr = dateRanges('202501-202502,2026');
+      expect(dr.toEditableString()).toBe('20250101-20250228,20260101-20261231');
+    });
+
+    test('should return an empty string for an empty DateRanges object', () => {
+      const dr = dateRanges('');
+      expect(dr.toEditableString()).toBe('');
+    });
+
+    test('should round trip a complex string', () => {
+      const s = '2024,20250801-';
+      const dr = dateRanges(s);
+      expect(dr.toEditableString()).toBe('20240101-20241231,20250801-');
+    });
+
+    test('should round trip a year', () => {
+      const s = '2024';
+      const dr = dateRanges(s);
+      expect(dr.toEditableString()).toBe('20240101-20241231');
+    });
+
+    test('should round trip a year range', () => {
+      const s = '2024-2025';
+      const dr = dateRanges(s);
+      expect(dr.toEditableString()).toBe('20240101-20251231');
+    });
+
+    test('should round trip a month range', () => {
+      const s = '202401-202404';
+      const dr = dateRanges(s);
+      expect(dr.toEditableString()).toBe('20240101-20240430');
+    });
+
+    test('should handle precise time', () => {
+      const s = '202401151030-202401151100';
+      const dr = dateRanges(s);
+      expect(dr.toEditableString()).toBe('20240115103000-20240115110000');
+    });
+
+    test('should handle multiple ranges with precise time', () => {
+      const dr = new DateRanges([
+        { after: new Date(2024, 0, 1, 10, 30, 0), before: new Date(2024, 0, 1, 11, 0, 0) },
+        { after: new Date(2024, 0, 2, 12, 0, 0), before: new Date(2024, 0, 2, 12, 30, 0) },
+      ]);
+      expect(dr.toEditableString()).toBe('20240101103000-20240101110000,20240102120000-20240102123000');
+    });
+  });
 });

@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.5] - 2025-09-06
+
+- Added `DateRanges.toEditableString()` method.
+
 ## [0.2.4] - 2025-08-28
 
 - Added `toJSON` method to `DateRanges` class.

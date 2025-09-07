@@ -129,6 +129,7 @@ function getDaysInMonth(year: number, month: number): number {
 
 /**
  * Converts a date string in various formats to a `Date` object.
+ * As with the Date constructor, the timezone uses the local timezone.
  *
  * Supported formats:
  * - `YYYY` (e.g., "2025")
@@ -137,7 +138,7 @@ function getDaysInMonth(year: number, month: number): number {
  * - `YYYYMMDDhh` (e.g., "2025011510")
  * - `YYYYMMDDhhmm` (e.g., "202501151030")
  * - `YYYYMMDDhhmmss` (e.g., "20250115103045")
- * to a Date object. As with the Date constructor, the timezone uses the local timezone.
+ *
  * @param {string} s - The date string to convert.
  * @param {Integer} [h=0] - The hour to set for the Date object (default is 0).
  * @returns {Date} The corresponding Date object.
