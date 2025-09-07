@@ -253,6 +253,39 @@ describe('date-range', () => {
     });
   });
 
+  describe('fromJSON', () => {
+    test('should correctly deserialize a single range', () => {
+      const s = '20250115-20250116';
+      const dr1 = dateRanges(s);
+      const json = dr1.toJSON();
+      const dr2 = new DateRanges();
+      dr2.fromJSON(json);
+      expect(dr2.toEditableString()).toBe(dr1.toEditableString());
+    });
+
+    test('should correctly deserialize multiple ranges', () => {
+      const s = '202501-202502,2026';
+      const dr1 = dateRanges(s);
+      const json = dr1.toJSON();
+      const dr2 = new DateRanges();
+      dr2.fromJSON(json);
+      expect(dr2.toEditableString()).toBe(dr1.toEditableString());
+    });
+
+    test('should handle an empty array', () => {
+      const dr = new DateRanges();
+      dr.fromJSON([]);
+      expect(dr.ranges.length).toBe(0);
+    });
+
+    test('should handle invalid date strings', () => {
+      const dr = new DateRanges();
+      dr.fromJSON([{ after: 'invalid date' }]);
+      expect(dr.ranges.length).toBe(1);
+      expect(dr.ranges[0].after).toBeUndefined();
+    });
+  });
+
   describe('toEditableString', () => {
     test('should correctly serialize a single range', () => {
       const dr = dateRanges('20250115-20250116');

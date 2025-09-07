@@ -1,3 +1,22 @@
+/**
+ * @module
+ *
+ * This module provides a `DateRanges` class for working with collections of date
+ * ranges.
+ *
+ * @example
+ * ```ts
+ * import { DateRanges } from '@epdoc/std/daterange/date-ranges';
+ *
+ * const dr = new DateRanges();
+ * dr.fromJSON([
+ *   { after: '2024-01-01T00:00:00.000Z' },
+ *   { before: '2024-01-02T00:00:00.000Z' },
+ * ]);
+ * console.log(dr.toEditableString());
+ * //-> "20240101-,-20240101"
+ * ```
+ */
 import { DateEx, dateEx, type ISOTZ } from '@epdoc/datetime';
 import { isNonEmptyArray, isValidDate } from '@epdoc/type';
 import type { DateRangeDef, DateRangeJSON } from './types.ts';
@@ -10,7 +29,7 @@ export class DateRanges {
 
   /**
    * Creates an instance of DateRanges.
-   * @param {DateRangeDef[]} [dateRanges] - An optional array of DateRangeDef objects.
+   * @param dateRanges - An optional array of DateRangeDef objects.
    */
   constructor(dateRanges?: DateRangeDef[]) {
     if (isNonEmptyArray(dateRanges)) {
@@ -22,7 +41,7 @@ export class DateRanges {
 
   /**
    * Creates a copy of the current DateRanges instance.
-   * @returns {DateRanges} A new instance of DateRanges with the same date ranges.
+   * @returns A new instance of DateRanges with the same date ranges.
    */
   copy(): DateRanges {
     const result = new DateRanges(this._ranges);
@@ -31,7 +50,6 @@ export class DateRanges {
 
   /**
    * Gets the array of date ranges.
-   * @returns {DateRangeDef[]} The array of date ranges.
    */
   get ranges(): DateRangeDef[] {
     return this._ranges;
@@ -39,9 +57,10 @@ export class DateRanges {
 
   /**
    * Checks if a given date is within any of the defined date ranges.
-   * @param {Date | undefined} date - The date to check.
-   * @param {boolean} [_defVal=true] - The default value to return if the date is invalid (default is true).
-   * @returns {boolean} True if the date is within the ranges, otherwise false.
+   * @param date - The date to check.
+   * @param _defVal - The default value to return if the date is invalid
+   * (default is true).
+   * @returns True if the date is within the ranges, otherwise false.
    */
   isDateInRange(date: Date | undefined, _defVal = true): boolean {
     if (isValidDate(date)) {
@@ -59,8 +78,9 @@ export class DateRanges {
   }
 
   /**
-   * Tests to see if the date range has one 'after' setting and, if so, returns that date.
-   * @returns {Date | undefined} The 'after' date if it exists, otherwise undefined.
+   * Tests to see if the date range has one 'after' setting and, if so, returns
+   * that date.
+   * @returns The 'after' date if it exists, otherwise undefined.
    */
   hasOneAfterDate(): Date | undefined {
     if (this.hasRanges()) {
@@ -76,12 +96,45 @@ export class DateRanges {
 
   /**
    * Checks if there are any date ranges defined.
-   * @returns {boolean} True if there are date ranges, otherwise false.
+   * @returns True if there are date ranges, otherwise false.
    */
   hasRanges(): boolean {
     return isNonEmptyArray(this._ranges);
   }
 
+  /**
+   * Populates the `DateRanges` instance from an array of `DateRangeJSON`
+   * objects.
+   *
+   * @param json - An array of `DateRangeJSON` objects.
+   */
+  fromJSON(json: DateRangeJSON[]): void {
+    this._ranges = [];
+    if (isNonEmptyArray(json)) {
+      json.forEach((item) => {
+        const range: DateRangeDef = {};
+        if (item.after) {
+          const d = new Date(item.after);
+          if (isValidDate(d)) {
+            range.after = d;
+          }
+        }
+        if (item.before) {
+          const d = new Date(item.before);
+          if (isValidDate(d)) {
+            range.before = d;
+          }
+        }
+        this._ranges.push(range);
+      });
+    }
+  }
+
+  /**
+   * Converts the `DateRanges` instance to an array of `DateRangeJSON` objects.
+   *
+   * @returns An array of `DateRangeJSON` objects.
+   */
   toJSON(): DateRangeJSON[] {
     const result: DateRangeJSON[] = [];
     this._ranges.forEach((range) => {
@@ -98,8 +151,23 @@ export class DateRanges {
   }
 
   /**
-   * Converts the date ranges to a human-editable string format that is in local time.
-   * @returns
+   * Converts the date ranges to a human-editable string format that is in local
+   * time.
+   *
+   * @returns A string representation of the date ranges.
+   *
+   * @example
+   * ```ts
+   * import { DateRanges } from '@epdoc/std/daterange/date-ranges';
+   *
+   * const dr = new DateRanges();
+   * dr.fromJSON([
+   *   { after: '2024-01-01T00:00:00.000Z' },
+   *   { before: '2024-01-02T00:00:00.000Z' },
+   * ]);
+   * console.log(dr.toEditableString());
+   * //-> "20240101-,-20240101"
+   * ```
    */
   toEditableString(): string {
     const isStart = (d: Date) => {
@@ -141,8 +209,10 @@ export class DateRanges {
   }
 
   /**
-   * Converts the date ranges to a human-readable string format that uses local time.
-   * @returns
+   * Converts the date ranges to a human-readable string format that uses local
+   * time.
+   *
+   * @returns A string representation of the date ranges.
    */
   toString(): string {
     const s: string[] = [];
