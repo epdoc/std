@@ -13,8 +13,16 @@ report generation.
 
 ## Installation
 
+To add this module to your project:
+
 ```bash
 deno add jsr:@epdoc/daterange
+```
+
+Then, import the necessary functions and classes into your code:
+
+```typescript
+import { dateList, DateRanges } from 'jsr:@epdoc/daterange';
 ```
 
 ## Usage
@@ -52,9 +60,10 @@ The parser is very flexible, making it easy for users to specify dates on the co
 | Open-Ended (Before) | `-20250101`          | Any time before the end of Jan 1.             |
 | Comma-Separated     | `2024,202501-202503` | A list of multiple, separate ranges.          |
 
-- When only the year, month, day is specified, times are zeroed to the beginning and end of the day (0h to 24h)
-- When only the year, month is specified, times are zeroed to the beginning and end of the month, also at 0h and 24h.
-- When only the year specified, times are zeroed to the beginning and end of the year.
+- When only the year, month, or day is specified, the time component defaults to the beginning of that period (e.g.,
+  `2025` becomes `2025-01-01T00:00:00`).
+- The end of a range is exclusive. For example, a range of `20250101-20250102` includes all of January 1st up to, but
+  not including, the start of January 2nd.
 
 ### Working with `DateRanges`
 
@@ -73,6 +82,12 @@ console.log(dateRanges.isDateInRange(date1)); // true
 const date2 = new Date('2025-01-22T12:00:00');
 console.log(dateRanges.isDateInRange(date2)); // false
 ```
+
+The `DateRanges` class also provides methods for serialization:
+
+- `toJSON()`: Converts the date ranges to a JSON-serializable format.
+- `toEditableString()`: Creates a string that can be edited by a human and parsed back into a `DateRanges` object.
+- `fromJSON()`: Populates a `DateRanges` object from a JSON array.
 
 ### Command-Line Tool
 
@@ -108,9 +123,13 @@ deno run --allow-env jsr:@epdoc/daterange/cli --hour=9 20250301
 ## API
 
 - [`dateList(spec: string, hour?: number): DateRangeDef[]`](./util.ts#L46)
+- [`dateRanges(spec: string, hour?: number): DateRanges`](./util.ts#L86)
+- [`dateStringToDate(s: string, h?: number): Date`](./util.ts#L10)
 - `DateRanges`
-- `dateStringToDate(s: string, h?: number): Date`
+  - `fromJSON(json: DateRangeJSON[]): void`
+  - `toJSON(): DateRangeJSON[]`
+  - `toEditableString(): string`
 
 ## License
 
-MIT
+MIT ''

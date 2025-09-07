@@ -1,4 +1,4 @@
-# TypeUtil Library
+# @epdoc/type
 
 ## Overview
 
@@ -15,7 +15,7 @@ be used except in experiments.
 
 To install the library, you can use npm or yarn:
 
-`deno add @epdoc/type`
+`deno add jsr:@epdoc/type`
 
 ## Usage
 
@@ -26,6 +26,14 @@ import { isBoolean } from '@epdoc/type';
 
 const val = true;
 console.log('val is a boolean?', isBoolean(val) ? 'yes' : 'no');
+```
+
+```typescript
+import { _, type Integer } from '@epdoc/type';
+
+const val = true;
+const idx: Integer = 0;
+console.log('val is a boolean?', _.isBoolean(val) ? 'yes' : 'no');
 ```
 
 ## License

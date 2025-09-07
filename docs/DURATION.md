@@ -1,4 +1,4 @@
-# @epdoc/std/duration
+# @epdoc/duration
 
 Contains time duration utilities that are not found in [moment.js](https://github.com/moment/moment) or require a fair
 amount of wrapper logic when using
