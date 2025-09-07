@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.8] - 2025-09-07
+
+- Added `DateRange` `init` and `clear` methods.
+
 ## [0.2.7] - 2025-09-07
 
 - Added `DateRange` `clear` method

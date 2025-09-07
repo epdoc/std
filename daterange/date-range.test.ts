@@ -350,4 +350,34 @@ describe('date-range', () => {
       expect(dr.toEditableString()).toBe('20240101103000-20240101110000,20240102120000-20240102123000');
     });
   });
+
+  describe('init and clear', () => {
+    test('should initialize with ranges', () => {
+      const dr = new DateRanges();
+      const ranges = dateList('2024-2025');
+      dr.init(ranges);
+      expect(dr.ranges.length).toBe(1);
+      expect(dr.toEditableString()).toBe('20240101-20251231');
+    });
+
+    test('should clear existing ranges on init', () => {
+      const dr = dateRanges('2023');
+      const ranges = dateList('2024-2025');
+      dr.init(ranges);
+      expect(dr.ranges.length).toBe(1);
+      expect(dr.toEditableString()).toBe('20240101-20251231');
+    });
+
+    test('should clear ranges with no arguments', () => {
+      const dr = dateRanges('2023');
+      dr.init();
+      expect(dr.hasRanges()).toBe(false);
+    });
+
+    test('should clear ranges with clear()', () => {
+      const dr = dateRanges('2023');
+      dr.clear();
+      expect(dr.hasRanges()).toBe(false);
+    });
+  });
 });

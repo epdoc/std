@@ -40,6 +40,23 @@ export class DateRanges {
   }
 
   /**
+   * Initializes the `DateRanges` instance with an array of `DateRangeDef` objects.
+   *
+   * @param ranges - An optional array of `DateRangeDef` objects. If not specified then the current
+   * values are cleared.
+   * @returns The `DateRanges` instance.
+   */
+  init(ranges?: DateRangeDef[]): this {
+    this.clear();
+    if (isNonEmptyArray(ranges)) {
+      ranges.forEach((item) => {
+        this._ranges.push({ before: item.before, after: item.after });
+      });
+    }
+    return this;
+  }
+
+  /**
    * Creates a copy of the current DateRanges instance.
    * @returns A new instance of DateRanges with the same date ranges.
    */
@@ -58,8 +75,9 @@ export class DateRanges {
   /**
    * Clears all date ranges from the instance.
    */
-  clear(): void {
+  clear(): this {
     this._ranges = [];
+    return this;
   }
 
   /**
