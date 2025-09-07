@@ -56,6 +56,13 @@ export class DateRanges {
   }
 
   /**
+   * Clears all date ranges from the instance.
+   */
+  clear(): void {
+    this._ranges = [];
+  }
+
+  /**
    * Checks if a given date is within any of the defined date ranges.
    * @param date - The date to check.
    * @param _defVal - The default value to return if the date is invalid
@@ -108,7 +115,7 @@ export class DateRanges {
    *
    * @param json - An array of `DateRangeJSON` objects.
    */
-  fromJSON(json: DateRangeJSON[]): void {
+  fromJSON(json?: DateRangeJSON[]): void {
     this._ranges = [];
     if (isNonEmptyArray(json)) {
       json.forEach((item) => {
