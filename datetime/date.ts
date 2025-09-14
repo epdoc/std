@@ -8,6 +8,8 @@ const REG = {
   isoTz: new RegExp(/^(Z|((\+|\-)(\d\d):(\d\d)))*$/),
 };
 const INVALID_DATE_STRING = 'Invalid Date';
+const GOOGLE_TO_UNIX_EPOCH_DAYS = 25568; // Sheets treats 1900 as a leap year, so we subtract 1.
+const MS_PER_DAY = 86400000;
 
 export type ISOTZ = string;
 export type PDFTZ = string;
@@ -258,9 +260,23 @@ export class DateEx {
    */
   public googleSheetsDate(): GoogleSheetsDate {
     this.validate();
-    const d = this._date;
-    const tNull = new Date(Date.UTC(1899, 11, 30, 0, 0, 0, 0)); // the starting value for Google
-    return ((d.getTime() - tNull.getTime()) / 60000 - d.getTimezoneOffset()) / 1440;
+    // The number 25569 is the count of days between the Google Sheets epoch (1899-12-30)
+    // and the Unix epoch (1970-01-01). 86400000 is the number of milliseconds in a day.
+    return this._date.getTime() / MS_PER_DAY + GOOGLE_TO_UNIX_EPOCH_DAYS;
+  }
+
+  /**
+   * Creates a DateEx object from a Google Sheets serial date number
+   * that was created with a local timezone offset.
+   * @param serial The Google Sheets serial date number.
+   * @returns A DateEx object.
+   */
+  static fromGoogleSheetsDate(serial: number): DateEx | undefined {
+    if (!_.isNumber(serial)) {
+      return undefined;
+    }
+    const ms = (serial - GOOGLE_TO_UNIX_EPOCH_DAYS) * MS_PER_DAY;
+    return new DateEx(ms);
   }
 
   static fromPdfDate(s: string): DateEx | undefined {

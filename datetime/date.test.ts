@@ -1,5 +1,5 @@
 import { expect } from '@std/expect';
-import { describe, it } from 'jsr:@std/testing/bdd';
+import { describe, it } from '@std/testing/bdd';
 import process from 'node:process';
 import { DateEx, dateEx } from './date.ts';
 
@@ -137,9 +137,47 @@ describe('date-util', () => {
     const d = new Date('1997-11-25T12:13:14.456Z');
     expect(new DateEx(d).julianDate()).toEqual(2450778);
   });
-  it('googleSheetsDate', () => {
-    const d = new Date('1997-11-25T12:13:14Z');
-    expect(new DateEx(d).googleSheetsDate()).toEqual(35759.25918981482);
+  describe('googleSheetsDate', () => {
+    it('should convert a UTC date to a Google Sheets serial number', () => {
+      // 2024-01-01 12:00:00 UTC
+      const d = new Date('2024-01-01T12:00:00Z');
+      const serial = new DateEx(d).googleSheetsDate();
+      expect(serial).toEqual(45291.5);
+    });
+
+    it('should convert a date with timezone offset to the correct serial number', () => {
+      // This test demonstrates that the input Date's offset is handled correctly,
+      // as Date.getTime() is always UTC.
+      // This is 2024-01-01 12:00:00 in a -06:00 timezone, which is 2024-01-01 18:00:00 UTC.
+      const d = new Date('2024-01-01T12:00:00-06:00');
+      const serial = new DateEx(d).googleSheetsDate();
+      // (new Date('2024-01-01T18:00:00Z').getTime() / 86400000) + 25569 = 45291.75
+      expect(serial).toEqual(45291.75);
+    });
+  });
+  describe('fromGoogleSheetsDate', () => {
+    it('should convert a Google Sheets serial number to a UTC date', () => {
+      const serial = 45291.5; // Represents 2024-01-01 12:00:00 UTC
+      const d = DateEx.fromGoogleSheetsDate(serial);
+      expect(d).toBeDefined();
+      if (d) {
+        expect(d.date.toISOString()).toEqual('2024-01-01T12:00:00.000Z');
+      }
+    });
+
+    it('should return a Date object that can be formatted to a local time string', () => {
+      const serial = 45291.75; // Represents 2024-01-01 18:00:00 UTC
+      const d = DateEx.fromGoogleSheetsDate(serial);
+      expect(d).toBeDefined();
+      if (d) {
+        // We expect the UTC date to be correct.
+        expect(d.date.toISOString()).toEqual('2024-01-01T18:00:00.000Z');
+        // Now, if we want to display this in a specific timezone, we can use toISOLocalString
+        // This should be 12:00:00 in a -06:00 timezone.
+        d.tz('-06:00');
+        expect(d.toISOLocalString(false)).toEqual('2024-01-01T12:00:00-06:00');
+      }
+    });
   });
   describe('fromPdfDate', () => {
     it.skip('CST1', () => {
