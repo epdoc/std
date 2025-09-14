@@ -1,5 +1,5 @@
-import { expect } from 'jsr:@std/expect';
-import { describe, it } from 'jsr:@std/testing/bdd';
+import { expect } from '@std/expect';
+import { describe, it } from '@std/testing/bdd';
 import type { Dict } from './types.ts';
 import { compareValues, deepCopy, deepEquals, isArray, isDict, omit, pick } from './util.ts';
 

@@ -1,4 +1,4 @@
-import { decodeAscii85, encodeAscii85 } from 'jsr:@std/encoding@^1.0.10/ascii85';
+import { decodeAscii85, encodeAscii85 } from '@std/encoding/ascii85';
 import stripJsonComments from './strip-comments.ts';
 import type {
   AsFloatOpts,

@@ -8,5 +8,7 @@
     "test": "deno test -SERW",
     "lint": "deno lint"
   },
-  "imports": {}
+  "imports": {
+    "@std/encoding": "jsr:@std/encoding@^1.0.10"
+  }
 }

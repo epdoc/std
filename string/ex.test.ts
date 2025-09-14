@@ -1,6 +1,6 @@
 import { dateEx } from '@epdoc/datetime';
-import { expect } from 'jsr:@std/expect';
-import { describe, test } from 'jsr:@std/testing/bdd';
+import { expect } from '@std/expect';
+import { describe, test } from '@std/testing/bdd';
 import { msub, StringEx } from './mod.ts';
 
 describe('StringEx', () => {

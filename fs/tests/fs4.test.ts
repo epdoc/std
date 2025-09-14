@@ -1,6 +1,6 @@
-import { expect } from 'jsr:@std/expect';
-import { afterEach, beforeEach, describe, it } from 'jsr:@std/testing/bdd';
-import { FileSpec, fileSpec, FolderSpec, folderSpec } from '../mod.ts';
+import { expect } from '@std/expect';
+import { afterEach, beforeEach, describe, it } from '@std/testing/bdd';
+import { FileSpec, fileSpec, FolderSpec } from '../mod.ts';
 import { fileConflictStrategyType, type SafeCopyOpts } from '../safecopy.ts';
 
 const READONLY = FolderSpec.fromMeta(import.meta.url, './readonly');
@@ -39,8 +39,12 @@ describe('safeCopy and backup', () => {
     try {
       await SRC_FILE.safeCopy(DEST_FILE, opts);
       expect(true).toBe(false); // should not be reached
-    } catch (e: any) {
-      expect(e.message).toContain('File exists');
+    } catch (e: unknown) {
+      expect(e).toBeInstanceOf(Error);
+      expect(e).toHaveProperty('message');
+      if (e instanceof Error && e.message) {
+        expect(e.message).toContain('File exists');
+      }
     }
   });
 

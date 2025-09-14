@@ -1,5 +1,5 @@
-import { expect } from 'jsr:@std/expect';
-import { afterAll, beforeAll, describe, test } from 'jsr:@std/testing/bdd';
+import { expect } from '@std/expect';
+import { afterAll, beforeAll, describe, test } from '@std/testing/bdd';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { fileSpec, FolderSpec, folderSpec, FSSpec, fsSpec } from '../mod.ts';

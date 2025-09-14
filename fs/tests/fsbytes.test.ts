@@ -1,5 +1,5 @@
-import { expect } from 'jsr:@std/expect';
-import { describe, test } from 'jsr:@std/testing/bdd';
+import { expect } from '@std/expect';
+import { describe, test } from '@std/testing/bdd';
 import { Buffer } from 'node:buffer';
 import * as fs from 'node:fs';
 import * as path from 'node:path';

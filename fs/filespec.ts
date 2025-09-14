@@ -1,11 +1,12 @@
 import { _, type Dict, type Integer, stripJsonComments } from '@epdoc/type';
-import * as dfs from '@std/fs';
 import { assert } from '@std/assert';
 import { decodeBase64, encodeBase64 } from '@std/encoding';
+import * as dfs from '@std/fs';
 import { fromFileUrl } from '@std/path';
 import crypto from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
+import { PDFDocument } from 'pdf-lib';
 import { BaseSpec } from './basespec.ts';
 import { FSError } from './error.ts';
 import type { FolderSpec } from './folderspec.ts';
@@ -306,20 +307,12 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
    * @returns {Promise<Date | undefined>} A promise that resolves with the creation date of the PDF file, or undefined if not found.
    */
   getPdfDate(): Promise<Date | undefined> {
-    let doc: unknown;
-    return import('npm:pdf-lib@^1.17.1')
-      .then(({ PDFDocument }) => {
-        doc = PDFDocument;
-        if (doc) {
-          return Deno.readFile(this._f);
-        }
+    return Promise.resolve()
+      .then(() => {
+        return Deno.readFile(this._f);
       })
       .then((arrayBuffer) => {
-        if (doc) {
-          // @ts-ignore we don't have types for pdf-lib
-          return doc.load(arrayBuffer, { updateMetadata: false });
-        }
-        return Promise.reject(new Error('No PDFDocument found'));
+        return PDFDocument.load(arrayBuffer, { updateMetadata: false });
       })
       .then((pdf) => {
         const pdfDate = pdf.getCreationDate();

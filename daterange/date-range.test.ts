@@ -1,6 +1,6 @@
 import { DateEx, dateEx } from '@epdoc/datetime';
-import { expect } from 'jsr:@std/expect';
-import { describe, test } from 'jsr:@std/testing/bdd';
+import { expect } from '@std/expect';
+import { describe, test } from '@std/testing/bdd';
 import { dateList, type DateRangeDef, DateRanges, dateRanges, dateStringToDate } from './mod.ts';
 
 function expectDate(

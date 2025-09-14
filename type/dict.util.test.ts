@@ -1,5 +1,5 @@
-import { expect } from 'jsr:@std/expect';
-import { describe, it } from 'jsr:@std/testing/bdd';
+import { expect } from '@std/expect';
+import { describe, it } from '@std/testing/bdd';
 import { dictUtil as t, isType } from './dictutil.ts';
 import { isString } from './util.ts';
 

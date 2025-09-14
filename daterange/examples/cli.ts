@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-env
 
-import { parseArgs } from 'jsr:@std/cli/parse-args';
+import { parseArgs } from '@std/cli/parse-args';
 import { dateEx } from '../../datetime/date.ts';
 import { asInt } from '../../type/util.ts';
 import { dateList, type DateRangeDef } from '../mod.ts';

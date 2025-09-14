@@ -1,5 +1,5 @@
 import { msub } from '@epdoc/string';
-import { expect } from 'jsr:@std/expect';
+import { expect } from '@std/expect';
 import * as colors from 'jsr:@std/fmt/colors';
 
 const msub1: msub.MSub = msub.createMSub({ open: '{[' });

@@ -1,5 +1,5 @@
 import { pad } from '@epdoc/type';
-import { expect } from '@std/expect@^1.0.15';
+import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 import { stringToDate } from './util.ts';
 

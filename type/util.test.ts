@@ -1,5 +1,5 @@
-import { expect } from 'jsr:@std/expect';
-import { describe, it } from 'jsr:@std/testing/bdd';
+import { expect } from '@std/expect';
+import { describe, it } from '@std/testing/bdd';
 import type { DigitChar, ExactlyOne, LetterChar, LowerCaseChar, UpperCaseChar } from './types.ts';
 import {
   asBoolean,
@@ -11,7 +11,7 @@ import {
   camel2dash,
   dash2camel,
   hasValue,
-  IError,
+  type IError,
   isArray,
   isBoolean,
   isDate,

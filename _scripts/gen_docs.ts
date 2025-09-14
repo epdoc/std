@@ -16,7 +16,7 @@
  * ```
  */
 
-import { dirname, join, basename, fromFileUrl } from 'jsr:@std/path';
+import { dirname, fromFileUrl, join } from 'jsr:@std/path^1';
 
 const __dirname = dirname(fromFileUrl(import.meta.url));
 const outDir = join(__dirname, '..', 'docs', 'jsdoc');
@@ -55,7 +55,7 @@ async function generateDocs() {
 
   for (const ws of workspaces) {
     const entryPoint = join(__dirname, '..', ws, 'mod.ts');
-        const outFile = join(outDir, `${ws.split('/').pop()}.json`);
+    const outFile = join(outDir, `${ws.split('/').pop()}.json`);
     console.log(`Generating docs for ${ws}...`);
 
     const process = Deno.run({
