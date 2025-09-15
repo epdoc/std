@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.9-alpha.0] - 2025-09-15
+
+- Added IANA timezone support.
+- Added back our hack for getting around google sheet tz bug when setting time.
+
 ## [1.0.8] - 2025-09-13
 
 - Fixed google sheets date conversion TZ handling.

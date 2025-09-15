@@ -1,27 +1,16 @@
-import { _, type Integer } from '@epdoc/type';
-
-export type Minutes = Integer;
+import { _ } from '@epdoc/type';
+import type { GMTTZ, GoogleSheetsDate, IANATZ, ISOTZ, JulianDay, Minutes, PDFTZ } from './types.ts';
 
 const REG = {
   pdfDate: new RegExp(/^D:(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(.*)$/),
   pdfTz: new RegExp(/^Z|((\+|\-)(\d\d)(\d\d)?)$/),
-  isoTz: new RegExp(/^(Z|((\+|\-)(\d\d):(\d\d)))*$/),
+  isoTz: new RegExp(/(Z|((\+|\-)(\d\d):(\d\d)))$/),
+  gmtTz: new RegExp(/GMT([+-])(\d{1,2}):?(\d{2})?/),
+  ianaTz: new RegExp(/^[A-Za-z_]+\/[A-Za-z_]+$/),
 };
 const INVALID_DATE_STRING = 'Invalid Date';
 const GOOGLE_TO_UNIX_EPOCH_DAYS = 25568; // Sheets treats 1900 as a leap year, so we subtract 1.
 const MS_PER_DAY = 86400000;
-
-export type ISOTZ = string;
-export type PDFTZ = string;
-/**
- * An integer value representing the Julian Day.
- * @see [Julian day](https://en.wikipedia.org/wiki/Julian_day)
- */
-export type JulianDay = Integer;
-/**
- * A floating point number representing date and time, suitable for use in Google Sheets.
- */
-export type GoogleSheetsDate = number;
 
 /**
  * Calls and returns `new DateUtil(date)`.
@@ -37,16 +26,30 @@ function isMinutes(val: unknown): val is Minutes {
 }
 
 /**
- * A wrapper for a javascript `Date` object.
+ * A wrapper for the native Javascript `Date` object that provides enhanced
+ * functionality for timezone handling, formatting, and compatibility with
+ * other systems like Google Sheets.
+ *
+ * `DateEx` objects are designed to be immutable in terms of their date/time
+ * value. Methods that would change the date/time, such as `withTz`,
+ * return a new `DateEx` instance.
  */
 export class DateEx {
   protected _date: Date;
   protected _tz: Minutes | undefined;
 
   /**
-   * Create a DateUtil object, which is a wrapper for a javascript `Date` object.
-   * @param date Optional Date object, or a string or number that can be used
-   * with the Date constructor method. If undefined then uses the value of `new Date()`.
+   * Creates a new DateEx object.
+   *
+   * The constructor can be called in several ways:
+   * - With no arguments: creates a `DateEx` for the current date and time.
+   * - With a single argument: can be a `Date` object, a timestamp number, or an
+   *   ISO 8601 string. If the string contains a timezone, it will be parsed
+   *   and set as the timezone of the object.
+   * - With multiple arguments: passed directly to the `Date` constructor (e.g.,
+   *   `new DateEx(2024, 0, 1)`).
+   *
+   * @param args Arguments to pass to the `Date` constructor.
    */
   constructor(...args: unknown[]) {
     // Examine args because the Date constructor drops ms if you construct with Date(args)
@@ -54,7 +57,14 @@ export class DateEx {
       this._date = new Date();
     } else if (args.length === 1) {
       if (!Array.isArray(args[0])) {
-        this._date = new Date(args[0] as string | number | Date);
+        const arg = args[0];
+        this._date = new Date(arg as string | number | Date);
+        if (_.isString(arg)) {
+          const match = arg.match(REG.isoTz);
+          if (match) {
+            this.tz(match[0] as ISOTZ);
+          }
+        }
       } else {
         this._date = new Date(...(args[0] as []));
       }
@@ -66,37 +76,59 @@ export class DateEx {
   /**
    * Set the timezone to use when outputting as a string, eg. with
    * toISOLocaleString(). A positive value of 360 is equivalent to '-06:00'.
-   * @param val Minutes or a string of the form '-06:00' or '+06:00'.
+   *
+   * If using an IANA timezone string (e.g., "America/New_York"), this method
+   * should be called again if the underlying date of the object is changed,
+   * as the offset may need to be recalculated to account for Daylight Saving
+   * Time. ISOTZ strings already contain the offset and do not need to be
+   * recalculated.
+   *
+   * @param val Minutes, an ISOTZ string, or an IANATZ string.
    */
-  tz(val: Minutes | ISOTZ): this {
-    this._tz = isMinutes(val) ? val : DateEx.tzParse(val as ISOTZ);
+  tz(val: Minutes | ISOTZ | IANATZ): this {
+    if (isMinutes(val)) {
+      this._tz = val;
+    } else if (DateEx.isIANATZ(val)) {
+      this._tz = this.ianaTzParse(val as IANATZ);
+    } else {
+      this._tz = DateEx.tzParse(val as ISOTZ);
+    }
     return this;
   }
 
+  /**
+   * Returns the timezone offset in minutes.
+   */
   getTz(): Minutes | undefined {
     return this._tz;
   }
 
+  /**
+   * Returns the underlying Javascript `Date` object.
+   */
   get date(): Date {
     return this._date;
   }
 
   /**
-   * When using a Date constructor that does not allow the tz to be specified,
-   * and the date was, for example, created using localtime, call tz() with the
-   * offset, and then adjustForTz() to adjust the Date object.
+   * Returns a new `DateEx` object with the date adjusted to a specific
+   * timezone. This is useful when a `Date` object is created in a local
+   * timezone but needs to be treated as if it were in a different timezone.
    *
    * @example
    * ```ts
    * import { dateEx } from '@epdoc/datetime';
    *
-   * const d = new Date(2024,1,1,11,59,59);
+   * // Create a date that is implicitly in the local timezone.
+   * const d = new Date(2024, 0, 1, 11, 59, 59);
+   * // Treat the date as if it were in a -06:00 timezone.
    * const d2 = dateEx(d).withTz(360).date;
-   * assertStrictEquals(d2.toISOString(), '2024-01-01T11:59:59.000Z');
+   * assertStrictEquals(d2.toISOString(), '2024-01-01T17:59:59.000Z');
    * ```
    * Note that val '-06:00' `ISOTZ` equals 360 `Minutes`, and '+06:00' equals -360.
-   });
-   * @param val If not specified, then use local timezone.
+   * @param val The timezone offset in minutes or an ISOTZ string. If not
+   * specified, the local timezone is used.
+   * @returns A new `DateEx` object with the adjusted date.
    */
   withTz(val?: Minutes | ISOTZ): this {
     let offset: Minutes = 0;
@@ -150,11 +182,20 @@ export class DateEx {
   }
 
   /**
-   * Format the date using the supplied format string. Will use the local
-   * timezone when outputing the time. Call tz() to override this value.
-   * Format strings are yyyy, MM, dd, HH, mm, ss and SSS.
-   * @param format
-   * @returns
+   * Formats the date as a string using a custom format. This method uses the
+   * timezone set on the `DateEx` object, or the local timezone if none is set.
+   *
+   * The format string can contain the following tokens:
+   * - `yyyy`: Full year (e.g., 2024)
+   * - `MM`: Month (01-12)
+   * - `dd`: Day of the month (01-31)
+   * - `HH`: Hours (00-23)
+   * - `mm`: Minutes (00-59)
+   * - `ss`: Seconds (00-59)
+   * - `SSS`: Milliseconds (000-999)
+   *
+   * @param format The format string.
+   * @returns The formatted date string.
    */
   format(format: string): string {
     const tzOffset: Minutes = isMinutes(this._tz) ? this._tz : this._date.getTimezoneOffset();
@@ -162,7 +203,14 @@ export class DateEx {
     return DateEx.formatInternal(d, format);
   }
 
-  formatUTC(format: string): string {
+  /**
+   * Formats the date as a string in UTC using a custom format.
+   *
+   * See the `format` method for a list of available format tokens.
+   *
+   * @param format The format string.
+   * @returns The formatted date string in UTC.
+   */
     return DateEx.formatInternal(this._date, format);
   }
 
@@ -190,7 +238,11 @@ export class DateEx {
   }
 
   static isIsoTz(val: unknown): val is ISOTZ {
-    return typeof val === 'string' && REG.isoTz.test(val);
+    return _.isString(val) && REG.isoTz.test(val);
+  }
+
+  static isIANATZ(val: unknown): val is IANATZ {
+    return _.isString(val) && REG.ianaTz.test(val);
   }
 
   /**
@@ -220,7 +272,7 @@ export class DateEx {
    * @returns Minutes of timezone offset
    */
   public static tzParse(val: ISOTZ): Minutes | undefined {
-    const p = typeof val === 'string' ? val.match(REG.isoTz) : false;
+    const p = _.isString(val) ? val.match(REG.isoTz) : false;
     if (p && p.length > 1) {
       if (p[1] === 'Z') {
         return 0;
@@ -238,7 +290,7 @@ export class DateEx {
    * @returns Minutes of timezone offset
    */
   public static pdfTzParse(val: PDFTZ): Minutes | undefined {
-    const p = typeof val === 'string' ? val.match(REG.isoTz) : false;
+    const p = _.isString(val) ? val.match(REG.isoTz) : false;
     if (p && p.length > 1) {
       if (p[1] === 'Z') {
         return 0;
@@ -254,15 +306,91 @@ export class DateEx {
   }
 
   /**
-   * Get the date in a Google Sheets value
+   * Parses an IANA time zone string to get the equivalent offset in minutes for
+   * the date stored in this `DateEx` object. The offset can vary by date due
+   * to Daylight Saving Time.
+   *
+   * This method leverages the `Intl.DateTimeFormat` API to determine the
+   * offset for a given IANA time zone identifier.
+   *
+   * @param val The IANA time zone string (e.g., "America/New_York").
+   * @returns The time zone offset in minutes, or `undefined` if parsing fails.
+   *          A positive value indicates a time zone that is behind UTC (e.g.,
+   *          the Americas), while a negative value indicates a time zone ahead
+   *          of UTC (e.g., Asia).
+   *
+   * @example
+   * ```ts
+   * // Get the offset for a winter date (EST)
+   * const dWinter = new DateEx('2024-01-01T12:00:00Z');
+   * const estOffset = dWinter.ianaTzParse("America/New_York");
+   * // estOffset will be 300
+   *
+   * // Get the offset for a summer date (EDT)
+   * const dSummer = new DateEx('2024-07-01T12:00:00Z');
+   * const edtOffset = dSummer.ianaTzParse("America/New_York");
+   * // edtOffset will be 240
+   * ```
+   */
+  public ianaTzParse(val: IANATZ): Minutes | undefined {
+    try {
+      const options: Intl.DateTimeFormatOptions = {
+        timeZone: val,
+        timeZoneName: 'longOffset',
+      };
+
+      const formattedParts = new Intl.DateTimeFormat('en-US', options).formatToParts(this._date);
+      const timeZoneNamePart = formattedParts.find((part) => part.type === 'timeZoneName');
+
+      if (!timeZoneNamePart) {
+        return undefined;
+      }
+
+      const offsetString: GMTTZ = timeZoneNamePart.value; // e.g., "GMT-05:00"
+
+      // Regex to extract hours and minutes, handling both positive and negative offsets.
+      const match = offsetString.match(REG.gmtTz);
+
+      if (!match) {
+        return undefined;
+      }
+
+      const sign = match[1] === '+' ? -1 : 1;
+      const hours = parseInt(match[2], 10);
+      const minutes = parseInt(match[3] || '0', 10);
+
+      const totalOffsetMinutes = sign * (hours * 60 + minutes);
+
+      return totalOffsetMinutes;
+    } catch (e) {
+      return undefined;
+    }
+  }
+
+  /**
+   * Get the date in a Google Sheets value. This method compensates for a bug in
+   * Google Sheets where it incorrectly adjusts dates based on the sheet's
+   * timezone setting. To ensure the date is displayed correctly in Google
+   * Sheets, you must first set the timezone of the `DateEx` object to match
+   * the timezone of the Google Sheet using the `tz()` method.
+   *
    * @returns A number which is the date with a value suitable for use in Google
-   * Sheets
+   * Sheets.
+   *
+   * @example
+   * ```ts
+   * const d = dateEx('2024-01-01T12:00:00.000Z');
+   * d.tz('America/New_York');
+   * const sheetValue = d.googleSheetsDate();
+   * ```
    */
   public googleSheetsDate(): GoogleSheetsDate {
     this.validate();
-    // The number 25569 is the count of days between the Google Sheets epoch (1899-12-30)
-    // and the Unix epoch (1970-01-01). 86400000 is the number of milliseconds in a day.
-    return this._date.getTime() / MS_PER_DAY + GOOGLE_TO_UNIX_EPOCH_DAYS;
+    const serial = this._date.getTime() / MS_PER_DAY + GOOGLE_TO_UNIX_EPOCH_DAYS;
+    if (this._tz) {
+      return serial - (this._tz / 1440);
+    }
+    return serial;
   }
 
   /**

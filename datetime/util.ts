@@ -1,20 +1,21 @@
-import type { Minutes } from './date.ts';
+import type { DateParseOptions } from './types.ts';
 
 /**
- * Converts a string representation of a date into a Date object.
- * The string can be in various formats: yyyy, yyyyMM, yyyyMMDD, yyyyMMDDhh, yyyyMMDDhhmm, yyyyMMDDhhmmss.
- * It also supports an underscore separator between date and time, e.g., yyyyMMDD_hhmmss.
- * @param {string} s - The date string to convert.
- * @returns {Date | undefined} The converted Date object, or undefined if the format is invalid.
- */
-interface DateParseOptions {
-  ymdSep?: string[]; // Separators for year, month, day (e.g., ['-', '_', '/', ' '])
-  midSep?: string[]; // Splitters between date and time (e.g., [' ', '_', '-'])
-  hmsSep?: string[]; // Separators for hour, minute, second (e.g., [':'])
-  offset?: Minutes; // Default value for unspecified components (hour, minute, second). Defaults to 0 (midnight).
-  // Note: Month and day will always default to 1 if not specified, regardless of 'offset'.
-  tz?: number | undefined; // Timezone offset in minutes. 0 for GMT/UTC, undefined for local time.
-}
+ * Converts a string representation of a date into a `Date` object.
+ * 
+ * This function is highly flexible and can parse a variety of formats. It is
+ * designed to handle common, sometimes ambiguous, date formats that may not
+ * strictly adhere to ISO 8601. It can infer missing date and time components,
+ * applying sensible defaults.
+ * 
+ * Key features:
+ * - Handles various separators (e.g., '-', '_', '/', ' ') for date and time parts.
+ * - Parses incomplete dates by defaulting month/day to 1 and time components to 0.
+ * - Supports timezone offsets.
+ * 
+ * @param s The date string to convert.
+ * @param opts Options for parsing, including separators and default values.
+ * @returns A `Date` object, or `undefined` if the string cannot be parsed.
 
 export function stringToDate(s: string, opts?: DateParseOptions): Date | undefined {
   // Default options

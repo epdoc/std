@@ -149,10 +149,22 @@ describe('date-util', () => {
       // This test demonstrates that the input Date's offset is handled correctly,
       // as Date.getTime() is always UTC.
       // This is 2024-01-01 12:00:00 in a -06:00 timezone, which is 2024-01-01 18:00:00 UTC.
-      const d = new Date('2024-01-01T12:00:00-06:00');
-      const serial = new DateEx(d).googleSheetsDate();
+      const d = new DateEx('2024-01-01T12:00:00-06:00');
+      const serial = d.googleSheetsDate();
       // (new Date('2024-01-01T18:00:00Z').getTime() / 86400000) + 25569 = 45291.75
-      expect(serial).toEqual(45291.75);
+      // The offset is 360 minutes. 360 / 1440 = 0.25
+      // So the corrected serial should be 45291.75 - 0.25 = 45291.5
+      expect(serial).toEqual(45291.5);
+    });
+
+    it('should produce the correct serial number for a specific timezone', () => {
+      const d = new DateEx('2024-01-01T12:00:00Z');
+      d.tz('America/New_York'); // UTC-5, so offset is 300
+      const serial = d.googleSheetsDate();
+      // raw serial is 45291.5
+      // offset is 300. 300/1440 = 0.20833333333333334
+      // corrected serial is 45291.5 - 0.20833333333333334 = 45291.291666666664
+      expect(serial).toBeCloseTo(45291.291666666664);
     });
   });
   describe('fromGoogleSheetsDate', () => {
@@ -179,6 +191,48 @@ describe('date-util', () => {
       }
     });
   });
+  describe('ianaTzParse', () => {
+    it('should parse America/New_York', () => {
+      // This may be -300 or -240 depending on DST
+      const d = new DateEx();
+      const offset = d.ianaTzParse('America/New_York');
+      expect(offset).toBeDefined();
+      expect(offset === 300 || offset === 240).toBe(true);
+    });
+
+    it('should parse Europe/London', () => {
+      // This may be 0 or -60 depending on DST
+      const d = new DateEx();
+      const offset = d.ianaTzParse('Europe/London');
+      expect(offset).toBeDefined();
+      expect(offset === 0 || offset === -60).toBe(true);
+    });
+
+    it('should parse Asia/Tokyo', () => {
+      const d = new DateEx();
+      const offset = d.ianaTzParse('Asia/Tokyo');
+      expect(offset).toBe(-540);
+    });
+
+    it('should parse Asia/Kolkata', () => {
+      const d = new DateEx();
+      const offset = d.ianaTzParse('Asia/Kolkata');
+      expect(offset).toBe(-330);
+    });
+
+    it('should parse America/Costa_Rica', () => {
+      const d = new DateEx();
+      const offset = d.ianaTzParse('America/Costa_Rica');
+      expect(offset).toBe(360);
+    });
+
+    it('should return undefined for an invalid timezone', () => {
+      const d = new DateEx();
+      const offset = d.ianaTzParse('Invalid/Timezone');
+      expect(offset).toBeUndefined();
+    });
+  });
+
   describe('fromPdfDate', () => {
     it.skip('CST1', () => {
       process.env.TZ = 'CST';
