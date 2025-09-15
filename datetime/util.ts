@@ -2,20 +2,21 @@ import type { DateParseOptions } from './types.ts';
 
 /**
  * Converts a string representation of a date into a `Date` object.
- * 
+ *
  * This function is highly flexible and can parse a variety of formats. It is
  * designed to handle common, sometimes ambiguous, date formats that may not
  * strictly adhere to ISO 8601. It can infer missing date and time components,
  * applying sensible defaults.
- * 
+ *
  * Key features:
  * - Handles various separators (e.g., '-', '_', '/', ' ') for date and time parts.
  * - Parses incomplete dates by defaulting month/day to 1 and time components to 0.
  * - Supports timezone offsets.
- * 
+ *
  * @param s The date string to convert.
  * @param opts Options for parsing, including separators and default values.
  * @returns A `Date` object, or `undefined` if the string cannot be parsed.
+ */
 
 export function stringToDate(s: string, opts?: DateParseOptions): Date | undefined {
   // Default options

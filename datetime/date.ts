@@ -18,7 +18,7 @@ const MS_PER_DAY = 86400000;
  * @returns
  */
 export function dateEx(...args: unknown[]): DateEx {
-  return new DateEx(args);
+  return new DateEx(...args);
 }
 
 function isMinutes(val: unknown): val is Minutes {
@@ -56,8 +56,11 @@ export class DateEx {
     if (!args.length) {
       this._date = new Date();
     } else if (args.length === 1) {
-      if (!Array.isArray(args[0])) {
-        const arg = args[0];
+      const arg = args[0];
+      if (arg instanceof DateEx) {
+        this._date = new Date(arg._date.getTime());
+        this._tz = arg._tz;
+      } else {
         this._date = new Date(arg as string | number | Date);
         if (_.isString(arg)) {
           const match = arg.match(REG.isoTz);
@@ -65,12 +68,14 @@ export class DateEx {
             this.tz(match[0] as ISOTZ);
           }
         }
-      } else {
-        this._date = new Date(...(args[0] as []));
       }
     } else {
       this._date = new Date(...(args as []));
     }
+  }
+
+  clone(): DateEx {
+    return new DateEx(this);
   }
 
   /**
@@ -130,7 +135,8 @@ export class DateEx {
    * specified, the local timezone is used.
    * @returns A new `DateEx` object with the adjusted date.
    */
-  withTz(val?: Minutes | ISOTZ): this {
+  withTz(val?: Minutes | ISOTZ): DateEx {
+    const result = this.clone();
     let offset: Minutes = 0;
     if (isMinutes(val)) {
       offset = val - this._date.getTimezoneOffset();
@@ -139,8 +145,8 @@ export class DateEx {
     } else {
       offset = 0;
     }
-    this._date = new Date(this._date.getTime() + offset * 60000);
-    return this;
+    result._date = new Date(this._date.getTime() + offset * 60000);
+    return result;
   }
 
   /**
@@ -211,6 +217,7 @@ export class DateEx {
    * @param format The format string.
    * @returns The formatted date string in UTC.
    */
+  formatUTC(format: string): string {
     return DateEx.formatInternal(this._date, format);
   }
 
@@ -362,7 +369,7 @@ export class DateEx {
       const totalOffsetMinutes = sign * (hours * 60 + minutes);
 
       return totalOffsetMinutes;
-    } catch (e) {
+    } catch (_e) {
       return undefined;
     }
   }

@@ -1,6 +1,6 @@
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
-import process from 'node:process';
+
 import { DateEx, dateEx } from './date.ts';
 
 // TODO: remove skip when deno date is fixed
@@ -64,14 +64,14 @@ describe('date-util', () => {
   });
   describe('withTz', () => {
     it('local', () => {
-      process.env.TZ = 'America/Costa_Rica';
+      Deno.env.set('TZ', 'America/Costa_Rica');
       const d: DateEx = dateEx(2024, 0, 1, 11, 59, 59, 456).withTz();
       expect(d.toISOLocalString()).toEqual('2024-01-01T11:59:59.456-06:00');
     });
   });
   describe('toISOLocaleString', () => {
     const d = new Date('1997-11-25T12:13:14.456Z');
-    process.env.TZ = 'CST';
+    Deno.env.set('TZ', 'CST');
     it('default', () => {
       expect(d.getTimezoneOffset()).toEqual(360);
       expect(d.toISOString()).toEqual('1997-11-25T12:13:14.456Z');
@@ -235,7 +235,7 @@ describe('date-util', () => {
 
   describe('fromPdfDate', () => {
     it.skip('CST1', () => {
-      process.env.TZ = 'CST';
+      Deno.env.set('TZ', 'CST');
       const d = DateEx.fromPdfDate('D:20240101120000-0600');
       expect(d).toBeDefined();
       if (d instanceof DateEx) {
@@ -243,7 +243,7 @@ describe('date-util', () => {
       }
     });
     it.skip('CST2', () => {
-      process.env.TZ = 'CST';
+      Deno.env.set('TZ', 'CST');
       const d = DateEx.fromPdfDate('D:20240101120000Z');
       expect(d).toBeDefined();
       if (d instanceof DateEx) {
@@ -253,7 +253,7 @@ describe('date-util', () => {
       }
     });
     it('AST +03:00', () => {
-      process.env.TZ = 'AST';
+      Deno.env.set('TZ', 'AST');
       const d = DateEx.fromPdfDate('D:20240101120000Z');
       expect(d).toBeDefined();
       if (d instanceof DateEx) {
