@@ -1,20 +1,6 @@
-import { pad } from '@epdoc/type';
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 import { stringToDate } from './util.ts';
-
-describe('pad', () => {
-  it('should pad single digit numbers', () => {
-    expect(pad(0, 2)).toBe('00');
-    expect(pad(1, 2)).toBe('01');
-    expect(pad(9, 2)).toBe('09');
-  });
-
-  it('should not pad double digit numbers', () => {
-    expect(pad(10, 2)).toBe('10');
-    expect(pad(99, 2)).toBe('99');
-  });
-});
 
 describe('stringToDate', () => {
   describe('basic parsing', () => {

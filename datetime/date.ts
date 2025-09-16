@@ -9,8 +9,11 @@ const REG = {
   ianaTz: new RegExp(/^[A-Za-z_]+\/[A-Za-z_]+$/),
 };
 const INVALID_DATE_STRING = 'Invalid Date';
-const GOOGLE_TO_UNIX_EPOCH_DAYS = 25568; // Sheets treats 1900 as a leap year, so we subtract 1.
+// const GOOGLE_TO_UNIX_EPOCH_DAYS = 25568; // Sheets treats 1900 as a leap year, so we subtract 1.
+const MS_PER_MIN = 60000;
+const MIN_PER_DAY = 1440;
 const MS_PER_DAY = 86400000;
+const tNullMs = new Date(Date.UTC(1899, 11, 30, 0, 0, 0, 0)).getTime(); // the starting value for Google
 
 /**
  * Calls and returns `new DateUtil(date)`.
@@ -162,17 +165,17 @@ export class DateEx {
     const d: Date = new Date(this._date.getTime() - tzOffset * 60000);
     let s = String(d.getUTCFullYear()) +
       '-' +
-      _.pad(d.getUTCMonth() + 1, 2) +
+      String(d.getUTCMonth() + 1).padStart(2, '0') +
       '-' +
-      _.pad(d.getUTCDate(), 2) +
+      String(d.getUTCDate()).padStart(2, '0') +
       'T' +
-      _.pad(d.getUTCHours(), 2) +
+      String(d.getUTCHours()).padStart(2, '0') +
       ':' +
-      _.pad(d.getUTCMinutes(), 2) +
+      String(d.getUTCMinutes()).padStart(2, '0') +
       ':' +
-      _.pad(d.getUTCSeconds(), 2);
+      String(d.getUTCSeconds()).padStart(2, '0');
     if (showMs !== false) {
-      s += '.' + _.pad(d.getMilliseconds(), 3);
+      s += '.' + String(d.getMilliseconds()).padStart(3, '0');
     }
     s += DateEx.tzFormat(tzOffset);
     return s;
@@ -225,12 +228,12 @@ export class DateEx {
     let f = String(format);
     f = f
       .replace('yyyy', String(d.getUTCFullYear()))
-      .replace('MM', _.pad(d.getUTCMonth() + 1, 2))
-      .replace('dd', _.pad(d.getUTCDate(), 2))
-      .replace('HH', _.pad(d.getUTCHours(), 2))
-      .replace('mm', _.pad(d.getUTCMinutes(), 2))
-      .replace('ss', _.pad(d.getUTCSeconds(), 2))
-      .replace('SSS', _.pad(d.getUTCMilliseconds(), 3));
+      .replace('MM', String(d.getUTCMonth() + 1).padStart(2, '0'))
+      .replace('dd', String(d.getUTCDate()).padStart(2, '0'))
+      .replace('HH', String(d.getUTCHours()).padStart(2, '0'))
+      .replace('mm', String(d.getUTCMinutes()).padStart(2, '0'))
+      .replace('ss', String(d.getUTCSeconds()).padStart(2, '0'))
+      .replace('SSS', String(d.getUTCMilliseconds()).padStart(3, '0'));
     return f;
   }
 
@@ -270,7 +273,8 @@ export class DateEx {
     if (m === 0) {
       return 'Z';
     }
-    return (m < 0 ? '+' : '-') + _.pad(Math.floor(Math.abs(m) / 60), 2) + ':' + _.pad(Math.abs(m) % 60, 2);
+    return (m < 0 ? '+' : '-') + String(Math.floor(Math.abs(m) / 60)).padStart(2, '0') + ':' +
+      String(Math.abs(m) % 60).padStart(2, '0');
   }
 
   /**
@@ -393,25 +397,30 @@ export class DateEx {
    */
   public googleSheetsDate(): GoogleSheetsDate {
     this.validate();
-    const serial = this._date.getTime() / MS_PER_DAY + GOOGLE_TO_UNIX_EPOCH_DAYS;
-    if (this._tz) {
-      return serial - (this._tz / 1440);
-    }
-    return serial;
+    const d = this._date;
+    return ((d.getTime() - tNullMs) / MS_PER_MIN - d.getTimezoneOffset()) / MIN_PER_DAY;
   }
 
   /**
    * Creates a DateEx object from a Google Sheets serial date number
    * that was created with a local timezone offset.
    * @param serial The Google Sheets serial date number.
+   * @param ianaTz The IANA timezone string of the spreadsheet, which is a
+   * required parameter. This value can be retrieved from the spreadsheet's
+   * settings.
    * @returns A DateEx object.
    */
-  static fromGoogleSheetsDate(serial: number): DateEx | undefined {
+  static fromGoogleSheetsDate(serial: number, ianaTz: IANATZ): DateEx | undefined {
     if (!_.isNumber(serial)) {
       return undefined;
     }
-    const ms = (serial - GOOGLE_TO_UNIX_EPOCH_DAYS) * MS_PER_DAY;
-    return new DateEx(ms);
+    const ms = MS_PER_DAY * serial + tNullMs;
+    const result = new DateEx(ms);
+    const minOffset = result.ianaTzParse(ianaTz);
+    if (minOffset) {
+      result._date = new Date(result._date.getTime() + minOffset * MS_PER_MIN);
+    }
+    return result;
   }
 
   static fromPdfDate(s: string): DateEx | undefined {
