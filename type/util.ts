@@ -752,7 +752,13 @@ export function omit(obj: Dict, ...args: (string | number)[]): Dict {
  * @param width - The total width of the resulting string.
  * @param [z='0'] - The character to use for padding.
  * @returns The padded string.
- * @deprecated Use String.padStart(len,padChar) instead
+ * @deprecated Use String.padStart() instead.
+ * @example
+ * ```typescript
+ * const num = 5;
+ * const paddedNum = String(num).padStart(4, '0');
+ * console.log(paddedNum); // '0005'
+ * ```
  */
 export function pad(n: number, width: number, z: string = '0'): string {
   const sn = String(n);
