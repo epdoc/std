@@ -6,9 +6,6 @@ All notable changes to this project will be documented in this file.
 
 - Fixed google sheets date bug relating to timezones.
 - Removed dependency on deprecated @epdoc/type pad function
-
-## [1.0.9-beta.0] - 2025-09-15
-
 - Fixed regressions that occured because of partial checkin.
 
 ## [1.0.9-alpha.0] - 2025-09-15
