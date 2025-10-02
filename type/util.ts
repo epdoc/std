@@ -1038,12 +1038,12 @@ export function deepEquals(a: unknown, b: unknown): boolean {
       return deepEquals(aValues, bValues);
     }
 
-    if (a instanceof Map && b instanceof Map) {
-      if (a.size !== b.size) {
+    if (a instanceof Uint8Array && b instanceof Uint8Array) {
+      if (a.length !== b.length) {
         return false;
       }
-      for (const [key, value] of a) {
-        if (!b.has(key) || !deepEquals(value, b.get(key))) {
+      for (let i = 0; i < a.length; i++) {
+        if (a[i] !== b[i]) {
           return false;
         }
       }
