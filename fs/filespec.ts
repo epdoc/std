@@ -1,4 +1,4 @@
-import { _, type Dict, type Integer, stripJsonComments } from '@epdoc/type';
+import { _, type DeepCopyOpts, type Dict, type Integer, stripJsonComments } from '@epdoc/type';
 import { assert } from '@std/assert';
 import { decodeBase64, encodeBase64 } from '@std/encoding';
 import * as dfs from '@std/fs';
@@ -15,7 +15,13 @@ import { FSSpec, fsSpec } from './fsspec.ts';
 import type { FSStats } from './fsstats.ts';
 import { type FSSpecParam, type IRootableSpec, type ISafeCopyableSpec, resolvePathArgs } from './icopyable.ts';
 import { type FileConflictStrategy, fileConflictStrategyType, safeCopy, type SafeCopyOpts } from './safecopy.ts';
-import { DigestAlgorithm, type DigestAlgorithmValues, type FilePath, type FsDeepCopyOpts } from './types.ts';
+import {
+  DigestAlgorithm,
+  type DigestAlgorithmValues,
+  type FilePath,
+  type FsDeepCopyOpts,
+  type FsDeepJsonDeserializeOpts,
+} from './types.ts';
 import { isFilePath, joinContinuationLines } from './util.ts';
 
 const REG = {
@@ -532,7 +538,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
    * read from disk, supporting advanced options such as recursive file inclusion, RegExp detection,
    * and custom transformation hooks.
    *
-   * @param {FsDeepCopyOpts} [options] - Options for the deep copy operation:
+   * @param {FsDeepJsonDeserializeOpts} [options] - Options for the deep copy operation:
    *   @param {boolean} [options.replace=Dict] - If set, replaces keys with values throughout `a`.
    *   @param {string} [options.pre='{'] - Prefix string for detecting replacement strings and URLs
    *   in string values.
@@ -542,6 +548,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
    *   file paths found in string values.
    *   @param {boolean} [options.detectRegExp=false] - If true, detects and reconstructs RegExp
    *   objects from plain objects using asRegExp.
+   *   @param [opts.stripJsonComments=false] - If true, strip JSON comments (jsonc)
    * @returns {Promise<unknown>} A promise that resolves with the deeply copied and transformed JSON
    * content.
    *
@@ -549,9 +556,14 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
    * // Recursively load and merge referenced files
    * const data = await file.deepReadJson({ includeUrl: true });
    */
-  async deepReadJson<T = unknown>(opts: FsDeepCopyOpts = {}): Promise<T> {
-    const data = await this.readJson();
-    return this.#deepCopy(data, opts) as T;
+  async readJsonEx<T = unknown>(opts: FsDeepJsonDeserializeOpts = {}): Promise<T> {
+    const data = await this.readAsString();
+    return _.jsonDeserialize(data, opts);
+  }
+
+  async writeJsonEx(value: unknown, options: DeepCopyOpts | null = null, space?: string | number): Promise<void> {
+    const text = _.jsonSerialize(value, options, space);
+    await Deno.writeTextFile(this._f, text);
   }
 
   /**
@@ -582,7 +594,7 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
       const p: string[] | null = a.match(urlTest);
       if (_.isNonEmptyArray(p) && isFilePath(p[2])) {
         const fs = new FileSpec(this.dirname, p[2]);
-        return fs.deepReadJson(opts).then((resp) => {
+        return fs.readJsonEx(opts).then((resp) => {
           return Promise.resolve(resp);
         });
       } else {

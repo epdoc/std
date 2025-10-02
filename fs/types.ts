@@ -1,4 +1,4 @@
-import type { DeepCopyOpts, Integer } from '@epdoc/type';
+import type { DeepCopyOpts, Integer, StripJsonCommentsOpts } from '@epdoc/type';
 import type { BaseSpec } from './basespec.ts';
 
 /**
@@ -27,6 +27,11 @@ export type FileExt = string;
 export type FolderName = string;
 
 export type FsDeepCopyOpts = DeepCopyOpts & {
+  includeUrl?: unknown;
+};
+
+export type FsDeepJsonDeserializeOpts = DeepCopyOpts & {
+  stripComments?: StripJsonCommentsOpts;
   includeUrl?: unknown;
 };
 

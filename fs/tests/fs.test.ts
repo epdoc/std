@@ -21,7 +21,7 @@ import {
 
 const READONLY = FolderSpec.fromMeta(import.meta.url, './readonly');
 const HOME = os.userInfo().homedir;
-const TEST_FILES = ['fs.test.ts', 'fs2.test.ts', 'fs3.test.ts', 'fs4.test.ts', 'fsbytes.test.ts'];
+const TEST_FILES = ['fs.jsonex.test.ts', 'fs.test.ts', 'fs2.test.ts', 'fs3.test.ts', 'fs4.test.ts', 'fsbytes.test.ts'];
 const TEST_FOLDERS = ['readonly', 'data1'];
 
 describe('FSSpec.fromMeta, FileSpec.fromMeta, FolderSpec.fromMeta', () => {
@@ -583,7 +583,7 @@ describe('FSSpec.fromMeta, FileSpec.fromMeta, FolderSpec.fromMeta', () => {
       const SRC = 'folder-sample/sample-nested.json';
       const SRC2 = 'folder-sample/sample-compare.json';
       const json2 = await fileSpec(READONLY.path, SRC2).readJson();
-      const json = await fileSpec(READONLY.path, SRC).deepReadJson(opts);
+      const json = await fileSpec(READONLY.path, SRC).readJsonEx(opts);
       expect(json2).toEqual(json);
     });
 

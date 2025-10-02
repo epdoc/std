@@ -1,5 +1,9 @@
 # Changelist
 
+## [0.2.18] - 2025-10-02
+
+- Added readJsonEx and writeJsonEx to FileSpec
+
 ## [0.2.17] - 2025-08-23
 
 - Resolve unhandles project rejection in `safeCopy`.
