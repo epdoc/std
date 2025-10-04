@@ -1,5 +1,9 @@
 # Changelist
 
+## [0.2.19] - 2025-10-03
+
+- Added makeTemp to FolderSpec and FileSpec.
+
 ## [0.2.18] - 2025-10-02
 
 - Added readJsonEx and writeJsonEx to FileSpec

@@ -72,6 +72,41 @@ export class FileSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSp
   }
 
   /**
+   * Creates a new temporary file in the default directory for temporary
+   * files, unless `dir` is specified.
+   *
+   * Other options include prefixing and suffixing the directory name with
+   * `prefix` and `suffix` respectively.
+   *
+   * This call resolves to the full path to the newly created file.
+   *
+   * Multiple programs calling this function simultaneously will create
+   * different files. It is the caller's responsibility to remove the file when
+   * no longer needed.
+   *
+   * ```ts
+   * const tmpFileName0 = await Deno.makeTempFile();  // e.g. /tmp/419e0bf2
+   * const tmpFileName1 = await Deno.makeTempFile({ prefix: 'my_temp' });  // e.g. /tmp/my_temp754d3098
+   * ```
+   *
+   * Requires `allow-write` permission
+   *
+   * @param opts
+   * @param opts.prefix -String that should precede the random portion of the temporary
+   * directory's name. This helps you identify the files you've created.
+   * @param opts.suffix - String that should follow the random portion of the temporary
+   * directory's name. This can be set to an extension (eg. ".json")
+   * @param opts.dir - Directory where the temporary directory should be created (defaults to
+   * the env variable `TMPDIR`, or the system's default, usually `/tmp`). Note that if the passed `dir` is relative, the path returned  will also be relative. Be mindful of
+   * this when changing working directory
+   * @returns A new FileSpec object with the path
+   */
+  public static async makeTemp(opts?: Deno.MakeTempOptions): Promise<FileSpec> {
+    const tempFilePath = await Deno.makeTempFile(opts);
+    return new FileSpec(tempFilePath);
+  }
+
+  /**
    * Return a copy of this object. Does not copy the file.
    * @see FileSpec#copyTo
    */
