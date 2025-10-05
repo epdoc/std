@@ -1,5 +1,9 @@
 # Changelist
 
+## [0.2.20] - 2025-10-05
+
+- Updated dependencies
+
 ## [0.2.19] - 2025-10-03
 
 - Added makeTemp to FolderSpec and FileSpec.
