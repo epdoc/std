@@ -1,5 +1,9 @@
 # Changelog for @epdoc/type
 
+## [1.1.14] - 2025-10-05
+
+- Fixed ISO 8601 Date detection in jsonDeserializer
+
 ## [1.1.13] - 2025-08-23
 
 - Improved robustness of `asError` utility and added unit tests
