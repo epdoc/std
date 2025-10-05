@@ -1,6 +1,6 @@
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
-import { stringToDate } from './util.ts';
+import { isISODate, stringToDate } from '../src/mod.ts';
 
 describe('stringToDate', () => {
   describe('basic parsing', () => {
@@ -71,6 +71,26 @@ describe('stringToDate', () => {
 
     it('should return undefined for invalid day', () => {
       expect(stringToDate('20240230')).toBeUndefined(); // Feb 30
+    });
+  });
+  describe('isISODate', () => {
+    it('should return true for valid ISO date strings', () => {
+      expect(isISODate('2025-10-05T10:20:30Z')).toBe(true);
+      expect(isISODate('2025-10-05T10:20:30.123Z')).toBe(true);
+      expect(isISODate('2025-10-05T10:20:30+05:30')).toBe(true);
+      expect(isISODate('2025-10-05T10:20:30.456-07:00')).toBe(true);
+      expect(isISODate('2025-10-05T10:20:30')).toBe(true);
+      expect(isISODate('2025-10-05T10:20:30.123')).toBe(true);
+    });
+
+    it('should return false for invalid ISO date strings', () => {
+      expect(isISODate('2025-10-05')).toBe(false);
+      expect(isISODate('10:20:30')).toBe(false);
+      expect(isISODate('2025-10-05 10:20:30')).toBe(false);
+      expect(isISODate('2025/10/05T10:20:30Z')).toBe(false);
+      expect(isISODate('2025-10-05T10:20:30+0530')).toBe(false);
+      expect(isISODate('2025-10-05T10:20:30,123Z')).toBe(false);
+      expect(isISODate('2025-10-05t10:20:30Z')).toBe(false);
     });
   });
 });

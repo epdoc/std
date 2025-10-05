@@ -1,7 +1,6 @@
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
-
-import { DateEx, dateEx } from './date.ts';
+import { DateEx, dateEx, type IANATZ, type ISOTZ } from '../src/mod.ts';
 
 // TODO: remove skip when deno date is fixed
 
@@ -9,13 +8,13 @@ describe('date-util', () => {
   // Test is using CST
   describe('tz statics', () => {
     it('parse', () => {
-      expect(DateEx.tzParse('-06:00')).toEqual(360);
-      expect(DateEx.tzParse('+06:00')).toEqual(-360);
-      expect(DateEx.tzParse('-02:30')).toEqual(150);
-      expect(DateEx.tzParse('+01:00')).toEqual(-60);
-      expect(DateEx.tzParse('+00:00')).toEqual(0);
-      expect(DateEx.tzParse('-00:00')).toEqual(0);
-      expect(DateEx.tzParse('Z')).toEqual(0);
+      expect(DateEx.tzParse('-06:00' as ISOTZ)).toEqual(360);
+      expect(DateEx.tzParse('+06:00' as ISOTZ)).toEqual(-360);
+      expect(DateEx.tzParse('-02:30' as ISOTZ)).toEqual(150);
+      expect(DateEx.tzParse('+01:00' as ISOTZ)).toEqual(-60);
+      expect(DateEx.tzParse('+00:00' as ISOTZ)).toEqual(0);
+      expect(DateEx.tzParse('-00:00' as ISOTZ)).toEqual(0);
+      expect(DateEx.tzParse('Z' as ISOTZ)).toEqual(0);
     });
     it('format', () => {
       expect(DateEx.tzFormat(-360)).toEqual('+06:00');
@@ -58,7 +57,7 @@ describe('date-util', () => {
       const d = dateEx();
       d.tz(-30);
       expect(d.getTz()).toEqual(-30);
-      d.tz('-05:00');
+      d.tz('-05:00' as ISOTZ);
       expect(d.getTz()).toEqual(300);
     });
   });
@@ -86,7 +85,7 @@ describe('date-util', () => {
   });
   describe('toISOLocaleString tz -06:00', () => {
     const d = new Date('1997-11-25T12:13:14.456Z');
-    const du = new DateEx(d).tz('-06:00');
+    const du = new DateEx(d).tz('-06:00' as ISOTZ);
     it('default', () => {
       expect(d.toISOString()).toEqual('1997-11-25T12:13:14.456Z');
       expect(du.toISOLocalString()).toEqual('1997-11-25T06:13:14.456-06:00');
@@ -159,7 +158,7 @@ describe('date-util', () => {
 
     it('should produce the correct serial number for a specific timezone', () => {
       const d = new DateEx('2024-01-01T12:00:00Z');
-      d.tz('America/New_York'); // UTC-5, so offset is 300
+      d.tz('America/New_York' as IANATZ); // UTC-5, so offset is 300
       const serial = d.googleSheetsDate();
       console.log(serial);
       // raw serial is 45292.25
@@ -169,7 +168,7 @@ describe('date-util', () => {
   describe('fromGoogleSheetsDate', () => {
     it('should convert a Google Sheets serial number to a UTC date', () => {
       const serial = 45291.5; // Represents 2024-01-01 12:00:00 UTC
-      const d = DateEx.fromGoogleSheetsDate(serial, 'Europe/London');
+      const d = DateEx.fromGoogleSheetsDate(serial, 'Europe/London' as IANATZ);
       expect(d).toBeDefined();
       if (d) {
         expect(d.date.toISOString()).toEqual('2023-12-31T12:00:00.000Z');
@@ -178,14 +177,14 @@ describe('date-util', () => {
 
     it('should return a Date object that can be formatted to a local time string', () => {
       const serial = 45292.75; // Represents 2024-01-01 18:00:00 UTC
-      const d = DateEx.fromGoogleSheetsDate(serial, 'America/Costa_Rica');
+      const d = DateEx.fromGoogleSheetsDate(serial, 'America/Costa_Rica' as IANATZ);
       expect(d).toBeDefined();
       if (d) {
         // We expect the UTC date to be correct.
         expect(d.date.toISOString()).toEqual('2024-01-02T00:00:00.000Z');
         // Now, if we want to display this in a specific timezone, we can use toISOLocalString
         // This should be 12:00:00 in a -06:00 timezone.
-        d.tz('-06:00');
+        d.tz('-06:00' as IANATZ);
         expect(d.toISOLocalString(false)).toEqual('2024-01-01T18:00:00-06:00');
       }
     });
@@ -194,7 +193,7 @@ describe('date-util', () => {
     it('should parse America/New_York', () => {
       // This may be -300 or -240 depending on DST
       const d = new DateEx();
-      const offset = d.ianaTzParse('America/New_York');
+      const offset = d.ianaTzParse('America/New_York' as IANATZ);
       expect(offset).toBeDefined();
       expect(offset === 300 || offset === 240).toBe(true);
     });
@@ -202,32 +201,32 @@ describe('date-util', () => {
     it('should parse Europe/London', () => {
       // This may be 0 or -60 depending on DST
       const d = new DateEx();
-      const offset = d.ianaTzParse('Europe/London');
+      const offset = d.ianaTzParse('Europe/London' as IANATZ);
       expect(offset).toBeDefined();
       expect(offset === 0 || offset === -60).toBe(true);
     });
 
     it('should parse Asia/Tokyo', () => {
       const d = new DateEx();
-      const offset = d.ianaTzParse('Asia/Tokyo');
+      const offset = d.ianaTzParse('Asia/Tokyo' as IANATZ);
       expect(offset).toBe(-540);
     });
 
     it('should parse Asia/Kolkata', () => {
       const d = new DateEx();
-      const offset = d.ianaTzParse('Asia/Kolkata');
+      const offset = d.ianaTzParse('Asia/Kolkata' as IANATZ);
       expect(offset).toBe(-330);
     });
 
     it('should parse America/Costa_Rica', () => {
       const d = new DateEx();
-      const offset = d.ianaTzParse('America/Costa_Rica');
+      const offset = d.ianaTzParse('America/Costa_Rica' as IANATZ);
       expect(offset).toBe(360);
     });
 
     it('should return undefined for an invalid timezone', () => {
       const d = new DateEx();
-      const offset = d.ianaTzParse('Invalid/Timezone');
+      const offset = d.ianaTzParse('Invalid/Timezone' as IANATZ);
       expect(offset).toBeUndefined();
     });
   });
@@ -257,7 +256,7 @@ describe('date-util', () => {
       expect(d).toBeDefined();
       if (d instanceof DateEx) {
         expect(d.date.toISOString()).toBe('2024-01-01T12:00:00.000Z');
-        expect(d.tz('+03:00').toISOLocalString(false)).toBe('2024-01-01T15:00:00+03:00');
+        expect(d.tz('+03:00' as ISOTZ).toISOLocalString(false)).toBe('2024-01-01T15:00:00+03:00');
       }
     });
   });

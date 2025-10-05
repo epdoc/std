@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run --allow-read --allow-write
 import { FileSpec, FolderSpec, WalkOptions } from '../fs/mod.ts';
-import { asError } from '../type/util.ts';
+import { asError } from '../type/src/util.ts';
 
 interface PackageInfo {
   name: string;

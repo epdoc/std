@@ -1,13 +1,7 @@
 import { _ } from '@epdoc/type';
-import type { GMTTZ, GoogleSheetsDate, IANATZ, ISOTZ, JulianDay, Minutes, PDFTZ } from './types.ts';
+import type { GMTTZ, GoogleSheetsDate, IANATZ, ISOTZ, JulianDay, PDFTZ, TzMinutes } from './types.ts';
+import { isIANATZ, isISOTZ, isPDFTZ } from './util.ts';
 
-const REG = {
-  pdfDate: new RegExp(/^D:(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(.*)$/),
-  pdfTz: new RegExp(/^Z|((\+|\-)(\d\d)(\d\d)?)$/),
-  isoTz: new RegExp(/(Z|((\+|\-)(\d\d):(\d\d)))$/),
-  gmtTz: new RegExp(/GMT([+-])(\d{1,2}):?(\d{2})?/),
-  ianaTz: new RegExp(/^[A-Za-z_]+\/[A-Za-z_]+$/),
-};
 const INVALID_DATE_STRING = 'Invalid Date';
 // const GOOGLE_TO_UNIX_EPOCH_DAYS = 25568; // Sheets treats 1900 as a leap year, so we subtract 1.
 const MS_PER_MIN = 60000;
@@ -24,7 +18,7 @@ export function dateEx(...args: unknown[]): DateEx {
   return new DateEx(...args);
 }
 
-function isMinutes(val: unknown): val is Minutes {
+function isMinutes(val: unknown): val is TzMinutes {
   return _.isInteger(val);
 }
 
@@ -39,7 +33,7 @@ function isMinutes(val: unknown): val is Minutes {
  */
 export class DateEx {
   protected _date: Date;
-  protected _tz: Minutes | undefined;
+  protected _tz: TzMinutes | undefined;
 
   /**
    * Creates a new DateEx object.
@@ -65,11 +59,8 @@ export class DateEx {
         this._tz = arg._tz;
       } else {
         this._date = new Date(arg as string | number | Date);
-        if (_.isString(arg)) {
-          const match = arg.match(REG.isoTz);
-          if (match) {
-            this.tz(match[0] as ISOTZ);
-          }
+        if (isISOTZ(arg)) {
+          this.tz(arg);
         }
       }
     } else {
@@ -93,12 +84,12 @@ export class DateEx {
    *
    * @param val Minutes, an ISOTZ string, or an IANATZ string.
    */
-  tz(val: Minutes | ISOTZ | IANATZ): this {
+  tz(val: TzMinutes | ISOTZ | IANATZ): this {
     if (isMinutes(val)) {
       this._tz = val;
-    } else if (DateEx.isIANATZ(val)) {
+    } else if (isIANATZ(val)) {
       this._tz = this.ianaTzParse(val as IANATZ);
-    } else {
+    } else if (isISOTZ(val)) {
       this._tz = DateEx.tzParse(val as ISOTZ);
     }
     return this;
@@ -107,7 +98,7 @@ export class DateEx {
   /**
    * Returns the timezone offset in minutes.
    */
-  getTz(): Minutes | undefined {
+  getTz(): TzMinutes | undefined {
     return this._tz;
   }
 
@@ -138,13 +129,13 @@ export class DateEx {
    * specified, the local timezone is used.
    * @returns A new `DateEx` object with the adjusted date.
    */
-  withTz(val?: Minutes | ISOTZ): DateEx {
+  withTz(val?: TzMinutes | ISOTZ): DateEx {
     const result = this.clone();
-    let offset: Minutes = 0;
+    let offset: TzMinutes = 0;
     if (isMinutes(val)) {
       offset = val - this._date.getTimezoneOffset();
-    } else if (DateEx.isIsoTz(val)) {
-      offset = (DateEx.tzParse(val) as Minutes) - this._date.getTimezoneOffset();
+    } else if (isISOTZ(val)) {
+      offset = (DateEx.tzParse(val) as TzMinutes) - this._date.getTimezoneOffset();
     } else {
       offset = 0;
     }
@@ -161,7 +152,7 @@ export class DateEx {
    */
   public toISOLocalString(showMs: boolean = true): string {
     this.validate();
-    const tzOffset: Minutes = _.isInteger(this._tz) ? this._tz as Minutes : this._date.getTimezoneOffset();
+    const tzOffset: TzMinutes = _.isInteger(this._tz) ? this._tz as TzMinutes : this._date.getTimezoneOffset();
     const d: Date = new Date(this._date.getTime() - tzOffset * 60000);
     let s = String(d.getUTCFullYear()) +
       '-' +
@@ -207,7 +198,7 @@ export class DateEx {
    * @returns The formatted date string.
    */
   format(format: string): string {
-    const tzOffset: Minutes = isMinutes(this._tz) ? this._tz : this._date.getTimezoneOffset();
+    const tzOffset: TzMinutes = isMinutes(this._tz) ? this._tz : this._date.getTimezoneOffset();
     const d: Date = new Date(this._date.getTime() - tzOffset * 60000);
     return DateEx.formatInternal(d, format);
   }
@@ -247,20 +238,12 @@ export class DateEx {
     return Math.floor(this._date.getTime() / 86400000 + 2440587.5);
   }
 
-  static isIsoTz(val: unknown): val is ISOTZ {
-    return _.isString(val) && REG.isoTz.test(val);
-  }
-
-  static isIANATZ(val: unknown): val is IANATZ {
-    return _.isString(val) && REG.ianaTz.test(val);
-  }
-
   /**
    * @param m
    * @returns
    * @deprecated Use tzFormat method instead
    */
-  public static tz(m: Minutes): string {
+  public static tz(m: TzMinutes): string {
     return DateEx.tzFormat(m);
   }
 
@@ -269,12 +252,12 @@ export class DateEx {
    * @param m Minutes
    * @returns string of the form '-06:00'
    */
-  public static tzFormat(m: Minutes): string {
+  public static tzFormat(m: TzMinutes): ISOTZ {
     if (m === 0) {
-      return 'Z';
+      return 'Z' as ISOTZ;
     }
     return (m < 0 ? '+' : '-') + String(Math.floor(Math.abs(m) / 60)).padStart(2, '0') + ':' +
-      String(Math.abs(m) % 60).padStart(2, '0');
+      String(Math.abs(m) % 60).padStart(2, '0') as ISOTZ;
   }
 
   /**
@@ -282,8 +265,8 @@ export class DateEx {
    * @param val
    * @returns Minutes of timezone offset
    */
-  public static tzParse(val: ISOTZ): Minutes | undefined {
-    const p = _.isString(val) ? val.match(REG.isoTz) : false;
+  public static tzParse(val: ISOTZ): TzMinutes | undefined {
+    const p = val.match(/(Z|((\+|\-)(\d\d):(\d\d)))$/);
     if (p && p.length > 1) {
       if (p[1] === 'Z') {
         return 0;
@@ -300,8 +283,8 @@ export class DateEx {
    * @param val
    * @returns Minutes of timezone offset
    */
-  public static pdfTzParse(val: PDFTZ): Minutes | undefined {
-    const p = _.isString(val) ? val.match(REG.isoTz) : false;
+  public static pdfTzParse(val: PDFTZ): TzMinutes | undefined {
+    const p = val.match(/Z|((\+|\-)(\d\d)(\d\d)?)$/);
     if (p && p.length > 1) {
       if (p[1] === 'Z') {
         return 0;
@@ -343,7 +326,7 @@ export class DateEx {
    * // edtOffset will be 240
    * ```
    */
-  public ianaTzParse(val: IANATZ): Minutes | undefined {
+  public ianaTzParse(val: IANATZ): TzMinutes | undefined {
     try {
       const options: Intl.DateTimeFormatOptions = {
         timeZone: val,
@@ -357,10 +340,10 @@ export class DateEx {
         return undefined;
       }
 
-      const offsetString: GMTTZ = timeZoneNamePart.value; // e.g., "GMT-05:00"
+      const offsetString = timeZoneNamePart.value as GMTTZ; // e.g., "GMT-05:00"
 
       // Regex to extract hours and minutes, handling both positive and negative offsets.
-      const match = offsetString.match(REG.gmtTz);
+      const match = offsetString.match(/GMT([+-])(\d{1,2}):?(\d{2})?/);
 
       if (!match) {
         return undefined;
@@ -398,7 +381,7 @@ export class DateEx {
   public googleSheetsDate(): GoogleSheetsDate {
     this.validate();
     const d = this._date;
-    return ((d.getTime() - tNullMs) / MS_PER_MIN - d.getTimezoneOffset()) / MIN_PER_DAY;
+    return ((d.getTime() - tNullMs) / MS_PER_MIN - d.getTimezoneOffset()) / MIN_PER_DAY as GoogleSheetsDate;
   }
 
   /**
@@ -410,7 +393,7 @@ export class DateEx {
    * settings.
    * @returns A DateEx object.
    */
-  static fromGoogleSheetsDate(serial: number, ianaTz: IANATZ): DateEx | undefined {
+  static fromGoogleSheetsDate(serial: GoogleSheetsDate, ianaTz: IANATZ): DateEx | undefined {
     if (!_.isNumber(serial)) {
       return undefined;
     }
@@ -424,17 +407,20 @@ export class DateEx {
   }
 
   static fromPdfDate(s: string): DateEx | undefined {
-    const p = s.match(REG.pdfDate);
+    const p = s.match(/^D:(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(.*)$/);
     if (p) {
-      const tzOffset: Minutes | undefined = DateEx.pdfTzParse(p[7]);
-      return new DateEx(
-        _.asInt(p[1]),
-        _.asInt(p[2]) - 1,
-        _.asInt(p[3]),
-        _.asInt(p[4]),
-        _.asInt(p[5]),
-        _.asInt(p[6]),
-      ).withTz(tzOffset);
+      const tzRaw = p[7];
+      if (isPDFTZ(tzRaw)) {
+        const tzOffset: TzMinutes | undefined = DateEx.pdfTzParse(tzRaw);
+        return new DateEx(
+          _.asInt(p[1]),
+          _.asInt(p[2]) - 1,
+          _.asInt(p[3]),
+          _.asInt(p[4]),
+          _.asInt(p[5]),
+          _.asInt(p[6]),
+        ).withTz(tzOffset);
+      }
     }
   }
 }

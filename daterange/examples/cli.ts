@@ -2,7 +2,7 @@
 
 import { parseArgs } from '@std/cli/parse-args';
 import { dateEx } from '../../datetime/date.ts';
-import { asInt } from '../../type/util.ts';
+import { asInt } from '../../type/src/util.ts';
 import { dateList, type DateRangeDef } from '../mod.ts';
 
 /**

@@ -1,4 +1,74 @@
-import type { DateParseOptions } from './types.ts';
+import { _ } from '@epdoc/type';
+import type { DateParseOptions, GMTTZ, GoogleSheetsDate, IANATZ, ISODate, ISOTZ, PDFTZ } from './types.ts';
+
+const REG = {
+  isoDate: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|([+-]\d{2}:\d{2}))?$/,
+  isoTz: /(Z|((\+|\-)(\d\d):(\d\d)))$/,
+  gmtTz: /GMT([+-])(\d{1,2}):?(\d{2})?/,
+  pdfTz: /Z|((\+|\-)(\d\d)(\d\d)?)$/,
+  ianaTz: /^[A-Za-z_]+\/[A-Za-z_]+$/,
+};
+
+/**
+ * Checks if a string is a valid ISO 8601 date string.
+ *
+ * The format is `YYYY-MM-DDTHH:mm:ss`, with optional milliseconds and timezone.
+ *
+ * @param s The string to check.
+ * @returns `true` if the string is a valid ISO date string, `false` otherwise.
+ * @example
+ * ```ts
+ * isISODate('2025-10-05T10:20:30Z'); // true
+ * isISODate('2025-10-05'); // false
+ * ```
+ */
+export function isISODate(s: unknown): s is ISODate {
+  return _.isString(s) && REG.isoDate.test(s);
+}
+
+export function isISOTZ(s: unknown): s is ISOTZ {
+  return _.isString(s) && REG.isoTz.test(s);
+}
+
+export function isGMTTZ(s: unknown): s is GMTTZ {
+  return _.isString(s) && REG.gmtTz.test(s);
+}
+
+export function isPDFTZ(s: unknown): s is PDFTZ {
+  return _.isString(s) && REG.pdfTz.test(s);
+}
+
+export function isIANATZ(s: unknown): s is IANATZ {
+  return _.isString(s) && REG.ianaTz.test(s);
+}
+
+// 1. Factory Function (for creation)
+export const asGoogleSheetsDate = (value: number): GoogleSheetsDate => {
+  if (!isValidGoogleSheetsDate(value)) {
+    throw new Error(`Invalid Google Sheets Date: ${value}`);
+  }
+  return value as GoogleSheetsDate;
+};
+
+// 2. Type Guard (for validation/checking)
+export const isGoogleSheetsDate = (value: unknown): value is GoogleSheetsDate => {
+  return typeof value === 'number' && isValidGoogleSheetsDate(value);
+};
+
+// 3. Validation Logic (reusable)
+const isValidGoogleSheetsDate = (value: number): boolean => {
+  return (
+    Number.isFinite(value) &&
+    !isNaN(value) &&
+    value >= 0 && // Google Sheets dates are positive numbers
+    value <= 2958465 // ~ December 31, 9999 (reasonable upper bound)
+  );
+};
+
+// 4. Safe conversion (for uncertain inputs)
+export const safeGoogleSheetsDate = (value: unknown): GoogleSheetsDate | null => {
+  return isGoogleSheetsDate(value) ? value : null;
+};
 
 /**
  * Converts a string representation of a date into a `Date` object.
@@ -17,7 +87,6 @@ import type { DateParseOptions } from './types.ts';
  * @param opts Options for parsing, including separators and default values.
  * @returns A `Date` object, or `undefined` if the string cannot be parsed.
  */
-
 export function stringToDate(s: string, opts?: DateParseOptions): Date | undefined {
   // Default options
   const defaultOpts = {
@@ -55,7 +124,7 @@ export function stringToDate(s: string, opts?: DateParseOptions): Date | undefin
     // If it's an ISO 8601 string, let Date() handle it.
     // This is a basic check to prevent parsing common ISO formats.
     // ISO 8601 typically includes 'T' for time separator or 'Z' for UTC.
-    if (/^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?)?$/.test(s)) {
+    if (isISODate(s)) {
       const d = new Date(s);
       // Verify if the native Date constructor actually produced a valid date
       if (!isNaN(d.getTime())) {

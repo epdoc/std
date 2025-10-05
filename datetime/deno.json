@@ -1,11 +1,11 @@
 {
   "name": "@epdoc/datetime",
   "version": "1.0.9-beta.1",
-  "exports": "./mod.ts",
+  "exports": "./src/mod.ts",
   "tasks": {
-    "test": "deno test -A date.test.ts",
-    "lint": "deno lint *.ts *.json",
-    "check": "deno check *.ts"
+    "test": "deno test -A test",
+    "lint": "deno lint src test deno.json",
+    "check": "deno check src test"
   },
   "imports": {
     "@epdoc/type": "jsr:@epdoc/type@^1.1.13",
