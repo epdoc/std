@@ -1,3 +1,4 @@
+export type { Brand } from '@epdoc/type';
 import type { Brand, Integer } from '@epdoc/type';
 
 /**
@@ -7,7 +8,7 @@ import type { Brand, Integer } from '@epdoc/type';
  * Runtime validation is required to enforce the integer and non-negative constraints.
  * @typedef {Integer} Milliseconds
  */
-export type TzMinutes = Integer;
+export type TzMinutes = Brand<Integer, 'TzMinutes'>;
 
 /**
  * A string representing a date in ISO 8601 format.

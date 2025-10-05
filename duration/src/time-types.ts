@@ -1,8 +1,8 @@
+import type { Integer } from '@epdoc/type';
 /**
  * This module contains type definitions for time-related values.
  * @module
  */
-import type { Integer } from '@epdoc/type';
 
 /**
  * Represents a duration in milliseconds.

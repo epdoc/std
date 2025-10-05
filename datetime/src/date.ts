@@ -1,6 +1,6 @@
 import { _ } from '@epdoc/type';
-import type { GMTTZ, GoogleSheetsDate, IANATZ, ISOTZ, JulianDay, PDFTZ, TzMinutes } from './types.ts';
-import { isIANATZ, isISOTZ, isPDFTZ } from './util.ts';
+import type { GMTTZ, GoogleSheetsDate, IANATZ, ISOTZ, JulianDay, TzMinutes } from './types.ts';
+import * as util from './utils.ts';
 
 const INVALID_DATE_STRING = 'Invalid Date';
 // const GOOGLE_TO_UNIX_EPOCH_DAYS = 25568; // Sheets treats 1900 as a leap year, so we subtract 1.
@@ -59,8 +59,8 @@ export class DateEx {
         this._tz = arg._tz;
       } else {
         this._date = new Date(arg as string | number | Date);
-        if (isISOTZ(arg)) {
-          this.tz(arg);
+        if (util.isISOTZ(arg)) {
+          this.tz(arg as ISOTZ);
         }
       }
     } else {
@@ -87,10 +87,10 @@ export class DateEx {
   tz(val: TzMinutes | ISOTZ | IANATZ): this {
     if (isMinutes(val)) {
       this._tz = val;
-    } else if (isIANATZ(val)) {
+    } else if (util.isIANATZ(val)) {
       this._tz = this.ianaTzParse(val as IANATZ);
-    } else if (isISOTZ(val)) {
-      this._tz = DateEx.tzParse(val as ISOTZ);
+    } else if (util.isISOTZ(val)) {
+      this._tz = util.parseISOTZ(val as ISOTZ);
     }
     return this;
   }
@@ -131,13 +131,13 @@ export class DateEx {
    */
   withTz(val?: TzMinutes | ISOTZ): DateEx {
     const result = this.clone();
-    let offset: TzMinutes = 0;
+    let offset: TzMinutes = 0 as TzMinutes;
     if (isMinutes(val)) {
-      offset = val - this._date.getTimezoneOffset();
-    } else if (isISOTZ(val)) {
-      offset = (DateEx.tzParse(val) as TzMinutes) - this._date.getTimezoneOffset();
+      offset = (val - this._date.getTimezoneOffset()) as TzMinutes;
+    } else if (util.isISOTZ(val)) {
+      offset = (util.parseISOTZ(val) as TzMinutes) - (this._date.getTimezoneOffset() as TzMinutes) as TzMinutes;
     } else {
-      offset = 0;
+      offset = 0 as TzMinutes;
     }
     result._date = new Date(this._date.getTime() + offset * 60000);
     return result;
@@ -152,7 +152,9 @@ export class DateEx {
    */
   public toISOLocalString(showMs: boolean = true): string {
     this.validate();
-    const tzOffset: TzMinutes = _.isInteger(this._tz) ? this._tz as TzMinutes : this._date.getTimezoneOffset();
+    const tzOffset: TzMinutes = _.isInteger(this._tz)
+      ? this._tz as TzMinutes
+      : this._date.getTimezoneOffset() as TzMinutes;
     const d: Date = new Date(this._date.getTime() - tzOffset * 60000);
     let s = String(d.getUTCFullYear()) +
       '-' +
@@ -168,7 +170,7 @@ export class DateEx {
     if (showMs !== false) {
       s += '.' + String(d.getMilliseconds()).padStart(3, '0');
     }
-    s += DateEx.tzFormat(tzOffset);
+    s += util.formatTzAsISOTZ(tzOffset);
     return s;
   }
 
@@ -198,7 +200,7 @@ export class DateEx {
    * @returns The formatted date string.
    */
   format(format: string): string {
-    const tzOffset: TzMinutes = isMinutes(this._tz) ? this._tz : this._date.getTimezoneOffset();
+    const tzOffset: TzMinutes = isMinutes(this._tz) ? this._tz : this._date.getTimezoneOffset() as TzMinutes;
     const d: Date = new Date(this._date.getTime() - tzOffset * 60000);
     return DateEx.formatInternal(d, format);
   }
@@ -236,67 +238,6 @@ export class DateEx {
   public julianDate(): JulianDay {
     this.validate();
     return Math.floor(this._date.getTime() / 86400000 + 2440587.5);
-  }
-
-  /**
-   * @param m
-   * @returns
-   * @deprecated Use tzFormat method instead
-   */
-  public static tz(m: TzMinutes): string {
-    return DateEx.tzFormat(m);
-  }
-
-  /**
-   * Format a timezone offset as a string
-   * @param m Minutes
-   * @returns string of the form '-06:00'
-   */
-  public static tzFormat(m: TzMinutes): ISOTZ {
-    if (m === 0) {
-      return 'Z' as ISOTZ;
-    }
-    return (m < 0 ? '+' : '-') + String(Math.floor(Math.abs(m) / 60)).padStart(2, '0') + ':' +
-      String(Math.abs(m) % 60).padStart(2, '0') as ISOTZ;
-  }
-
-  /**
-   * Parse a timezone offset in the form '-06:00' and return 360.
-   * @param val
-   * @returns Minutes of timezone offset
-   */
-  public static tzParse(val: ISOTZ): TzMinutes | undefined {
-    const p = val.match(/(Z|((\+|\-)(\d\d):(\d\d)))$/);
-    if (p && p.length > 1) {
-      if (p[1] === 'Z') {
-        return 0;
-      } else if (p.length > 4) {
-        const pol = p[3] === '-' ? 1 : -1;
-        const result = _.asInt(p[4]) * 60 + _.asInt(p[5]);
-        return result ? pol * result : result;
-      }
-    }
-  }
-
-  /**
-   * Parse a timezone offset in the form '-06:00' and return 360.
-   * @param val
-   * @returns Minutes of timezone offset
-   */
-  public static pdfTzParse(val: PDFTZ): TzMinutes | undefined {
-    const p = val.match(/Z|((\+|\-)(\d\d)(\d\d)?)$/);
-    if (p && p.length > 1) {
-      if (p[1] === 'Z') {
-        return 0;
-      } else if (p.length > 3) {
-        const pol = p[2] === '-' ? 1 : -1;
-        let val = _.asInt(p[3]) * 60;
-        if (p.length > 3) {
-          val += _.asInt(p[4]);
-        }
-        return val ? pol * val : val;
-      }
-    }
   }
 
   /**
@@ -355,7 +296,7 @@ export class DateEx {
 
       const totalOffsetMinutes = sign * (hours * 60 + minutes);
 
-      return totalOffsetMinutes;
+      return totalOffsetMinutes as TzMinutes;
     } catch (_e) {
       return undefined;
     }
@@ -374,7 +315,7 @@ export class DateEx {
    * @example
    * ```ts
    * const d = dateEx('2024-01-01T12:00:00.000Z');
-   * d.tz('America/New_York');
+   * d.tz('America/New_York' as IANATZ);
    * const sheetValue = d.googleSheetsDate();
    * ```
    */
@@ -410,8 +351,8 @@ export class DateEx {
     const p = s.match(/^D:(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(.*)$/);
     if (p) {
       const tzRaw = p[7];
-      if (isPDFTZ(tzRaw)) {
-        const tzOffset: TzMinutes | undefined = DateEx.pdfTzParse(tzRaw);
+      if (util.isPDFTZ(tzRaw)) {
+        const tzOffset: TzMinutes | undefined = util.parsePDFTZ(tzRaw);
         return new DateEx(
           _.asInt(p[1]),
           _.asInt(p[2]) - 1,

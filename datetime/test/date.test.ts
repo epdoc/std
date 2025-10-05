@@ -1,6 +1,6 @@
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
-import { DateEx, dateEx, type IANATZ, type ISOTZ } from '../src/mod.ts';
+import { DateEx, dateEx, type IANATZ, type ISOTZ, type TzMinutes, util } from '../src/mod.ts';
 
 // TODO: remove skip when deno date is fixed
 
@@ -8,20 +8,20 @@ describe('date-util', () => {
   // Test is using CST
   describe('tz statics', () => {
     it('parse', () => {
-      expect(DateEx.tzParse('-06:00' as ISOTZ)).toEqual(360);
-      expect(DateEx.tzParse('+06:00' as ISOTZ)).toEqual(-360);
-      expect(DateEx.tzParse('-02:30' as ISOTZ)).toEqual(150);
-      expect(DateEx.tzParse('+01:00' as ISOTZ)).toEqual(-60);
-      expect(DateEx.tzParse('+00:00' as ISOTZ)).toEqual(0);
-      expect(DateEx.tzParse('-00:00' as ISOTZ)).toEqual(0);
-      expect(DateEx.tzParse('Z' as ISOTZ)).toEqual(0);
+      expect(util.parseISOTZ('-06:00' as ISOTZ)).toEqual(360);
+      expect(util.parseISOTZ('+06:00' as ISOTZ)).toEqual(-360);
+      expect(util.parseISOTZ('-02:30' as ISOTZ)).toEqual(150);
+      expect(util.parseISOTZ('+01:00' as ISOTZ)).toEqual(-60);
+      expect(util.parseISOTZ('+00:00' as ISOTZ)).toEqual(0);
+      expect(util.parseISOTZ('-00:00' as ISOTZ)).toEqual(0);
+      expect(util.parseISOTZ('Z' as ISOTZ)).toEqual(0);
     });
     it('format', () => {
-      expect(DateEx.tzFormat(-360)).toEqual('+06:00');
-      expect(DateEx.tzFormat(360)).toEqual('-06:00');
-      expect(DateEx.tzFormat(-390)).toEqual('+06:30');
-      expect(DateEx.tzFormat(+150)).toEqual('-02:30');
-      expect(DateEx.tzFormat(0)).toEqual('Z');
+      expect(util.formatTzAsISOTZ(-360 as TzMinutes)).toEqual('+06:00');
+      expect(util.formatTzAsISOTZ(360 as TzMinutes)).toEqual('-06:00');
+      expect(util.formatTzAsISOTZ(-390 as TzMinutes)).toEqual('+06:30');
+      expect(util.formatTzAsISOTZ(150 as TzMinutes)).toEqual('-02:30');
+      expect(util.formatTzAsISOTZ(0 as TzMinutes)).toEqual('Z');
     });
   });
   describe('tz offset', () => {
@@ -40,22 +40,22 @@ describe('date-util', () => {
       expect(tz).toEqual(360);
     });
     it('-02:00', () => {
-      const tz = DateEx.tzFormat(120);
+      const tz = util.formatTzAsISOTZ(120 as TzMinutes);
       expect(tz).toEqual('-02:00');
     });
     it('360', () => {
-      const tz = DateEx.tzFormat(360);
+      const tz = util.formatTzAsISOTZ(360 as TzMinutes);
       expect(tz).toEqual('-06:00');
     });
     it('-360', () => {
-      const tz = DateEx.tzFormat(-360);
+      const tz = util.formatTzAsISOTZ(-360 as TzMinutes);
       expect(tz).toEqual('+06:00');
     });
   });
   describe('tz set offset', () => {
     it('30', () => {
       const d = dateEx();
-      d.tz(-30);
+      d.tz(-30 as TzMinutes);
       expect(d.getTz()).toEqual(-30);
       d.tz('-05:00' as ISOTZ);
       expect(d.getTz()).toEqual(300);
@@ -99,7 +99,7 @@ describe('date-util', () => {
   });
   describe('toISOLocaleString tz -150', () => {
     const d = new Date('1997-11-25T12:13:14.456Z');
-    const du = new DateEx(d).tz(-150);
+    const du = new DateEx(d).tz(-150 as TzMinutes);
     it('default', () => {
       expect(d.toISOString()).toEqual('1997-11-25T12:13:14.456Z');
       expect(du.toISOLocalString()).toEqual('1997-11-25T14:43:14.456+02:30');
@@ -113,7 +113,7 @@ describe('date-util', () => {
   });
   describe('toISOLocaleString tz 0', () => {
     const d = new Date('1997-11-25T12:13:14.456Z');
-    const du = new DateEx(d).tz(0);
+    const du = new DateEx(d).tz(0 as TzMinutes);
     it('default', () => {
       expect(d.toISOString()).toEqual('1997-11-25T12:13:14.456Z');
       expect(du.toISOLocalString()).toEqual('1997-11-25T12:13:14.456Z');
@@ -167,7 +167,7 @@ describe('date-util', () => {
   });
   describe('fromGoogleSheetsDate', () => {
     it('should convert a Google Sheets serial number to a UTC date', () => {
-      const serial = 45291.5; // Represents 2024-01-01 12:00:00 UTC
+      const serial = util.asGoogleSheetsDate(45291.5); // Represents 2024-01-01 12:00:00 UTC
       const d = DateEx.fromGoogleSheetsDate(serial, 'Europe/London' as IANATZ);
       expect(d).toBeDefined();
       if (d) {
@@ -176,7 +176,7 @@ describe('date-util', () => {
     });
 
     it('should return a Date object that can be formatted to a local time string', () => {
-      const serial = 45292.75; // Represents 2024-01-01 18:00:00 UTC
+      const serial = util.asGoogleSheetsDate(45292.75); // Represents 2024-01-01 18:00:00 UTC
       const d = DateEx.fromGoogleSheetsDate(serial, 'America/Costa_Rica' as IANATZ);
       expect(d).toBeDefined();
       if (d) {
@@ -184,7 +184,7 @@ describe('date-util', () => {
         expect(d.date.toISOString()).toEqual('2024-01-02T00:00:00.000Z');
         // Now, if we want to display this in a specific timezone, we can use toISOLocalString
         // This should be 12:00:00 in a -06:00 timezone.
-        d.tz('-06:00' as IANATZ);
+        d.tz('-06:00' as ISOTZ);
         expect(d.toISOLocalString(false)).toEqual('2024-01-01T18:00:00-06:00');
       }
     });
@@ -247,7 +247,8 @@ describe('date-util', () => {
       if (d instanceof DateEx) {
         expect(d.date.toISOString()).toBe('2024-01-01T12:00:00.000Z');
         expect(d.toISOLocalString(false)).toBe('2024-01-01T06:00:00-06:00');
-        expect(d.tz(-60).toISOLocalString(false)).toBe('2024-01-01T13:00:00+01:00');
+        d.tz(-60 as TzMinutes).toISOLocalString(false);
+        expect(d.toISOLocalString(false)).toBe('2024-01-01T13:00:00+01:00');
       }
     });
     it('AST +03:00', () => {

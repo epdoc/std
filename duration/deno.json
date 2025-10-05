@@ -1,12 +1,12 @@
 {
   "name": "@epdoc/duration",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Duration formatting",
-  "exports": "./mod.ts",
+  "exports": "./src/mod.ts",
   "tasks": {
     "test": "deno test --allow-env"
   },
   "imports": {
-    "@epdoc/type": "jsr:@epdoc/type@^1.1.15"
+    "@epdoc/type": "jsr:@epdoc/type@^1.1.16"
   }
 }

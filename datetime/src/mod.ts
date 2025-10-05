@@ -1,3 +1,3 @@
-export * from './date.ts';
-export * from './types.ts';
-export * from './util.ts';
+export { DateEx, dateEx } from './date.ts';
+export type * from './types.ts';
+export * as util from './utils.ts';

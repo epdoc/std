@@ -1,8 +1,6 @@
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
-import * as Time from './consts.ts';
-import * as Duration from './duration/mod.ts';
-import { duration } from './utils.ts';
+import { Duration, duration, Time } from '../src/mod.ts';
 
 describe('duration-util', () => {
   describe('digital', () => {

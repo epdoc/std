@@ -1,7 +1,7 @@
 import type { Dict, Integer } from '@epdoc/type';
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
-import { Duration, type Seconds } from './mod.ts';
+import { Duration, type Seconds } from '../src/mod.ts';
 
 const zero = {
   _ms: 0,

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0-beta.1] - 2025-10-05
+
+- Reorganized code into src and test folders, moving utility functions from date.ts to utils.ts.
+- Now using TypeScript Branded types for some types.
+- Updated dependencies.
+
 ## [1.0.9-beta.1] - 2025-09-16
 
 - Fixed google sheets date bug relating to timezones.

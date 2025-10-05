@@ -1,27 +1,14 @@
 import { _ } from '@epdoc/type';
-import type { DateParseOptions, GMTTZ, GoogleSheetsDate, IANATZ, ISODate, ISOTZ, PDFTZ } from './types.ts';
+import type { DateParseOptions, GMTTZ, GoogleSheetsDate, IANATZ, ISODate, ISOTZ, PDFTZ, TzMinutes } from './types.ts';
 
 const REG = {
   isoDate: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|([+-]\d{2}:\d{2}))?$/,
-  isoTz: /(Z|((\+|\-)(\d\d):(\d\d)))$/,
+  isoTz: /^(Z|((\+|\-)(\d\d):(\d\d)))$/,
   gmtTz: /GMT([+-])(\d{1,2}):?(\d{2})?/,
   pdfTz: /Z|((\+|\-)(\d\d)(\d\d)?)$/,
   ianaTz: /^[A-Za-z_]+\/[A-Za-z_]+$/,
 };
 
-/**
- * Checks if a string is a valid ISO 8601 date string.
- *
- * The format is `YYYY-MM-DDTHH:mm:ss`, with optional milliseconds and timezone.
- *
- * @param s The string to check.
- * @returns `true` if the string is a valid ISO date string, `false` otherwise.
- * @example
- * ```ts
- * isISODate('2025-10-05T10:20:30Z'); // true
- * isISODate('2025-10-05'); // false
- * ```
- */
 export function isISODate(s: unknown): s is ISODate {
   return _.isString(s) && REG.isoDate.test(s);
 }
@@ -42,33 +29,29 @@ export function isIANATZ(s: unknown): s is IANATZ {
   return _.isString(s) && REG.ianaTz.test(s);
 }
 
-// 1. Factory Function (for creation)
-export const asGoogleSheetsDate = (value: number): GoogleSheetsDate => {
+export function asGoogleSheetsDate(value: number): GoogleSheetsDate {
   if (!isValidGoogleSheetsDate(value)) {
     throw new Error(`Invalid Google Sheets Date: ${value}`);
   }
   return value as GoogleSheetsDate;
-};
+}
 
-// 2. Type Guard (for validation/checking)
-export const isGoogleSheetsDate = (value: unknown): value is GoogleSheetsDate => {
+export function isGoogleSheetsDate(value: unknown): value is GoogleSheetsDate {
   return typeof value === 'number' && isValidGoogleSheetsDate(value);
-};
+}
 
-// 3. Validation Logic (reusable)
-const isValidGoogleSheetsDate = (value: number): boolean => {
+export function isValidGoogleSheetsDate(value: number): boolean {
   return (
     Number.isFinite(value) &&
     !isNaN(value) &&
     value >= 0 && // Google Sheets dates are positive numbers
     value <= 2958465 // ~ December 31, 9999 (reasonable upper bound)
   );
-};
+}
 
-// 4. Safe conversion (for uncertain inputs)
-export const safeGoogleSheetsDate = (value: unknown): GoogleSheetsDate | null => {
+export function safeGoogleSheetsDate(value: unknown): GoogleSheetsDate | null {
   return isGoogleSheetsDate(value) ? value : null;
-};
+}
 
 /**
  * Converts a string representation of a date into a `Date` object.
@@ -184,4 +167,42 @@ export function stringToDate(s: string, opts?: DateParseOptions): Date | undefin
   }
 
   return date;
+}
+export function formatTzAsISOTZ(m: TzMinutes): ISOTZ {
+  if (m === 0) {
+    return 'Z' as ISOTZ;
+  }
+  return (m < 0 ? '+' : '-') + String(Math.floor(Math.abs(m) / 60)).padStart(2, '0') + ':' +
+    String(Math.abs(m) % 60).padStart(2, '0') as ISOTZ;
+}
+
+export function parseISOTZ(val: ISOTZ): TzMinutes | undefined {
+  const p = val.match(/(Z|((\+|\-)(\d\d):(\d\d)))$/);
+  if (p && p.length > 1) {
+    if (p[1] === 'Z') {
+      return 0 as TzMinutes;
+    }
+    if (p.length > 4) {
+      const pol = p[3] === '-' ? 1 : -1;
+      const result = _.asInt(p[4]) * 60 + _.asInt(p[5]);
+      return (result ? pol * result : result) as TzMinutes;
+    }
+  }
+}
+
+export function parsePDFTZ(val: PDFTZ): TzMinutes | undefined {
+  const p = val.match(/Z|((\+|\-)(\d\d)(\d\d)?)$/);
+  if (p && p.length > 1) {
+    if (p[1] === 'Z') {
+      return 0 as TzMinutes;
+    }
+    if (p.length > 3) {
+      const pol = p[2] === '-' ? 1 : -1;
+      let val = _.asInt(p[3]) * 60;
+      if (p.length > 3) {
+        val += _.asInt(p[4]);
+      }
+      return (val ? pol * val : val) as TzMinutes;
+    }
+  }
 }
