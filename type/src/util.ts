@@ -507,14 +507,15 @@ export function asFloat(val: unknown, opts?: AsFloatOpts): number {
  * @param defVal - The default value to return if conversion fails.
  * @returns The converted integer value.
  */
-export function asInt(val: unknown, defVal = 0): number {
+export function asInt(val: unknown, defVal: Integer = 0 as Integer): Integer {
   // for speed do this test first
   if (isNumber(val)) {
-    return Number.isInteger(val) ? val : Math.round(val);
-  } else if (isNonEmptyString(val)) {
+    return Number.isInteger(val) ? val as Integer : Math.round(val) as Integer;
+  }
+  if (isNonEmptyString(val)) {
     const v = parseFloat(val);
     if (isNumber(v)) {
-      return Number.isInteger(v) ? v : Math.round(v);
+      return Number.isInteger(v) ? v as Integer : Math.round(v) as Integer;
     }
   }
   return defVal;

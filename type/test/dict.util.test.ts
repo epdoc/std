@@ -1,7 +1,7 @@
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
-import { dictUtil as t, isType } from './dictutil.ts';
-import { isString } from './util.ts';
+import { dictUtil as t, isType } from '../src/mod.ts';
+import { isString } from '../src/mod.ts';
 
 describe('dictUtil', () => {
   describe('isType', () => {

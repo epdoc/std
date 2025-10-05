@@ -1,5 +1,5 @@
 /**
- * Represents an integer type.
+ * A simple alias for code hinting
  */
 export type Integer = number;
 
@@ -14,6 +14,16 @@ export type Dict = Record<string, unknown>;
  * Result of a comparison between two Dict objects.
  */
 export type CompareResult = -1 | 0 | 1;
+
+/**
+ * A "branded type" is a technique in TypeScript to create a new type that is a
+ * subtype of an existing type (like `string`), but is not assignable to the
+ * original type or other branded types. This is useful when you want to
+ * distinguish between different kinds of strings that have a specific format or
+ * meaning.
+ */
+declare const __brand: unique symbol;
+type Brand<T, B> = T & { [__brand]: B };
 
 /**
  * Constructs a type where exactly one property from a set of keys `K`

@@ -1,7 +1,7 @@
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
-import type { Dict } from './types.ts';
-import { compareValues, deepCopy, deepEquals, isArray, isDict, omit, pick } from './util.ts';
+import type { Dict } from '../src/mod.ts';
+import { compareValues, deepCopy, deepEquals, isArray, isDict, omit, pick } from '../src/mod.ts';
 
 describe('deep', () => {
   // describe('misc', () => {

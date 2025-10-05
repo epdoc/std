@@ -1,8 +1,6 @@
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
-import stripJsonComments from './strip-comments.ts';
-import type { Dict } from './types.ts';
-import * as _ from './util.ts';
+import { _, type Dict, stripJsonComments } from '../src/mod.ts';
 
 describe('json', () => {
   describe('jsonSerialize', () => {

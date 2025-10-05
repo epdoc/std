@@ -1,6 +1,6 @@
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
-import type { DigitChar, ExactlyOne, LetterChar, LowerCaseChar, UpperCaseChar } from './types.ts';
+import type { DigitChar, ExactlyOne, IError, LetterChar, LowerCaseChar, UpperCaseChar } from '../src/mod.ts';
 import {
   asBoolean,
   asDate,
@@ -11,7 +11,6 @@ import {
   camel2dash,
   dash2camel,
   hasValue,
-  type IError,
   isArray,
   isBoolean,
   isDate,
@@ -39,7 +38,7 @@ import {
   msub,
   pad,
   underscoreCapitalize,
-} from './util.ts';
+} from '../src/mod.ts';
 
 describe('util', () => {
   describe('number', () => {

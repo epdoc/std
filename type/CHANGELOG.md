@@ -1,5 +1,10 @@
 # Changelog for @epdoc/type
 
+## [1.1.15] - 2025-10-05
+
+- Added `Brand` declaration.
+- Reorganized files into src and test folders.
+
 ## [1.1.14] - 2025-10-05
 
 - Fixed ISO 8601 Date detection in jsonDeserializer
