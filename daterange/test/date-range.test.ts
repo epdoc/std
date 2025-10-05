@@ -1,7 +1,7 @@
-import { DateEx, dateEx } from '@epdoc/datetime';
+import { DateEx, dateEx, ISODate } from '@epdoc/datetime';
 import { expect } from '@std/expect';
 import { describe, test } from '@std/testing/bdd';
-import { dateList, type DateRangeDef, DateRanges, dateRanges, dateStringToDate } from './mod.ts';
+import { dateList, type DateRangeDef, DateRanges, dateRanges, dateStringToDate } from '../src/mod.ts';
 
 function expectDate(
   date: Date | undefined,
@@ -280,7 +280,7 @@ describe('date-range', () => {
 
     test('should handle invalid date strings', () => {
       const dr = new DateRanges();
-      dr.fromJSON([{ after: 'invalid date' }]);
+      dr.fromJSON([{ after: 'invalid date' as ISODate }]);
       expect(dr.ranges.length).toBe(1);
       expect(dr.ranges[0].after).toBeUndefined();
     });

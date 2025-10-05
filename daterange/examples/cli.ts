@@ -1,9 +1,9 @@
 #!/usr/bin/env -S deno run --allow-env
 
+import { dateEx } from '@epdoc/datetime';
+import { _ } from '@epdoc/type';
 import { parseArgs } from '@std/cli/parse-args';
-import { dateEx } from '../../datetime/date.ts';
-import { asInt } from '../../type/src/util.ts';
-import { dateList, type DateRangeDef } from '../mod.ts';
+import { dateList, type DateRangeDef } from '../src/mod.ts';
 
 /**
  * A command-line tool to parse date range strings.
@@ -27,7 +27,7 @@ function main() {
     string: ['hour'],
   });
 
-  const h = asInt(flags.hour, 0);
+  const h = _.asInt(flags.hour, 0);
   const dateSpecs = flags._;
 
   if (dateSpecs.length === 0) {

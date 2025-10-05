@@ -1,4 +1,4 @@
-import type { ISOTZ } from '@epdoc/datetime';
+import type { ISODate } from '@epdoc/datetime';
 
 /**
  * Represents a definition of a date range with optional before and after dates.
@@ -16,6 +16,6 @@ export type DateRangeDef = {
  * The format of DateRanges toJSON method.
  */
 export type DateRangeJSON = {
-  after?: ISOTZ;
-  before?: ISOTZ;
+  after?: ISODate;
+  before?: ISODate;
 };

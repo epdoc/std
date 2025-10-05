@@ -17,7 +17,7 @@
  * //-> "20240101-,-20240101"
  * ```
  */
-import { DateEx, dateEx, type ISOTZ } from '@epdoc/datetime';
+import { DateEx, dateEx, ISODate } from '@epdoc/datetime';
 import { isNonEmptyArray, isValidDate } from '@epdoc/type';
 import type { DateRangeDef, DateRangeJSON } from './types.ts';
 
@@ -163,12 +163,12 @@ export class DateRanges {
   toJSON(): DateRangeJSON[] {
     const result: DateRangeJSON[] = [];
     this._ranges.forEach((range) => {
-      const obj: { after?: ISOTZ; before?: ISOTZ } = {};
+      const obj: { after?: ISODate; before?: ISODate } = {};
       if (range.after) {
-        obj.after = new DateEx(range.after).toISOLocalString();
+        obj.after = new DateEx(range.after).toISOLocalString() as ISODate;
       }
       if (range.before) {
-        obj.before = new DateEx(range.before).toISOLocalString();
+        obj.before = new DateEx(range.before).toISOLocalString() as ISODate;
       }
       result.push(obj);
     });
