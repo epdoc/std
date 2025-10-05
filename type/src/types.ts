@@ -23,7 +23,7 @@ export type CompareResult = -1 | 0 | 1;
  * meaning.
  */
 declare const __brand: unique symbol;
-type Brand<T, B> = T & { [__brand]: B };
+export type Brand<T, B> = T & { [__brand]: B };
 
 /**
  * Constructs a type where exactly one property from a set of keys `K`

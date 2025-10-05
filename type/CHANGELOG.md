@@ -1,5 +1,9 @@
 # Changelog for @epdoc/type
 
+## [1.1.16] - 2025-10-05
+
+- Exported Brand type
+
 ## [1.1.15] - 2025-10-05
 
 - Added `Brand` declaration.
