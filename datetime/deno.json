@@ -8,7 +8,7 @@
     "check": "deno check src test"
   },
   "imports": {
-    "@epdoc/type": "jsr:@epdoc/type@^1.1.13",
+    "@epdoc/type": "jsr:@epdoc/type@^1.1.15",
     "@std/expect": "jsr:@std/expect@^1.0.17"
   }
 }
