@@ -1,5 +1,9 @@
 # Changelist
 
+## [0.2.23] - 2025-10-05
+
+- Update dependencies
+
 ## [0.2.22] - 2025-10-05
 
 - Update @epdoc/type dependency.
