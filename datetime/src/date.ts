@@ -1,5 +1,5 @@
 import { _ } from '@epdoc/type';
-import type { GMTTZ, GoogleSheetsDate, IANATZ, ISOTZ, JulianDay, TzMinutes } from './types.ts';
+import type { GMTTZ, GoogleSheetsDate, IANATZ, ISOTZ, ISOTzDate, JulianDay, TzMinutes } from './types.ts';
 import * as util from './utils.ts';
 
 const INVALID_DATE_STRING = 'Invalid Date';
@@ -150,7 +150,7 @@ export class DateEx {
    * @param showMs Set to false to hide (truncate) milliseconds
    * @returns
    */
-  public toISOLocalString(showMs: boolean = true): string {
+  public toISOLocalString(showMs: boolean = true): ISOTzDate {
     this.validate();
     const tzOffset: TzMinutes = _.isInteger(this._tz)
       ? this._tz as TzMinutes
@@ -171,7 +171,7 @@ export class DateEx {
       s += '.' + String(d.getMilliseconds()).padStart(3, '0');
     }
     s += util.formatTzAsISOTZ(tzOffset);
-    return s;
+    return s as ISOTzDate;
   }
 
   /**

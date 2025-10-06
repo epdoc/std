@@ -11,10 +11,16 @@ import type { Brand, Integer } from '@epdoc/type';
 export type TzMinutes = Brand<Integer, 'TzMinutes'>;
 
 /**
- * A string representing a date in ISO 8601 format.
+ * A string representing a date in ISO 8601 format using UTC
  * @example "2024-01-01T12:00:00Z"
  */
 export type ISODate = Brand<string, 'ISODate'>;
+
+/**
+ * A string representing a date in ISO 8601 format using the local timezone
+ * @example "2024-01-01T12:00:00-06:00"
+ */
+export type ISOTzDate = Brand<string, 'ISOTzDate'>;
 
 /**
  * A string representing a timezone offset in ISO 8601 format.

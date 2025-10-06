@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0-beta.3] - 2025-10-05
+
+- Changed type of toISOLocalString() to ISOTzDate
+
 ## [2.0.0-beta.2] - 2025-10-05
 
 - Update @epdoc/type dependency.
