@@ -1,5 +1,9 @@
 # Changelist
 
+## [0.2.24] - 2025-10-06
+
+- Fixed bug in FolderSpec.makeTemp return type
+
 ## [0.2.23] - 2025-10-05
 
 - Update dependencies

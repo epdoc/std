@@ -127,9 +127,9 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
    * directory
    * @returns A new FileSpec object with the path
    */
-  public static async makeTemp(opts?: Deno.MakeTempOptions): Promise<FileSpec> {
-    const tempFilePath = await Deno.makeTempDir(opts);
-    return new FileSpec(tempFilePath);
+  public static async makeTemp(opts?: Deno.MakeTempOptions): Promise<FolderSpec> {
+    const tempPath = await Deno.makeTempDir(opts);
+    return new FolderSpec(tempPath);
   }
 
   /**
