@@ -1,4 +1,4 @@
-import { dateEx } from '@epdoc/datetime';
+import { dateEx, TzMinutes } from '@epdoc/datetime';
 import { expect } from '@std/expect';
 import { describe, test } from '@std/testing/bdd';
 import { msub, StringEx } from './mod.ts';
@@ -90,10 +90,10 @@ describe('msub', () => {
   test('date custom formatting', () => {
     const d = new Date('2024-11-15T00:00:00.000Z');
     const fmt1 = (_d: Date, _f: string) => {
-      return dateEx(_d).tz(360).toISOLocalString();
+      return dateEx(_d).tz(360 as TzMinutes).toISOLocalString() as string;
     };
     const fmt2 = (d: Date, f: string) => {
-      return dateEx(d).tz(0).format(f);
+      return dateEx(d).tz(0 as TzMinutes).format(f);
     };
 
     const r0 = msub.init({ format: fmt1 }).replace('The date is ${a:toISOString}', { a: d });
