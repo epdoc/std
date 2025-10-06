@@ -16,18 +16,19 @@ import type {
 const REGEX = {
   isTrue: new RegExp(/^(true|yes|on)$/, 'i'),
   isFalse: new RegExp(/^(false|no|off)$/, 'i'),
-  customElement: new RegExp(/CustomElement$/),
   allHex: new RegExp(/^[0-9a-fA-F]+$/),
   firstUppercase: new RegExp(/(^[A-Z])/),
   allUppercase: new RegExp(/([A-Z])/, 'g'),
   firstCapitalize: new RegExp(/^([a-z])/),
   allCapitalize: new RegExp(/(\_[a-z])/, 'gi'),
   tr: new RegExp(/^[\[]tr[\]](.+)$/),
-  html: new RegExp(/[&<>"'\/]/, 'g'),
-  instr: new RegExp(/^[\[]([^\]]+)[\]](.*)$/),
   camel2dash: new RegExp(/([a-z0-9])([A-Z])/, 'g'),
   dash2camel: new RegExp(/-(.)/, 'g'),
   isISODate: new RegExp(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|([+-]\d{2}:\d{2}))?$/),
+  escMatch: new RegExp(/[.*+?^${}()|[\]\\]/g),
+  // customElement: new RegExp(/CustomElement$/),
+  // html: new RegExp(/[&<>"'\/]/, 'g'),
+  // instr: new RegExp(/^[\[]([^\]]+)[\]](.*)$/),
 };
 
 /**
@@ -55,6 +56,26 @@ export function isString(val: unknown): val is string {
  */
 export function isNonEmptyString(val: unknown): val is string {
   return typeof val === 'string' && val.length > 0;
+}
+
+/**
+ * Checks if the given value is a Uint8Array.
+ * @param val - The value to check.
+ * @returns True if the value is a Uint8Array, otherwise false.
+ */
+
+export function isUint8Array(val: unknown): val is Uint8Array {
+  return val instanceof Uint8Array;
+}
+
+/**
+ * Checks if the given value is a Uint8Array.
+ * @param val - The value to check.
+ * @returns True if the value is a Uint8Array, otherwise false.
+ */
+
+export function isNonEmptyUint8Array(val: unknown): val is Uint8Array {
+  return val instanceof Uint8Array && val.length > 0;
 }
 
 /**
@@ -866,13 +887,19 @@ export function msub(
     return s;
   }
   // Build a global regex for ${key}
-  const escapedPre = pre.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const escapedPost = post.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const escapedPre = escapeString(pre);
+  const escapedPost = escapeString(post);
+  // const escapedPre = pre.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  // const escapedPost = post.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const pattern = new RegExp(`${escapedPre}(.*?)${escapedPost}`, 'g');
   return s.replace(
     pattern,
     (_match, key) => Object.prototype.hasOwnProperty.call(replace, key) ? replace[key] : _match,
   );
+}
+
+function escapeString(s: string): string {
+  return s.replace(REGEX.escMatch, '\\$&');
 }
 
 /**
@@ -924,17 +951,21 @@ export function jsonSerialize(value: unknown, options: DeepCopyOpts | null = nul
       return { __filter: ['ASCII85Decode'], data: encodeAscii85(val) };
     }
 
-    if (val instanceof Set) {
+    if (isSet(val)) {
       return { __filter: 'Set', data: Array.from(val) };
     }
 
-    if (val instanceof Map) {
+    if (isMap(val)) {
       return { __filter: 'Map', data: Array.from(val.entries()) };
     }
 
-    if (val instanceof RegExp) {
+    if (isRegExp(val)) {
       return { __filter: 'RegExp', regex: val.source, flags: val.flags };
     }
+
+    // if (isDate(val)) {
+    //   return { __filter: 'Date', data: val.toISOString() };
+    // }
 
     // Pass through Dates and other types as-is for default JSON.stringify behavior
     return val;

@@ -26,6 +26,14 @@ const isEscaped = (jsonString: string, quotePosition: Integer): boolean => {
   return backslashCount % 2 === 1;
 };
 
+/**
+ * Removes comments from a JSON string.
+ *
+ * @param jsonString The JSON string to strip comments from.
+ * @param options Options for stripping comments.
+ * @returns The JSON string without comments.
+ * @throws {TypeError} If the `jsonString` argument is not a string.
+ */
 export default function stripJsonComments(jsonString: string, options: StripJsonCommentsOpts = {}): string {
   if (typeof jsonString !== 'string') {
     throw new TypeError(`Expected argument \`jsonString\` to be a \`string\`, got \`${typeof jsonString}\``);
