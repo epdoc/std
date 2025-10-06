@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0-beta.4] - 2025-10-06
+
+- Made ISOTzDate a subclass of ISODate
+
 ## [2.0.0-beta.3] - 2025-10-05
 
 - Changed type of toISOLocalString() to ISOTzDate

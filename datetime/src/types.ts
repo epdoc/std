@@ -20,7 +20,7 @@ export type ISODate = Brand<string, 'ISODate'>;
  * A string representing a date in ISO 8601 format using the local timezone
  * @example "2024-01-01T12:00:00-06:00"
  */
-export type ISOTzDate = Brand<string, 'ISOTzDate'>;
+export type ISOTzDate = ISODate & { readonly __tz: true };
 
 /**
  * A string representing a timezone offset in ISO 8601 format.
