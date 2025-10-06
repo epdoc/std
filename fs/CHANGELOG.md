@@ -1,5 +1,9 @@
 # Changelist
 
+## [0.2.21] - 2025-10-05
+
+- Update @epdoc/type dependency because of jsonSerialize changes.
+
 ## [0.2.20] - 2025-10-05
 
 - Updated dependencies
