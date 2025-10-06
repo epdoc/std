@@ -1,0 +1,7 @@
+{
+  "port": 9229,
+  "console": "internalConsole",
+  "tests": {
+    "runtimeArgs": ["--check"]
+  }
+}

@@ -2,211 +2,20 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "request": "launch",
-      "name": "Debug ./type/dict.util.test.ts",
-      "type": "node",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "UNIT_TEST": "1"
-      },
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "runtimeArgs": [
-        "test",
-        "--inspect-brk",
-        "/Users/jpravetz/dev/@epdoc/std/type/dict.util.test.ts"
-      ],
-      "attachSimplePort": 9229
-    },
-    {
-      "request": "launch",
-      "name": "Debug ./duration/record.test.ts",
-      "type": "node",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "UNIT_TEST": "1"
-      },
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "runtimeArgs": [
-        "test",
-        "--inspect-brk",
-        "/Users/jpravetz/dev/@epdoc/std/duration/record.test.ts"
-      ],
-      "attachSimplePort": 9229
-    },
-    {
-      "request": "launch",
-      "name": "Debug ./daterange/date-range.test.ts",
-      "type": "node",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "UNIT_TEST": "1"
-      },
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "runtimeArgs": [
-        "test",
-        "--inspect-brk",
-        "/Users/jpravetz/dev/@epdoc/std/daterange/date-range.test.ts"
-      ],
-      "attachSimplePort": 9229
-    },
-    {
-      "request": "launch",
-      "name": "Debug ./response/mod.test.ts",
-      "type": "node",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "UNIT_TEST": "1"
-      },
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "runtimeArgs": [
-        "test",
-        "--inspect-brk",
-        "/Users/jpravetz/dev/@epdoc/std/response/mod.test.ts"
-      ],
-      "attachSimplePort": 9229
-    },
-    {
-      "request": "launch",
-      "name": "Debug ./type/util.test.ts",
-      "type": "node",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "UNIT_TEST": "1"
-      },
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "runtimeArgs": [
-        "test",
-        "--inspect-brk",
-        "/Users/jpravetz/dev/@epdoc/std/type/util.test.ts"
-      ],
-      "attachSimplePort": 9229
-    },
-    {
-      "request": "launch",
-      "name": "Debug ./datetime/date.test.ts",
-      "type": "node",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "UNIT_TEST": "1"
-      },
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "runtimeArgs": [
-        "test",
-        "--inspect-brk",
-        "/Users/jpravetz/dev/@epdoc/std/datetime/date.test.ts"
-      ],
-      "attachSimplePort": 9229
-    },
-    {
-      "request": "launch",
-      "name": "Debug ./duration/duration.test.ts",
-      "type": "node",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "UNIT_TEST": "1"
-      },
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "runtimeArgs": [
-        "test",
-        "--inspect-brk",
-        "/Users/jpravetz/dev/@epdoc/std/duration/duration.test.ts"
-      ],
-      "attachSimplePort": 9229
-    },
-    {
-      "request": "launch",
-      "name": "Debug ./string/ex.test.ts",
-      "type": "node",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "UNIT_TEST": "1"
-      },
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "runtimeArgs": [
-        "test",
-        "--inspect-brk",
-        "/Users/jpravetz/dev/@epdoc/std/string/ex.test.ts"
-      ],
-      "attachSimplePort": 9229
-    },
-    {
-      "request": "launch",
-      "name": "Debug ./fs/fs.test.ts",
-      "type": "node",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "UNIT_TEST": "1"
-      },
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "runtimeArgs": [
-        "test",
-        "--inspect-brk",
-        "/Users/jpravetz/dev/@epdoc/std/fs/tests/fs.test.ts"
-      ],
-      "attachSimplePort": 9229
-    },
-    {
-      "request": "launch",
-      "name": "Debug ./fs/fsbytes.test.ts",
-      "type": "node",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "UNIT_TEST": "1"
-      },
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "runtimeArgs": [
-        "test",
-        "--inspect-brk",
-        "/Users/jpravetz/dev/@epdoc/std/fs/tests/fsbytes.test.ts"
-      ],
-      "attachSimplePort": 9229
-    },
-    {
-      "request": "launch",
-      "name": "Debug ./fs/fs2.test.ts",
-      "type": "node",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "UNIT_TEST": "1"
-      },
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "runtimeArgs": [
-        "test",
-        "--inspect-brk",
-        "/Users/jpravetz/dev/@epdoc/std/fs/tests/fs2.test.ts"
-      ],
-      "attachSimplePort": 9229
-    },
-    {
-      "request": "launch",
-      "name": "Debug ./fs/fs3.test.ts",
-      "type": "node",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "UNIT_TEST": "1"
-      },
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "runtimeArgs": [
-        "test",
-        "--inspect-brk",
-        "/Users/jpravetz/dev/@epdoc/std/fs/tests/fs3.test.ts"
-      ],
-      "attachSimplePort": 9229
-    },
-    {
       "type": "node",
       "request": "launch",
-      "name": "Debug type/dict.util.test.ts",
+      "name": "Debug daterange/examples/cli.run.ts",
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "deno",
       "runtimeArgs": [
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/std/type/dict.util.test.ts"
+        "/Users/jpravetz/dev/@epdoc/std/daterange/examples/cli.run.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -214,17 +23,18 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug duration/record.test.ts",
+      "name": "Debug daterange/test/date-range.test.ts",
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "deno",
       "runtimeArgs": [
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/std/duration/record.test.ts"
+        "/Users/jpravetz/dev/@epdoc/std/daterange/test/date-range.test.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -232,17 +42,18 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug datetime/util.test.ts",
+      "name": "Debug datetime/test/date.test.ts",
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "deno",
       "runtimeArgs": [
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/std/datetime/util.test.ts"
+        "/Users/jpravetz/dev/@epdoc/std/datetime/test/date.test.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -250,17 +61,18 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug type/util.test.ts",
+      "name": "Debug datetime/test/util.test.ts",
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "deno",
       "runtimeArgs": [
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/std/type/util.test.ts"
+        "/Users/jpravetz/dev/@epdoc/std/datetime/test/util.test.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -268,17 +80,18 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug datetime/date.test.ts",
+      "name": "Debug duration/examples/duration.run.ts",
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "deno",
       "runtimeArgs": [
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/std/datetime/date.test.ts"
+        "/Users/jpravetz/dev/@epdoc/std/duration/examples/duration.run.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -286,17 +99,18 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug duration/duration.test.ts",
+      "name": "Debug duration/test/duration.test.ts",
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "deno",
       "runtimeArgs": [
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/std/duration/duration.test.ts"
+        "/Users/jpravetz/dev/@epdoc/std/duration/test/duration.test.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -304,17 +118,18 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug type/json.test.ts",
+      "name": "Debug duration/test/record.test.ts",
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "deno",
       "runtimeArgs": [
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/std/type/json.test.ts"
+        "/Users/jpravetz/dev/@epdoc/std/duration/test/record.test.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -322,107 +137,18 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug type/deep.test.ts",
+      "name": "Debug fs/tests/fs.jsonex.test.ts",
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "deno",
       "runtimeArgs": [
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/std/type/deep.test.ts"
+        "/Users/jpravetz/dev/@epdoc/std/fs/tests/fs.jsonex.test.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
-      "env": {
-        "LAUNCHGEN": "true"
-      }
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug response/apires.test.ts",
-      "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
-      "runtimeArgs": [
-        "test",
-        "--inspect-brk",
-        "-A",
-        "/Users/jpravetz/dev/@epdoc/std/response/apires.test.ts"
-      ],
-      "attachSimplePort": 9229,
-      "console": "integratedTerminal",
-      "env": {
-        "LAUNCHGEN": "true"
-      }
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug response/catch.array.test.ts",
-      "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
-      "runtimeArgs": [
-        "test",
-        "--inspect-brk",
-        "-A",
-        "/Users/jpravetz/dev/@epdoc/std/response/catch.array.test.ts"
-      ],
-      "attachSimplePort": 9229,
-      "console": "integratedTerminal",
-      "env": {
-        "LAUNCHGEN": "true"
-      }
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug daterange/date-range.test.ts",
-      "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
-      "runtimeArgs": [
-        "test",
-        "--inspect-brk",
-        "-A",
-        "/Users/jpravetz/dev/@epdoc/std/daterange/date-range.test.ts"
-      ],
-      "attachSimplePort": 9229,
-      "console": "integratedTerminal",
-      "env": {
-        "LAUNCHGEN": "true"
-      }
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug string/ex.test.ts",
-      "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
-      "runtimeArgs": [
-        "test",
-        "--inspect-brk",
-        "-A",
-        "/Users/jpravetz/dev/@epdoc/std/string/ex.test.ts"
-      ],
-      "attachSimplePort": 9229,
-      "console": "integratedTerminal",
-      "env": {
-        "LAUNCHGEN": "true"
-      }
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug response/catch.obj.test.ts",
-      "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
-      "runtimeArgs": [
-        "test",
-        "--inspect-brk",
-        "-A",
-        "/Users/jpravetz/dev/@epdoc/std/response/catch.obj.test.ts"
-      ],
-      "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -437,28 +163,11 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/std/fs/tests/fs.test.ts"
+        "/Users/jpravetz/dev/@epdoc/std/fs/tests/fs.test.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
-      "env": {
-        "LAUNCHGEN": "true"
-      }
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug fs/tests/fsbytes.test.ts",
-      "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
-      "runtimeArgs": [
-        "test",
-        "--inspect-brk",
-        "-A",
-        "/Users/jpravetz/dev/@epdoc/std/fs/tests/fsbytes.test.ts"
-      ],
-      "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -473,10 +182,11 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/std/fs/tests/fs2.test.ts"
+        "/Users/jpravetz/dev/@epdoc/std/fs/tests/fs2.test.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -491,10 +201,11 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/std/fs/tests/fs3.test.ts"
+        "/Users/jpravetz/dev/@epdoc/std/fs/tests/fs3.test.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -509,10 +220,182 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/std/fs/tests/fs4.test.ts"
+        "/Users/jpravetz/dev/@epdoc/std/fs/tests/fs4.test.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug fs/tests/fsbytes.test.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/std/fs/tests/fsbytes.test.ts",
+        "--check"
+      ],
+      "attachSimplePort": 9229,
+      "console": "internalConsole",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug response/apires.test.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/std/response/apires.test.ts",
+        "--check"
+      ],
+      "attachSimplePort": 9229,
+      "console": "internalConsole",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug response/catch.array.test.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/std/response/catch.array.test.ts",
+        "--check"
+      ],
+      "attachSimplePort": 9229,
+      "console": "internalConsole",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug response/catch.obj.test.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/std/response/catch.obj.test.ts",
+        "--check"
+      ],
+      "attachSimplePort": 9229,
+      "console": "internalConsole",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug string/ex.test.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/std/string/ex.test.ts",
+        "--check"
+      ],
+      "attachSimplePort": 9229,
+      "console": "internalConsole",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug type/test/deep.test.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/std/type/test/deep.test.ts",
+        "--check"
+      ],
+      "attachSimplePort": 9229,
+      "console": "internalConsole",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug type/test/dict.util.test.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/std/type/test/dict.util.test.ts",
+        "--check"
+      ],
+      "attachSimplePort": 9229,
+      "console": "internalConsole",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug type/test/json.test.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/std/type/test/json.test.ts",
+        "--check"
+      ],
+      "attachSimplePort": 9229,
+      "console": "internalConsole",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug type/test/util.test.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/std/type/test/util.test.ts",
+        "--check"
+      ],
+      "attachSimplePort": 9229,
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
