@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/daterange",
-  "version": "0.2.9",
+  "version": "0.2.10",
   "exports": {
     ".": "./src/mod.ts"
   },
@@ -9,7 +9,7 @@
   },
   "imports": {
     "@epdoc/datetime": "jsr:@epdoc/datetime@^2.0.0-beta.1",
-    "@epdoc/type": "jsr:@epdoc/type@^1.1.16",
+    "@epdoc/type": "jsr:@epdoc/type@^1.1.17",
     "@std/cli": "jsr:@std/cli@^1.0.22"
   }
 }
