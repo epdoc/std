@@ -2,7 +2,7 @@ import { deepEquals } from '@epdoc/type';
 import { expect } from '@std/expect';
 import { afterAll, beforeEach, describe, test } from '@std/testing/bdd';
 import os from 'node:os';
-import { fileSpec, FolderSpec } from '../mod.ts';
+import { FileSpec, FolderSpec } from '../mod.ts'; // Import FileSpec and FolderSpec directly
 
 interface TestData {
   name: string;
@@ -46,15 +46,15 @@ interface NestedTestData {
   version: string;
 }
 
-const READONLY = FolderSpec.fromMeta(import.meta.url, './readonly');
+const READONLY = new FolderSpec(import.meta.url, './readonly'); // Use new FolderSpec
 const HOME = os.userInfo().homedir;
 
 describe('FileSpec JSON Extended Read/Write', () => {
-  const testFilePath = READONLY.add('test-jsonex.json').path;
+  const testFilePath = new FileSpec(READONLY, 'test-jsonex.json'); // Use new FileSpec
 
   // Helper function to clean up the test file
   async function cleanup() {
-    const file = fileSpec(testFilePath);
+    const file = new FileSpec(testFilePath); // Use new FileSpec
     if (await file.getExists()) {
       await file.remove();
     }
@@ -76,7 +76,7 @@ describe('FileSpec JSON Extended Read/Write', () => {
       value: 123,
       isActive: true,
     };
-    const file = fileSpec(testFilePath);
+    const file = new FileSpec(testFilePath); // Use new FileSpec
     await file.writeJsonEx(data);
     const readData = await file.readJsonEx<TestData>();
     expect(readData).toEqual(data);
@@ -87,7 +87,7 @@ describe('FileSpec JSON Extended Read/Write', () => {
       pattern: new RegExp('^test.*$', 'i'),
       another: 'value',
     };
-    const file = fileSpec(testFilePath);
+    const file = new FileSpec(testFilePath); // Use new FileSpec
     await file.writeJsonEx(data);
     const readData = await file.readJsonEx<RegExpTestData>();
 
@@ -103,7 +103,7 @@ describe('FileSpec JSON Extended Read/Write', () => {
       mySet: new Set([1, 2, 3, 'hello']),
       other: 'data',
     };
-    const file = fileSpec(testFilePath);
+    const file = new FileSpec(testFilePath); // Use new FileSpec
     await file.writeJsonEx(data);
     const readData = await file.readJsonEx<SetTestData>();
 
@@ -118,7 +118,7 @@ describe('FileSpec JSON Extended Read/Write', () => {
       myMap: new Map<string, string>([['key1', 'value1'], ['key2', '123']]),
       info: 'more',
     };
-    const file = fileSpec(testFilePath);
+    const file = new FileSpec(testFilePath); // Use new FileSpec
     await file.writeJsonEx(data);
     const readData = await file.readJsonEx<MapTestData>();
 
@@ -133,7 +133,7 @@ describe('FileSpec JSON Extended Read/Write', () => {
       byteArray: new Uint8Array([10, 20, 30, 40, 50]),
       id: 1,
     };
-    const file = fileSpec(testFilePath);
+    const file = new FileSpec(testFilePath); // Use new FileSpec
     await file.writeJsonEx(data);
     const readData = await file.readJsonEx<Uint8ArrayTestData>();
 
@@ -152,7 +152,7 @@ describe('FileSpec JSON Extended Read/Write', () => {
       HOME: HOME,
       USER: 'testuser',
     };
-    const file = fileSpec(testFilePath);
+    const file = new FileSpec(testFilePath); // Use new FileSpec
     await file.writeJsonEx(data, { replace: replaceMap });
 
     // Read without replacement to check raw content
@@ -181,7 +181,7 @@ describe('FileSpec JSON Extended Read/Write', () => {
     };
 
     const replaceMap = { HOME: HOME };
-    const file = fileSpec(testFilePath);
+    const file = new FileSpec(testFilePath); // Use new FileSpec
     await file.writeJsonEx(nestedData, { replace: replaceMap });
     const readData = await file.readJsonEx<NestedTestData>({ replace: replaceMap });
 

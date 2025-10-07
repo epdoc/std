@@ -2,7 +2,7 @@
   "name": "@epdoc/fs",
   "version": "0.2.24",
   "description": "File system entry wrapper",
-  "exports": "./mod.ts",
+  "exports": "./src/mod.ts",
   "tasks": {
     "test": "deno test --allow-env --allow-sys --allow-read --allow-write",
     "test1": "deno test --allow-env --allow-sys --allow-read --allow-write tests/fs.test.ts"
@@ -23,6 +23,8 @@
     ]
   },
   "imports": {
+    "$util": "./src/util/mod.ts",
+    "$spec": "./src/spec/mod.ts",
     "@epdoc/datetime": "jsr:@epdoc/datetime@^2.0.0-beta.3",
     "@epdoc/response": "jsr:@epdoc/response@^0.1.4",
     "@epdoc/string": "jsr:@epdoc/string@^0.1.3",

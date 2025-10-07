@@ -1,7 +1,7 @@
 import * as dfs from '@std/fs';
 import path from 'node:path';
-import { FSStats } from './fsstats.ts';
-import type { FilePath, FolderPath } from './types.ts';
+import { FSStats } from '../fsstats.ts';
+import type { Path } from '../types.ts';
 
 /**
  * Abstract class representing a file system item, which may be of unknown type,
@@ -9,7 +9,7 @@ import type { FilePath, FolderPath } from './types.ts';
  */
 export abstract class BaseSpec {
   // @ts-ignore this does get initialized
-  protected _f: FilePath | FolderPath;
+  protected _f: Path;
   protected _stats: FSStats = new FSStats();
   protected _dirEntry: Deno.DirEntry | undefined;
 
@@ -42,7 +42,7 @@ export abstract class BaseSpec {
    * Getter that returns the resolved file system path.
    * @returns {FilePath} The full path of the file system item.
    */
-  get path(): FilePath {
+  get path(): Path {
     return this._f;
   }
 
@@ -308,8 +308,8 @@ export abstract class BaseSpec {
    * @param {dfs.CopyOptions} [options] - Options for the copy operation.
    * @returns {Promise<void>} - A promise that resolves when the copy is complete.
    */
-  copyTo(dest: FilePath | BaseSpec, options?: dfs.CopyOptions): Promise<void> {
-    const p: FilePath = dest instanceof BaseSpec ? dest.path : dest;
+  copyTo(dest: Path | BaseSpec, options?: dfs.CopyOptions): Promise<void> {
+    const p: Path = dest instanceof BaseSpec ? dest.path : dest;
     return dfs.copy(this._f, p, options);
   }
 
@@ -319,20 +319,9 @@ export abstract class BaseSpec {
    * @param options An dfs.CopyOptionsSync object
    * @returns
    */
-  copySync(dest: FilePath | BaseSpec, options?: dfs.CopyOptions): this {
-    const p: FilePath = dest instanceof BaseSpec ? dest.path : dest;
+  copySync(dest: Path | BaseSpec, options?: dfs.CopyOptions): this {
+    const p: Path = dest instanceof BaseSpec ? dest.path : dest;
     dfs.copySync(this._f, p, options);
     return this;
-  }
-
-  /**
-   * Moves this file or folder to the location `dest`.
-   * @param {FilePath | BaseSpec} dest - The new path for the file.
-   * @param {dfs.MoveOptions} options - Options to overwrite and dereference symlinks.
-   * @returns {Promise<void>} - A promise that resolves when the move is complete.
-   */
-  moveTo(dest: FilePath | BaseSpec, options?: dfs.MoveOptions): Promise<void> {
-    const p: FilePath = dest instanceof BaseSpec ? dest.path : dest;
-    return dfs.move(this._f, p, options);
   }
 }

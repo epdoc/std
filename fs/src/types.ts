@@ -1,30 +1,43 @@
-import type { DeepCopyOpts, Integer, StripJsonCommentsOpts } from '@epdoc/type';
-import type { BaseSpec } from './basespec.ts';
+import type { BaseSpec } from '$spec';
+import type { Brand, DeepCopyOpts, Integer, StripJsonCommentsOpts } from '@epdoc/type';
+import type { DigestAlgorithm } from './consts.ts';
 
 /**
  * Represents a file path.
  */
-export type FilePath = string;
+export type FilePath = Brand<string, 'FilePath'>;
 
 /**
  * Represents a folder path.
  */
-export type FolderPath = string;
+export type FolderPath = Brand<string, 'FolderPath'>;
 
 /**
- * Represents a file name including it's extension.
+ * Represents a file name including its extension.
+ * Defined as an intersection of a string (for compatibility) and the components.
  */
-export type FileName = string;
+export type FileName = Brand<string, 'FileName'>;
+
+/**
+ * Represents a file name excluding it's extension.
+ */
+export type FileBasename = Brand<string, 'FileBasename'>;
 
 /**
  * Represents a file extension, excluding the leading dot (e.g., 'txt').
  */
-export type FileExt = string;
+export type FileExt = Brand<string, 'FileExt'>;
 
 /**
  * Represents a folder name.
+ * While it can be a simple string, branding it ensures it's only a single folder name, not a path.
  */
-export type FolderName = string;
+export type FolderName = Brand<string, 'FolderName'>;
+
+export type Path = FilePath | FolderPath;
+export type Name = FileName | FolderName;
+
+export type PathSegment = BaseSpec | string;
 
 export type FsDeepCopyOpts = DeepCopyOpts & {
   includeUrl?: unknown;
@@ -57,15 +70,5 @@ export type RemoveOpts = Partial<{
   retryDelay: Integer;
 }>;
 
-export const DigestAlgorithm = {
-  sha1: 'SHA1',
-  sha256: 'SHA256',
-  sha512: 'SHA512',
-  ripemd: 'RIPEMD',
-  ripemd160: 'RIPEMD160',
-  blake2s256: 'BLAKE2s256',
-  blake2b512: 'BLAKE2b512',
-  md5Sha1: 'MD5-SHA1',
-} as const;
 export type DigestAlgorithmValues = (typeof DigestAlgorithm)[DigestAlgorithmType];
 export type DigestAlgorithmType = keyof typeof DigestAlgorithm;

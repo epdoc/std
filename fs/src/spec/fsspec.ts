@@ -1,35 +1,25 @@
+import { resolvePathArgs, safeCopy, type SafeCopyOpts } from '$util';
 import { fromFileUrl } from '@std/path';
 import os from 'node:os';
 import path from 'node:path';
+import type * as FS from '../types.ts';
 import { BaseSpec } from './basespec.ts';
-import { isArray } from '@epdoc/type';
-import { type FileSpec, fileSpec } from './filespec.ts';
-import { type FolderSpec, folderSpec } from './folderspec.ts';
-import { type FSSpecParam, type ICopyableSpec, type IRootableSpec, resolvePathArgs } from './icopyable.ts';
-import { safeCopy, type SafeCopyOpts } from './safecopy.ts';
-import { type SymlinkSpec, symlinkSpec } from './symspec.ts';
-import type { FilePath, FolderPath } from './types.ts';
+import { FileSpec } from './filespec.ts';
+import { FolderSpec } from './folderspec.ts';
+import type { ICopyableSpec, IRootableSpec } from './icopyable.ts';
+import { SymlinkSpec } from './symspec.ts';
 
 /**
- * Create a new FSItem object.
- * @param {(BaseSpec | FolderPath | FilePath)[]} args - An FSItem, a path, or a spread of paths to be used with path.resolve
- * @returns {BaseSpec} - A new FSItem object
- */
-export function fsSpec(...args: FSSpecParam): FSSpec {
-  return new FSSpec(...args);
-}
-
-/**
- * Class representing a file system item, which may be a file, folder, or
- * symlink. Use this when you do not know the specific type at creation time.
+ * Class representing a file system item, which may be a file, folder, or symlink. Use this when you
+ * do not know the specific type at creation time. FileSpec, FolderSpec and SymlinkSpec do NOT
+ * subclass FSSpec as they do not share methods with this class.
  */
 export class FSSpec extends BaseSpec implements ICopyableSpec, IRootableSpec {
   /**
-   * Creates a new FSSpec instance.
-   * @param {...FSSpecParam} args - An FSItem, a path, or spread of paths for resolving the file system path.
+   * Public constructor for FSSpec.
+   * @param {...PathSegment[]} args - Path segments to resolve.
    */
-
-  constructor(...args: FSSpecParam) {
+  public constructor(...args: FS.PathSegment[]) {
     super();
     this._f = resolvePathArgs(...args);
   }
@@ -49,7 +39,8 @@ export class FSSpec extends BaseSpec implements ICopyableSpec, IRootableSpec {
    */
   public static fromMeta(metaUrl: string, ...paths: string[]): FSSpec {
     const dir = path.dirname(fromFileUrl(metaUrl));
-    return new FSSpec(path.join(dir, ...paths));
+    const fullPath = path.join(dir, ...paths);
+    return new FSSpec(fullPath);
   }
 
   /**
@@ -81,13 +72,13 @@ export class FSSpec extends BaseSpec implements ICopyableSpec, IRootableSpec {
   resolveType(): FSSpec | FolderSpec | FileSpec | SymlinkSpec {
     let result: FSSpec | FolderSpec | FileSpec | SymlinkSpec;
     if (this.isFile() === true) {
-      result = fileSpec(this);
+      result = new FileSpec(this);
     } else if (this.isFolder() === true) {
-      result = folderSpec(this);
+      result = new FolderSpec(this);
     } else if (this.isSymlink() === true) {
-      result = symlinkSpec(this.path);
+      result = new SymlinkSpec(this.path);
     } else {
-      result = fsSpec(this);
+      result = new FSSpec(this);
     }
     this.copyParamsTo(result);
     return result;
@@ -99,7 +90,7 @@ export class FSSpec extends BaseSpec implements ICopyableSpec, IRootableSpec {
    * @returns {Promise<FSSpec | FolderSpec | FileSpec | SymlinkSpec>} A promise
    * resolving to the specific type instance.
    */
-  getResolvedType(): Promise<FSSpec | FolderSpec | FileSpec | SymlinkSpec> {
+  getResolvedType(): Promise<FSSpec | FileSpec | FolderSpec | SymlinkSpec> {
     return this.getStats().then(() => {
       return this.resolveType();
     });
@@ -118,10 +109,8 @@ export class FSSpec extends BaseSpec implements ICopyableSpec, IRootableSpec {
    * console.log(updated.path); // e.g. '/Users/jpravetz/projects/src/index.ts'
    */
   add(...args: string[]): FSSpec {
-    if (args.length === 1 && isArray(args[0])) {
-      return new FSSpec(path.resolve(this._f, ...args[0]));
-    }
-    return new FSSpec(path.resolve(this._f, ...args));
+    const fullPath = path.resolve(this._f, ...args);
+    return new FSSpec(fullPath);
   }
 
   /**
@@ -138,7 +127,8 @@ export class FSSpec extends BaseSpec implements ICopyableSpec, IRootableSpec {
    */
 
   home(...args: string[]): FSSpec {
-    return this.add(os.userInfo().homedir, ...args);
+    const fullPath = path.resolve(os.userInfo().homedir, ...args);
+    return new FSSpec(fullPath);
   }
 
   /**
@@ -149,7 +139,7 @@ export class FSSpec extends BaseSpec implements ICopyableSpec, IRootableSpec {
    * @returns {Promise<void>} A promise that resolves when the copy operation completes.
    */
   safeCopy(
-    destFile: FilePath | FolderPath | FileSpec | FolderSpec | FSSpec,
+    destFile: FS.Path | FileSpec | FolderSpec | FSSpec,
     opts: SafeCopyOpts = {},
   ): Promise<void> {
     return safeCopy(this, destFile, opts);

@@ -1,46 +1,11 @@
-import type { Integer } from '@epdoc/type';
+import { FileSpec, FolderSpec, FSSpec, SymlinkSpec } from '$spec'; // Import as value
 import * as dfs from '@std/fs';
 import path from 'node:path';
-import { FSError } from './error.ts';
-import { FileSpec } from './filespec.ts';
-import { FolderSpec } from './folderspec.ts';
-import { FSSpec } from './fsspec.ts';
-import { SymlinkSpec } from './symspec.ts';
-import type { FilePath } from './types.ts';
-import { resolveType } from './util.ts';
-
-/**
- * Represents the possible conflict resolution strategies for a file.
- */
-export type FileConflictStrategy =
-  | { type: 'renameWithTilde'; errorIfExists?: boolean }
-  | {
-    type: 'renameWithNumber';
-    separator?: string;
-    limit?: Integer;
-    prefix?: string;
-    errorIfExists?: boolean;
-  }
-  | { type: 'overwrite'; errorIfExists?: boolean }
-  | { type: 'skip'; errorIfExists?: boolean }
-  | { type: 'error'; errorIfExists?: boolean };
-
-/**
- * A mapping of conflict strategy types to their string representations.
- */
-export const fileConflictStrategyType = {
-  renameWithTilde: 'renameWithTilde',
-  renameWithNumber: 'renameWithNumber',
-  overwrite: 'overwrite',
-  skip: 'skip',
-  error: 'error',
-} as const;
-
-/**
- * Type representing the possible conflict strategy types.
- * This type is derived from the keys of the `fileConflictStrategyType` object.
- */
-export type FileConflictStrategyType = (typeof fileConflictStrategyType)[keyof typeof fileConflictStrategyType];
+import { FSError } from '../error.ts';
+import type { FilePath, FolderPath } from '../types.ts';
+import { fileConflictStrategyType } from './consts.ts';
+import { resolveType } from './resolve-type.ts';
+import type * as util from './types.ts';
 
 /**
  * Checks if a given value is a valid FileConflictStrategyType.
@@ -48,37 +13,9 @@ export type FileConflictStrategyType = (typeof fileConflictStrategyType)[keyof t
  * @param value The value to check.
  * @returns True if the value is a valid FileConflictStrategyType, false otherwise.
  */
-export function isFileConflictStrategyType(value: unknown): value is FileConflictStrategyType {
+export function isFileConflictStrategyType(value: unknown): value is util.FileConflictStrategyType {
   return typeof value === 'string' && value in Object.keys(fileConflictStrategyType);
 }
-
-type SafeCopyOptsBase = {
-  /**
-   * Don't actually move or copy the file, just execute the logic around it
-   */
-  test?: boolean;
-  /**
-   * Whether to move or copy the file or folder.
-   */
-  move?: boolean;
-};
-
-/**
- * Represents the options for the safeCopy method.
- */
-export type SafeFileCopyOpts = SafeCopyOptsBase & {
-  /**
-   * The strategy to use when a file with the same name already exists.
-   */
-  conflictStrategy?: FileConflictStrategy;
-};
-
-export type SafeFolderCopyOpts = SafeCopyOptsBase;
-
-/**
- * Represents the options for the safeCopy method.
- */
-export type SafeCopyOpts = SafeFileCopyOpts & SafeFolderCopyOpts;
 
 /**
  * Safely copies a source file or folder to a destination.
@@ -88,9 +25,9 @@ export type SafeCopyOpts = SafeFileCopyOpts & SafeFolderCopyOpts;
  * @returns {Promise<void>} - A promise that resolves when the copy is complete.
  */
 export async function safeCopy(
-  src: FSSpec | FileSpec | FolderSpec | SymlinkSpec,
-  dest: FilePath | FSSpec | FileSpec | FolderSpec,
-  options: SafeCopyOpts = {},
+  src: FSSpec | FileSpec | FolderSpec | FolderSpec | SymlinkSpec,
+  dest: FilePath | FSSpec | FileSpec | FolderSpec | FolderPath,
+  options: util.SafeCopyOpts = {},
 ): Promise<void> {
   const fsSrc = await resolveType(src);
 
@@ -133,7 +70,7 @@ export async function safeCopy(
 export async function safeCopyFile(
   src: FileSpec,
   fsDest: FileSpec | FolderSpec,
-  options: SafeFileCopyOpts = {},
+  options: util.SafeFileCopyOpts = {},
 ): Promise<void> {
   if (fsDest instanceof FileSpec) {
     const destExists = await fsDest.getExists();
@@ -175,7 +112,7 @@ export async function safeCopyFile(
 export async function safeCopyFolder(
   src: FolderSpec,
   fsDest: FolderSpec,
-  options: SafeCopyOpts = {},
+  options: util.SafeCopyOpts = {},
 ): Promise<void> {
   // if (options.contents === false) {
   //   fsDest = fsDest.add(src.dirname);

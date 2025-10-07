@@ -1,12 +1,9 @@
-export * from './filespec.ts';
-export * from './folderspec.ts';
 export * from './fsbytes.ts';
 export type { FileCategory, FileType } from './fsheaders.ts';
-export * from './fsspec.ts';
 export * from './fsstats.ts';
+export * from './spec/mod.ts';
 // export * from './icopyable.ts';
 export * from './error.ts';
-export * from './safecopy.ts';
-export * from './symspec.ts';
+export * from './guards.ts';
 export * from './types.ts';
-export * from './util.ts';
+export * as util from './util/mod.ts';

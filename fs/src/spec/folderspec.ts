@@ -1,52 +1,24 @@
+import { resolvePathArgs, safeCopy, type SafeCopyOpts } from '$util';
 import { _, type Dict } from '@epdoc/type';
 import * as dfs from '@std/fs';
 import { fromFileUrl } from '@std/path';
 import os from 'node:os';
 import path from 'node:path';
+import type * as FS from '../types.ts';
 import { BaseSpec } from './basespec.ts';
 import { FileSpec } from './filespec.ts';
-import { FSSpec } from './fsspec.ts';
-import { type FSSpecParam, type IRootableSpec, type ISafeCopyableSpec, resolvePathArgs } from './icopyable.ts';
-import { safeCopy, type SafeCopyOpts } from './safecopy.ts';
+import type { FSSpec } from './fsspec.ts';
+import type { IRootableSpec, ISafeCopyableSpec } from './icopyable.ts';
 import { SymlinkSpec } from './symspec.ts';
-import type { FileName, FilePath, FolderName, FolderPath, FSSortOpts, GetChildrenOpts } from './types.ts';
-
-function fromDirEntry(path: FolderPath, entry: Deno.DirEntry): FileSpec | FolderSpec | SymlinkSpec | FSSpec {
-  if (entry.isDirectory) {
-    return new FolderSpec(path, entry.name).setDirEntry(entry);
-  } else if (entry.isFile) {
-    return new FileSpec(path, entry.name).setDirEntry(entry);
-  } else if (entry.isSymlink) {
-    return new SymlinkSpec(path, entry.name).setDirEntry(entry);
-  }
-  return new FSSpec(path, entry.name).setDirEntry(entry);
-}
-
-function fromWalkEntry(entry: dfs.WalkEntry): FileSpec | FolderSpec | SymlinkSpec | FSSpec {
-  if (entry.isDirectory) {
-    return new FolderSpec(entry.path).setDirEntry(entry);
-  } else if (entry.isFile) {
-    return new FileSpec(entry.path).setDirEntry(entry);
-  } else if (entry.isSymlink) {
-    return new SymlinkSpec(entry.path).setDirEntry(entry);
-  }
-  return new FSSpec(entry.path).setDirEntry(entry);
-}
+import type { FolderDiff } from './types.ts';
+import { fromDirEntry, fromWalkEntry } from './utils.ts';
 
 /**
  * Factory function to create a new FolderSpec object.
  */
-export function folderSpec(...args: FSSpecParam): FolderSpec {
+export function folderSpec(...args: FS.PathSegment[]): FolderSpec {
   return new FolderSpec(...args);
 }
-
-export type FolderDiff = {
-  missing: FileName[];
-  added: FileName[];
-  diff: FileName[];
-};
-
-export type WalkOptions = dfs.WalkOptions;
 
 /**
  * An object representing a file system entry, which may be either a file or a
@@ -72,11 +44,15 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
   // If this is a folder, contains a filtered list of symlinks within this folder
   protected _symlinks: SymlinkSpec[] = [];
   // Stores the strings that were used to create the path. This property may be deprecated at unknown time.
-  protected _args: (FilePath | FolderPath)[] = [];
+  protected _args: FS.Path[] = [];
 
-  constructor(...args: FSSpecParam) {
+  /**
+   * Public constructor for FolderSpec.
+   * @param {...PathSegment[]} args - Path segments to resolve.
+   */
+  public constructor(...args: FS.PathSegment[]) {
     super();
-    this._f = resolvePathArgs(...args);
+    this._f = resolvePathArgs(...args) as FS.FolderPath; // Cast to FolderPath
   }
 
   /**
@@ -94,7 +70,8 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
    */
   public static fromMeta(metaUrl: string, ...paths: string[]): FolderSpec {
     const dir = path.dirname(fromFileUrl(metaUrl));
-    return new FolderSpec(path.join(dir, ...paths));
+    const fullPath = path.join(dir, ...paths);
+    return new FolderSpec(fullPath);
   }
 
   /**
@@ -159,6 +136,10 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
     return target;
   }
 
+  override get path(): FS.FolderPath {
+    return this._f as FS.FolderPath;
+  }
+
   /**
    * For folders, indicates if we have read the folder's contents.
    * @returns {boolean} - true if this is a folder and we have read the folder's contents.
@@ -193,9 +174,9 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
    * getChildren().
    * @returns {FileName[]} Array of filenames.
    */
-  get filenames(): FileName[] {
+  get filenames(): FS.FileName[] {
     return this._files.map((fs: FileSpec) => {
-      return fs.filename;
+      return fs.filename as FS.FileName;
     });
   }
 
@@ -213,21 +194,20 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
    * getChildren().
    * @returns {FolderName[]} Array of folder names.
    */
-  get folderNames(): FolderName[] {
+  get folderNames(): FS.FolderName[] {
     return this._folders.map((fs) => {
-      return fs.filename;
+      return fs.filename as FS.FolderName;
     });
   }
 
   add(...args: string[]): FolderSpec {
-    if (args.length === 1 && _.isArray(args[0])) {
-      return new FolderSpec(path.resolve(this._f, ...args[0]));
-    }
-    return new FolderSpec(path.resolve(this._f, ...args));
+    const fullPath = path.resolve(this._f, ...args);
+    return new FolderSpec(fullPath);
   }
 
   home(...args: string[]): FolderSpec {
-    return this.add(os.userInfo().homedir, ...args);
+    const fullPath = path.resolve(os.userInfo().homedir, ...args);
+    return new FolderSpec(fullPath);
   }
 
   /**
@@ -260,7 +240,8 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
   async readDir(): Promise<BaseSpec[]> {
     const results: BaseSpec[] = [];
     for await (const entry of Deno.readDir(this._f)) {
-      results.push(fromDirEntry(this.path, entry));
+      const fs = fromDirEntry(this.path as FS.FolderPath, entry);
+      results.push(fs);
     }
     return results;
   }
@@ -317,7 +298,7 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
    * @example
    * // Find all files ending in 2 digits (e.g. metadata-01.json)
    * const folder = new FolderSpec("./data");
-   * const results = await folder.walk({
+   * const results = await folder.walk({n
    *   includeFiles: true,
    *   includeDirs: false,
    *   match: [/\-\d{2}\..*$/]
@@ -356,8 +337,8 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
    *   });
    * ```
    */
-  getChildren(options: GetChildrenOpts = { levels: 1 }): Promise<BaseSpec[]> {
-    const opts: GetChildrenOpts = {
+  getChildren(options: FS.GetChildrenOpts = { levels: 1 }): Promise<BaseSpec[]> {
+    const opts: FS.GetChildrenOpts = {
       match: options.match,
       levels: _.isNumber(options.levels) ? options.levels - 1 : 0,
       callback: options.callback,
@@ -372,7 +353,7 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
       .then(async () => {
         const jobs: Promise<unknown>[] = [];
         for await (const entry of Deno.readDir(this._f)) {
-          const fs = fromDirEntry(this.path, entry);
+          const fs = fromDirEntry(this.path as FS.FolderPath, entry); // Cast this.path to FolderPath
           let bMatch = false;
           if (opts.match) {
             if (_.isString(opts.match) && entry.name === opts.match) {
@@ -418,7 +399,7 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
    * @param {FSSortOpts} [opts={}] - Sorting options.
    * @returns {void}
    */
-  public sortChildren(opts: FSSortOpts = {}) {
+  public sortChildren(opts: FS.FSSortOpts = {}) {
     this._folders = FolderSpec.sortByFilename(this._folders) as FolderSpec[];
     if (opts.type === 'size') {
       this._files = FolderSpec.sortFilesBySize(this._files) as FileSpec[];
@@ -431,7 +412,7 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
     }
   }
 
-  safeCopy(destFile: FilePath | FileSpec | FolderSpec | FSSpec, opts: SafeCopyOpts = {}): Promise<void> {
+  safeCopy(destFile: FS.FilePath | FileSpec | FolderSpec | FSSpec, opts: SafeCopyOpts = {}): Promise<void> {
     return safeCopy(this, destFile, opts);
   }
 
@@ -458,6 +439,17 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
   }
 
   /**
+   * Moves this file or folder to the location `dest`.
+   * @param {FilePath | BaseSpec} dest - The new path for the file.
+   * @param {dfs.MoveOptions} options - Options to overwrite and dereference symlinks.
+   * @returns {Promise<void>} - A promise that resolves when the move is complete.
+   */
+  moveTo(dest: FS.FolderPath | FolderSpec, options?: dfs.MoveOptions): Promise<void> {
+    const p: FS.FolderPath = dest instanceof FolderSpec ? dest.path : dest;
+    return dfs.move(this._f, p, options);
+  }
+
+  /**
    * Shallow comparison of the files in two folders to see if they are
    * identical. This is not a deep compare, and ignores subfolders.
    * @param folder
@@ -475,7 +467,12 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
     }
     for (let fdx = 0; fdx < aFiles.length; ++fdx) {
       const aFile = aFiles[fdx];
-      const bFile = bFiles[fdx];
+      const bFile = bFiles.find((file) => {
+        return file.filename === aFile.filename;
+      });
+      if (!bFile) { // Handle undefined bFile
+        return false;
+      }
       if (aFile.filename.toLowerCase() !== bFile.filename.toLowerCase()) {
         return false;
       }
@@ -507,11 +504,11 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
         return file.filename === aFile.filename;
       });
       if (!bFile) {
-        result.missing.push(aFile.filename);
+        result.missing.push(aFile.filename as FS.FileName);
       } else {
         const bEqual = await filesEqual(aFile, bFile, opts);
         if (!bEqual) {
-          result.diff.push(aFile.filename);
+          result.diff.push(aFile.filename as FS.FileName);
         }
       }
     }
@@ -521,7 +518,7 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
         return file.filename === bFile.filename;
       });
       if (!aFile) {
-        result.added.push(bFile.filename);
+        result.added.push(bFile.filename as FS.FileName);
       }
     }
 

@@ -2,20 +2,10 @@ import { BaseSpec } from './basespec.ts';
 import type { FileSpec } from './filespec.ts';
 import type { FolderSpec } from './folderspec.ts';
 import type { FSSpec } from './fsspec.ts';
-import { type FSSpecParam, type ICopyableSpec, resolvePathArgs } from './icopyable.ts';
+import type { ICopyableSpec } from './icopyable.ts';
+import { resolvePathArgs } from './path-resolver.ts';
 import type { SafeCopyOpts } from './safecopy.ts';
-import type { FilePath, FolderPath } from './types.ts';
-
-export type SymlinkSpecParam = FolderPath | FilePath;
-
-/**
- * Create a new FSItem object.
- * @param {(FileSpec | FolderSpec | FolderPath | FilePath)[]} args - An FSItem, a path, or a spread of paths to be used with path.resolve
- * @returns {FileSpec} - A new FSItem object
- */
-export function symlinkSpec(...args: SymlinkSpecParam[]): SymlinkSpec {
-  return new SymlinkSpec(...args);
-}
+import type { FilePath, FolderPath, PathSegment } from './types.ts';
 
 /**
  * An object representing a file system entry, which may be either a file or a
@@ -31,9 +21,14 @@ export function symlinkSpec(...args: SymlinkSpecParam[]): SymlinkSpec {
  *  - Testing files for equality
  */
 export class SymlinkSpec extends BaseSpec implements ICopyableSpec {
-  constructor(...args: FSSpecParam) {
+  /**
+   * Public constructor for SymlinkSpec.
+   * @param {...PathSegment[]} args - Path segments to resolve.
+   */
+  public constructor(...args: PathSegment[]) {
     super();
-    this._f = resolvePathArgs(...args);
+    // Symlinks can point to either files or folders, so we use FSPath.
+    this._f = resolvePathArgs(...args) as FilePath | FolderPath;
   }
 
   /**
@@ -41,9 +36,7 @@ export class SymlinkSpec extends BaseSpec implements ICopyableSpec {
    * @see FileSpec#copyTo
    */
   copy(): SymlinkSpec {
-    const result = new SymlinkSpec(this.path);
-    this.copyParamsTo(result);
-    return result;
+    return new SymlinkSpec(this);
   }
 
   safeCopy(_destFile: FilePath | FileSpec | FolderSpec | FSSpec, _opts: SafeCopyOpts = {}): Promise<boolean> {
@@ -56,11 +49,14 @@ export class SymlinkSpec extends BaseSpec implements ICopyableSpec {
   }
 
   override isFile(): boolean | undefined {
-    return false;
+    // This should be determined by the target of the symlink, but for now,
+    // we'll rely on the constructor's isFinalPathFile or a default.
+    // For simplicity, let's assume it's a file unless we have more info.
+    return undefined; // Placeholder, needs actual resolution
   }
 
   override isFolder(): boolean | undefined {
-    return false;
+    return undefined; // Placeholder, needs actual resolution
   }
 
   override isSymlink(): boolean | undefined {
