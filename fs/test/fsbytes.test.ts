@@ -3,7 +3,7 @@ import { describe, test } from '@std/testing/bdd';
 import { Buffer } from 'node:buffer';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { type FileCategory, type FileType, FolderSpec, FSBytes } from '../mod.ts';
+import { type FileCategory, type FileType, FolderSpec, FSBytes } from '../src/mod.ts';
 
 const READONLY = FolderSpec.fromMeta(import.meta.url, './readonly');
 

@@ -308,7 +308,7 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
    * //   FileSpec { path: "data/chapter-42.md" }
    * // ]
    */
-  async walk(opts: dfs.WalkOptions): Promise<BaseSpec[]> {
+  async walk(opts: dfs.WalkOptions): Promise<(FileSpec | FolderSpec | SymlinkSpec | FSSpec)[]> {
     const entries = await Array.fromAsync(dfs.walk(this._f, opts));
 
     return entries.map((entry) => fromWalkEntry(entry));

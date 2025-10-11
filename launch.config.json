@@ -1,7 +1,38 @@
 {
-  "port": 9229,
-  "console": "internalConsole",
-  "tests": {
-    "runtimeArgs": ["--check"]
+  "launch": {
+    "port": 9229,
+    "console": "internalConsole",
+    "excludes": [
+      "node_modules/**",
+      ".git/**",
+      "**/.*",
+      "**/.*/**"
+    ],
+    "groups": [
+      {
+        "id": "test",
+        "name": "Tests",
+        "includes": [
+          "**/*.test.ts"
+        ],
+        "runtimeArgs": [
+          "test",
+          "-A",
+          "--inspect-brk"
+        ]
+      },
+      {
+        "id": "run",
+        "name": "Runnable",
+        "includes": [
+          "**/*.run.ts"
+        ],
+        "runtimeArgs": [
+          "run",
+          "-A",
+          "--inspect-brk"
+        ]
+      }
+    ]
   }
 }

@@ -646,7 +646,11 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
    */
   async readJsonEx<T = unknown>(opts: FS.FsDeepJsonDeserializeOpts = {}): Promise<T> {
     const data = await this.readAsString();
-    return _.jsonDeserialize(data, opts);
+    const json = _.jsonDeserialize(data, opts);
+    if (opts.includeUrl || opts.detectRegExp) {
+      return (await this.#deepCopy(json, opts)) as T;
+    }
+    return json as T;
   }
 
   async writeJsonEx(value: unknown, options: DeepCopyOpts | null = null, space?: string | number): Promise<void> {
@@ -677,8 +681,8 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
    */
   #deepCopy(a: unknown, options?: FS.FsDeepCopyOpts): Promise<unknown> {
     const opts: FS.FsDeepCopyOpts = _.deepCopySetDefaultOpts(options);
-    const urlTest = new RegExp(`^${opts.pre}(file|http|https):\/\/(.+)${opts.post}$`, 'i');
-    if (opts.includeUrl && _.isNonEmptyString(a) && urlTest.test(a)) {
+    if (opts.includeUrl && _.isNonEmptyString(a)) {
+      const urlTest = new RegExp(`^${opts.pre}(file|http|https):\/\/(.+)${opts.post}$`, 'i');
       const p: string[] | null = a.match(urlTest);
       if (_.isNonEmptyArray(p) && isFilePath(p[2])) {
         const fs = new FileSpec(this.dirname, p[2]);

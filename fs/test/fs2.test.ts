@@ -2,7 +2,7 @@ import { expect } from '@std/expect';
 import { afterAll, beforeAll, describe, test } from '@std/testing/bdd';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import { FileSpec, FolderSpec, FSSpec } from '../mod.ts'; // Import directly
+import { FileSpec, FolderSpec, FSSpec } from '../src/mod.ts'; // Import directly
 
 const READONLY = new FolderSpec(import.meta.url, './readonly'); // Use new FolderSpec
 
@@ -52,7 +52,7 @@ describe('FSSpec, FileSpec, FolderSpec', () => {
 
   test('basename getter returns correct basename', () => {
     const item = new FileSpec(testFile);
-    expect(item.name).toBe('test'); // Use name getter
+    expect(item.basename).toBe('test'); // Use name getter
   });
 
   test('setExt changes file extension', () => {
@@ -64,8 +64,8 @@ describe('FSSpec, FileSpec, FolderSpec', () => {
 
   test('setBasename changes file basename', () => {
     const item = new FileSpec(testFile);
-    item.setName('newtest'); // Use setName
-    expect(item.name).toBe('newtest'); // Use name getter
+    item.setBasename('newtest'); // Use setName
+    expect(item.basename).toBe('newtest'); // Use name getter
     expect(item.path).toBe(path.join(testDir, 'newtest.txt'));
   });
 
@@ -99,7 +99,7 @@ describe('FSSpec, FileSpec, FolderSpec', () => {
   test('add() correctly joins paths', () => {
     const item = new FileSpec(testDir).add('subdir', 'file.txt'); // Use new FileSpec
     expect(item.path).toBe(path.join(testDir, 'subdir', 'file.txt'));
-    return item.getIsFile().then((resp) => {
+    return item.getIsFile().then((resp: boolean) => {
       expect(resp).toBe(false);
     });
   });

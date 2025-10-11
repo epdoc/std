@@ -1,4 +1,4 @@
-import { duration } from '../mod.ts';
+import { duration } from '../src/mod.ts';
 
 console.log('digital');
 console.log(' ', duration().digital.format(-4443454));

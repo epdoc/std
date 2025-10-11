@@ -1,11 +1,10 @@
+import * as util from '$util';
+import type { FilePath, FolderPath, PathSegment } from '../types.ts';
 import { BaseSpec } from './basespec.ts';
 import type { FileSpec } from './filespec.ts';
 import type { FolderSpec } from './folderspec.ts';
 import type { FSSpec } from './fsspec.ts';
 import type { ICopyableSpec } from './icopyable.ts';
-import { resolvePathArgs } from './path-resolver.ts';
-import type { SafeCopyOpts } from './safecopy.ts';
-import type { FilePath, FolderPath, PathSegment } from './types.ts';
 
 /**
  * An object representing a file system entry, which may be either a file or a
@@ -28,7 +27,7 @@ export class SymlinkSpec extends BaseSpec implements ICopyableSpec {
   public constructor(...args: PathSegment[]) {
     super();
     // Symlinks can point to either files or folders, so we use FSPath.
-    this._f = resolvePathArgs(...args) as FilePath | FolderPath;
+    this._f = util.resolvePathArgs(...args) as FilePath | FolderPath;
   }
 
   /**
@@ -39,7 +38,7 @@ export class SymlinkSpec extends BaseSpec implements ICopyableSpec {
     return new SymlinkSpec(this);
   }
 
-  safeCopy(_destFile: FilePath | FileSpec | FolderSpec | FSSpec, _opts: SafeCopyOpts = {}): Promise<boolean> {
+  safeCopy(_destFile: FilePath | FileSpec | FolderSpec | FSSpec, _opts: util.SafeCopyOpts = {}): Promise<boolean> {
     throw new Error('Cannot copy a symlink');
   }
 

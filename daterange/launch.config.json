@@ -1,0 +1,13 @@
+{
+  "launch": {
+    "groups": [
+      {
+        "id": "daterange",
+        "name": "examples/cli.ts",
+        "program": "examples/cli.ts",
+        "runtimeArgs": ["run", "-A", "--inspect-brk"],
+        "scripts": ["", "-h"]
+      }
+    ]
+  }
+}

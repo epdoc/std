@@ -3,8 +3,11 @@ import { isString } from '@epdoc/type';
 import path from 'node:path';
 import type * as FS from '../types.ts';
 
-export const ERR_STR = { replace: (o: { type: string }) => `Error: Invalid argument type at index > 0: ${o.type}` };
-export const ERR_FILE_STR = { replace: (o: { type: string }) => `Error: ${o.type} must be the only argument.` };
+export const ERR_STR = {
+  replace: (o: { type: string }): string => `Error: Invalid argument type at index > 0: ${o.type}`,
+};
+
+export const ERR_FILE_STR = { replace: (o: { type: string }): string => `Error: ${o.type} must be the only argument.` };
 
 export const isFileNameCheck = (val: unknown): val is FS.FileName =>
   isString(val) && val.includes('.') && val !== '.' && val !== '..';

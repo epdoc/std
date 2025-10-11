@@ -3,9 +3,7 @@ import { afterAll, beforeAll, describe, test } from '@std/testing/bdd';
 import { Buffer } from 'node:buffer';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import { FileSpec } from '../filespec.ts';
-import { FolderSpec } from '../folderspec.ts';
-import type { FSSortOpts } from '../mod.ts';
+import { FileSpec, FolderSpec, type FSSortOpts } from '../src/mod.ts';
 
 const READONLY = new FolderSpec(import.meta.url, './readonly'); // Use new FolderSpec
 

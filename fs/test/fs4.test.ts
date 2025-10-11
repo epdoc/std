@@ -1,7 +1,6 @@
 import { expect } from '@std/expect';
 import { afterEach, beforeEach, describe, it } from '@std/testing/bdd';
-import { FileSpec, fileSpec, FolderSpec } from '../mod.ts';
-import { fileConflictStrategyType, type SafeCopyOpts } from '../safecopy.ts';
+import { FileSpec, FolderSpec, util } from '../src/mod.ts';
 
 const READONLY = FolderSpec.fromMeta(import.meta.url, './readonly');
 const TEST_DIR = new FolderSpec(READONLY.dirname, 'test-data-fs4');
@@ -23,8 +22,8 @@ describe('safeCopy and backup', () => {
 
   it('safeCopy with skip strategy should do nothing if dest exists', async () => {
     await DEST_FILE.write('dest file');
-    const opts: SafeCopyOpts = {
-      conflictStrategy: { type: fileConflictStrategyType.skip },
+    const opts: util.SafeCopyOpts = {
+      conflictStrategy: { type: util.fileConflictStrategyType.skip },
     };
     await SRC_FILE.safeCopy(DEST_FILE, opts);
     const content = await DEST_FILE.readAsString();
@@ -33,8 +32,8 @@ describe('safeCopy and backup', () => {
 
   it('safeCopy with error strategy should throw if dest exists', async () => {
     await DEST_FILE.write('dest file');
-    const opts: SafeCopyOpts = {
-      conflictStrategy: { type: fileConflictStrategyType.error, errorIfExists: true },
+    const opts: util.SafeCopyOpts = {
+      conflictStrategy: { type: util.fileConflictStrategyType.error, errorIfExists: true },
     };
     try {
       await SRC_FILE.safeCopy(DEST_FILE, opts);
@@ -50,8 +49,8 @@ describe('safeCopy and backup', () => {
 
   it('safeCopy with overwrite strategy should overwrite if dest exists', async () => {
     await DEST_FILE.write('dest file');
-    const opts: SafeCopyOpts = {
-      conflictStrategy: { type: fileConflictStrategyType.overwrite },
+    const opts: util.SafeCopyOpts = {
+      conflictStrategy: { type: util.fileConflictStrategyType.overwrite },
     };
     await SRC_FILE.safeCopy(DEST_FILE, opts);
     const content = await DEST_FILE.readAsString();
@@ -60,8 +59,8 @@ describe('safeCopy and backup', () => {
 
   it('safeCopy with renameWithTilde strategy should rename dest if it exists', async () => {
     await DEST_FILE.write('dest file');
-    const opts: SafeCopyOpts = {
-      conflictStrategy: { type: fileConflictStrategyType.renameWithTilde },
+    const opts: util.SafeCopyOpts = {
+      conflictStrategy: { type: util.fileConflictStrategyType.renameWithTilde },
     };
     await SRC_FILE.safeCopy(DEST_FILE, opts);
     const content = await DEST_FILE.readAsString();
@@ -73,13 +72,13 @@ describe('safeCopy and backup', () => {
 
   it('safeCopy with renameWithNumber strategy should rename dest if it exists', async () => {
     await DEST_FILE.write('dest file');
-    const opts: SafeCopyOpts = {
-      conflictStrategy: { type: fileConflictStrategyType.renameWithNumber },
+    const opts: util.SafeCopyOpts = {
+      conflictStrategy: { type: util.fileConflictStrategyType.renameWithNumber },
     };
     await SRC_FILE.safeCopy(DEST_FILE, opts);
     const content = await DEST_FILE.readAsString();
     expect(content).toBe('source file');
-    const backupFile = fileSpec(DEST_FOLDER.path, 'file-01.txt');
+    const backupFile = new FileSpec(DEST_FOLDER.path, 'file-01.txt');
     const backupContent = await backupFile.readAsString();
     expect(backupContent).toBe('dest file');
   });

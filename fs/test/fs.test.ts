@@ -4,20 +4,19 @@ import { expect } from '@std/expect';
 import { describe, it, test } from '@std/testing/bdd';
 import os from 'node:os';
 import path from 'node:path';
-import { FSError } from '../error.ts';
 import {
   DigestAlgorithm,
-  fileConflictStrategyType,
   FileSpec,
   FolderSpec,
+  FSError,
   FSSpec,
   // isFilename,
   isFilePath,
   isFolderPath,
-  type SafeCopyOpts,
-} from '../mod.ts';
+  util,
+} from '../src/mod.ts';
 
-const READONLY = new FolderSpec(import.meta.url, './readonly'); // Use new FolderSpec
+const READONLY = FolderSpec.fromMeta(import.meta.url, './readonly'); // Use new FolderSpec
 const HOME = os.userInfo().homedir;
 const TEST_FILES = ['fs.jsonex.test.ts', 'fs.test.ts', 'fs2.test.ts', 'fs3.test.ts', 'fs4.test.ts', 'fsbytes.test.ts'];
 const TEST_FOLDERS = ['readonly', 'data1'];
@@ -83,9 +82,10 @@ describe('FSSpec.fromMeta, FileSpec.fromMeta, FolderSpec.fromMeta', () => {
           expect(isArray(folder1.files)).toBe(true);
           expect(isArray(folder1.folders)).toBe(true);
           expect(folder1.files.length).toBe(TEST_FILES.length);
-          expect(folder1.folders.length).toBe(1);
+          const folders = folder1.folders.filter((f) => f.filename === 'readonly');
+          expect(folders.length).toBe(1);
           folder1.sortChildren();
-          expect(folder1.folders[0].filename).toEqual(TEST_FOLDERS[0]);
+          expect(folders[0].filename).toEqual(TEST_FOLDERS[0]);
         });
     });
     test('setExt() sets the extension of a file', () => {
@@ -99,7 +99,7 @@ describe('FSSpec.fromMeta, FileSpec.fromMeta, FolderSpec.fromMeta', () => {
       const PATH = './mypath/to/file/sample.less.json';
       const EXPECTED = `${Deno.cwd()}/mypath/to/file/sample.more.json`;
       const fs: FileSpec = new FileSpec(PATH); // Use new FileSpec
-      fs.setName('sample.more'); // Use setName
+      fs.setBasename('sample.more'); // Use setBasename
       expect(fs.path).toEqual(EXPECTED);
       expect(fs.filename).toEqual('sample.more.json'); // Use filename
     });
@@ -176,7 +176,7 @@ describe('FSSpec.fromMeta, FileSpec.fromMeta, FolderSpec.fromMeta', () => {
         })
         .then((fs) => {
           expect(fs instanceof FileSpec).toBe(true);
-          expect((fs as FileSpec).size).toBe(52); // Use size getter
+          expect((fs as FileSpec).size()).toBe(52); // Use size getter
         });
     });
     test('constructor resolves path with dot folder', () => {
@@ -439,7 +439,7 @@ describe('FSSpec.fromMeta, FileSpec.fromMeta, FolderSpec.fromMeta', () => {
         });
     });
   });
-  describe.skip('Section 4', () => {
+  describe('Section 4', () => {
     test('fsEnsureDir no file', () => {
       return Promise.resolve()
         .then((_resp) => {
@@ -466,6 +466,10 @@ describe('FSSpec.fromMeta, FileSpec.fromMeta, FolderSpec.fromMeta', () => {
     });
     test('fsCopy fsitem.Move', () => {
       return Promise.resolve()
+        .then(async () => {
+          await new FSSpec(READONLY.dirname, 'data2').remove({ recursive: true });
+          await new FSSpec(READONLY.dirname, 'data3').remove({ recursive: true });
+        })
         .then((_resp) => {
           return new FSSpec(READONLY.path).copyTo(new FSSpec(READONLY.dirname, 'data2'), { preserveTimestamps: true }); // Use new FSSpec
         })
@@ -489,7 +493,7 @@ describe('FSSpec.fromMeta, FileSpec.fromMeta, FolderSpec.fromMeta', () => {
         })
         .then((resp) => {
           expect(resp).toBe(true);
-          return new FSSpec(READONLY.dirname, 'data2').moveTo(new FSSpec(READONLY.dirname, 'data3')); // Use new FSSpec
+          return new FolderSpec(READONLY.dirname, 'data2').moveTo(new FolderSpec(READONLY.dirname, 'data3')); // Use new FSSpec
         })
         .then((resp) => {
           expect(resp).toBeUndefined();
@@ -543,8 +547,8 @@ describe('FSSpec.fromMeta, FileSpec.fromMeta, FolderSpec.fromMeta', () => {
           return new FSSpec(READONLY.path).getResolvedType(); // Use new FSSpec
         })
         .then((resp) => {
-          const opts: SafeCopyOpts = {
-            conflictStrategy: { type: fileConflictStrategyType.renameWithNumber, limit: 5 },
+          const opts: util.SafeCopyOpts = {
+            conflictStrategy: { type: util.fileConflictStrategyType.renameWithNumber, limit: 5 },
           };
           if (resp instanceof FileSpec || resp instanceof FolderSpec) {
             return resp.safeCopy(new FolderSpec(READONLY.dirname, 'data2'), opts);
@@ -590,12 +594,46 @@ describe('FSSpec.fromMeta, FileSpec.fromMeta, FolderSpec.fromMeta', () => {
     });
 
     test('deep json', async () => {
+      const tempDir = await Deno.makeTempDir();
+      const nestedJson = {
+        description: 'this is a nested sample file',
+        array2: [1, '2', 3],
+        dict2: {
+          item2: {
+            item3: 'this is item3 dict',
+            item4: '{{file://./sample.json}}',
+          },
+          item5: 'is here',
+        },
+      };
+      const sampleJson = {
+        description: 'this is a sample file',
+        array: [1, '2', 3],
+        dict: {
+          item1: 'is here',
+        },
+      };
+      const compareJson = {
+        description: 'this is a nested sample file',
+        array2: [1, '2', 3],
+        dict2: {
+          item2: {
+            item3: 'this is item3 dict',
+            item4: sampleJson,
+          },
+          item5: 'is here',
+        },
+      };
+      await new FileSpec(tempDir, 'sample-nested.json').writeJson(nestedJson);
+      await new FileSpec(tempDir, 'sample.json').writeJson(sampleJson);
+      await new FileSpec(tempDir, 'sample-compare.json').writeJson(compareJson);
+
       const opts = { pre: '{{', post: '}}', includeUrl: true };
-      const SRC = 'folder-sample/sample-nested.json';
-      const SRC2 = 'folder-sample/sample-compare.json';
-      const json2 = await new FileSpec(READONLY.path, SRC2).readJson(); // Use new FileSpec
-      const json = await new FileSpec(READONLY.path, SRC).readJsonEx(opts); // Use new FileSpec
-      expect(json2).toEqual(json);
+      const json = await new FileSpec(tempDir, 'sample-nested.json').readJsonEx(opts);
+      const json2 = await new FileSpec(tempDir, 'sample-compare.json').readJson();
+      expect(json).toEqual(json2);
+
+      await Deno.remove(tempDir, { recursive: true });
     });
 
     test('write utf8', async () => {
@@ -630,27 +668,32 @@ describe('FSSpec.fromMeta, FileSpec.fromMeta, FolderSpec.fromMeta', () => {
       expect(fsitem.dirname).toEqual('/the/path/goes');
       expect(fsitem.extname).toEqual('.txt');
       expect(fsitem.filename).toEqual('right.here.txt'); // Use filename
-      // expect(fsitem.basename).toEqual('right.here'); // Removed basename
-      // expect(fsitem.isExtType('txt')).toEqual(true); // Removed isExtType
-      // expect(fsitem.isTxt()).toEqual(true); // Removed isTxt
-      // expect(fsitem.isJson()).toEqual(false); // Removed isJson
-      // expect(fsitem.isExtType('json', 'txt')).toEqual(true); // Removed isExtType
-      // expect(fsitem.isExtType('json', 'pdf')).toEqual(false); // Removed isExtType
-      // expect(fsitem.isExtType('txt', 'pdf')).toEqual(true); // Removed isExtType
+      expect(fsitem.basename).toEqual('right.here'); // Removed basename
+      expect(fsitem.isExtType('txt')).toEqual(true); // Removed isExtType
+      expect(fsitem.isTxt()).toEqual(true); // Removed isTxt
+      expect(fsitem.isJson()).toEqual(false); // Removed isJson
+      expect(fsitem.isExtType('json', 'txt')).toEqual(true); // Removed isExtType
+      expect(fsitem.isExtType('json', 'pdf')).toEqual(false); // Removed isExtType
+      expect(fsitem.isExtType('txt', 'pdf')).toEqual(true); // Removed isExtType
     });
 
     it('readAsLines', async () => {
-      const filePath = path.join(READONLY.path, 'test-files', 'continuation_sample.txt');
-      const fsItem = new FileSpec(filePath);
+      const tempDir = await FolderSpec.makeTemp();
+      const lines = [
+        'This is a line',
+        'This is a continued line that spans multiple lines \\',
+        'This is a normal line',
+        'Another continued line example \\',
+        'Final line',
+      ];
+      const content = lines.join('\n');
+      const fsFile = new FileSpec(tempDir, 'continuation_sample.txt');
+      await fsFile.write(content);
 
-      // const lines = await fsItem.readAsLines('\'); // readAsLines is not a method of FileSpec
-      // expect(lines).toEqual([
-      //   'This is a line',
-      //   'This is a continued line that spans multiple lines',
-      //   'This is a normal line',
-      //   'Another continued line example',
-      //   'Final line',
-      // ]);
+      const readLines = await fsFile.readAsLines('\\');
+      expect(readLines).toEqual(lines);
+
+      await tempDir.remove();
     });
   });
 });

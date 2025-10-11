@@ -2,7 +2,7 @@ import { deepEquals } from '@epdoc/type';
 import { expect } from '@std/expect';
 import { afterAll, beforeEach, describe, test } from '@std/testing/bdd';
 import os from 'node:os';
-import { FileSpec, FolderSpec } from '../mod.ts'; // Import FileSpec and FolderSpec directly
+import { FileSpec, FolderSpec } from '../src/mod.ts'; // Import FileSpec and FolderSpec directly
 
 interface TestData {
   name: string;
