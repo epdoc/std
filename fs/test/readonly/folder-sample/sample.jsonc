@@ -1,8 +1,0 @@
-{
-  "description": "this is a sample jsonc file",   // we have comments here
-  /* and more comments */
-  "array": [1, "2", 3],
-  "dict": {
-    "item1": "is here", // and trailing commas.
-  }
-}

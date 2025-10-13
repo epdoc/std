@@ -14,7 +14,6 @@ import { fromFileUrl } from '@std/path';
 import crypto from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
-import { PDFDocument } from 'pdf-lib';
 import { DigestAlgorithm } from '../consts.ts';
 import { FSError } from '../error.ts';
 import { FSBytes } from '../fsbytes.ts';
@@ -25,6 +24,7 @@ import { BaseSpec } from './basespec.ts';
 import { FolderSpec } from './folderspec.ts';
 import { FSSpec } from './fsspec.ts';
 import type { ICopyableSpec, IRootableSpec, ISafeCopyableSpec } from './icopyable.ts';
+import { PDFMetadataReader } from './readpdf.ts';
 
 const REG = {
   pdf: /\.pdf$/i,
@@ -400,29 +400,42 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
   }
 
   /**
+   * For PDF files, gets the Creation Date of this file by reading its metadata using PDFMetadataReader.
+   * @returns {Promise<Date | undefined>} A promise that resolves with the creation date of the PDF file, or undefined if not found.
+   */
+  async getPdfDate(): Promise<Date | undefined> {
+    try {
+      const metadata = await PDFMetadataReader.extractMetadata(this._f);
+      return metadata.creationDate;
+    } catch (err) {
+      throw _.asError(err, { path: this._f, cause: 'getPdfDate' });
+    }
+  }
+
+  /**
    * For PDF files, gets the Creation Date of this file file by reading it's
    * metadata.
    * @returns {Promise<Date | undefined>} A promise that resolves with the creation date of the PDF file, or undefined if not found.
    */
-  getPdfDate(): Promise<Date | undefined> {
-    return Promise.resolve()
-      .then(() => {
-        return Deno.readFile(this._f);
-      })
-      .then((arrayBuffer) => {
-        return PDFDocument.load(arrayBuffer, { updateMetadata: false });
-      })
-      .then((pdf) => {
-        const pdfDate = pdf.getCreationDate();
-        if (pdfDate) {
-          return Promise.resolve(pdfDate);
-        }
-        return Promise.reject(new Error('No creation date found'));
-      })
-      .catch((err) => {
-        throw _.asError(err, { path: this._f, cause: 'getPdfDate' });
-      });
-  }
+  // getPdfDateDeprecated(): Promise<Date | undefined> {
+  //   return Promise.resolve()
+  //     .then(() => {
+  //       return Deno.readFile(this._f);
+  //     })
+  //     .then((arrayBuffer) => {
+  //       return PDFDocument.load(arrayBuffer, { updateMetadata: false });
+  //     })
+  //     .then((pdf) => {
+  //       const pdfDate = pdf.getCreationDate();
+  //       if (pdfDate) {
+  //         return Promise.resolve(pdfDate);
+  //       }
+  //       return Promise.reject(new Error('No creation date found'));
+  //     })
+  //     .catch((err) => {
+  //       throw _.asError(err, { path: this._f, cause: 'getPdfDate' });
+  //     });
+  // }
 
   /**
    * Use checksums to test if this file is equal to path2

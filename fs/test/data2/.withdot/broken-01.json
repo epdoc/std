@@ -1,7 +1,0 @@
-{
-  "description": "this is a sample file in the .withdot folder",
-  "array": [1, "2", 3],
-  "dict": {
-    "item1": "is 
-  }
-}

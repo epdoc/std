@@ -383,6 +383,7 @@
       "runtimeArgs": [
         "test",
         "-A",
+        "--no-check",
         "--inspect-brk",
         "${workspaceFolder}/fs/test/fs3.test.ts"
       ],

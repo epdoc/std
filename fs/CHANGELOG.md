@@ -1,5 +1,22 @@
 # Changelist
 
+## [0.2.26] - 2025-10-13
+
+- **BREAKING**: Reorganized test suite to eliminate static test dependencies
+- Converted all tests to use temporary directories instead of static `readonly` and `data2` folders
+- Reorganized test files by functionality:
+  - `filespec.test.ts` - Core FileSpec operations
+  - `folderspec.test.ts` - Core FolderSpec operations  
+  - `fsspec.test.ts` - Base FSSpec operations
+  - `safecopy.test.ts` - Safe copy operations (renamed from fs4.test.ts)
+  - `fsbytes.test.ts` - File type detection
+  - `jsonex.test.ts` - JSON extended operations (renamed from fs.jsonex.test.ts)
+- Added `pdfgen.ts` utility for generating test PDFs with metadata
+- Eliminated redundant tests across multiple files
+- Improved test organization with clear separation of concerns
+- All 87 tests now pass with 100% success rate
+- Removed static test data files from repository
+
 ## [0.2.25] - 2025-10-12
 
 - Fixed readlines implementation when using continuation.
