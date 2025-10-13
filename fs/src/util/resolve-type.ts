@@ -8,21 +8,36 @@ import { type BaseSpec, FileSpec, FolderSpec, FSSpec, SymlinkSpec } from '../spe
  * @returns The joined lines.
  */
 export function joinContinuationLines(lines: string[], continuation: string | RegExp): string[] {
-  const regex = typeof continuation === 'string' ? new RegExp('^(.*)' + continuation + '\s*$') : continuation;
+  const regex = typeof continuation === 'string' ? new RegExp('^(.*)' + continuation + '\\s*$') : continuation;
   const result: string[] = [];
+
   for (let idx = 0; idx < lines.length; ++idx) {
     let line = lines[idx];
     const p = line.match(regex);
+
     if (p) {
+      // Remove the continuation character and any trailing whitespace
       line = p[1];
-      if (idx + 1 < lines.length) {
-        line += lines[idx + 1].replace(/^\s+/, '');
-        lines[idx + 1] = line;
+
+      // Keep combining with subsequent lines until we find one without continuation
+      while (idx + 1 < lines.length) {
+        const nextLine = lines[idx + 1];
+        line += nextLine.replace(/^\s+/, '');
+        idx++; // Skip the next line since we've merged it
+
+        // Check if the merged line still ends with continuation
+        const nextMatch = line.match(regex);
+        if (nextMatch) {
+          line = nextMatch[1]; // Remove the continuation character
+        } else {
+          break; // No more continuation, exit the while loop
+        }
       }
-    } else {
-      result.push(line);
     }
+
+    result.push(line);
   }
+
   return result;
 }
 

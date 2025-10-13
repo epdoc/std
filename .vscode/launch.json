@@ -1,141 +1,140 @@
 {
-  "port": 9229,
-  "console": "internalConsole",
-  "tests": {
-    "runtimeArgs": [
-      "--allow-all"
-    ]
-  },
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "deno",
+      "type": "node",
       "request": "launch",
-      "name": "Debug fs/test/fs.test.ts",
-      "program": "${workspaceFolder}/fs/test/fs.test.ts",
+      "name": "Debug ./fs/fs.test.ts",
       "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
       "runtimeArgs": [
         "test",
         "--inspect-brk",
-        "-A",
-        "fs/test/fs.test.ts",
-        "--check"
+        "/Users/jpravetz/dev/@epdoc/std/fs/test/fs.test.ts"
+      ],
+      "attachSimplePort": 9229
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug ./fs/fs.test.ts no port",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "/Users/jpravetz/dev/@epdoc/std/fs/test/fs.test.ts"
       ]
     },
     {
       "type": "node",
       "request": "launch",
       "name": "response: apires.test.ts",
-      "program": "${workspaceFolder}/response/apires.test.ts",
       "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
       "runtimeArgs": [
         "test",
         "-A",
-        "--inspect-brk"
+        "--inspect-brk",
+        "${workspaceFolder}/response/apires.test.ts"
       ],
-      "attachSimplePort": 9229,
-      "console": "internalConsole",
       "presentation": {
         "group": "response"
-      },
-      "env": {
-        "LAUNCHGEN": "true"
       }
     },
     {
       "type": "node",
       "request": "launch",
       "name": "response: catch.array.test.ts",
-      "program": "${workspaceFolder}/response/catch.array.test.ts",
       "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
       "runtimeArgs": [
         "test",
         "-A",
-        "--inspect-brk"
+        "--inspect-brk",
+        "${workspaceFolder}/response/catch.array.test.ts"
       ],
-      "attachSimplePort": 9229,
-      "console": "internalConsole",
       "presentation": {
         "group": "response"
-      },
-      "env": {
-        "LAUNCHGEN": "true"
       }
     },
     {
       "type": "node",
       "request": "launch",
       "name": "response: catch.obj.test.ts",
-      "program": "${workspaceFolder}/response/catch.obj.test.ts",
       "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
       "runtimeArgs": [
         "test",
         "-A",
-        "--inspect-brk"
+        "--inspect-brk",
+        "${workspaceFolder}/response/catch.obj.test.ts"
       ],
-      "attachSimplePort": 9229,
-      "console": "internalConsole",
       "presentation": {
         "group": "response"
-      },
-      "env": {
-        "LAUNCHGEN": "true"
       }
     },
     {
       "type": "node",
       "request": "launch",
       "name": "daterange: test/date-range.test.ts",
-      "program": "${workspaceFolder}/daterange/test/date-range.test.ts",
       "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
       "runtimeArgs": [
         "test",
         "-A",
-        "--inspect-brk"
+        "--inspect-brk",
+        "${workspaceFolder}/daterange/test/date-range.test.ts"
       ],
-      "attachSimplePort": 9229,
-      "console": "internalConsole",
       "presentation": {
         "group": "daterange"
-      },
-      "env": {
-        "LAUNCHGEN": "true"
       }
     },
     {
       "type": "node",
       "request": "launch",
       "name": "daterange: examples/cli.ts",
-      "program": "${workspaceFolder}/packages/daterange/examples/cli.ts",
+      "program": "${workspaceFolder}/daterange/examples/cli.ts",
       "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
       "runtimeArgs": [
         "run",
         "-A",
         "--inspect-brk"
       ],
       "args": [],
-      "attachSimplePort": 9229,
-      "console": "internalConsole",
-      "presentation": {
-        "group": "daterange"
-      },
       "env": {
         "LAUNCHGEN": "true"
+      },
+      "presentation": {
+        "group": "daterange"
       }
     },
     {
       "type": "node",
       "request": "launch",
       "name": "daterange: examples/cli.ts -h",
-      "program": "${workspaceFolder}/packages/daterange/examples/cli.ts",
+      "program": "${workspaceFolder}/daterange/examples/cli.ts",
       "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
       "runtimeArgs": [
         "run",
         "-A",
@@ -144,349 +143,331 @@
       "args": [
         "-h"
       ],
-      "attachSimplePort": 9229,
-      "console": "internalConsole",
-      "presentation": {
-        "group": "daterange"
-      },
       "env": {
         "LAUNCHGEN": "true"
+      },
+      "presentation": {
+        "group": "daterange"
       }
     },
     {
       "type": "node",
       "request": "launch",
       "name": "datetime: test/util.test.ts",
-      "program": "${workspaceFolder}/datetime/test/util.test.ts",
       "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
       "runtimeArgs": [
         "test",
         "-A",
-        "--inspect-brk"
+        "--inspect-brk",
+        "${workspaceFolder}/datetime/test/util.test.ts"
       ],
-      "attachSimplePort": 9229,
-      "console": "internalConsole",
       "presentation": {
         "group": "datetime"
-      },
-      "env": {
-        "LAUNCHGEN": "true"
       }
     },
     {
       "type": "node",
       "request": "launch",
       "name": "datetime: test/date.test.ts",
-      "program": "${workspaceFolder}/datetime/test/date.test.ts",
       "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
       "runtimeArgs": [
         "test",
         "-A",
-        "--inspect-brk"
+        "--inspect-brk",
+        "${workspaceFolder}/datetime/test/date.test.ts"
       ],
-      "attachSimplePort": 9229,
-      "console": "internalConsole",
       "presentation": {
         "group": "datetime"
-      },
-      "env": {
-        "LAUNCHGEN": "true"
       }
     },
     {
       "type": "node",
       "request": "launch",
       "name": "type: test/dict.util.test.ts",
-      "program": "${workspaceFolder}/type/test/dict.util.test.ts",
       "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
       "runtimeArgs": [
         "test",
         "-A",
-        "--inspect-brk"
+        "--inspect-brk",
+        "${workspaceFolder}/type/test/dict.util.test.ts"
       ],
-      "attachSimplePort": 9229,
-      "console": "internalConsole",
       "presentation": {
         "group": "type"
-      },
-      "env": {
-        "LAUNCHGEN": "true"
       }
     },
     {
       "type": "node",
       "request": "launch",
       "name": "type: test/util.test.ts",
-      "program": "${workspaceFolder}/type/test/util.test.ts",
       "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
       "runtimeArgs": [
         "test",
         "-A",
-        "--inspect-brk"
+        "--inspect-brk",
+        "${workspaceFolder}/type/test/util.test.ts"
       ],
-      "attachSimplePort": 9229,
-      "console": "internalConsole",
       "presentation": {
         "group": "type"
-      },
-      "env": {
-        "LAUNCHGEN": "true"
       }
     },
     {
       "type": "node",
       "request": "launch",
       "name": "type: test/json.test.ts",
-      "program": "${workspaceFolder}/type/test/json.test.ts",
       "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
       "runtimeArgs": [
         "test",
         "-A",
-        "--inspect-brk"
+        "--inspect-brk",
+        "${workspaceFolder}/type/test/json.test.ts"
       ],
-      "attachSimplePort": 9229,
-      "console": "internalConsole",
       "presentation": {
         "group": "type"
-      },
-      "env": {
-        "LAUNCHGEN": "true"
       }
     },
     {
       "type": "node",
       "request": "launch",
       "name": "type: test/deep.test.ts",
-      "program": "${workspaceFolder}/type/test/deep.test.ts",
       "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
       "runtimeArgs": [
         "test",
         "-A",
-        "--inspect-brk"
+        "--inspect-brk",
+        "${workspaceFolder}/type/test/deep.test.ts"
       ],
-      "attachSimplePort": 9229,
-      "console": "internalConsole",
       "presentation": {
         "group": "type"
-      },
-      "env": {
-        "LAUNCHGEN": "true"
       }
     },
     {
       "type": "node",
       "request": "launch",
       "name": "string: ex.test.ts",
-      "program": "${workspaceFolder}/string/ex.test.ts",
       "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
       "runtimeArgs": [
         "test",
         "-A",
-        "--inspect-brk"
+        "--inspect-brk",
+        "${workspaceFolder}/string/ex.test.ts"
       ],
-      "attachSimplePort": 9229,
-      "console": "internalConsole",
       "presentation": {
         "group": "string"
-      },
-      "env": {
-        "LAUNCHGEN": "true"
       }
     },
     {
       "type": "node",
       "request": "launch",
       "name": "fs: test/fs.test.ts",
-      "program": "${workspaceFolder}/fs/test/fs.test.ts",
       "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
       "runtimeArgs": [
         "test",
         "-A",
-        "--inspect-brk"
+        "--inspect-brk",
+        "${workspaceFolder}/fs/test/fs.test.ts"
       ],
-      "attachSimplePort": 9229,
-      "console": "internalConsole",
       "presentation": {
         "group": "fs"
-      },
-      "env": {
-        "LAUNCHGEN": "true"
       }
     },
     {
       "type": "node",
       "request": "launch",
       "name": "fs: test/fsbytes.test.ts",
-      "program": "${workspaceFolder}/fs/test/fsbytes.test.ts",
       "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
       "runtimeArgs": [
         "test",
         "-A",
-        "--inspect-brk"
+        "--inspect-brk",
+        "${workspaceFolder}/fs/test/fsbytes.test.ts"
       ],
-      "attachSimplePort": 9229,
-      "console": "internalConsole",
       "presentation": {
         "group": "fs"
-      },
-      "env": {
-        "LAUNCHGEN": "true"
       }
     },
     {
       "type": "node",
       "request": "launch",
       "name": "fs: test/fs.jsonex.test.ts",
-      "program": "${workspaceFolder}/fs/test/fs.jsonex.test.ts",
       "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
       "runtimeArgs": [
         "test",
         "-A",
-        "--inspect-brk"
+        "--inspect-brk",
+        "${workspaceFolder}/fs/test/fs.jsonex.test.ts"
       ],
-      "attachSimplePort": 9229,
-      "console": "internalConsole",
       "presentation": {
         "group": "fs"
-      },
-      "env": {
-        "LAUNCHGEN": "true"
       }
     },
     {
       "type": "node",
       "request": "launch",
       "name": "fs: test/fs2.test.ts",
-      "program": "${workspaceFolder}/fs/test/fs2.test.ts",
       "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
       "runtimeArgs": [
         "test",
         "-A",
-        "--inspect-brk"
+        "--inspect-brk",
+        "${workspaceFolder}/fs/test/fs2.test.ts"
       ],
-      "attachSimplePort": 9229,
-      "console": "internalConsole",
       "presentation": {
         "group": "fs"
-      },
-      "env": {
-        "LAUNCHGEN": "true"
       }
     },
     {
       "type": "node",
       "request": "launch",
       "name": "fs: test/fs3.test.ts",
-      "program": "${workspaceFolder}/fs/test/fs3.test.ts",
       "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
       "runtimeArgs": [
         "test",
         "-A",
-        "--inspect-brk"
+        "--inspect-brk",
+        "${workspaceFolder}/fs/test/fs3.test.ts"
       ],
-      "attachSimplePort": 9229,
-      "console": "internalConsole",
       "presentation": {
         "group": "fs"
-      },
-      "env": {
-        "LAUNCHGEN": "true"
       }
     },
     {
       "type": "node",
       "request": "launch",
       "name": "fs: test/fs4.test.ts",
-      "program": "${workspaceFolder}/fs/test/fs4.test.ts",
       "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
       "runtimeArgs": [
         "test",
         "-A",
-        "--inspect-brk"
+        "--inspect-brk",
+        "${workspaceFolder}/fs/test/fs4.test.ts"
       ],
-      "attachSimplePort": 9229,
-      "console": "internalConsole",
       "presentation": {
         "group": "fs"
-      },
-      "env": {
-        "LAUNCHGEN": "true"
       }
     },
     {
       "type": "node",
       "request": "launch",
       "name": "duration: test/record.test.ts",
-      "program": "${workspaceFolder}/duration/test/record.test.ts",
       "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
       "runtimeArgs": [
         "test",
         "-A",
-        "--inspect-brk"
+        "--inspect-brk",
+        "${workspaceFolder}/duration/test/record.test.ts"
       ],
-      "attachSimplePort": 9229,
-      "console": "internalConsole",
       "presentation": {
         "group": "duration"
-      },
-      "env": {
-        "LAUNCHGEN": "true"
       }
     },
     {
       "type": "node",
       "request": "launch",
       "name": "duration: test/duration.test.ts",
-      "program": "${workspaceFolder}/duration/test/duration.test.ts",
       "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
       "runtimeArgs": [
         "test",
         "-A",
-        "--inspect-brk"
+        "--inspect-brk",
+        "${workspaceFolder}/duration/test/duration.test.ts"
       ],
-      "attachSimplePort": 9229,
-      "console": "internalConsole",
       "presentation": {
         "group": "duration"
-      },
-      "env": {
-        "LAUNCHGEN": "true"
       }
     },
     {
       "type": "node",
       "request": "launch",
       "name": "duration: examples/duration.run.ts",
-      "program": "${workspaceFolder}/duration/examples/duration.run.ts",
       "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
       "runtimeArgs": [
         "run",
         "-A",
         "--inspect-brk"
       ],
-      "attachSimplePort": 9229,
-      "console": "internalConsole",
+      "program": "${workspaceFolder}/duration/examples/duration.run.ts",
       "presentation": {
         "group": "duration"
-      },
-      "env": {
-        "LAUNCHGEN": "true"
       }
     }
   ]

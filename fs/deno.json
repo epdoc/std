@@ -1,16 +1,23 @@
 {
   "name": "@epdoc/fs",
-  "version": "0.2.24",
+  "version": "0.2.25",
   "description": "File system entry wrapper",
   "exports": "./src/mod.ts",
   "tasks": {
-    "test": "deno test --allow-env --allow-sys --allow-read --allow-write",
-    "test1": "deno test --allow-env --allow-sys --allow-read --allow-write tests/fs.test.ts"
+    "testx": "deno test --allow-env --allow-sys --allow-read --allow-write",
+    "test1": "deno test --allow-env --allow-sys --allow-read --allow-write ./test/fs.test.ts"
   },
   "tests": {
     "include": [
       "test/**/*.ts"
-    ]
+    ],
+    "permissions": {
+      "env": true,
+      "net": true,
+      "read": true,
+      "write": true,
+      "sys": true
+    }
   },
   "lint": {
     "exclude": [

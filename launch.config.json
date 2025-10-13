@@ -8,10 +8,12 @@
       "**/.*",
       "**/.*/**"
     ],
+    "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
     "groups": [
       {
         "id": "test",
         "name": "Tests",
+        "console": "internalConsole",
         "includes": [
           "**/*.test.ts"
         ],
@@ -24,6 +26,7 @@
       {
         "id": "run",
         "name": "Runnable",
+        "console": "internalConsole",
         "includes": [
           "**/*.run.ts"
         ],

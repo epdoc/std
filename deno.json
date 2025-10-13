@@ -5,7 +5,6 @@
   },
   "license": "MIT",
   "tasks": {
-    "test": "deno test -SERW",
     "lint": "deno lint",
     "docs": "deno run -A _scripts/gen_docs.ts",
     "check": "deno check type datetime duration daterange fs string response"

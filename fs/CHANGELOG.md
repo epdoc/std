@@ -1,5 +1,9 @@
 # Changelist
 
+## [0.2.25] - 2025-10-12
+
+- Fixed readlines implementation when using continuation.
+
 ## [0.2.24] - 2025-10-06
 
 - Fixed bug in FolderSpec.makeTemp return type

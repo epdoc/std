@@ -681,19 +681,25 @@ describe('FSSpec.fromMeta, FileSpec.fromMeta, FolderSpec.fromMeta', () => {
       const tempDir = await FolderSpec.makeTemp();
       const lines = [
         'This is a line',
-        'This is a continued line that spans multiple lines \\',
-        'This is a normal line',
+        'This is a continued line that spans multiple lines. \\',
+        'This goes at the end of the previous line.',
         'Another continued line example \\',
         'Final line',
+      ];
+      const expected = [
+        'This is a line',
+        'This is a continued line that spans multiple lines. This goes at the end of the previous line.',
+        'Another continued line example Final line',
       ];
       const content = lines.join('\n');
       const fsFile = new FileSpec(tempDir, 'continuation_sample.txt');
       await fsFile.write(content);
 
       const readLines = await fsFile.readAsLines('\\');
-      expect(readLines).toEqual(lines);
+      expect(readLines).toEqual(expected);
 
-      await tempDir.remove();
+      await tempDir.remove({ recursive: true });
+      // await Deno.remove(tempDir.path, { recursive: true });
     });
   });
 });
