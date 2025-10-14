@@ -49,7 +49,7 @@ endobj
   parts.push('xref\n');
   parts.push('0 5\n');
   parts.push('0000000000 65535 f \n');
-  objects.forEach((obj, i) => {
+  objects.forEach((obj) => {
     parts.push(`${obj.offset.toString().padStart(10, '0')} 00000 n \n`);
   });
 

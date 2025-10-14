@@ -4,6 +4,7 @@ import * as dfs from '@std/fs';
 import { fromFileUrl } from '@std/path';
 import os from 'node:os';
 import path from 'node:path';
+import process from 'node:process';
 import type * as FS from '../types.ts';
 import { BaseSpec } from './basespec.ts';
 import { FileSpec } from './filespec.ts';
@@ -72,6 +73,10 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
     const dir = path.dirname(fromFileUrl(metaUrl));
     const fullPath = path.join(dir, ...paths);
     return new FolderSpec(fullPath);
+  }
+
+  public static cwd(): FolderSpec {
+    return new FolderSpec(process.cwd());
   }
 
   /**

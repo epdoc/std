@@ -16,10 +16,10 @@ describe('FileSpec', () => {
     testFile = path.join(testDir, 'test.txt');
     testJson = path.join(testDir, 'test.json');
     pdfFile = path.join(testDir, 'test.pdf');
-    
+
     await fs.writeFile(testFile, 'Hello, World!');
     await fs.writeFile(testJson, JSON.stringify({ key: 'value' }));
-    
+
     // Generate PDF with specific date for testing
     const robustPDF = generateRobustPDF('20180201000000');
     await Deno.writeTextFile(pdfFile, robustPDF);

@@ -6,7 +6,7 @@
 - Converted all tests to use temporary directories instead of static `readonly` and `data2` folders
 - Reorganized test files by functionality:
   - `filespec.test.ts` - Core FileSpec operations
-  - `folderspec.test.ts` - Core FolderSpec operations  
+  - `folderspec.test.ts` - Core FolderSpec operations
   - `fsspec.test.ts` - Base FSSpec operations
   - `safecopy.test.ts` - Safe copy operations (renamed from fs4.test.ts)
   - `fsbytes.test.ts` - File type detection

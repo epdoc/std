@@ -1,10 +1,8 @@
+// deno-lint-ignore-file no-explicit-any
 import { deepEquals } from '@epdoc/type';
 import { expect } from '@std/expect';
 import { afterAll, beforeEach, describe, test } from '@std/testing/bdd';
-import os from 'node:os';
 import { FileSpec } from '../src/mod.ts';
-
-const HOME = os.userInfo().homedir;
 
 describe('JSON Extended Operations', () => {
   let testDir: string;
@@ -96,19 +94,19 @@ describe('JSON Extended Operations', () => {
         message: 'Hello from {USER}!',
       };
       const replaceMap = {
-        HOME: HOME,
+        HOME: testDir,
         USER: 'testuser',
       };
       await testFilePath.writeJsonEx(data, { replace: replaceMap });
 
       // Read without replacement to check raw content
       const rawReadData = await testFilePath.readJsonEx({}) as any;
-      expect(rawReadData.path).toEqual(`${HOME}/documents/config.json`);
+      expect(rawReadData.path).toEqual(`${testDir}/documents/config.json`);
       expect(rawReadData.message).toEqual(`Hello from testuser!`);
 
       // Read with replacement
       const readDataWithReplace = await testFilePath.readJsonEx({ replace: replaceMap }) as any;
-      expect(readDataWithReplace.path).toEqual(`${HOME}/documents/config.json`);
+      expect(readDataWithReplace.path).toEqual(`${testDir}/documents/config.json`);
       expect(readDataWithReplace.message).toEqual(`Hello from testuser!`);
     });
   });
@@ -126,7 +124,7 @@ describe('JSON Extended Operations', () => {
         version: '1.0.0',
       };
 
-      const replaceMap = { HOME: HOME };
+      const replaceMap = { HOME: testDir };
       await testFilePath.writeJsonEx(nestedData, { replace: replaceMap });
       const readData = await testFilePath.readJsonEx({ replace: replaceMap }) as any;
 
@@ -148,7 +146,7 @@ describe('JSON Extended Operations', () => {
       expect(readConfig.token).toBeInstanceOf(Uint8Array);
       expect(deepEquals(readConfig.token, originalConfig.token)).toBe(true);
 
-      expect(readConfig.logPath).toEqual(`${HOME}/logs/app.log`);
+      expect(readConfig.logPath).toEqual(`${testDir}/logs/app.log`);
     });
   });
 });

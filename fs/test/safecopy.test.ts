@@ -41,7 +41,7 @@ describe('Safe Copy Operations', () => {
       const opts: util.SafeCopyOpts = {
         conflictStrategy: { type: util.fileConflictStrategyType.error, errorIfExists: true },
       };
-      
+
       let errorThrown = false;
       try {
         await srcFile.safeCopy(destFile, opts);
@@ -71,10 +71,10 @@ describe('Safe Copy Operations', () => {
         conflictStrategy: { type: util.fileConflictStrategyType.renameWithTilde },
       };
       await srcFile.safeCopy(destFile, opts);
-      
+
       const content = await destFile.readAsString();
       expect(content).toBe('source file');
-      
+
       const backupFile = new FileSpec(destFile.path + '~');
       const backupContent = await backupFile.readAsString();
       expect(backupContent).toBe('dest file');
@@ -86,10 +86,10 @@ describe('Safe Copy Operations', () => {
         conflictStrategy: { type: util.fileConflictStrategyType.renameWithNumber },
       };
       await srcFile.safeCopy(destFile, opts);
-      
+
       const content = await destFile.readAsString();
       expect(content).toBe('source file');
-      
+
       const backupFile = new FileSpec(destFolder.path, 'file-01.txt');
       const backupContent = await backupFile.readAsString();
       expect(backupContent).toBe('dest file');

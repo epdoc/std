@@ -2,7 +2,6 @@ import { expect } from '@std/expect';
 import { afterAll, beforeAll, describe, test } from '@std/testing/bdd';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import os from 'node:os';
 import { FileSpec, FolderSpec, FSError, FSSpec } from '../src/mod.ts';
 
 describe('FSSpec', () => {
@@ -45,7 +44,7 @@ describe('FSSpec', () => {
       const newDir = path.join(testDir, 'new-directory');
       const folder = new FolderSpec(newDir);
       await folder.ensureDir();
-      
+
       const exists = await folder.getExists();
       expect(exists).toBe(true);
     });

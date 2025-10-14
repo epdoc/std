@@ -11,7 +11,7 @@ describe('FolderSpec', () => {
   beforeAll(async () => {
     testDir = await Deno.makeTempDir({ prefix: 'folderspec_test_' });
     subDir = path.join(testDir, 'subdir');
-    
+
     await fs.mkdir(subDir, { recursive: true });
     await fs.writeFile(path.join(testDir, 'file1.txt'), 'File 1');
     await fs.writeFile(path.join(testDir, 'file2.json'), '{"test": true}');
@@ -44,9 +44,9 @@ describe('FolderSpec', () => {
       const folder = new FolderSpec(testDir);
       const files = await folder.getFiles();
       expect(files.length).toBe(2);
-      expect(files.every(f => f instanceof FileSpec)).toBe(true);
-      
-      const filenames = files.map(f => f.filename).sort();
+      expect(files.every((f) => f instanceof FileSpec)).toBe(true);
+
+      const filenames = files.map((f) => f.filename).sort();
       expect(filenames).toEqual(['file1.txt', 'file2.json']);
     });
 
@@ -86,8 +86,8 @@ describe('FolderSpec', () => {
       const folder = new FolderSpec(testDir);
       await folder.getChildren();
       folder.sortChildren({ type: 'alphabetical' });
-      
-      const filenames = folder.files.map(f => f.filename);
+
+      const filenames = folder.files.map((f) => f.filename);
       expect(filenames).toEqual(['file1.txt', 'file2.json']);
     });
 
@@ -95,8 +95,8 @@ describe('FolderSpec', () => {
       const folder = new FolderSpec(testDir);
       const files = await folder.getFiles();
       const sorted = FolderSpec.sortByFilename(files);
-      
-      const filenames = sorted.map(f => f.filename);
+
+      const filenames = sorted.map((f) => f.filename);
       expect(filenames).toEqual(['file1.txt', 'file2.json']);
     });
   });
@@ -121,6 +121,15 @@ describe('FolderSpec', () => {
         skip: [/nested/],
       });
       expect(results.length).toBe(1); // Only file1.txt
+    });
+  });
+
+  describe('cwd', () => {
+    test('FolderSpec.cwd() returns a FolderSpec for the current working directory', () => {
+      const cwdSpec = FolderSpec.cwd();
+      const actualCwd = Deno.cwd();
+      expect(cwdSpec).toBeInstanceOf(FolderSpec);
+      expect(cwdSpec.path).toEqual(actualCwd);
     });
   });
 
