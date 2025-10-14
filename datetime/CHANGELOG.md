@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.1] - 2025-10-13
+
+- Bump version to 2.0.0
+
 ## [2.0.0-beta.4] - 2025-10-06
 
 - Made ISOTzDate a subclass of ISODate
