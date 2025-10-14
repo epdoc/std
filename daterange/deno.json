@@ -10,6 +10,6 @@
   "imports": {
     "@epdoc/datetime": "jsr:@epdoc/datetime@^2.0.0-beta.4",
     "@epdoc/type": "jsr:@epdoc/type@^1.1.17",
-    "@std/cli": "jsr:@std/cli@^1.0.22"
+    "@std/cli": "jsr:@std/cli@^1.0.23"
   }
 }

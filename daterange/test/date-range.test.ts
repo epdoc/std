@@ -1,4 +1,4 @@
-import { DateEx, dateEx, ISODate } from '@epdoc/datetime';
+import { DateEx, dateEx, type ISODate } from '@epdoc/datetime';
 import { expect } from '@std/expect';
 import { describe, test } from '@std/testing/bdd';
 import { dateList, type DateRangeDef, DateRanges, dateRanges, dateStringToDate } from '../src/mod.ts';

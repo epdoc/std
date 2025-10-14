@@ -17,7 +17,7 @@
  * //-> "20240101-,-20240101"
  * ```
  */
-import { DateEx, dateEx, ISOTzDate } from '@epdoc/datetime';
+import { DateEx, dateEx, type ISOTzDate } from '@epdoc/datetime';
 import { isNonEmptyArray, isValidDate } from '@epdoc/type';
 import type { DateRangeDef, DateRangeJSON } from './types.ts';
 
