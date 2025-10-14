@@ -2,7 +2,8 @@
 
 ## [1.1.17] - 2025-10-05
 
-- Fixed jsonSerialize Date serialization: it converts to an ISO string instead of a Date object, and we are going to live with that.
+- Fixed jsonSerialize Date serialization: it converts to an ISO string instead of a Date object, and we are going to
+  live with that.
 
 ## [1.1.16] - 2025-10-05
 

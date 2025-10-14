@@ -1,4 +1,4 @@
-import { dateEx, TzMinutes } from '@epdoc/datetime';
+import { dateEx, type TzMinutes } from '@epdoc/datetime';
 import { expect } from '@std/expect';
 import { describe, test } from '@std/testing/bdd';
 import { msub, StringEx } from './mod.ts';
