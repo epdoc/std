@@ -2,6 +2,7 @@
   "version": "5",
   "specifiers": {
     "jsr:@epdoc/datetime@^2.0.0-beta.4": "2.0.0-beta.4",
+    "jsr:@epdoc/datetime@^2.0.1": "2.0.1",
     "jsr:@epdoc/response@~0.1.4": "0.1.4",
     "jsr:@epdoc/string@~0.1.4": "0.1.4",
     "jsr:@epdoc/type@1.0.3": "1.0.3",
@@ -30,6 +31,9 @@
   "jsr": {
     "@epdoc/datetime@2.0.0-beta.4": {
       "integrity": "432b2b266ba6c32de75b6ea72152d9443bd96ca30257311a36a2777b13061d7a"
+    },
+    "@epdoc/datetime@2.0.1": {
+      "integrity": "4afda1be7f94c7859e6a56c447b6e4eac05b5e9653797c0d707d58cbe415fe24"
     },
     "@epdoc/response@0.1.4": {
       "integrity": "c86bf216b8de787df8c7f5d609e088a36e951ce64b77a7d5fead5b97ce56631b",
@@ -244,7 +248,7 @@
     "members": {
       "daterange": {
         "dependencies": [
-          "jsr:@epdoc/datetime@^2.0.0-beta.4",
+          "jsr:@epdoc/datetime@^2.0.1",
           "jsr:@epdoc/type@^1.1.17",
           "jsr:@std/cli@^1.0.23"
         ]
