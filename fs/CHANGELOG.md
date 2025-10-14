@@ -1,5 +1,9 @@
 # Changelist
 
+## [0.2.27] - 2025-10-13
+
+- Added cwd() to FolderSpec
+
 ## [0.2.26] - 2025-10-13
 
 - **BREAKING**: Reorganized test suite to eliminate static test dependencies
