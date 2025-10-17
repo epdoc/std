@@ -1,3 +1,4 @@
+import * as Error from '$error';
 import {
   type FileConflictStrategy,
   fileConflictStrategyType,
@@ -12,10 +13,11 @@ import { decodeBase64, encodeBase64 } from '@std/encoding';
 import * as dfs from '@std/fs';
 import { fromFileUrl } from '@std/path';
 import crypto from 'node:crypto';
+import { promises as nfs } from 'node:fs';
+import type { FileHandle } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { DigestAlgorithm } from '../consts.ts';
-import { FSError } from '../error.ts';
 import { FSBytes } from '../fsbytes.ts';
 import type { FSStats } from '../fsstats.ts';
 import { asFilePath, isFilePath } from '../guards.ts';
@@ -42,7 +44,7 @@ const BUFSIZE = 2 * 8192;
  * Class representing a file system entry when it is known to be a file.
  */
 export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, ISafeCopyableSpec {
-  #file?: Deno.FsFile;
+  #file?: FileHandle;
 
   /**
    * Public constructor for FileSpec.
@@ -55,6 +57,13 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
 
   override get path(): FS.FilePath {
     return this._f as FS.FilePath;
+  }
+
+  /**
+   * Return the FolderSpec for the folder that contains this file.
+   */
+  parentFolder(): FolderSpec {
+    return new FolderSpec(this.dirname);
   }
 
   /**
@@ -104,9 +113,27 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
    * this when changing working directory
    * @returns A new FileSpec object with the path
    */
-  public static async makeTemp(opts?: Deno.MakeTempOptions): Promise<FileSpec> {
-    const tempFilePath = await Deno.makeTempFile(opts);
-    return new FileSpec(tempFilePath);
+  public static async makeTemp(opts: { prefix?: string; suffix?: string; dir?: string } = {}): Promise<FileSpec> {
+    const tmpRoot = opts.dir ? path.resolve(opts.dir) : os.tmpdir();
+    const prefix = _.isString(opts.prefix) ? opts.prefix : 'tmp-';
+    const mkdtempPrefix = path.join(tmpRoot, prefix);
+
+    // Create a unique temp directory
+    const tmpDir = await nfs.mkdtemp(mkdtempPrefix);
+
+    // Generate a unique filename
+    const name = _.isFunction(crypto.randomUUID) ? crypto.randomUUID() : crypto.randomBytes(8).toString('hex');
+
+    let filePath = path.join(tmpDir, name);
+    if (opts?.suffix) {
+      filePath = `${filePath}${opts.suffix}`;
+    }
+
+    // Create the file exclusively
+    const fh = await nfs.open(filePath, 'wx');
+    await fh.close();
+
+    return new FileSpec(filePath);
   }
 
   /**
@@ -392,11 +419,35 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
   }
 
   /**
-   * Ensures that the parent folder to this file exists
-   * @returns {Promise<void>} A promise that resolves when the directory is ensured.
+   * Ensures that the parent folder to this file exists.
+   *
+   * This method will consult our FolderSpec helpers and, if the parent
+   * folder does not exist, attempt to create it. Errors are thrown as
+   * specific subclasses of Error.FSError so callers can respond to
+   * common filesystem failure modes (e.g. not found, permission denied).
+   *
+   * @throws {FSNotFoundError|FSPermissionError|Error.FSError} When the parent
+   * directory cannot be created or validated. The thrown error will be an
+   * instance of a subclass of Error.FSError with `.path` set to the file path.
    */
   async ensureParentDir(): Promise<void> {
-    await dfs.ensureDir(this.dirname);
+    const parent = new FolderSpec(this.dirname);
+    let stats: FSStats;
+    try {
+      stats = await parent.getStats();
+    } catch (err: unknown) {
+      throw this.asError(err, 'ensureParentDir');
+    }
+    if (stats.exists()) {
+      if (stats.isFolder()) return;
+      throw new Error.NotADirectory('Not a directory', { path: this._f, cause: 'ensureParentDir' });
+    }
+
+    try {
+      await nfs.mkdir(this.dirname, { recursive: true });
+    } catch (err: unknown) {
+      throw this.asError(err, 'ensureParentDir');
+    }
   }
 
   /**
@@ -408,7 +459,7 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
       const metadata = await PDFMetadataReader.extractMetadata(this._f);
       return metadata.creationDate;
     } catch (err) {
-      throw _.asError(err, { path: this._f, cause: 'getPdfDate' });
+      throw this.asError(err, 'getPdfDate');
     }
   }
 
@@ -461,7 +512,8 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
       }
       return Promise.resolve(false);
     }
-    throw new Error('Invalid filesEqual argument');
+    // invalid usage -> throw a usage specific error subclass
+    throw this.asError('Invalid filesEqual argument', 'filesEqual');
   }
 
   protected async _equal(fs: FileSpec): Promise<boolean> {
@@ -475,14 +527,17 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
     return false;
   }
 
-  async open(opts: { read?: boolean; write?: boolean }): Promise<Deno.FsFile> {
-    this.#file = await Deno.open(this._f, opts);
+  async open(opts: { read?: boolean; write?: boolean }): Promise<FileHandle> {
+    // map read/write flags to Node flags
+    const flags = opts.write ? (opts.read ? 'r+' : 'w') : 'r';
+    this.#file = await nfs.open(this._f, flags);
     return this.#file;
   }
 
   close(): void {
     if (this.#file) {
-      this.#file.close();
+      // close is async on Node; keep signature void to match callers
+      this.#file.close().catch(() => {/* ignore */});
       this.#file = undefined;
     }
   }
@@ -504,17 +559,15 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
         await this.open({ read: true });
         assert(this.#file, 'File was not opened');
       }
-      await this.#file.seek(position, Deno.SeekMode.Start);
-      const numRead = await this.#file.read(buffer);
-      if (close) {
-        this.close();
-      }
-      return numRead;
+      // FileHandle.read returns { bytesRead, buffer }
+      const result = await this.#file.read(buffer, 0, buffer.length, position);
+      const bytesRead = result.bytesRead ?? 0;
+      if (close) this.close();
+      // return null for EOF to match previous API
+      return bytesRead === 0 ? null : bytesRead;
     } catch (err) {
-      if (close) {
-        this.close();
-      }
-      throw _.asError(err, { path: this._f, cause: 'readBytes' });
+      if (close) this.close();
+      throw this.asError(err, 'readBytes');
     }
   }
 
@@ -537,60 +590,37 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
   async readAsBytes(encoding?: 'base64'): Promise<Uint8Array> {
     try {
       if (encoding === 'base64') {
-        const result = await Deno.readTextFile(this._f);
+        const result = (await nfs.readFile(this._f)).toString('utf8');
         return decodeBase64(result);
       }
-      return await Deno.readFile(this._f);
+      const buf = await nfs.readFile(this._f);
+      return new Uint8Array(buf);
     } catch (err) {
-      throw _.asError(err, { path: this._f, cause: 'readFile' });
+      throw this.asError(err, 'readAsBytes');
     }
   }
 
   /**
    * Reads the entire file as a string. Can optionally decode base64-encoded content.
    *
-   * @param {('base64' | undefined)} [encoding] - If 'base64', decodes the file content from base64 before converting to string
+   * @param {'base64' | undefined} [encoding] - If 'base64', decodes the file content from base64 before converting to string
    * @returns {Promise<string>} A promise that resolves with the file contents as a string
    *
-   * @example
-   * // Read text file
-   * const text = await file.readAsString();
-   * console.log(text); // e.g., "Hello World"
-   *
-   * // Read base64-encoded file
-   * const base64Text = await file.readAsString('base64');
-   * // If file contains "SGVsbG8=" the result will be:
-   * // "Hello"
-   *
-   * @throws {FSError} If the file cannot be read or decoded
+   * @throws {FSNotFoundError|FSPermissionError|FSReadError|Error.FSError} When the file cannot be read or decoded.
    */
   async readAsString(encoding?: 'base64'): Promise<string> {
     try {
       if (encoding === 'base64') {
-        const encodedAsBase64 = await Deno.readTextFile(this._f);
+        const encodedAsBase64 = (await nfs.readFile(this._f)).toString('utf8');
         const byteArray: Uint8Array = decodeBase64(encodedAsBase64);
         const decoder = new TextDecoder();
         return decoder.decode(byteArray);
       }
-      return await Deno.readTextFile(this._f);
-    } catch (err) {
-      throw _.asError(err, { path: this._f, cause: 'readTextFile' });
+      return (await nfs.readFile(this._f)).toString('utf8');
+    } catch (err: unknown) {
+      throw this.asError(err, 'readAsString');
     }
   }
-
-  // safeReadAsString(): ApiResponsePromise<string> {
-  //   return await safe(read)
-  //   const result = new ApiResponse<string>();
-  //   return Deno.readTextFile(this._f)
-  //     .then((resp) => {
-  //       result.setData(resp);
-  //       return Promise.resolve(result);
-  //     })
-  //     .catch((err) => {
-  //       result.setError(new FSError(err, { cause: err.cause, path: this._f }));
-  //       return Promise.resolve(result);
-  //     });
-  // }
 
   /**
    * Reads the file as a string and splits it into lines.
@@ -598,7 +628,7 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
    */
   async readAsLines(continuation?: string): Promise<string[]> {
     try {
-      const data = await Deno.readTextFile(this._f);
+      const data = (await nfs.readFile(this._f)).toString('utf8');
       const lines = data.split(REG.lineSeparator).map((line) => {
         // RSC output files are encoded oddly and this seems to clean them up
         return line.replace(/\r/, '').replace(/\0/g, '');
@@ -610,7 +640,7 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
         return lines;
       }
     } catch (err) {
-      throw _.asError(err, { path: this._f, cause: 'readAsLines' });
+      throw this.asError(err, 'readAsLines');
     }
   }
 
@@ -620,14 +650,14 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
    */
   async readJson<T = unknown>(): Promise<T> {
     try {
-      const s = await Deno.readTextFile(this._f);
+      const s = (await nfs.readFile(this._f)).toString('utf8');
       if (this.isJsonc()) {
         // If the file is JSONC, strip comments before parsing
         return JSON.parse(stripJsonComments(s, { trailingCommas: true })) as T;
       }
       return JSON.parse(s) as T;
     } catch (err) {
-      throw _.asError(err, { path: this._f, cause: 'readJson' });
+      throw this.asError(err, 'readJson');
     }
   }
 
@@ -668,7 +698,7 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
 
   async writeJsonEx(value: unknown, options: DeepCopyOpts | null = null, space?: string | number): Promise<void> {
     const text = _.jsonSerialize(value, options, space);
-    await Deno.writeTextFile(this._f, text);
+    await nfs.writeFile(this._f, text, 'utf8');
   }
 
   /**
@@ -731,12 +761,21 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
 
   /**
    * Writes JSON data to the file.
+   * Accepts the same replacer and space parameters as JSON.stringify.
    * @param {unknown} data - The data to write as JSON.
    * @returns {Promise<void>} A promise that resolves when the write operation is complete.
    */
-  async writeJson(data: unknown): Promise<void> {
-    const text = JSON.stringify(data, null, 2);
-    await Deno.writeTextFile(this._f, text);
+  async writeJson(
+    data: unknown,
+    replacer?: ((key: string, value: any) => any) | Array<number | string> | null,
+    space?: string | number,
+  ): Promise<void> {
+    const text = JSON.stringify(data, replacer as any, space);
+    try {
+      await nfs.writeFile(this._f, text, 'utf8');
+    } catch (err) {
+      throw this.asError(err);
+    }
   }
 
   /**
@@ -783,15 +822,16 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
   async write(data: string | string[] | Uint8Array): Promise<void> {
     try {
       if (data instanceof Uint8Array) {
-        await Deno.writeFile(this._f, data);
+        await nfs.writeFile(this._f, data);
       } else {
         const text = _.isArray(data) ? data.join('\n') : data;
-        await Deno.writeTextFile(this._f, text);
+        await nfs.writeFile(this._f, text, 'utf8');
       }
     } catch (err) {
       throw this.asError(err);
     }
   }
+
   safeCopy(destFile: FS.FilePath | FileSpec | FolderSpec | FSSpec, opts: SafeCopyOpts = {}): Promise<void> {
     return safeCopy(this, destFile, opts);
   }
@@ -808,19 +848,20 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
   ): Promise<FS.FilePath | undefined> {
     const stats: FSStats = await this.getStats();
     if (!stats || !stats.exists()) {
-      throw new FSError('File does not exist', { code: 'ENOENT', path: this._f });
+      // more specific NotFound subclass
+      throw new Error.NotFound('File does not exist', { code: 'ENOENT', path: this._f });
     }
     const newPath: FS.FilePath | undefined = await this.#getNewPath(opts);
-    if (newPath && isFilePath(newPath)) { // type guard not working correctly
+    if (newPath && isFilePath(newPath)) {
       return this.moveTo(newPath, { overwrite: true })
         .then(() => {
           return Promise.resolve(newPath);
         })
         .catch((err) => {
-          if (err instanceof Error) {
+          if (err instanceof Error.FSError) {
             throw err;
           }
-          throw new FSError(String(err), { code: 'ENOENT', path: this._f });
+          throw this.asError(err, 'backup');
         });
     }
     return Promise.resolve(undefined);
@@ -834,7 +875,7 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
         const limit = _.isInteger(opts.limit) ? opts.limit : 32;
         this.findAvailableIndexFilename(limit, opts.separator, opts.prefix).then((resp) => {
           if (!resp && opts.errorIfExists) {
-            reject(new FSError('File exists', { code: 'EEXIST', path: this._f }));
+            reject(new Error.AlreadyExists('File exists', { code: 'EEXIST', path: this._f }));
           } else {
             resolve(resp);
           }
@@ -843,7 +884,7 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
         resolve(this.path); // Changed to return string directly
       } else {
         if (opts.errorIfExists) {
-          reject(new FSError('File exists', { code: 'EEXIST', path: this._f }));
+          reject(new Error.AlreadyExists('File exists', { code: 'EEXIST', path: this._f }));
         }
         resolve(undefined);
       }
@@ -886,7 +927,81 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
     return dfs.move(this._f, p, options);
   }
 
-  asError(error: unknown): FSError {
-    return new FSError(_.asError(error), { path: this._f });
+  asError(error: unknown, cause?: string): Error.FSError {
+    const base = _.asError(error);
+
+    // Narrow view of possible platform error shape (no `any` used).
+    type ErrWithCode = { code?: string; errno?: number | string; message?: string };
+    const errWithCode = base as unknown as ErrWithCode;
+
+    const code = errWithCode.code ?? (errWithCode.errno !== undefined ? String(errWithCode.errno) : undefined);
+    const opts: Error.FSErrorOptions = { path: this._f, cause, code };
+
+    const codeStr = String(code || '').toUpperCase();
+
+    switch (codeStr) {
+      case 'ENOENT':
+        return new Error.NotFound(base, opts);
+      case 'ENOTDIR':
+        return new Error.NotADirectory(base, opts);
+      case 'EISDIR':
+        return new Error.IsADirectory(base, opts);
+      case 'EEXIST':
+        return new Error.AlreadyExists(base, opts);
+      case 'EACCES':
+      case 'EPERM':
+        return new Error.PermissionDenied(base, opts);
+      case 'EBADF':
+        return new Error.BadResource(base, opts);
+      case 'EIO':
+        return new Error.FSError(base, opts);
+      case 'ENOTEMPTY':
+        return new Error.FSError(base, opts);
+      case 'ETIMEDOUT':
+        return new Error.TimedOut(base, opts);
+      case 'EINTR':
+        return new Error.Interrupted(base, opts);
+      case 'EAGAIN':
+      case 'EWOULDBLOCK':
+        return new Error.WouldBlock(base, opts);
+      case 'ECONNREFUSED':
+        return new Error.ConnectionRefused(base, opts);
+      case 'ECONNRESET':
+        return new Error.ConnectionReset(base, opts);
+      case 'ECONNABORTED':
+        return new Error.ConnectionAborted(base, opts);
+      case 'ENOTCONN':
+        return new Error.NotConnected(base, opts);
+      case 'EADDRINUSE':
+        return new Error.AddrInUse(base, opts);
+      case 'EADDRNOTAVAIL':
+        return new Error.AddrNotAvailable(base, opts);
+      case 'EPIPE':
+        return new Error.BrokenPipe(base, opts);
+      default:
+        break;
+    }
+
+    const lowerCause = String(cause ?? '').toLowerCase();
+    const msg = String(errWithCode.message ?? '').toLowerCase();
+
+    if (msg.includes('eof') || msg.includes('unexpected eof')) {
+      return new Error.UnexpectedEof(base, opts);
+    }
+
+    if (lowerCause.includes('read')) {
+      return new Error.BadResource(base, opts);
+    }
+
+    if (
+      lowerCause.includes('write') || lowerCause.includes('mkdir') || lowerCause.includes('open') ||
+      lowerCause.includes('create') || lowerCause.includes('rename') || lowerCause.includes('move') ||
+      lowerCause.includes('unlink')
+    ) {
+      return new Error.FSError(base, opts);
+    }
+
+    // Fallback to the generic FSError
+    return new Error.FSError(base, opts);
   }
 }

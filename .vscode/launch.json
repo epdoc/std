@@ -293,7 +293,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "fs: test/fs.test.ts",
+      "name": "fs: test/filespec.test.ts",
       "cwd": "${workspaceFolder}",
       "attachSimplePort": 9229,
       "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
@@ -304,7 +304,47 @@
         "test",
         "-A",
         "--inspect-brk",
-        "${workspaceFolder}/fs/test/fs.test.ts"
+        "${workspaceFolder}/fs/test/filespec.test.ts"
+      ],
+      "presentation": {
+        "group": "fs"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "fs: test/safecopy.test.ts",
+      "cwd": "${workspaceFolder}",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
+      "runtimeArgs": [
+        "test",
+        "-A",
+        "--inspect-brk",
+        "${workspaceFolder}/fs/test/safecopy.test.ts"
+      ],
+      "presentation": {
+        "group": "fs"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "fs: test/folderspec.test.ts",
+      "cwd": "${workspaceFolder}",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
+      "runtimeArgs": [
+        "test",
+        "-A",
+        "--inspect-brk",
+        "${workspaceFolder}/fs/test/folderspec.test.ts"
       ],
       "presentation": {
         "group": "fs"
@@ -333,7 +373,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "fs: test/fs.jsonex.test.ts",
+      "name": "fs: test/jsonex.test.ts",
       "cwd": "${workspaceFolder}",
       "attachSimplePort": 9229,
       "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
@@ -344,7 +384,7 @@
         "test",
         "-A",
         "--inspect-brk",
-        "${workspaceFolder}/fs/test/fs.jsonex.test.ts"
+        "${workspaceFolder}/fs/test/jsonex.test.ts"
       ],
       "presentation": {
         "group": "fs"
@@ -353,7 +393,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "fs: test/fs2.test.ts",
+      "name": "fs: test/error.test.ts",
       "cwd": "${workspaceFolder}",
       "attachSimplePort": 9229,
       "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
@@ -364,7 +404,7 @@
         "test",
         "-A",
         "--inspect-brk",
-        "${workspaceFolder}/fs/test/fs2.test.ts"
+        "${workspaceFolder}/fs/test/error.test.ts"
       ],
       "presentation": {
         "group": "fs"
@@ -373,28 +413,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "fs: test/fs3.test.ts",
-      "cwd": "${workspaceFolder}",
-      "attachSimplePort": 9229,
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "env": {
-        "LAUNCHGEN": "true"
-      },
-      "runtimeArgs": [
-        "test",
-        "-A",
-        "--no-check",
-        "--inspect-brk",
-        "${workspaceFolder}/fs/test/fs3.test.ts"
-      ],
-      "presentation": {
-        "group": "fs"
-      }
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "fs: test/fs4.test.ts",
+      "name": "fs: test/fsspec.test.ts",
       "cwd": "${workspaceFolder}",
       "attachSimplePort": 9229,
       "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
@@ -405,7 +424,7 @@
         "test",
         "-A",
         "--inspect-brk",
-        "${workspaceFolder}/fs/test/fs4.test.ts"
+        "${workspaceFolder}/fs/test/fsspec.test.ts"
       ],
       "presentation": {
         "group": "fs"

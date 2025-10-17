@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/fs",
-  "version": "0.2.27",
+  "version": "0.2.28",
   "description": "File system entry wrapper",
   "exports": "./src/mod.ts",
   "tasks": {
@@ -30,6 +30,7 @@
     ]
   },
   "imports": {
+    "$error": "./src/error/mod.ts",
     "$util": "./src/util/mod.ts",
     "$spec": "./src/spec/mod.ts",
     "@epdoc/datetime": "jsr:@epdoc/datetime@^2.0.0-beta.4",

@@ -2,7 +2,7 @@ import { expect } from '@std/expect';
 import { afterAll, beforeAll, describe, test } from '@std/testing/bdd';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import { FileSpec, FolderSpec, FSError, FSSpec } from '../src/mod.ts';
+import { Error, FileSpec, FolderSpec, FSSpec } from '../src/mod.ts';
 
 describe('FSSpec', () => {
   let testDir: string;
@@ -52,16 +52,24 @@ describe('FSSpec', () => {
 
   describe('Error Handling', () => {
     test('FSError can be instantiated with string', () => {
-      const error = new FSError('Test error message');
-      expect(error).toBeInstanceOf(Error);
+      const error = new Error.FSError('Test error message');
+      expect(error).toBeInstanceOf(Error.FSError);
       expect(error.message).toBe('Test error message');
     });
 
     test('FSError can be instantiated with Error object', () => {
-      const originalError = new Error('Original error');
-      const fsError = new FSError(originalError);
-      expect(fsError).toBeInstanceOf(Error);
+      const originalError = new Error.FSError('Original error');
+      const fsError = new Error.FSError(originalError);
+      expect(fsError).toBeInstanceOf(Error.FSError);
       expect(fsError.message).toBe('Original error');
+    });
+
+    test('NotFound preserves code and path', () => {
+      const notFound = new Error.NotFound('Not found', { code: 'ENOENT', path: '/tmp/missing' });
+      expect(notFound).toBeInstanceOf(Error.FSError);
+      expect(notFound).toBeInstanceOf(Error.NotFound);
+      expect(notFound.code).toBe('ENOENT');
+      expect(notFound.path).toBe('/tmp/missing');
     });
   });
 });

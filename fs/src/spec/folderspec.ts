@@ -2,6 +2,7 @@ import { resolvePathArgs, safeCopy, type SafeCopyOpts } from '$util';
 import { _, type Dict } from '@epdoc/type';
 import * as dfs from '@std/fs';
 import { fromFileUrl } from '@std/path';
+import { promises as nfs } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
@@ -109,9 +110,23 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
    * directory
    * @returns A new FileSpec object with the path
    */
-  public static async makeTemp(opts?: Deno.MakeTempOptions): Promise<FolderSpec> {
-    const tempPath = await Deno.makeTempDir(opts);
-    return new FolderSpec(tempPath);
+  public static async makeTemp(opts: { prefix?: string; suffix?: string; dir?: string } = {}): Promise<FolderSpec> {
+    const tmpRoot = opts.dir ? path.resolve(opts.dir) : os.tmpdir();
+    const prefix = _.isString(opts.prefix) ? opts.prefix : 'tmp-';
+    const mkdtempPrefix = path.join(tmpRoot, prefix);
+
+    // mkdtemp creates a new directory with a unique suffix appended to the prefix
+    const created = await nfs.mkdtemp(mkdtempPrefix);
+
+    // If a suffix was requested, rename the created dir to include the suffix.
+    // Note: this is not atomic with mkdtemp and may collide; caller responsibility.
+    if (opts.suffix) {
+      const finalPath = `${created}${opts.suffix}`;
+      await nfs.rename(created, finalPath);
+      return new FolderSpec(finalPath);
+    }
+
+    return new FolderSpec(created);
   }
 
   /**

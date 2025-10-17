@@ -1,5 +1,11 @@
 # Changelist
 
+## [0.2.28] - 2025-10-17
+
+- Added FileSpec.parentFolder method.
+- Added new set of Error types.
+- Updated FileSpec to not use Deno libraries.
+
 ## [0.2.27] - 2025-10-13
 
 - Added cwd() to FolderSpec
