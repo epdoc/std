@@ -107,7 +107,9 @@ export async function* walk(
         const canonicalPath = canonicalize ? await dirent.realPath() : dirent.path;
         if (!privateVisited.has(canonicalPath)) {
           privateVisited.add(canonicalPath);
-                          yield dirent;
-                        }
-                    }
-                  }}
+          yield dirent;
+        }
+      }
+    }
+  }
+}

@@ -1,5 +1,9 @@
 # Changelist
 
+## [1.0.0-alpha.3] - 2025-10-20
+
+- All checks and tests pass, but we need to do more verification
+
 ## [1.0.0-alpha.2] - 2025-10-20
 
 - snapshot during major refactoring
