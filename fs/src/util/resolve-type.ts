@@ -1,4 +1,4 @@
-import { type BaseSpec, FileSpec, FolderSpec, FSSpec, SymlinkSpec } from '../spec/mod.ts';
+import { FileSpec, FolderSpec, FSSpec, type FSSpecBase, SymlinkSpec, type TypedFSSpec } from '$spec';
 /**
  * Joins continuation lines in a string array.
  * @param lines - The array of lines to join.
@@ -42,14 +42,14 @@ export function joinContinuationLines(lines: string[], continuation: string | Re
 }
 
 export async function resolveType(
-  file: string | BaseSpec,
-): Promise<FSSpec | FileSpec | FolderSpec | SymlinkSpec> {
-  if (file instanceof FileSpec || file instanceof FolderSpec || file instanceof SymlinkSpec) {
-    return file;
+  fsItem: string | FSSpecBase,
+): Promise<TypedFSSpec | undefined> {
+  if (fsItem instanceof FileSpec || fsItem instanceof FolderSpec || fsItem instanceof SymlinkSpec) {
+    return fsItem;
   }
-  if (file instanceof FSSpec) {
-    return await file.getResolvedType();
+  if (fsItem instanceof FSSpec) {
+    return await fsItem.resolvedType();
   }
-  const result = await new FSSpec(file).getResolvedType();
+  const result = await new FSSpec(fsItem).resolvedType();
   return result;
 }

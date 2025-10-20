@@ -19,14 +19,15 @@ import os from 'node:os';
 import path from 'node:path';
 import { DigestAlgorithm } from '../consts.ts';
 import { FSBytes } from '../fsbytes.ts';
-import type { FSStats } from '../fsstats.ts';
 import { asFilePath, isFilePath } from '../guards.ts';
 import type * as FS from '../types.ts';
-import { BaseSpec } from './basespec.ts';
+import type { FileInfo } from '../types.ts';
+import { FSSpecBase } from './basespec.ts';
 import { FolderSpec } from './folderspec.ts';
 import { FSSpec } from './fsspec.ts';
 import type { ICopyableSpec, IRootableSpec, ISafeCopyableSpec } from './icopyable.ts';
 import { PDFMetadataReader } from './readpdf.ts';
+import type { JsonReplacer } from './types.ts';
 
 const REG = {
   pdf: /\.pdf$/i,
@@ -43,7 +44,7 @@ const BUFSIZE = 2 * 8192;
 /**
  * Class representing a file system entry when it is known to be a file.
  */
-export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, ISafeCopyableSpec {
+export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec, ISafeCopyableSpec {
   #file?: FileHandle;
 
   /**
@@ -146,7 +147,7 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
     return result;
   }
 
-  override copyParamsTo(target: BaseSpec): BaseSpec {
+  override copyParamsTo(target: FSSpecBase): FSSpecBase {
     super.copyParamsTo(target);
     return target;
   }
@@ -217,14 +218,12 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
   }
 
   size(): Integer | undefined {
-    if (this._stats.isInitialized()) {
-      return this._stats.size;
-    }
+    return this.info?.size;
   }
 
   getSize(): Promise<Integer | undefined> {
-    return this.getStats().then(() => {
-      return this._stats.size;
+    return this.stats().then((info) => {
+      return info?.size;
     });
   }
 
@@ -247,18 +246,6 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
         }
       }
     }
-    return false;
-  }
-
-  override isFile(): boolean | undefined {
-    return true;
-  }
-
-  override isFolder(): boolean | undefined {
-    return false;
-  }
-
-  override isSymlink(): boolean | undefined {
     return false;
   }
 
@@ -333,7 +320,7 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
     }
     if (ext !== this.extname) {
       this._f = path.format({ ...path.parse(this._f), base: '', ext: ext }) as FS.FilePath;
-      this._stats.clear();
+      this._info = undefined;
     }
     return this;
   }
@@ -346,7 +333,7 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
   setBasename(val: string): this {
     if (val !== this.basename) {
       this._f = path.format({ dir: this.dirname, name: val, ext: this.extname }) as FS.FilePath;
-      this._stats.clear();
+      this._info = undefined;
     }
     return this;
   }
@@ -432,14 +419,14 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
    */
   async ensureParentDir(): Promise<void> {
     const parent = new FolderSpec(this.dirname);
-    let stats: FSStats;
+    let stats: FileInfo | undefined;
     try {
-      stats = await parent.getStats();
+      stats = await parent.stats();
     } catch (err: unknown) {
       throw this.asError(err, 'ensureParentDir');
     }
-    if (stats.exists()) {
-      if (stats.isFolder()) return;
+    if (stats?.exists) {
+      if (stats.isDirectory) return;
       throw new Error.NotADirectory('Not a directory', { path: this._f, cause: 'ensureParentDir' });
     }
 
@@ -493,38 +480,49 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
    * @param path2
    * @returns {Promise<boolean>} A promise that resolves with true if the files are equal, false otherwise.
    */
-  async filesEqual(arg: FS.FilePath | FileSpec | FSSpec): Promise<boolean> {
+  async equalTo(arg: FS.FilePath | FileSpec | FSSpec, opts: FS.EqualOptions = { checksum: true }): Promise<boolean> {
     if (arg instanceof FileSpec) {
-      return this._equal(arg);
+      return await this._equal(arg, opts);
     }
     if (arg instanceof FSSpec) {
-      const fs = await arg.getResolvedType();
+      const fs = await arg.resolvedType();
       if (fs instanceof FileSpec) {
-        return this._equal(fs);
+        return await this._equal(fs, opts);
       }
-      return Promise.resolve(false);
+      return false;
     }
     if (isFilePath(arg)) {
       const fs = new FileSpec(arg);
-      const isFile = await fs.getIsFile();
+      const isFile = await fs.isFile();
       if (isFile) {
-        return this._equal(fs);
+        return await this._equal(fs, opts);
       }
-      return Promise.resolve(false);
+      return false;
     }
     // invalid usage -> throw a usage specific error subclass
     throw this.asError('Invalid filesEqual argument', 'filesEqual');
   }
 
-  protected async _equal(fs: FileSpec): Promise<boolean> {
-    const exists1 = await this.getExists();
-    const exists2 = await fs.getExists();
-    if (exists1 && exists2) {
-      const checksum1 = await this.digest();
-      const checksum2 = await fs.digest();
-      return checksum1 === checksum2;
+  protected async _equal(fs: FileSpec, opts: FS.EqualOptions = { checksum: true }): Promise<boolean> {
+    const aInfo = await this.stats();
+    const bInfo = await fs.stats();
+    if (!aInfo || !bInfo) {
+      return false;
     }
-    return false;
+    if (!aInfo.isFile || !bInfo.isFile) {
+      return false;
+    }
+    if (aInfo.size !== bInfo.size) {
+      return false;
+    }
+    if (opts.checksum) {
+      const aChecksum = await this.digest();
+      const bChecksum = await fs.digest();
+      if (aChecksum !== bChecksum) {
+        return false;
+      }
+    }
+    return true;
   }
 
   async open(opts: { read?: boolean; write?: boolean }): Promise<FileHandle> {
@@ -698,7 +696,7 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
 
   async writeJsonEx(value: unknown, options: DeepCopyOpts | null = null, space?: string | number): Promise<void> {
     const text = _.jsonSerialize(value, options, space);
-    await nfs.writeFile(this._f, text, 'utf8');
+    await nfs.writeFile(this._f, new TextEncoder().encode(text));
   }
 
   /**
@@ -767,12 +765,13 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
    */
   async writeJson(
     data: unknown,
-    replacer?: ((key: string, value: any) => any) | Array<number | string> | null,
+    replacer?: JsonReplacer,
     space?: string | number,
   ): Promise<void> {
-    const text = JSON.stringify(data, replacer as any, space);
+    const replacerArg = replacer as unknown as Parameters<typeof JSON.stringify>[1];
+    const text = JSON.stringify(data, replacerArg, space);
     try {
-      await nfs.writeFile(this._f, text, 'utf8');
+      await nfs.writeFile(this._f, new TextEncoder().encode(text));
     } catch (err) {
       throw this.asError(err);
     }
@@ -825,7 +824,7 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
         await nfs.writeFile(this._f, data);
       } else {
         const text = _.isArray(data) ? data.join('\n') : data;
-        await nfs.writeFile(this._f, text, 'utf8');
+        await nfs.writeFile(this._f, new TextEncoder().encode(text));
       }
     } catch (err) {
       throw this.asError(err);
@@ -846,8 +845,8 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
   async backup(
     opts: FileConflictStrategy = { type: 'renameWithTilde', errorIfExists: false },
   ): Promise<FS.FilePath | undefined> {
-    const stats: FSStats = await this.getStats();
-    if (!stats || !stats.exists()) {
+    const stats = await this.stats();
+    if (!stats?.exists) {
       // more specific NotFound subclass
       throw new Error.NotFound('File does not exist', { code: 'ENOENT', path: this._f });
     }
@@ -855,6 +854,7 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
     if (newPath && isFilePath(newPath)) {
       return this.moveTo(newPath, { overwrite: true })
         .then(() => {
+          this._info = undefined; // Invalidate cache after move
           return Promise.resolve(newPath);
         })
         .catch((err) => {
@@ -909,7 +909,7 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
     let looking = true;
     while (looking) {
       newFsDest = new FileSpec(this.dirname, this.basename + sep + prefix + _.pad(++count, 2) + this.extname);
-      looking = await newFsDest.getExists();
+      looking = await newFsDest.exists();
     }
     if (!looking && newFsDest instanceof FileSpec) {
       return newFsDest.path;
@@ -918,90 +918,12 @@ export class FileSpec extends BaseSpec implements ICopyableSpec, IRootableSpec, 
 
   /**
    * Moves this file or folder to the location `dest`.
-   * @param {FilePath | BaseSpec} dest - The new path for the file.
+   * @param {FilePath | FSSpecBase} dest - The new path for the file.
    * @param {dfs.MoveOptions} options - Options to overwrite and dereference symlinks.
    * @returns {Promise<void>} - A promise that resolves when the move is complete.
    */
   moveTo(dest: FS.Path | FolderSpec | FileSpec, options?: dfs.MoveOptions): Promise<void> {
     const p: FS.Path = (dest instanceof FolderSpec || dest instanceof FileSpec) ? dest.path : dest;
     return dfs.move(this._f, p, options);
-  }
-
-  asError(error: unknown, cause?: string): Error.FSError {
-    const base = _.asError(error);
-
-    // Narrow view of possible platform error shape (no `any` used).
-    type ErrWithCode = { code?: string; errno?: number | string; message?: string };
-    const errWithCode = base as unknown as ErrWithCode;
-
-    const code = errWithCode.code ?? (errWithCode.errno !== undefined ? String(errWithCode.errno) : undefined);
-    const opts: Error.FSErrorOptions = { path: this._f, cause, code };
-
-    const codeStr = String(code || '').toUpperCase();
-
-    switch (codeStr) {
-      case 'ENOENT':
-        return new Error.NotFound(base, opts);
-      case 'ENOTDIR':
-        return new Error.NotADirectory(base, opts);
-      case 'EISDIR':
-        return new Error.IsADirectory(base, opts);
-      case 'EEXIST':
-        return new Error.AlreadyExists(base, opts);
-      case 'EACCES':
-      case 'EPERM':
-        return new Error.PermissionDenied(base, opts);
-      case 'EBADF':
-        return new Error.BadResource(base, opts);
-      case 'EIO':
-        return new Error.FSError(base, opts);
-      case 'ENOTEMPTY':
-        return new Error.FSError(base, opts);
-      case 'ETIMEDOUT':
-        return new Error.TimedOut(base, opts);
-      case 'EINTR':
-        return new Error.Interrupted(base, opts);
-      case 'EAGAIN':
-      case 'EWOULDBLOCK':
-        return new Error.WouldBlock(base, opts);
-      case 'ECONNREFUSED':
-        return new Error.ConnectionRefused(base, opts);
-      case 'ECONNRESET':
-        return new Error.ConnectionReset(base, opts);
-      case 'ECONNABORTED':
-        return new Error.ConnectionAborted(base, opts);
-      case 'ENOTCONN':
-        return new Error.NotConnected(base, opts);
-      case 'EADDRINUSE':
-        return new Error.AddrInUse(base, opts);
-      case 'EADDRNOTAVAIL':
-        return new Error.AddrNotAvailable(base, opts);
-      case 'EPIPE':
-        return new Error.BrokenPipe(base, opts);
-      default:
-        break;
-    }
-
-    const lowerCause = String(cause ?? '').toLowerCase();
-    const msg = String(errWithCode.message ?? '').toLowerCase();
-
-    if (msg.includes('eof') || msg.includes('unexpected eof')) {
-      return new Error.UnexpectedEof(base, opts);
-    }
-
-    if (lowerCause.includes('read')) {
-      return new Error.BadResource(base, opts);
-    }
-
-    if (
-      lowerCause.includes('write') || lowerCause.includes('mkdir') || lowerCause.includes('open') ||
-      lowerCause.includes('create') || lowerCause.includes('rename') || lowerCause.includes('move') ||
-      lowerCause.includes('unlink')
-    ) {
-      return new Error.FSError(base, opts);
-    }
-
-    // Fallback to the generic FSError
-    return new Error.FSError(base, opts);
   }
 }

@@ -1,4 +1,4 @@
-import { BaseSpec } from '$spec';
+import { FSSpecBase } from '$spec';
 import { isString } from '@epdoc/type';
 import path from 'node:path';
 import type * as FS from '../types.ts';
@@ -22,7 +22,7 @@ export function resolvePathArgs(...args: FS.PathSegment[]): FS.Path {
   for (let adx = 0; adx < args.length; ++adx) {
     const item = args[adx];
 
-    if (item instanceof BaseSpec) {
+    if (item instanceof FSSpecBase) {
       if (adx === 0) {
         parts.push(item.path);
       } else {

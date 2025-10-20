@@ -28,9 +28,9 @@ describe('FSSpec error conditions', () => {
   });
 
   test('ensureParentDir -> NotADirectory when parent is a file', async () => {
-    const parentFile = path.join(tmpDir, 'parent-file');
-    await fs.writeFile(parentFile, 'data');
-    const child = new FileSpec(path.join(parentFile, 'child.txt'));
+    const fsParentFile = new FileSpec(tmpDir, 'parent-file');
+    await fsParentFile.write('these are the content of the file names "parent-file"');
+    const child = new FileSpec(fsParentFile, 'child.txt');
     try {
       await child.ensureParentDir();
       throw new Error('Expected ensureParentDir to throw NotADirectory');

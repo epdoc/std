@@ -1,39 +1,35 @@
-import * as dfs from '@std/fs';
+import * as Err from '$error';
+import * as util from '$util';
+import { _ } from '@epdoc/type';
+import { assert } from '@std/assert';
+import * as fs from 'node:fs';
 import path from 'node:path';
-import { FSStats } from '../fsstats.ts';
-import type { Path } from '../types.ts';
+import type { CopyOptions, FileInfo, FSEntry, Path, RemoveOptions } from '../types.ts';
 
 /**
  * Abstract class representing a file system item, which may be of unknown type,
  * a file, folder, or symlink.
  */
-export abstract class BaseSpec {
+export abstract class FSSpecBase {
   // @ts-ignore this does get initialized
   protected _f: Path;
-  protected _stats: FSStats = new FSStats();
-  protected _dirEntry: Deno.DirEntry | undefined;
+  protected _info: FileInfo | undefined;
+  protected _dirEntry: FSEntry | undefined;
 
   /**
-   * Creates a new instance of BaseSpec by resolving the provided path parts.
-   * The constructor accepts a variable number of arguments, which can be the
-   * path from a FolderSpec of FSSpec, followed by strings representing the
-   * path, or just path parts, or a single FileSpec path.
-   *
-   * @throws {Error} Throws an error if the parameters are invalid, such as if
-   * multiple FileSpec instances are provided or if a FolderSpec or FSSpec is
-   * used for anything other than the first argument.
+   * Clears the cached FileInfo, forcing a re-read on the next stats() call.
    */
-  // constructor(...args: FSSpecParam) {
-  //   this._f = resolvePathArgs(...args);
-  // }
+  clearInfo(): void {
+    this._info = undefined;
+  }
 
   /**
    * Copies parameters from this FSSpec to the target FSSpec.
-   * @param {BaseSpec} target - The target FSSpec to copy parameters to.
-   * @returns {BaseSpec} - The target FSSpec with copied parameters.
+   * @param {FSSpecBase} target - The target FSSpec to copy parameters to.
+   * @returns {FSSpecBase} - The target FSSpec with copied parameters.
    */
-  copyParamsTo(target: BaseSpec): BaseSpec {
-    target._stats = this._stats;
+  copyParamsTo(target: FSSpecBase): FSSpecBase {
+    target._info = this._info;
     target._dirEntry = this._dirEntry;
     return target;
   }
@@ -65,220 +61,92 @@ export abstract class BaseSpec {
   }
 
   /**
-   * Sets the FSStats for this file system item.
-   * @param {FSStats} stats - An instance of FSStats representing file statistics.
-   * @returns {this} The current instance for chaining.
-   */
-  setStats(stats: FSStats): this {
-    this._stats = stats;
-    return this;
-  }
-
-  /**
    * Sets the directory entry for this file system item.
-   * @param {Deno.DirEntry | undefined} dirEntry - The Deno.DirEntry object, or undefined if not applicable.
+   * @param {FSEntry | undefined} dirEntry - The FSEntry object, or undefined if not applicable.
    * @returns {this} The current instance for chaining.
    */
-  setDirEntry(dirEntry: Deno.DirEntry | undefined): this {
+  setDirEntry(dirEntry: FSEntry | undefined): this {
     this._dirEntry = dirEntry;
     return this;
   }
 
-  /**
-   * Getter returns the FSStats object associated with this file. A previous
-   * call to getStats() is needed in order to read stats from disk.
-   * @return {FSStats} - The FSStats for this file, if they have been read.
-   */
-  get stats(): FSStats {
-    return this._stats;
+  hasInfo(): boolean {
+    return this._info ? true : false;
   }
 
   /**
-   * Checks if the stats for this file or folder are initialized.
-   * @returns {boolean} - True if stats are initialized, false otherwise.
+   * Synchronously returns the cached FileInfo object, or undefined if
+   * stats have not been loaded.
    */
-  hasStats(): boolean {
-    return this._stats.isInitialized();
+  get info(): FileInfo {
+    assert(this._info, 'File stats have not been read');
+    return this._info;
   }
 
   /**
-   * If this is a file, have we already determined the file's size in bytes?
-   * @returns {boolean} - True if we know the file size, false otherwise
-   */
-  get hasFileSize(): boolean {
-    return this._stats.size !== -1;
-  }
-
-  /**
-   * Async call to retrieve the stats for this file or folder and returns a new
-   * instance of FileSpec, FolderSpec, or SymlinkSpec.
+   * Asynchronously retrieves the stats for this file or folder.
    * @param {boolean} force - Force retrieval of the stats, even if they have
    * already been retrieved.
+   * @returns {Promise<FileInfo | undefined>} A promise that resolves with the file's stats.
    */
-  public getStats(force = false): Promise<FSStats> {
-    if (force || !this._stats.isInitialized()) {
-      return (
-        Promise.resolve(this)
-          .then(() => {
-            return Deno.lstat(this._f);
-          })
-          // @ts-ignore xxx Trying to find a way to quiet this error
-          .then((resp: Deno.FileInfo) => {
-            this._stats = new FSStats(resp);
-            return Promise.resolve(this._stats);
-          })
-          .catch((_err) => {
-            this._stats = new FSStats();
-            return Promise.resolve(this._stats);
-          })
-      );
-    } else {
-      return Promise.resolve(this._stats);
+  stats(force = false): Promise<FileInfo | undefined> {
+    if (force || !this._info) {
+      return fs.promises.lstat(this._f)
+        .then((rawStats: fs.Stats) => {
+          this._info = util.statsToFileInfo(rawStats);
+          return this._info;
+        })
+        .catch((_err) => {
+          this._info = undefined;
+          return this._info;
+        });
     }
+    return Promise.resolve(this._info);
   }
 
   /**
-   * Checks if the file or folder exists.
-   *
-   * It is recommended to use getExists() unless it is known that getStats() has
-   * already be executed.
-   *
-   * @returns {boolean | undefined} True if the item exists, or undefined if not
-   * determined.
-   */
-  exists(): boolean | undefined {
-    if (this._dirEntry) {
-      return true;
-    }
-    if (this._stats.isInitialized()) {
-      return this._stats.exists();
-    }
-  }
-
-  /**
-   * Async check if this file or folder exist? Will retrieve the FSStats for the
-   * file system entry if they haven't been previously read.
+   * Asynchronously checks if this file or folder exists.
    * @returns a promise with value true if this exists.
    */
-  getExists(): Promise<boolean> {
-    return this.getStats().then((stats: FSStats) => {
-      return stats.exists();
-    });
+  async exists(force = false): Promise<boolean> {
+    const info = await this.stats(force);
+    return info?.exists === true;
   }
 
-  /**
-   * Determines if the file system item type is known (i.e. is the item a file, folder or symlink)
-   * Returns true if a directory entry is available or if the stats are initialized.
-   * @returns {boolean} True if the type is known, false otherwise.
-   * @experimental Use hasStats() where possible
-   */
-  knowType(): boolean {
-    return this._dirEntry || this._stats.isInitialized() ? true : false;
-  }
-
-  /**
-   * Checks if the file system item is a file.
-   *
-   * It is recommended to use getIsFile() unless it is known that getStats() has
-   * already be executed.
-   *
-   * @returns {boolean | undefined} True if it is a file; false if not a file,
-   * undefined if the result has not yet been determined.
-   */
-  isFile(): boolean | undefined {
-    if (this._dirEntry) {
-      return this._dirEntry.isFile;
-    }
-    if (this._stats.isInitialized()) {
-      return this._stats.isFile();
-    }
-  }
-
-  /**
-   * Checks if the file system item is a folder.
-   *
-   * It is recommended to use getIsFolder() unless it is known that getStats() has
-   * already be executed.
-   *
-   * @returns {boolean | undefined} True if it is a folder; otherwise, undefined.
-   */
-  isFolder(): boolean | undefined {
-    if (this._dirEntry) {
-      return this._dirEntry.isDirectory;
-    }
-    if (this._stats.isInitialized()) {
-      return this._stats.isDirectory();
-    }
-  }
-
-  /**
-   * Checks if the file system item is a symlink.
-   *
-   * It is recommended to use getIsSymlink() unless it is known that getStats() has
-   * already be executed.
-   *
-   * @returns {boolean | undefined} True if it is a symlink; otherwise, undefined.
-   */
-  isSymlink(): boolean | undefined {
-    if (this._dirEntry) {
-      return this._dirEntry.isSymlink;
-    }
-    if (this._stats.isInitialized()) {
-      return this._stats.isSymlink();
-    }
-  }
   /**
    * Asynchronously checks if the file system item is a file.
    * @returns {Promise<boolean>} A promise that resolves to true if it is a file.
    */
-  getIsFile(): Promise<boolean> {
-    return this.getStats().then(() => {
-      return this._stats.isFile();
-    });
+  async isFile(force = false): Promise<boolean> {
+    const info = await this.stats(force);
+    return info?.isFile === true;
   }
 
   /**
    * Asynchronously checks if the file system item is a folder.
    * @returns {Promise<boolean>} A promise that resolves to true if it is a folder.
    */
-  getIsFolder(): Promise<boolean> {
-    return this.getStats().then(() => {
-      return this._stats.isDirectory();
-    });
+  async isFolder(force = false): Promise<boolean> {
+    const info = await this.stats(force);
+    return info?.isDirectory === true;
   }
 
   /**
    * Asynchronously checks if the file system item is a symlink.
    * @returns {Promise<boolean>} A promise that resolves to true if it is a symlink.
    */
-  getIsSymlink(): Promise<boolean> {
-    return this.getStats().then(() => {
-      return this._stats.isSymlink();
-    });
-  }
-
-  /**
-   * Retrieves the creation date of this file or folder, if available.
-   *
-   * It is recommended to use getCreatedAt() unless it is known that getStats() has
-   * already be executed.
-   *
-   * @returns {Date | undefined} The creation date, or undefined if not available.
-   */
-  createdAt(): Date | undefined {
-    if (this._stats.isInitialized()) {
-      return this._stats.createdAt();
-    }
+  async isSymlink(force = false): Promise<boolean> {
+    const info = await this.stats(force);
+    return info?.isSymlink === true;
   }
 
   /**
    * Asynchronously retrieves the creation date of this file or folder.
    * @returns {Promise<Date | undefined>} A promise that resolves to the creation date, or undefined if not available.
    */
-  getCreatedAt(): Promise<Date | undefined> {
-    return this.getStats().then(() => {
-      return this._stats.createdAt();
-    });
+  async createdAt(force = false): Promise<Date | null | undefined> {
+    const info = await this.stats(force);
+    return info?.createdAt;
   }
 
   /**
@@ -287,41 +155,122 @@ export abstract class BaseSpec {
    * @param {boolean} options.recursive - Recursively remove items if this is a folder.
    * @returns {Promise<void>} - A promise that resolves when the file or folder is removed.
    */
-  remove(options: Deno.RemoveOptions = {}): Promise<void> {
-    return this.getStats()
-      .then(() => {
-        if (this._stats.exists()) {
-          return Deno.remove(this._f, options);
-        }
-      })
-      .catch((err) => {
-        if (err && err.code === 'ENOTEMPTY') {
-          err.message += ', set recursive option to true to delete non-empty folders.';
-        }
-        return Promise.reject(err);
-      });
+  async remove(options: RemoveOptions = {}): Promise<void> {
+    const exists = await this.exists(true);
+    if (exists) {
+      return fs.promises.rm(this._f, options);
+    }
   }
 
   /**
    * Copies this file or folder to the location `dest`.
-   * @param {FilePath | BaseSpec} dest - The destination path.
-   * @param {dfs.CopyOptions} [options] - Options for the copy operation.
+   * @param {Path} dest - The destination path.
+   * @param {CopyOptions} [options] - Options for the copy operation.
    * @returns {Promise<void>} - A promise that resolves when the copy is complete.
    */
-  copyTo(dest: Path | BaseSpec, options?: dfs.CopyOptions): Promise<void> {
-    const p: Path = dest instanceof BaseSpec ? dest.path : dest;
-    return dfs.copy(this._f, p, options);
+  async copyTo(dest: Path, options?: CopyOptions): Promise<void> {
+    try {
+      let flags = 0;
+      if (options?.overwrite === false) {
+        flags = fs.constants.COPYFILE_EXCL;
+      }
+      await fs.promises.copyFile(this._f, dest, flags);
+
+      if (options?.preserveTimestamps) {
+        const sourceInfo = await this.stats();
+        if (sourceInfo?.atime && sourceInfo?.modifiedAt) {
+          await fs.promises.utimes(dest, sourceInfo.atime, sourceInfo.modifiedAt);
+        }
+      }
+    } catch (err) {
+      throw this.asError(err, 'copyTo');
+    }
   }
 
   /**
-   * Syncronous version of `copyTo` method.
-   * @param dest
-   * @param options An dfs.CopyOptionsSync object
-   * @returns
+   * Asynchronously retrieves the canonicalized absolute path of the file system item.
+   * This resolves symbolic links and '..' or '.' segments.
+   * @returns {Promise<Path>} A promise that resolves to the canonicalized absolute path.
    */
-  copySync(dest: Path | BaseSpec, options?: dfs.CopyOptions): this {
-    const p: Path = dest instanceof BaseSpec ? dest.path : dest;
-    dfs.copySync(this._f, p, options);
-    return this;
+  realPath(): Promise<Path> {
+    return fs.promises.realpath(this._f) as Promise<Path>;
+  }
+
+  asError(error: unknown, cause?: string): Err.FSError {
+    const base = _.asError(error);
+
+    // Narrow view of possible platform error shape (no `any` used).
+    type ErrWithCode = { code?: string; errno?: number | string; message?: string };
+    const errWithCode = base as unknown as ErrWithCode;
+
+    const code = errWithCode.code ?? (errWithCode.errno !== undefined ? String(errWithCode.errno) : undefined);
+    const opts: Err.FSErrorOptions = { path: this._f, cause, code };
+
+    const codeStr = String(code || '').toUpperCase();
+
+    switch (codeStr) {
+      case 'ENOENT':
+        return new Err.NotFound(base, opts);
+      case 'ENOTDIR':
+        return new Err.NotADirectory(base, opts);
+      case 'EISDIR':
+        return new Err.IsADirectory(base, opts);
+      case 'EEXIST':
+        return new Err.AlreadyExists(base, opts);
+      case 'EACCES':
+      case 'EPERM':
+        return new Err.PermissionDenied(base, opts);
+      case 'EBADF':
+        return new Err.BadResource(base, opts);
+      case 'EIO':
+        return new Err.FSError(base, opts);
+      case 'ENOTEMPTY':
+        return new Err.FSError(base, opts);
+      case 'ETIMEDOUT':
+        return new Err.TimedOut(base, opts);
+      case 'EINTR':
+        return new Err.Interrupted(base, opts);
+      case 'EAGAIN':
+      case 'EWOULDBLOCK':
+        return new Err.WouldBlock(base, opts);
+      case 'ECONNREFUSED':
+        return new Err.ConnectionRefused(base, opts);
+      case 'ECONNRESET':
+        return new Err.ConnectionReset(base, opts);
+      case 'ECONNABORTED':
+        return new Err.ConnectionAborted(base, opts);
+      case 'ENOTCONN':
+        return new Err.NotConnected(base, opts);
+      case 'EADDRINUSE':
+        return new Err.AddrInUse(base, opts);
+      case 'EADDRNOTAVAIL':
+        return new Err.AddrNotAvailable(base, opts);
+      case 'EPIPE':
+        return new Err.BrokenPipe(base, opts);
+      default:
+        break;
+    }
+
+    const lowerCause = String(cause ?? '').toLowerCase();
+    const msg = String(errWithCode.message ?? '').toLowerCase();
+
+    if (msg.includes('eof') || msg.includes('unexpected eof')) {
+      return new Err.UnexpectedEof(base, opts);
+    }
+
+    if (lowerCause.includes('read')) {
+      return new Err.BadResource(base, opts);
+    }
+
+    if (
+      lowerCause.includes('write') || lowerCause.includes('mkdir') || lowerCause.includes('open') ||
+      lowerCause.includes('create') || lowerCause.includes('rename') || lowerCause.includes('move') ||
+      lowerCause.includes('unlink')
+    ) {
+      return new Err.FSError(base, opts);
+    }
+
+    // Fallback to the generic FSError
+    return new Err.FSError(base, opts);
   }
 }

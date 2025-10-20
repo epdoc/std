@@ -3,18 +3,19 @@ import { fromFileUrl } from '@std/path';
 import os from 'node:os';
 import path from 'node:path';
 import type * as FS from '../types.ts';
-import { BaseSpec } from './basespec.ts';
+import { FSSpecBase } from './basespec.ts';
 import { FileSpec } from './filespec.ts';
 import { FolderSpec } from './folderspec.ts';
 import type { ICopyableSpec, IRootableSpec } from './icopyable.ts';
 import { SymlinkSpec } from './symspec.ts';
+import type { TypedFSSpec } from './types.ts';
 
 /**
  * Class representing a file system item, which may be a file, folder, or symlink. Use this when you
  * do not know the specific type at creation time. FileSpec, FolderSpec and SymlinkSpec do NOT
  * subclass FSSpec as they do not share methods with this class.
  */
-export class FSSpec extends BaseSpec implements ICopyableSpec, IRootableSpec {
+export class FSSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec {
   /**
    * Public constructor for FSSpec.
    * @param {...PathSegment[]} args - Path segments to resolve.
@@ -53,10 +54,10 @@ export class FSSpec extends BaseSpec implements ICopyableSpec, IRootableSpec {
 
   /**
    * Copies parameters from this instance to the target BaseSpec.
-   * @param {BaseSpec} target - The target BaseSpec to copy parameters to.
-   * @returns {BaseSpec} The target BaseSpec with copied parameters.
+   * @param {FSSpecBase} target - The target BaseSpec to copy parameters to.
+   * @returns {FSSpecBase} The target BaseSpec with copied parameters.
    */
-  override copyParamsTo(target: BaseSpec): BaseSpec {
+  override copyParamsTo(target: FSSpecBase): FSSpecBase {
     super.copyParamsTo(target);
     return target;
   }
@@ -69,16 +70,17 @@ export class FSSpec extends BaseSpec implements ICopyableSpec, IRootableSpec {
    *
    * @returns {FSSpec | FolderSpec | FileSpec | SymlinkSpec} The resolved type instance.
    */
-  resolveType(): FSSpec | FolderSpec | FileSpec | SymlinkSpec {
-    let result: FSSpec | FolderSpec | FileSpec | SymlinkSpec;
-    if (this.isFile() === true) {
+  cachedResolveType(): TypedFSSpec | undefined {
+    let result: TypedFSSpec | undefined = undefined;
+    if (this.info.isFile) {
       result = new FileSpec(this);
-    } else if (this.isFolder() === true) {
+    } else if (this.info.isDirectory === true) {
       result = new FolderSpec(this);
-    } else if (this.isSymlink() === true) {
+    } else if (this.info.isSymlink === true) {
       result = new SymlinkSpec(this.path);
-    } else {
-      result = new FSSpec(this);
+    }
+    if (!result) {
+      return undefined;
     }
     this.copyParamsTo(result);
     return result;
@@ -90,10 +92,9 @@ export class FSSpec extends BaseSpec implements ICopyableSpec, IRootableSpec {
    * @returns {Promise<FSSpec | FolderSpec | FileSpec | SymlinkSpec>} A promise
    * resolving to the specific type instance.
    */
-  getResolvedType(): Promise<FSSpec | FileSpec | FolderSpec | SymlinkSpec> {
-    return this.getStats().then(() => {
-      return this.resolveType();
-    });
+  async resolvedType(force = false): Promise<TypedFSSpec | undefined> {
+    await this.stats(force);
+    return this.cachedResolveType();
   }
 
   /**

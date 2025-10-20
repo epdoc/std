@@ -27,11 +27,19 @@ export type SafeCopyOptsBase = {
   /**
    * Don't actually move or copy the file, just execute the logic around it
    */
-  test?: boolean;
+  dryRun?: boolean;
   /**
    * Whether to move or copy the file or folder.
    */
   move?: boolean;
+  /**
+   * Whether to overwrite existing files.
+   */
+  overwrite?: boolean;
+  /**
+   * Whether to preserve the original file's timestamps.
+   */
+  preserveTimestamps?: boolean;
 };
 
 /**

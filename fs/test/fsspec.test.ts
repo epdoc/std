@@ -21,13 +21,13 @@ describe('FSSpec', () => {
   describe('Type Resolution', () => {
     test('getResolvedType() returns FileSpec for file', async () => {
       const fsspec = new FSSpec(testFile);
-      const resolved = await fsspec.getResolvedType();
+      const resolved = await fsspec.resolvedType();
       expect(resolved).toBeInstanceOf(FileSpec);
     });
 
     test('getResolvedType() returns FolderSpec for folder', async () => {
       const fsspec = new FSSpec(testDir);
-      const resolved = await fsspec.getResolvedType();
+      const resolved = await fsspec.resolvedType();
       expect(resolved).toBeInstanceOf(FolderSpec);
     });
   });
@@ -45,7 +45,7 @@ describe('FSSpec', () => {
       const folder = new FolderSpec(newDir);
       await folder.ensureDir();
 
-      const exists = await folder.getExists();
+      const exists = await folder.exists();
       expect(exists).toBe(true);
     });
   });

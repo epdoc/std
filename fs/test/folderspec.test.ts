@@ -25,12 +25,12 @@ describe('FolderSpec', () => {
   describe('Basic Operations', () => {
     test('getExists() returns true for existing folder', async () => {
       const folder = new FolderSpec(testDir);
-      expect(await folder.getExists()).toBe(true);
+      expect(await folder.exists()).toBe(true);
     });
 
-    test('getIsFolder() returns true for folder', async () => {
+    test('isFolder() returns true for folder', async () => {
       const folder = new FolderSpec(testDir);
-      expect(await folder.getIsFolder()).toBe(true);
+      expect(await folder.isFolder()).toBe(true);
     });
 
     test('dirname getter returns correct parent directory', () => {

@@ -1,22 +1,23 @@
-import { resolvePathArgs, safeCopy, type SafeCopyOpts } from '$util';
+import { direntToSpec, resolvePathArgs, safeCopy, type SafeCopyOpts } from '$util';
+import { walk, type WalkOptions } from '$walk';
 import { _, type Dict } from '@epdoc/type';
-import * as dfs from '@std/fs';
-import { fromFileUrl } from '@std/path';
 import { promises as nfs } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 import type * as FS from '../types.ts';
-import { BaseSpec } from './basespec.ts';
+
+import { FSSpecBase } from './basespec.ts';
 import { FileSpec } from './filespec.ts';
 import type { FSSpec } from './fsspec.ts';
 import type { IRootableSpec, ISafeCopyableSpec } from './icopyable.ts';
 import { SymlinkSpec } from './symspec.ts';
-import type { FolderDiff } from './types.ts';
-import { fromDirEntry, fromWalkEntry } from './utils.ts';
+import type { FolderDiff, MoveOptions, TypedFSSpec } from './types.ts';
 
 /**
  * Factory function to create a new FolderSpec object.
+ * @deprecated1
  */
 export function folderSpec(...args: FS.PathSegment[]): FolderSpec {
   return new FolderSpec(...args);
@@ -35,7 +36,7 @@ export function folderSpec(...args: FS.PathSegment[]): FolderSpec {
  *  - Getting the creation dates of files, including using the metadata of some file formats
  *  - Testing files for equality
  */
-export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootableSpec {
+export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootableSpec {
   // @ts-ignore this does get initialized
   // Test to see if _folders and _files have been read
   protected _haveReadFolderContents: boolean = false;
@@ -71,7 +72,7 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
    * // dataFolder.path will be /path/to/your/project/data
    */
   public static fromMeta(metaUrl: string, ...paths: string[]): FolderSpec {
-    const dir = path.dirname(fromFileUrl(metaUrl));
+    const dir = path.dirname(fileURLToPath(metaUrl));
     const fullPath = path.join(dir, ...paths);
     return new FolderSpec(fullPath);
   }
@@ -93,8 +94,8 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
    * no longer needed.
    *
    * ```ts
-   * const tempDirName0 = await Deno.makeTempDir();  // e.g. /tmp/2894ea76
-   * const tempDirName1 = await Deno.makeTempDir({ prefix: 'my_temp' }); // e.g. /tmp/my_temp339c944d
+   * const tempDirName0 = await FolderSpec.makeTemp();  // e.g. /tmp/2894ea76
+   * const tempDirName1 = await FolderSpec.makeTemp({ prefix: 'my_temp' }); // e.g. /tmp/my_temp339c944d
    * ```
    *
    * Requires `allow-write` permission.
@@ -131,7 +132,7 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
 
   /**
    * Return a copy of this object. Does not copy the file.
-   * @see BaseSpec#copyTo
+   * @see FSSpecBase#copyTo
    */
   copy(): FolderSpec {
     const result = new FolderSpec(this);
@@ -139,7 +140,7 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
     return result;
   }
 
-  override copyParamsTo(target: BaseSpec): BaseSpec {
+  override copyParamsTo(target: FSSpecBase): FSSpecBase {
     super.copyParamsTo(target);
     if (target instanceof FolderSpec) {
       target._haveReadFolderContents = this._haveReadFolderContents;
@@ -168,22 +169,10 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
     return this._haveReadFolderContents;
   }
 
-  override isFile(): boolean | undefined {
-    return false;
-  }
-
-  override isFolder(): boolean | undefined {
-    return true;
-  }
-
-  override isSymlink(): boolean | undefined {
-    return false;
-  }
-
   /**
    * Get the list of FSItem files that matched a previous call to getFiles() or
    * getChildren().
-   * @returns {BaseSpec[]} Array of FSItem objects representing files.
+   * @returns {FSSpecBase[]} Array of FSItem objects representing files.
    */
   get files(): FileSpec[] {
     return this._files;
@@ -203,7 +192,7 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
   /**
    * Get the list of FSItem folders that matched a previous call to getFolders() or
    * getChildren().
-   * @returns {BaseSpec[]} Array of FSItem objects representing folders.
+   * @returns {FSSpecBase[]} Array of FSItem objects representing folders.
    */
   get folders(): FolderSpec[] {
     return this._folders;
@@ -234,35 +223,30 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
    * Ensures there is a folder with this path.
    * @returns {Promise<void>} A promise that resolves when the directory is ensured.
    */
-  ensureDir(): Promise<void> {
-    return dfs.ensureDir(this._f);
-  }
-
-  /**
-   * Synchronous version of `ensureDir`.
-   * @param {fx.EnsureDirOptions | number} [options] Options for ensuring the directory.
-   * @returns {this} The current FSItem instance.
-   */
-  ensureDirSync(): this {
-    dfs.ensureDirSync(this._f);
-    return this;
+  async ensureDir(): Promise<void> {
+    await nfs.mkdir(this._f, { recursive: true });
   }
 
   async ensureParentDir(): Promise<void> {
-    await dfs.ensureDir(this.dirname);
+    await nfs.mkdir(this.dirname, { recursive: true });
+  }
+
+  async mkdir(name: FS.Name): Promise<FolderSpec> {
+    const newFolder = new FolderSpec(this, name);
+    await newFolder.ensureDir();
+    return newFolder;
   }
 
   /**
    * Reads the contents of the directory and returns an array of BaseSpec objects
    * representing both files and folders.
-   * @returns {Promise<BaseSpec[]>} Array of BaseSpec objects for directory entries
+   * @returns {Promise<FSSpecBase[]>} Array of BaseSpec objects for directory entries
    */
-  async readDir(): Promise<BaseSpec[]> {
-    const results: BaseSpec[] = [];
-    for await (const entry of Deno.readDir(this._f)) {
-      const fs = fromDirEntry(this.path as FS.FolderPath, entry);
-      results.push(fs);
-    }
+  async readDir(): Promise<(TypedFSSpec)[]> {
+    const dirents = await nfs.readdir(this._f, { withFileTypes: true });
+    const results = dirents
+      .map((d) => direntToSpec(this.path as FS.FolderPath, d))
+      .filter(Boolean) as (TypedFSSpec)[];
     return results;
   }
 
@@ -273,15 +257,10 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
    * @returns {Promise<FileSpec[]>} Array of FileSpec objects for matching files
    */
   async getFiles(regex?: RegExp): Promise<FileSpec[]> {
-    const results: FileSpec[] = [];
-    for await (const entry of Deno.readDir(this._f)) {
-      if (entry.isFile) {
-        if (!regex || regex.test(entry.name)) {
-          const fileSpec = new FileSpec(this.path, entry.name).setDirEntry(entry);
-          results.push(fileSpec);
-        }
-      }
-    }
+    const dirents = await nfs.readdir(this._f, { withFileTypes: true });
+    const results = dirents
+      .map((d) => direntToSpec(this.path as FS.FolderPath, d))
+      .filter((spec): spec is FileSpec => spec instanceof FileSpec && (!regex || regex.test(spec.filename)));
     return results;
   }
 
@@ -292,28 +271,23 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
    * @returns {Promise<FolderSpec[]>} Array of FolderSpec objects for matching folders
    */
   async getFolders(regex?: RegExp): Promise<FolderSpec[]> {
-    const results: FolderSpec[] = [];
-    for await (const entry of Deno.readDir(this._f)) {
-      if (entry.isDirectory) {
-        if (!regex || regex.test(entry.name)) {
-          const folderSpec = new FolderSpec(this.path, entry.name).setDirEntry(entry);
-          results.push(folderSpec);
-        }
-      }
-    }
+    const dirents = await nfs.readdir(this._f, { withFileTypes: true });
+    const results = dirents
+      .map((d) => direntToSpec(this.path as FS.FolderPath, d))
+      .filter((spec): spec is FolderSpec => spec instanceof FolderSpec && (!regex || regex.test(spec.filename)));
     return results;
   }
 
   /**
    * Recursively walks through the directory tree and returns all matching entries.
    *
-   * @param {dfs.WalkOptions} opts - Options for the walk:
+   * @param {WalkOptions} opts - Options for the walk:
    *   - maxDepth?: number - Maximum directory depth to traverse
    *   - includeFiles?: boolean - Whether to include files (default: true)
    *   - includeDirs?: boolean - Whether to include directories (default: true)
    *   - match?: RegExp[] - Array of patterns to match against
    *   - skip?: RegExp[] - Array of patterns to skip
-   * @returns {Promise<BaseSpec[]>} Array of BaseSpec objects for matched entries
+   * @returns {Promise<FSSpecBase[]>} Array of BaseSpec objects for matched entries
    *
    * @example
    * // Find all files ending in 2 digits (e.g. metadata-01.json)
@@ -328,10 +302,8 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
    * //   FileSpec { path: "data/chapter-42.md" }
    * // ]
    */
-  async walk(opts: dfs.WalkOptions): Promise<(FileSpec | FolderSpec | SymlinkSpec | FSSpec)[]> {
-    const entries = await Array.fromAsync(dfs.walk(this._f, opts));
-
-    return entries.map((entry) => fromWalkEntry(entry));
+  async walk(opts: WalkOptions): Promise<(FileSpec | FolderSpec | SymlinkSpec | FSSpec)[]> {
+    return await Array.fromAsync(walk(this, opts));
   }
 
   /**
@@ -343,7 +315,7 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
    * @param {number} [options.levels=1] - The number of levels to traverse. Defaults to 1.
    * @param {function} [options.callback] - A callback function to be called for each matched item.
    * @param {Object} [options.sort] - Sorting options for the results.
-   * @returns {Promise<BaseSpec[]>} - A promise that resolves to an array of FSSpec objects representing the files and folders.
+   * @returns {Promise<FSSpecBase[]>} - A promise that resolves to an array of FSSpec objects representing the files and folders.
    *
    * @example
    * ```ts
@@ -357,61 +329,61 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
    *   });
    * ```
    */
-  getChildren(options: FS.GetChildrenOpts = { levels: 1 }): Promise<BaseSpec[]> {
+  async getChildren(options: FS.GetChildrenOpts = { levels: 1 }): Promise<TypedFSSpec[]> {
     const opts: FS.GetChildrenOpts = {
       match: options.match,
       levels: _.isNumber(options.levels) ? options.levels - 1 : 0,
       callback: options.callback,
       sort: _.isDict(options.sort) ? options.sort : {},
     };
-    const all: BaseSpec[] = [];
+
     this._folders = [];
     this._files = [];
     this._symlinks = [];
     this._haveReadFolderContents = false;
-    return Promise.resolve()
-      .then(async () => {
-        const jobs: Promise<unknown>[] = [];
-        for await (const entry of Deno.readDir(this._f)) {
-          const fs = fromDirEntry(this.path as FS.FolderPath, entry); // Cast this.path to FolderPath
-          let bMatch = false;
-          if (opts.match) {
-            if (_.isString(opts.match) && entry.name === opts.match) {
-              bMatch = true;
-            } else if (_.isRegExp(opts.match) && opts.match.test(entry.name)) {
-              bMatch = true;
-            }
-          } else {
-            bMatch = true;
-          }
-          if (bMatch) {
-            all.push(fs);
-            if (opts.callback) {
-              const job1 = opts.callback(fs);
-              jobs.push(job1);
-            }
-            if (fs instanceof FolderSpec) {
-              this._folders.push(fs);
-              if ((opts.levels as number) > 0) {
-                const job2 = fs.getChildren(opts);
-                jobs.push(job2);
-              }
-            } else if (fs instanceof FileSpec) {
-              this._files.push(fs);
-            } else if (fs instanceof SymlinkSpec) {
-              this._symlinks.push(fs);
-            }
-          }
+
+    const allEntries = await this.readDir();
+    const matchedEntries: TypedFSSpec[] = [];
+    const jobs: Promise<unknown>[] = [];
+
+    for (const fsItem of allEntries) {
+      let bMatch = false;
+      if (opts.match) {
+        if (_.isString(opts.match) && fsItem.filename === opts.match) {
+          bMatch = true;
+        } else if (_.isRegExp(opts.match) && opts.match.test(fsItem.filename)) {
+          bMatch = true;
         }
-        return Promise.all(jobs);
-      })
-      .then((_resp) => {
-        this._haveReadFolderContents = true;
-        if (_.isDict(opts.sort)) {
-          this.sortChildren(opts.sort);
+      } else {
+        bMatch = true;
+      }
+
+      if (bMatch) {
+        matchedEntries.push(fsItem);
+        if (opts.callback) {
+          const job1 = opts.callback(fsItem);
+          jobs.push(job1);
         }
-        return Promise.resolve(all);
-      });
+        if (fsItem instanceof FolderSpec) {
+          this._folders.push(fsItem);
+          if ((opts.levels as number) > 0) {
+            const job2 = fsItem.getChildren(opts);
+            jobs.push(job2);
+          }
+        } else if (fsItem instanceof FileSpec) {
+          this._files.push(fsItem);
+        } else if (fsItem instanceof SymlinkSpec) {
+          this._symlinks.push(fsItem);
+        }
+      }
+    }
+
+    await Promise.all(jobs);
+    this._haveReadFolderContents = true;
+    if (_.isDict(opts.sort)) {
+      this.sortChildren(opts.sort);
+    }
+    return matchedEntries;
   }
 
   /**
@@ -450,23 +422,33 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
    * Sorts the files of this FSItem by size. Run getChildren() first.
    * @returns {this} The current FSItem instance.
    */
-  static sortFilesBySize(items: BaseSpec[]): BaseSpec[] {
+  static sortFilesBySize(items: FSSpecBase[]): FSSpecBase[] {
     return items
       .filter((item) => item instanceof FileSpec)
       .sort((a, b) => {
-        return _.compareValues(a as unknown as Dict, b as unknown as Dict, 'size');
+        return _.compareValues(a.info as unknown as Dict, b.info as unknown as Dict, 'size');
       });
   }
 
   /**
    * Moves this file or folder to the location `dest`.
-   * @param {FilePath | BaseSpec} dest - The new path for the file.
-   * @param {dfs.MoveOptions} options - Options to overwrite and dereference symlinks.
+   * @param {FilePath | FSSpecBase} dest - The new path for the file.
+   * @param {MoveOptions} options - Options to overwrite existing files.
    * @returns {Promise<void>} - A promise that resolves when the move is complete.
    */
-  moveTo(dest: FS.FolderPath | FolderSpec, options?: dfs.MoveOptions): Promise<void> {
+  async moveTo(dest: FS.FolderPath | FolderSpec, options?: MoveOptions): Promise<void> {
     const p: FS.FolderPath = dest instanceof FolderSpec ? dest.path : dest;
-    return dfs.move(this._f, p, options);
+
+    if (options?.overwrite) {
+      try {
+        await nfs.access(p);
+        await nfs.rm(p, { recursive: true, force: true });
+      } catch {
+        // Destination doesn't exist, which is fine
+      }
+    }
+
+    return nfs.rename(this._f, p);
   }
 
   /**
@@ -496,7 +478,7 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
       if (aFile.filename.toLowerCase() !== bFile.filename.toLowerCase()) {
         return false;
       }
-      const bEqual = await filesEqual(aFile, bFile, opts);
+      const bEqual = await aFile.equalTo(bFile, opts);
       if (!bEqual) {
         return false;
       }
@@ -526,7 +508,7 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
       if (!bFile) {
         result.missing.push(aFile.filename as FS.FileName);
       } else {
-        const bEqual = await filesEqual(aFile, bFile, opts);
+        const bEqual = await aFile.equalTo(bFile, opts);
         if (!bEqual) {
           result.diff.push(aFile.filename as FS.FileName);
         }
@@ -544,24 +526,4 @@ export class FolderSpec extends BaseSpec implements ISafeCopyableSpec, IRootable
 
     return result;
   }
-}
-
-async function filesEqual(
-  aFile: FileSpec,
-  bFile: FileSpec,
-  opts: { checksum?: boolean } = { checksum: true },
-): Promise<boolean> {
-  const aSize = await aFile.getSize();
-  const bSize = await bFile.getSize();
-  if (aSize !== bSize) {
-    return false;
-  }
-  if (opts.checksum) {
-    const aChecksum = await aFile.checksum();
-    const bChecksum = await bFile.checksum();
-    if (aChecksum !== bChecksum) {
-      return false;
-    }
-  }
-  return true;
 }

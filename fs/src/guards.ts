@@ -1,4 +1,5 @@
-import { isNonEmptyString } from '@epdoc/type';
+import { isFunction, isNonEmptyString, isObject } from '@epdoc/type';
+import type { Stats } from 'node:fs';
 import type { FileBasename, FileExt, FileName, FilePath, FolderName, FolderPath } from './types.ts';
 
 /**
@@ -59,4 +60,14 @@ export function isFileExt(val: unknown): val is FileExt {
 }
 export function isFolderName(val: unknown): val is FolderName {
   return isNonEmptyString(val);
+}
+
+/**
+ * Type guard to check if an object is a Node.js Stats instance
+ */
+export function isNodeStats(val: unknown): val is Stats {
+  return isObject(val) &&
+    'isFile' in val && 'isDirectory' in val && 'isSymbolicLink' in val &&
+    isFunction(val.isFile) && isFunction(val.isDirectory) && isFunction(val.isSymbolicLink) &&
+    'mode' in val && 'size' in val;
 }

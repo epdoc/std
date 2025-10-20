@@ -1,6 +1,9 @@
 import { expect } from '@std/expect';
-import { afterAll, beforeAll, describe, test } from '@std/testing/bdd';
+import { afterAll, beforeAll, describe, it, test } from '@std/testing/bdd';
+import { Buffer } from 'node:buffer';
+import { promises as nfs } from 'node:fs';
 import * as fs from 'node:fs/promises';
+import os from 'node:os';
 import * as path from 'node:path';
 import { DigestAlgorithm, FileSpec } from '../src/mod.ts';
 import { generateRobustPDF } from './pdfgen.ts';
@@ -69,7 +72,7 @@ describe('FileSpec', () => {
     test('add() correctly joins paths', async () => {
       const file = new FileSpec(testDir).add('subdir', 'file.txt');
       expect(file.path).toBe(path.join(testDir, 'subdir', 'file.txt'));
-      const isFile = await file.getIsFile();
+      const isFile = await file.isFile();
       expect(isFile).toBe(false);
     });
   });
@@ -77,12 +80,12 @@ describe('FileSpec', () => {
   describe('File Operations', () => {
     test('getExists() returns true for existing file', async () => {
       const file = new FileSpec(testFile);
-      expect(await file.getExists()).toBe(true);
+      expect(await file.exists()).toBe(true);
     });
 
-    test('getIsFile() returns true for file', async () => {
+    test('isFile() returns true for file', async () => {
       const file = new FileSpec(testFile);
-      expect(await file.getIsFile()).toBe(true);
+      expect(await file.isFile()).toBe(true);
     });
 
     test('readJson() reads and parses JSON correctly', async () => {
@@ -140,5 +143,60 @@ describe('FileSpec', () => {
       expect(file).toBeInstanceOf(FileSpec);
       expect(file.path.endsWith('somefile.json')).toBe(true);
     });
+  });
+});
+
+describe('FileSpec read/write helpers', () => {
+  let tmpDir: string;
+  beforeAll(async () => {
+    tmpDir = await nfs.mkdtemp(path.join(os.tmpdir(), 'fsspec-read-'));
+  });
+
+  afterAll(async () => {
+    await nfs.rm(tmpDir, { recursive: true, force: true });
+  });
+
+  it('writeJson() then readAsString() returns the exact JSON text', async () => {
+    const filePath = path.join(tmpDir, 'data.json');
+    const f = new FileSpec(filePath);
+    const obj = { version: '1.0.0' };
+    await f.writeJson(obj);
+    const txt = await f.readAsString();
+    expect(txt).toBe(JSON.stringify(obj));
+  });
+
+  it('readAsBytes() returns the written bytes', async () => {
+    const filePath = path.join(tmpDir, 'bytes.json');
+    const f = new FileSpec(filePath);
+    const obj = { a: 1, b: 'x' };
+    await f.writeJson(obj);
+    const bytes = await f.readAsBytes();
+    const expected = Buffer.from(JSON.stringify(obj), 'utf8');
+    expect(Buffer.from(bytes)).toEqual(expected);
+  });
+
+  it('readJson() parses JSON written by writeJson()', async () => {
+    const filePath = path.join(tmpDir, 'parsed.json');
+    const f = new FileSpec(filePath);
+    const obj = { name: 'test', n: 2 };
+    await f.writeJson(obj, null, 2);
+    const parsed = await f.readJson<typeof obj>();
+    expect(parsed).toEqual(obj);
+  });
+
+  it('writeBase64/readAsString(base64) encode and decode correctly', async () => {
+    const filePath = path.join(tmpDir, 'b64.txt');
+    const f = new FileSpec(filePath);
+    await f.writeBase64('Hello');
+    const decoded = await f.readAsString('base64');
+    expect(decoded).toBe('Hello');
+  });
+
+  it('readAsLines() returns lines split correctly', async () => {
+    const filePath = path.join(tmpDir, 'lines.txt');
+    const f = new FileSpec(filePath);
+    await f.write(['one', 'two', 'three']);
+    const lines = await f.readAsLines();
+    expect(lines).toEqual(['one', 'two', 'three']);
   });
 });

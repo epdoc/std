@@ -1,5 +1,9 @@
 # Changelist
 
+## [1.0.0-alpha.2] - 2025-10-20
+
+- snapshot during major refactoring
+
 ## [0.2.28] - 2025-10-17
 
 - Added FileSpec.parentFolder method.

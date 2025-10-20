@@ -1,8 +1,10 @@
 import * as Error from '$error';
-import { FileSpec, FolderSpec, FSSpec, SymlinkSpec } from '$spec'; // Import as value
-import * as dfs from '@std/fs';
+import * as Spec from '$spec'; // Import Spec
+import { FileSpec, FolderSpec, type FSSpec, SymlinkSpec } from '$spec'; // Import Spec
+import type { WalkOptions } from '$walk';
+import { walk } from '$walk'; // Import walk from $walk
 import path from 'node:path';
-import type { FilePath, FolderPath } from '../types.ts';
+import type { FilePath, Path } from '../types.ts';
 import { fileConflictStrategyType } from './consts.ts';
 import { resolveType } from './resolve-type.ts';
 import type * as util from './types.ts';
@@ -25,33 +27,40 @@ export function isFileConflictStrategyType(value: unknown): value is util.FileCo
  * @returns {Promise<void>} - A promise that resolves when the copy is complete.
  */
 export async function safeCopy(
-  src: FSSpec | FileSpec | FolderSpec | FolderSpec | SymlinkSpec,
-  dest: FilePath | FSSpec | FileSpec | FolderSpec | FolderPath,
+  src: Path | FSSpec | FileSpec | FolderSpec | SymlinkSpec,
+  dest: Path | FSSpec | FileSpec | FolderSpec,
   options: util.SafeCopyOpts = {},
 ): Promise<void> {
   const fsSrc = await resolveType(src);
+  const fsDest = await resolveType(dest);
+
+  if (!fsSrc) {
+    throw new Error.NotFound('Source file undiscoverable', { path: String(src) });
+  }
+  if (!fsDest) {
+    throw new Error.NotFound('Destination file undiscoverable', { path: String(fsDest) });
+  }
 
   // Check if src is a symlink
-  if (fsSrc.isSymlink()) {
+  if (fsSrc instanceof SymlinkSpec) {
     // use a specific error type from $error
     throw new Error.InvalidData('Source cannot be a symlink', { path: fsSrc.path });
   }
-
-  // Ensure src exists
-  const srcExists = await fsSrc.getExists();
-  if (!srcExists) {
-    throw new Error.NotFound('Source does not exist', { path: fsSrc.path });
-  }
-
-  const fsDest = await resolveType(dest);
+  // Check if dest is a symlink
   if (fsDest instanceof SymlinkSpec) {
+    // use a specific error type from $error
     throw new Error.InvalidData('Destination cannot be a symlink', { path: fsDest.path });
   }
 
+  // Ensure src exists
+  const srcInfo = await fsSrc.stats();
+  if (!srcInfo || !srcInfo.exists) {
+    throw new Error.NotFound('Source file not found', { path: fsSrc.path });
+  }
+
   if (src instanceof FileSpec) {
-    if (fsDest instanceof FSSpec) {
-      // resolved destination is not a concrete file/folder spec
-      throw new Error.InvalidData('Destination must be a FileSpec or FolderSpec', { path: fsDest.path });
+    if (!(fsDest instanceof FolderSpec || fsDest instanceof FileSpec)) {
+      throw new Error.InvalidData('Destination must be a FileSpec or FolderSpec');
     }
     await safeCopyFile(src, fsDest, options);
   } else if (src instanceof FolderSpec) {
@@ -75,13 +84,32 @@ export async function safeCopyFile(
   options: util.SafeFileCopyOpts = {},
 ): Promise<void> {
   if (fsDest instanceof FileSpec) {
-    const destExists = await fsDest.getExists();
+    const destExists = await fsDest.exists();
     if (destExists) {
-      // Handle existing destination file
-      const p: FilePath | undefined = await fsDest.backup(options.conflictStrategy);
-      if (p === undefined) {
+      const conflictStrategy = options.conflictStrategy;
+      if (conflictStrategy?.type === fileConflictStrategyType.skip) {
         return;
+      } else if (conflictStrategy?.type === fileConflictStrategyType.error) {
+        if (conflictStrategy.errorIfExists) {
+          throw new Error.AlreadyExists('File exists', { path: fsDest.path });
+        }
+      } else if (conflictStrategy?.type === fileConflictStrategyType.renameWithTilde) {
+        await fsDest.moveTo(fsDest.path + '~' as FilePath, { overwrite: true });
+        fsDest.clearInfo(); // Clear cached stats after move
+      } else if (conflictStrategy?.type === fileConflictStrategyType.renameWithNumber) {
+        const newPath = await fsDest.findAvailableIndexFilename(
+          conflictStrategy.limit,
+          conflictStrategy.separator,
+          conflictStrategy.prefix,
+        );
+        if (newPath) {
+          await fsDest.moveTo(newPath, { overwrite: true });
+          fsDest.clearInfo(); // Clear cached stats after move
+        } else if (conflictStrategy.errorIfExists) {
+          throw new Error.AlreadyExists('File exists', { path: fsDest.path });
+        }
       }
+      // For 'overwrite' strategy, no action is needed here, proceed to copy
     } else {
       try {
         await fsDest.ensureParentDir();
@@ -121,21 +149,29 @@ export async function safeCopyFile(
  * @returns {Promise<void>} - A promise that resolves when the copy is complete.
  */
 export async function safeCopyFolder(
-  src: FolderSpec,
-  fsDest: FolderSpec,
+  src: Spec.FolderSpec,
+  fsDest: Spec.FolderSpec,
   options: util.SafeCopyOpts = {},
 ): Promise<void> {
   // Ensure destination folder exists
   await fsDest.ensureDir();
 
+  const walkOpts: WalkOptions = {
+    includeFiles: true,
+    includeDirs: true,
+    includeSymlinks: true,
+    followSymlinks: false,
+    canonicalize: true,
+  };
+
   // Use walk to copy files and folders
-  for await (const entry of dfs.walk(src.path)) {
+  for await (const entry of walk(new Spec.FolderSpec(src.path), walkOpts)) {
     const relativePath = path.relative(src.path, entry.path);
     const destEntryPath = path.join(fsDest.path, relativePath);
 
-    if (entry.isDirectory) {
-      await new FolderSpec(destEntryPath).ensureDir();
-    } else if (entry.isFile) {
+    if (await entry.isFolder()) {
+      await new Spec.FolderSpec(destEntryPath).ensureDir();
+    } else if (await entry.isFile()) {
       const srcFile = new FileSpec(entry.path);
       try {
         await safeCopyFile(srcFile, new FileSpec(destEntryPath), options);
