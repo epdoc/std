@@ -2,6 +2,15 @@ import * as Spec from '$spec';
 import { include } from './filter.ts';
 import type { WalkOptions } from './types.ts';
 
+/**
+ * Asynchronously walks a file system tree, yielding `FSSpec` entries that match the specified options.
+ * This function is an async generator, allowing iteration over file system entries as they are discovered.
+ *
+ * @param fsRoot The starting folder to begin the walk.
+ * @param options Optional configuration for the walk operation.
+ * @param privateVisited Internal set used to track visited canonical paths to prevent infinite loops when following symlinks.
+ * @returns An async iterable iterator that yields `FSSpec` objects (FolderSpec, FileSpec, or SymlinkSpec).
+ */
 export async function* walk(
   fsRoot: Spec.FolderSpec,
   options?: WalkOptions,

@@ -49,7 +49,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
 
   /**
    * Public constructor for FileSpec.
-   * @param {...PathSegment[]} args - Path segments to resolve.
+   * @param args - Path segments to resolve.
    */
   public constructor(...args: FS.PathSegment[]) {
     super();
@@ -71,8 +71,8 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * Creates a new FileSpec from a file URL, typically from `import.meta.url`.
    * This allows for creating paths relative to the current module.
    *
-   * @param {string} metaUrl - The `import.meta.url` of the calling module.
-   * @param {...string[]} paths - Additional path segments to join.
+   * @param metaUrl - The `import.meta.url` of the calling module.
+   * @param paths - Additional path segments to join.
    * @returns {FileSpec} A new FileSpec instance.
    *
    * @example
@@ -166,7 +166,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
 
   /**
    * Test for equality with the basename of this file.
-   * @param {string} name
+   * @param name
    * @returns {boolean} True if equal
    */
   isNamed(name: string): boolean {
@@ -185,7 +185,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   /**
    * Appends additional path segments to the current file system path.
    *
-   * @param {...string[]} args - One or more string path segments.
+   * @param args - One or more string path segments.
    * @returns {FileSpec} A new FileSpec instance with the updated path.
    * @experimental
    *
@@ -204,7 +204,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   /**
    * Constructs a new FileSpec instance rooted at the user's home directory.
    *
-   * @param {...string[]} args - Additional path segments to append after the home directory.
+   * @param args - Additional path segments to append after the home directory.
    * @returns {FileSpec} A new FileSpec instance for the specified path.
    *
    * @example
@@ -251,7 +251,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
 
   /**
    * Tests the extension to see if this is a PDF file.
-   * @param {boolean} [testContents=false] If true, tests the file contents as well (not implemented).
+   * @param [testContents=false] If true, tests the file contents as well (not implemented).
    * @returns {boolean} True if the extension indicates this is a PDF file.
    */
   isPdf(_testContents = false): boolean {
@@ -297,8 +297,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
  * them as an FSBytes instance. In order to determine what type of file this is,
  * at least 24 bytes must be read.
 
- * @param {number} [length=24] The number of bytes to read from the file.
- * Defaults to 24.
+ * @param [length=24] The number of bytes to read from the file. Defaults to 24.
  * @returns {Promise<FSBytes>} A promise that resolves with an FSBytes instance
  * containing the read bytes, or rejects with an error.
  */
@@ -311,7 +310,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
 
   /**
    * Set or change the extension of this file. `This` must be a file.
-   * @param {string} ext The extension. The string may or may not include a leading '.'.
+   * @param ext The extension. The string may or may not include a leading '.'.
    * @returns {this} The current FSItem instance.
    */
   setExt(ext: string): this {
@@ -327,7 +326,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
 
   /**
    * Set or change the basename of this file. `This` must be a file.
-   * @param {string} val The new basename for the file.
+   * @param val The new basename for the file.
    * @returns {this} The current FSItem instance.
    */
   setBasename(val: string): this {
@@ -341,6 +340,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   /**
    * Returns a temporary file path by appending a tilde (~).
    * @returns {Promise<FilePath>} A promise that resolves to the temporary file path.
+   * @deprecated
    */
   getUniquePath(): Promise<FS.FilePath> {
     return Promise.resolve((this.path + '~') as FS.FilePath);
@@ -349,6 +349,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   /**
    * Returns a unique file path by appending a number if the file already exists.
    * @returns {Promise<FilePath>} A promise that resolves to a unique file path.
+   * @deprecated
    */
   getUniqueFile(): Promise<FS.FilePath> {
     return new Promise<FS.FilePath>((resolve) => {
@@ -541,8 +542,8 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   }
 
   /**
-   * @param {Uint8Array} buffer - An Uint8Array of the length that is to be read
-   * @param {Integer} [position=0] - The starting offset to read from the file
+   * @param buffer - An Uint8Array of the length that is to be read
+   * @param [position=0] - The starting offset to read from the file
    * @returns {Promise<number>} - Resolves to either the number of bytes read during the operation or EOF (null) if there was nothing more to read.
    *
    * @example
@@ -572,7 +573,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   /**
    * Reads the entire file as a Uint8Array. Can optionally decode base64-encoded content.
    *
-   * @param {('base64' | undefined)} [encoding] - If 'base64', decodes the file content from base64
+   * @param [encoding] - If 'base64', decodes the file content from base64
    * @returns {Promise<Uint8Array>} A promise that resolves with the file contents as bytes
    *
    * @example
@@ -601,7 +602,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   /**
    * Reads the entire file as a string. Can optionally decode base64-encoded content.
    *
-   * @param {'base64' | undefined} [encoding] - If 'base64', decodes the file content from base64 before converting to string
+   * @param [encoding] - If 'base64', decodes the file content from base64 before converting to string
    * @returns {Promise<string>} A promise that resolves with the file contents as a string
    *
    * @throws {FSNotFoundError|FSPermissionError|FSReadError|Error.FSError} When the file cannot be read or decoded.
@@ -667,15 +668,15 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * read from disk, supporting advanced options such as recursive file inclusion, RegExp detection,
    * and custom transformation hooks.
    *
-   * @param {FsDeepJsonDeserializeOpts} [options] - Options for the deep copy operation:
-   *   @param {boolean} [options.replace=Dict] - If set, replaces keys with values throughout `a`.
-   *   @param {string} [options.pre='{'] - Prefix string for detecting replacement strings and URLs
+   * @param [options] - Options for the deep copy operation:
+   *   @param [options.replace=Dict] - If set, replaces keys with values throughout `a`.
+   *   @param [options.pre='{'] - Prefix string for detecting replacement strings and URLs
    *   in string values.
-   *   @param {string} [options.post='}'] - Suffix string for detecting replacement strings and URLs
+   *   @param [options.post='}'] - Suffix string for detecting replacement strings and URLs
    *   in string values.
-   *   @param {boolean} [options.includeUrl=false] - Recursively loads and merges JSON from URLs or
+   *   @param [options.includeUrl=false] - Recursively loads and merges JSON from URLs or
    *   file paths found in string values.
-   *   @param {boolean} [options.detectRegExp=false] - If true, detects and reconstructs RegExp
+   *   @param [options.detectRegExp=false] - If true, detects and reconstructs RegExp
    *   objects from plain objects using asRegExp.
    *   @param [opts.stripJsonComments=false] - If true, strip JSON comments (jsonc)
    * @returns {Promise<unknown>} A promise that resolves with the deeply copied and transformed JSON
@@ -707,13 +708,13 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    *   - Detecting and reconstructing RegExp objects from plain objects.
    *   - Custom transformation or replacement of values during the copy.
    *
-   * @param {unknown} a - The data to deep copy.
-   * @param {FsDeepCopyOpts} [options] - Options for the deep copy operation:
-   *   @param {boolean} [options.replace=Dict] - If set, replaces keys with values throughout `a`.
-   *   @param {string} [options.pre='{'] - Prefix string for detecting replacement strings and URLs in string values.
-   *   @param {string} [options.post='}'] - Suffix string for detecting replacement strings and URLs in string values.
-   *   @param {boolean} [options.includeUrl=false] - Recursively loads and merges JSON from URLs or file paths found in string values.
-   *   @param {boolean} [options.detectRegExp=false] - If true, detects and reconstructs RegExp objects from plain objects using asRegExp.
+   * @param a - The data to deep copy.
+   * @param [options] - Options for the deep copy operation:
+   *   @param [options.replace=Dict] - If set, replaces keys with values throughout `a`.
+   *   @param [options.pre='{'] - Prefix string for detecting replacement strings and URLs in string values.
+   *   @param [options.post='}'] - Suffix string for detecting replacement strings and URLs in string values.
+   *   @param [options.includeUrl=false] - Recursively loads and merges JSON from URLs or file paths found in string values.
+   *   @param [options.detectRegExp=false] - If true, detects and reconstructs RegExp objects from plain objects using asRegExp.
    * @returns {Promise<unknown>} A promise that resolves with the deeply copied and transformed data.
    *
    * @example
@@ -760,7 +761,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   /**
    * Writes JSON data to the file.
    * Accepts the same replacer and space parameters as JSON.stringify.
-   * @param {unknown} data - The data to write as JSON.
+   * @param data - The data to write as JSON.
    * @returns {Promise<void>} A promise that resolves when the write operation is complete.
    */
   async writeJson(
@@ -779,7 +780,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
 
   /**
    * Encodes input as base64 and writes to the file.
-   * @param {string | Uint8Array} data - The data to encode and write as base64
+   * @param data - The data to encode and write as base64
    * @returns {Promise<void>} A promise that resolves when the write completes
    *
    * @example
@@ -800,11 +801,11 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   /**
    * Writes data to the file.
    *
-   * @param {string | string[] | Uint8Array} data - The data to write:
+   * @param data - The data to write:
    *   - string: Text content with encoding
    *   - string[]: Array of lines to join with newlines
    *   - Uint8Array: Raw binary data
-   * @param {string} [type='utf8'] - Text encoding (ignored for Uint8Array)
+   * @param [type='utf8'] - Text encoding (ignored for Uint8Array)
    * @returns {Promise<void>} Promise that resolves when write completes
    *
    * @example
@@ -838,7 +839,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   /**
    * 'Backup' a file by moving it to a new filename. Use when copying a file to
    * the same location or creating a new file at the same location.
-   * @param {BackupOpts} opts
+   * @param opts
    * @returns {Promise<FilePath | undefined>} - Path to file if file was backed
    * up, or true if the file didn't exist
    */
@@ -895,8 +896,8 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * Finds the next available indexed filename. For example, for `filename.ext`,
    * tries `filename-01.ext`, `filename-02.ext`, etc until it finds a filename
    * that is not used.
-   * @param {Integer} [limit=32] - The maximum number of attempts to find an available filename.
-   * @param {string} [sep='-'] - The separator to use between the filename and the index.
+   * @param [limit=32] - The maximum number of attempts to find an available filename.
+   * @param [sep='-'] - The separator to use between the filename and the index.
    * @returns {Promise<FilePath | undefined>} A promise that resolves with an available file path, or undefined if not found.
    */
   async findAvailableIndexFilename(
@@ -918,8 +919,8 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
 
   /**
    * Moves this file or folder to the location `dest`.
-   * @param {FilePath | FSSpecBase} dest - The new path for the file.
-   * @param {dfs.MoveOptions} options - Options to overwrite and dereference symlinks.
+   * @param dest - The new path for the file.
+   * @param options - Options to overwrite and dereference symlinks.
    * @returns {Promise<void>} - A promise that resolves when the move is complete.
    */
   moveTo(dest: FS.Path | FolderSpec | FileSpec, options?: dfs.MoveOptions): Promise<void> {

@@ -1,3 +1,8 @@
+/**
+ * This module exports utility functions and types for file system operations.
+ * It re-exports from other modules within the `util` directory.
+ */
+
 export { fileConflictStrategyType } from './consts.ts';
 export { direntToSpec, statsToFileInfo } from './fileinfo.ts';
 export * from './resolve-path.ts';

@@ -4,6 +4,11 @@ import path from 'node:path';
 import { FileSpec, FolderSpec, SymlinkSpec, type TypedFSSpec } from '../spec/mod.ts';
 import type { FileInfo, FolderPath } from '../types.ts';
 
+/**
+ * Converts Node.js `Stats` object to a `FileInfo` object.
+ * @param stats - The Node.js `Stats` object.
+ * @returns A `FileInfo` object containing file information.
+ */
 export function statsToFileInfo(stats: Stats): FileInfo {
   const isFile = stats.isFile();
   const isDirectory = stats.isDirectory();
@@ -34,6 +39,12 @@ export function statsToFileInfo(stats: Stats): FileInfo {
   };
 }
 
+/**
+ * Converts a Node.js `Dirent` object to a `TypedFSSpec` (FileSpec, FolderSpec, or SymlinkSpec).
+ * @param parentPath - The path of the parent directory.
+ * @param dirent - The Node.js `Dirent` object.
+ * @returns A `TypedFSSpec` object if the dirent is a file, directory, or symlink, otherwise `undefined`.
+ */
 export function direntToSpec(parentPath: FolderPath, dirent: Dirent): TypedFSSpec | undefined {
   const entryPath = path.join(parentPath, dirent.name);
   if (dirent.isFile()) {

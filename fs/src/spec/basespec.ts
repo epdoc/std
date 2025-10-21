@@ -25,7 +25,7 @@ export abstract class FSSpecBase {
 
   /**
    * Copies parameters from this FSSpec to the target FSSpec.
-   * @param {FSSpecBase} target - The target FSSpec to copy parameters to.
+   * @param target - The target FSSpec to copy parameters to.
    * @returns {FSSpecBase} - The target FSSpec with copied parameters.
    */
   copyParamsTo(target: FSSpecBase): FSSpecBase {
@@ -62,7 +62,7 @@ export abstract class FSSpecBase {
 
   /**
    * Sets the directory entry for this file system item.
-   * @param {FSEntry | undefined} dirEntry - The FSEntry object, or undefined if not applicable.
+   * @param dirEntry - The FSEntry object, or undefined if not applicable.
    * @returns {this} The current instance for chaining.
    */
   setDirEntry(dirEntry: FSEntry | undefined): this {
@@ -131,6 +131,11 @@ export abstract class FSSpecBase {
     return info?.isDirectory === true;
   }
 
+  async isDir(force = false): Promise<boolean> {
+    const info = await this.stats(force);
+    return info?.isDirectory === true;
+  }
+
   /**
    * Asynchronously checks if the file system item is a symlink.
    * @returns {Promise<boolean>} A promise that resolves to true if it is a symlink.
@@ -151,8 +156,8 @@ export abstract class FSSpecBase {
 
   /**
    * Removes this file or folder.
-   * @param {Deno.RemoveOptions} options - Options for removing the file or folder.
-   * @param {boolean} options.recursive - Recursively remove items if this is a folder.
+   * @param options - Options for removing the file or folder.
+   * @param options.recursive - Recursively remove items if this is a folder.
    * @returns {Promise<void>} - A promise that resolves when the file or folder is removed.
    */
   async remove(options: RemoveOptions = {}): Promise<void> {
@@ -164,8 +169,8 @@ export abstract class FSSpecBase {
 
   /**
    * Copies this file or folder to the location `dest`.
-   * @param {Path} dest - The destination path.
-   * @param {CopyOptions} [options] - Options for the copy operation.
+   * @param dest - The destination path.
+   * @param [options] - Options for the copy operation.
    * @returns {Promise<void>} - A promise that resolves when the copy is complete.
    */
   async copyTo(dest: Path, options?: CopyOptions): Promise<void> {

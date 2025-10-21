@@ -1,12 +1,15 @@
-# Changelist
+# Changelog for @epdoc/fs
 
 ## [1.0.0-alpha.3] - 2025-10-20
 
-- All checks and tests pass, but we need to do more verification
-
-## [1.0.0-alpha.2] - 2025-10-20
-
-- snapshot during major refactoring
+- Major refactoring with breaking changes.
+- Removed many dependencies on Deno as part of migrating module for use on multiple runtimes
+- Removed `FSStat` object and now use `FileInfo` for `Stats`
+- Cleaned up, with naming changes, method interface for determining `Stats` values
+- Changed naming on `resolveTypes()` as well
+- Updated version to 1.0.0-alpha.3.
+- More _eat your own dog good_, using our own code for reading directories, etc. This applies to `src/walk/walk.ts` as
+  well as other code areas.
 
 ## [0.2.28] - 2025-10-17
 

@@ -52,9 +52,15 @@ export type SafeFileCopyOpts = SafeCopyOptsBase & {
   conflictStrategy?: FileConflictStrategy;
 };
 
+/**
+ * Represents the options for safely copying a folder.
+ */
 export type SafeFolderCopyOpts = SafeCopyOptsBase;
 
 /**
  * Represents the options for the safeCopy method.
+ */
+/**
+ * Represents the combined options for safe copy operations, including both file and folder specific options.
  */
 export type SafeCopyOpts = SafeFileCopyOpts & SafeFolderCopyOpts;

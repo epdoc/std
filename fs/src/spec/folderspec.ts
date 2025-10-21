@@ -16,14 +16,6 @@ import { SymlinkSpec } from './symspec.ts';
 import type { FolderDiff, MoveOptions, TypedFSSpec } from './types.ts';
 
 /**
- * Factory function to create a new FolderSpec object.
- * @deprecated1
- */
-export function folderSpec(...args: FS.PathSegment[]): FolderSpec {
-  return new FolderSpec(...args);
-}
-
-/**
  * An object representing a file system entry, which may be either a file or a
  * folder.
  *
@@ -51,7 +43,7 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
 
   /**
    * Public constructor for FolderSpec.
-   * @param {...PathSegment[]} args - Path segments to resolve.
+   * @param args - Path segments to resolve.
    */
   public constructor(...args: FS.PathSegment[]) {
     super();
@@ -62,8 +54,8 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
    * Creates a new FolderSpec from a file URL, typically from `import.meta.url`.
    * This allows for creating paths relative to the current module.
    *
-   * @param {string} metaUrl - The `import.meta.url` of the calling module.
-   * @param {...string[]} paths - Additional path segments to join.
+   * @param metaUrl - The `import.meta.url` of the calling module.
+   * @param paths - Additional path segments to join.
    * @returns {FolderSpec} A new FolderSpec instance.
    *
    * @example
@@ -163,7 +155,7 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
 
   /**
    * For folders, indicates if we have read the folder's contents.
-   * @returns {boolean} - true if this is a folder and we have read the folder's contents.
+   * @returns - true if this is a folder and we have read the folder's contents.
    */
   haveReadFolderContents(): boolean {
     return this._haveReadFolderContents;
@@ -172,7 +164,7 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
   /**
    * Get the list of FSItem files that matched a previous call to getFiles() or
    * getChildren().
-   * @returns {FSSpecBase[]} Array of FSItem objects representing files.
+   * @returns Array of FSItem objects representing files.
    */
   get files(): FileSpec[] {
     return this._files;
@@ -181,7 +173,7 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
   /**
    * Get the list of filenames that matched a previous call to getFolders() or
    * getChildren().
-   * @returns {FileName[]} Array of filenames.
+   * @returns Array of filenames.
    */
   get filenames(): FS.FileName[] {
     return this._files.map((fs: FileSpec) => {
@@ -192,7 +184,7 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
   /**
    * Get the list of FSItem folders that matched a previous call to getFolders() or
    * getChildren().
-   * @returns {FSSpecBase[]} Array of FSItem objects representing folders.
+   * @returns Array of FSItem objects representing folders.
    */
   get folders(): FolderSpec[] {
     return this._folders;
@@ -201,7 +193,7 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
   /**
    * Get the list of folder names that matched a previous call to getFolders() or
    * getChildren().
-   * @returns {FolderName[]} Array of folder names.
+   * @returns Array of folder names.
    */
   get folderNames(): FS.FolderName[] {
     return this._folders.map((fs) => {
@@ -253,7 +245,7 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
   /**
    * Returns an array of FileSpec objects for files in the directory that match
    * the optional regex pattern.
-   * @param {RegExp} [regex] - Optional regular expression to filter filenames
+   * @param [regex] - Optional regular expression to filter filenames
    * @returns {Promise<FileSpec[]>} Array of FileSpec objects for matching files
    */
   async getFiles(regex?: RegExp): Promise<FileSpec[]> {
@@ -267,7 +259,7 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
   /**
    * Returns an array of FolderSpec objects for subdirectories that match
    * the optional regex pattern.
-   * @param {RegExp} [regex] - Optional regular expression to filter folder names
+   * @param [regex] - Optional regular expression to filter folder names
    * @returns {Promise<FolderSpec[]>} Array of FolderSpec objects for matching folders
    */
   async getFolders(regex?: RegExp): Promise<FolderSpec[]> {
@@ -281,7 +273,7 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
   /**
    * Recursively walks through the directory tree and returns all matching entries.
    *
-   * @param {WalkOptions} opts - Options for the walk:
+   * @param opts - Options for the walk:
    *   - maxDepth?: number - Maximum directory depth to traverse
    *   - includeFiles?: boolean - Whether to include files (default: true)
    *   - includeDirs?: boolean - Whether to include directories (default: true)
@@ -310,11 +302,11 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
    * Retrieves the list of files and folders within this folder, optionally matching
    * a specified pattern and limiting the depth of the search.
    *
-   * @param {GetChildrenOpts} options - Options for retrieving children.
-   * @param {string | RegExp} [options.match] - A string or regular expression to match file or folder names.
-   * @param {number} [options.levels=1] - The number of levels to traverse. Defaults to 1.
-   * @param {function} [options.callback] - A callback function to be called for each matched item.
-   * @param {Object} [options.sort] - Sorting options for the results.
+   * @param options - Options for retrieving children.
+   * @param [options.match] - A string or regular expression to match file or folder names.
+   * @param [options.levels=1] - The number of levels to traverse. Defaults to 1.
+   * @param [options.callback] - A callback function to be called for each matched item.
+   * @param [options.sort] - Sorting options for the results.
    * @returns {Promise<FSSpecBase[]>} - A promise that resolves to an array of FSSpec objects representing the files and folders.
    *
    * @example
@@ -388,7 +380,7 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
 
   /**
    * Sorts the children (files and folders) of this FSItem.
-   * @param {FSSortOpts} [opts={}] - Sorting options.
+   * @param [opts={}] - Sorting options.
    * @returns {void}
    */
   public sortChildren(opts: FS.FSSortOpts = {}) {
@@ -409,8 +401,7 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
   }
 
   /**
-   * Sorts the files of this FSItem alphabetically.
-   * @returns {this} The current FSItem instance.
+   * @returns Array of FileSpec or FolderSpec objects.
    */
   static sortByFilename(items: (FileSpec | FolderSpec)[]): (FileSpec | FolderSpec)[] {
     return items.sort((a, b) => {
@@ -420,7 +411,7 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
 
   /**
    * Sorts the files of this FSItem by size. Run getChildren() first.
-   * @returns {this} The current FSItem instance.
+   * @returns Array of FSSpecBase objects.
    */
   static sortFilesBySize(items: FSSpecBase[]): FSSpecBase[] {
     return items
@@ -432,8 +423,8 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
 
   /**
    * Moves this file or folder to the location `dest`.
-   * @param {FilePath | FSSpecBase} dest - The new path for the file.
-   * @param {MoveOptions} options - Options to overwrite existing files.
+   * @param dest - The new path for the file.
+   * @param options - Options to overwrite existing files.
    * @returns {Promise<void>} - A promise that resolves when the move is complete.
    */
   async moveTo(dest: FS.FolderPath | FolderSpec, options?: MoveOptions): Promise<void> {

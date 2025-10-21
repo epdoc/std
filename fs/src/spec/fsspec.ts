@@ -18,7 +18,7 @@ import type { TypedFSSpec } from './types.ts';
 export class FSSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec {
   /**
    * Public constructor for FSSpec.
-   * @param {...PathSegment[]} args - Path segments to resolve.
+   * @param args - Path segments to resolve.
    */
   public constructor(...args: FS.PathSegment[]) {
     super();
@@ -29,8 +29,8 @@ export class FSSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec {
    * Creates a new FSSpec from a file URL, typically from `import.meta.url`.
    * This allows for creating paths relative to the current module.
    *
-   * @param {string} metaUrl - The `import.meta.url` of the calling module.
-   * @param {...string[]} paths - Additional path segments to join.
+   * @param metaUrl - The `import.meta.url` of the calling module.
+   * @param paths - Additional path segments to join.
    * @returns {FSSpec} A new FSSpec instance.
    *
    * @example
@@ -54,7 +54,7 @@ export class FSSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec {
 
   /**
    * Copies parameters from this instance to the target BaseSpec.
-   * @param {FSSpecBase} target - The target BaseSpec to copy parameters to.
+   * @param target - The target BaseSpec to copy parameters to.
    * @returns {FSSpecBase} The target BaseSpec with copied parameters.
    */
   override copyParamsTo(target: FSSpecBase): FSSpecBase {
@@ -100,7 +100,7 @@ export class FSSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec {
   /**
    * Appends additional path segments to the current file system path.
    *
-   * @param {...string[]} args - One or more string path segments.
+   * @param args - One or more string path segments.
    * @returns {FSSpec} A new FSSpec instance with the updated path.
    * @experimental
    *
@@ -117,7 +117,7 @@ export class FSSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec {
   /**
    * Constructs a new FSSpec instance rooted at the user's home directory.
    *
-   * @param {...string[]} args - Additional path segments to append after the home directory.
+   * @param args - Additional path segments to append after the home directory.
    * @returns {FSSpec} A new FSSpec instance for the specified path.
    *
    * @example
@@ -135,8 +135,8 @@ export class FSSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec {
   /**
    * Safely copies this file system item to a destination.
    *
-   * @param {FilePath | FolderPath | FileSpec | FolderSpec | FSSpec} destFile - The destination path or FS item.
-   * @param {SafeCopyOpts} [opts={}] - Optional safe copy options.
+   * @param destFile - The destination path or FS item.
+   * @param [opts={}] - Optional safe copy options.
    * @returns {Promise<void>} A promise that resolves when the copy operation completes.
    */
   safeCopy(
@@ -149,7 +149,7 @@ export class FSSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec {
   /**
    * Compares the path of this instance with another FSSpec, FileSpec, or FolderSpec.
    *
-   * @param {FSSpec | FileSpec | FolderSpec} val - The FS item to compare with.
+   * @param val - The FS item to compare with.
    * @returns {boolean} True if both items have the same path; otherwise, false.
    */
   equalPaths(val: FSSpec | FileSpec | FolderSpec): boolean {

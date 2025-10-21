@@ -41,6 +41,11 @@ export function joinContinuationLines(lines: string[], continuation: string | Re
   return result;
 }
 
+/**
+ * Resolves the type of a file system item (FileSpec, FolderSpec, or SymlinkSpec).
+ * @param fsItem - The file system item to resolve, either a path string or an FSSpecBase instance.
+ * @returns A Promise that resolves to a TypedFSSpec object (FileSpec, FolderSpec, or SymlinkSpec) or `undefined` if the type cannot be resolved.
+ */
 export async function resolveType(
   fsItem: string | FSSpecBase,
 ): Promise<TypedFSSpec | undefined> {

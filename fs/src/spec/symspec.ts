@@ -22,7 +22,7 @@ import type { ICopyableSpec } from './icopyable.ts';
 export class SymlinkSpec extends FSSpecBase implements ICopyableSpec {
   /**
    * Public constructor for SymlinkSpec.
-   * @param {...PathSegment[]} args - Path segments to resolve.
+   * @param args - Path segments to resolve.
    */
   public constructor(...args: PathSegment[]) {
     super();
@@ -32,7 +32,6 @@ export class SymlinkSpec extends FSSpecBase implements ICopyableSpec {
 
   /**
    * Return a copy of this object. Does not copy the file.
-   * @see FileSpec#copyTo
    */
   copy(): SymlinkSpec {
     return new SymlinkSpec(this);
