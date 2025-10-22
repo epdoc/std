@@ -1,33 +1,32 @@
-import { readFile, writeFile } from 'node:fs/promises';
+import { FileSpec, FolderSpec } from '@epdoc/fs';
 import { join } from 'node:path';
 
 async function main() {
-  const tempDir = await Deno.makeTempDir();
-  const filePath = join(tempDir, 'deno.json');
+  const fsTempDir = await FolderSpec.makeTemp();
+  const originalCwd = FolderSpec.cwd();
+  fsTempDir.chdir();
   let exitCode = 0;
 
   try {
-    console.log(`Using temporary directory: ${tempDir}`);
+    console.log(`Using temporary directory: ${fsTempDir.path}`);
+
+    const denoJsonFile = new FileSpec('deno.json');
 
     // 1. Write initial JSON content
     const initialData = { version: '1.0.0' };
-    await writeFile(filePath, JSON.stringify(initialData, null, 2));
-    console.log('Wrote initial file:', JSON.stringify(initialData, null, 2));
+    await denoJsonFile.writeJson(initialData, null, 2);
+    console.log('Content after initial write:', await denoJsonFile.readAsString());
 
     // 2. Simulate the "bump" operation
     const bumpedData = { version: '1.0.1' };
-    await writeFile(filePath, JSON.stringify(bumpedData, null, 2));
-    console.log('Wrote bumped file:', JSON.stringify(bumpedData, null, 2));
+    await denoJsonFile.writeJson(bumpedData, null, 2);
+    console.log('Content after bump write:', await denoJsonFile.readAsString());
 
     // 3. Read the content back as a string
-    const content = await readFile(filePath, 'utf-8');
+    const content = await denoJsonFile.readAsString();
     console.log(`File content read as string: "${content}"`);
 
-    // 4. Read and parse the JSON content
-    const jsonContent = JSON.parse(await readFile(filePath, 'utf-8'));
-    console.log('File content parsed as JSON:', jsonContent);
-
-    // 5. Define expected content and assert
+    // 4. Define expected content and assert
     const expectedContent = JSON.stringify({ version: '1.0.1' }, null, 2);
     console.log(`Expected string content: "${expectedContent}"`);
 
@@ -49,8 +48,9 @@ async function main() {
     exitCode = 1;
   } finally {
     // Clean up the temporary directory
-    await Deno.remove(tempDir, { recursive: true });
-    console.log(`\nCleaned up temporary directory: ${tempDir}`);
+    originalCwd.chdir();
+    await fsTempDir.remove({ recursive: true });
+    console.log(`\nCleaned up temporary directory: ${fsTempDir.path}`);
     Deno.exit(exitCode);
   }
 }

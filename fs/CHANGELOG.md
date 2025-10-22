@@ -1,5 +1,15 @@
 # Changelog for @epdoc/fs
 
+## [1.0.0-alpha.5] - 2025-10-21
+
+- Resolved fs write to file race condition error due to nodejs library limitiations
+
+## [1.0.0-alpha.5] - 2025-10-21
+
+- **Fix**: Resolved a race condition in Deno's file system operations where `FileSpec.readAsString()` could return empty content if called immediately after a write operation. This issue was masked by asynchronous operations (e.g., logging) that introduced an artificial delay.
+  - Modified `FileSpec.writeJson()`, `FileSpec.writeJsonEx()`, and `FileSpec.write()` to explicitly flush data to disk using `fileHandle.sync()` after writing, ensuring data persistence before the write method returns.
+  - This fix improves the robustness of file write operations and resolves `AssertionError`s in test environments where timing is critical.
+
 ## [1.0.0-alpha.4] - 2025-10-21
 
 - Centralize and provide better error handling. Improved implementations of various methods.

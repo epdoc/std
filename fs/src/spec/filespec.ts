@@ -604,11 +604,18 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   }
 
   async writeJsonEx(value: unknown, options: DeepCopyOpts | null = null, space?: string | number): Promise<void> {
+    const text = _.jsonSerialize(value, options, space);
+    let fileHandle: FileHandle | undefined;
     try {
-      const text = _.jsonSerialize(value, options, space);
-      await nfs.writeFile(this._f, new TextEncoder().encode(text));
+      fileHandle = await nfs.open(this._f, 'w');
+      await fileHandle.write(new TextEncoder().encode(text));
+      await fileHandle.sync(); // Ensure data is flushed to disk
     } catch (err: unknown) {
       throw this.asError(err, 'writeJsonEx');
+    } finally {
+      if (fileHandle) {
+        await fileHandle.close();
+      }
     }
   }
 
@@ -625,10 +632,17 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   ): Promise<void> {
     const replacerArg = replacer as unknown as Parameters<typeof JSON.stringify>[1];
     const text = JSON.stringify(data, replacerArg, space);
+    let fileHandle: FileHandle | undefined;
     try {
-      await nfs.writeFile(this._f, new TextEncoder().encode(text));
+      fileHandle = await nfs.open(this._f, 'w');
+      await fileHandle.write(new TextEncoder().encode(text));
+      await fileHandle.sync(); // Ensure data is flushed to disk
     } catch (err) {
       throw this.asError(err);
+    } finally {
+      if (fileHandle) {
+        await fileHandle.close();
+      }
     }
   }
 
@@ -674,15 +688,22 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * await file.write(bytes);
    */
   async write(data: string | string[] | Uint8Array): Promise<void> {
+    let fileHandle: FileHandle | undefined;
     try {
+      fileHandle = await nfs.open(this._f, 'w');
       if (data instanceof Uint8Array) {
-        await nfs.writeFile(this._f, data);
+        await fileHandle.write(data);
       } else {
         const text = _.isArray(data) ? data.join('\n') : data;
-        await nfs.writeFile(this._f, new TextEncoder().encode(text));
+        await fileHandle.write(new TextEncoder().encode(text));
       }
+      await fileHandle.sync(); // Ensure data is flushed to disk
     } catch (err) {
       throw this.asError(err);
+    } finally {
+      if (fileHandle) {
+        await fileHandle.close();
+      }
     }
   }
 
