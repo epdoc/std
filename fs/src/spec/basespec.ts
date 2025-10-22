@@ -75,8 +75,10 @@ export abstract class FSSpecBase {
   }
 
   /**
-   * Synchronously returns the cached FileInfo object, or undefined if
-   * stats have not been loaded.
+   * Accesses the cached file information.
+   * This property is populated by calling the async `stats()` method.
+   * @returns {FileInfo} The cached file info.
+   * @throws {Error} If `stats()` has not been called yet.
    */
   get info(): FileInfo {
     assert(this._info, 'File stats have not been read');
@@ -89,19 +91,21 @@ export abstract class FSSpecBase {
    * already been retrieved.
    * @returns {Promise<FileInfo | undefined>} A promise that resolves with the file's stats.
    */
-  stats(force = false): Promise<FileInfo | undefined> {
+  async stats(force = false): Promise<FileInfo | undefined> {
     if (force || !this._info) {
-      return fs.promises.lstat(this._f)
-        .then((rawStats: fs.Stats) => {
-          this._info = util.statsToFileInfo(rawStats);
-          return this._info;
-        })
-        .catch((_err) => {
-          this._info = undefined;
-          return this._info;
-        });
+      try {
+        const rawStats = await fs.promises.lstat(this._f);
+        this._info = util.statsToFileInfo(rawStats);
+      } catch (err: unknown) {
+        if (_.isObject(err) && 'code' in err && err.code === 'ENOENT') {
+          this._info = undefined; // Correctly handle non-existent files
+        } else {
+          // For all other errors, throw a classified error
+          throw this.asError(err, 'stats');
+        }
+      }
     }
-    return Promise.resolve(this._info);
+    return this._info;
   }
 
   /**
@@ -161,9 +165,13 @@ export abstract class FSSpecBase {
    * @returns {Promise<void>} - A promise that resolves when the file or folder is removed.
    */
   async remove(options: RemoveOptions = {}): Promise<void> {
-    const exists = await this.exists(true);
-    if (exists) {
-      return fs.promises.rm(this._f, options);
+    if (await this.exists(true)) {
+      try {
+        await fs.promises.rm(this._f, options);
+        this.clearInfo();
+      } catch (err: unknown) {
+        throw this.asError(err, 'remove');
+      }
     }
   }
 
@@ -197,11 +205,20 @@ export abstract class FSSpecBase {
    * This resolves symbolic links and '..' or '.' segments.
    * @returns {Promise<Path>} A promise that resolves to the canonicalized absolute path.
    */
-  realPath(): Promise<Path> {
-    return fs.promises.realpath(this._f) as Promise<Path>;
+  async realPath(): Promise<Path> {
+    try {
+      const resolvedPath = await fs.promises.realpath(this._f);
+      return resolvedPath as Path;
+    } catch (err: unknown) {
+      throw this.asError(err, 'realPath');
+    }
   }
 
   asError(error: unknown, cause?: string): Err.FSError {
+    if (error instanceof Err.FSError) {
+      return error;
+    }
+
     const base = _.asError(error);
 
     // Narrow view of possible platform error shape (no `any` used).

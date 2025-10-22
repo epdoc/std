@@ -1,77 +1,72 @@
+import { DigestAlgorithm, FileSpec, FolderSpec } from '$fs';
 import { expect } from '@std/expect';
 import { afterAll, beforeAll, describe, it, test } from '@std/testing/bdd';
 import { Buffer } from 'node:buffer';
 import { promises as nfs } from 'node:fs';
-import * as fs from 'node:fs/promises';
 import os from 'node:os';
 import * as path from 'node:path';
-import { DigestAlgorithm, FileSpec } from '../src/mod.ts';
 import { generateRobustPDF } from './pdfgen.ts';
 
 describe('FileSpec', () => {
-  let testDir: string;
-  let testFile: string;
-  let testJson: string;
-  let pdfFile: string;
+  let testDir: FolderSpec;
+  let testFile: FileSpec;
+  let testJson: FileSpec;
+  let pdfFile: FileSpec;
 
   beforeAll(async () => {
-    testDir = await Deno.makeTempDir({ prefix: 'filespec_test_' });
-    testFile = path.join(testDir, 'test.txt');
-    testJson = path.join(testDir, 'test.json');
-    pdfFile = path.join(testDir, 'test.pdf');
+    testDir = await FolderSpec.makeTemp({ prefix: 'filespec_test_' });
+    testFile = new FileSpec(testDir, 'test.txt');
+    testJson = new FileSpec(testDir, 'test.json');
+    pdfFile = new FileSpec(testDir, 'test.pdf');
 
-    await fs.writeFile(testFile, 'Hello, World!');
-    await fs.writeFile(testJson, JSON.stringify({ key: 'value' }));
+    await testFile.write('Hello, World!');
+    await testFile.write(JSON.stringify({ key: 'value' }));
 
     // Generate PDF with specific date for testing
     const robustPDF = generateRobustPDF('20180201000000');
-    await Deno.writeTextFile(pdfFile, robustPDF);
+    await pdfFile.write(robustPDF);
   });
 
   afterAll(async () => {
-    await Deno.remove(testDir, { recursive: true });
+    await testDir.remove({ recursive: true });
   });
 
   describe('Basic Properties', () => {
     test('filename getter returns correct filename', () => {
-      const file = new FileSpec(testFile);
-      expect(file.filename).toBe('test.txt');
+      expect(testFile.filename).toBe('test.txt');
     });
 
     test('dirname getter returns correct directory', () => {
-      const file = new FileSpec(testFile);
-      expect(file.dirname).toBe(testDir);
+      expect(testFile.dirname).toBe(testDir.path);
     });
 
     test('extname getter returns correct extension', () => {
-      const file = new FileSpec(testFile);
-      expect(file.extname).toBe('.txt');
+      expect(testFile.extname).toBe('.txt');
     });
 
     test('basename getter returns correct basename', () => {
-      const file = new FileSpec(testFile);
-      expect(file.basename).toBe('test');
+      expect(testFile.basename).toBe('test');
     });
   });
 
   describe('Path Manipulation', () => {
     test('setExt() changes file extension', () => {
-      const file = new FileSpec(testFile);
+      const file = testFile.copy();
       file.setExt('.md');
       expect(file.extname).toBe('.md');
-      expect(file.path).toBe(path.join(testDir, 'test.md'));
+      expect(file.path).toBe(path.join(testDir.path, 'test.md'));
     });
 
     test('setBasename() changes file basename', () => {
-      const file = new FileSpec(testFile);
+      const file = testFile.copy();
       file.setBasename('newtest');
       expect(file.basename).toBe('newtest');
-      expect(file.path).toBe(path.join(testDir, 'newtest.txt'));
+      expect(file.path).toBe(path.join(testDir.path, 'newtest.txt'));
     });
 
     test('add() correctly joins paths', async () => {
       const file = new FileSpec(testDir).add('subdir', 'file.txt');
-      expect(file.path).toBe(path.join(testDir, 'subdir', 'file.txt'));
+      expect(file.path).toBe(path.join(testDir.path, 'subdir', 'file.txt'));
       const isFile = await file.isFile();
       expect(isFile).toBe(false);
     });
@@ -79,41 +74,36 @@ describe('FileSpec', () => {
 
   describe('File Operations', () => {
     test('getExists() returns true for existing file', async () => {
-      const file = new FileSpec(testFile);
-      expect(await file.exists()).toBe(true);
+      expect(await testFile.exists()).toBe(true);
     });
 
     test('isFile() returns true for file', async () => {
-      const file = new FileSpec(testFile);
-      expect(await file.isFile()).toBe(true);
+      expect(await testFile.isFile()).toBe(true);
     });
 
     test('readJson() reads and parses JSON correctly', async () => {
-      const file = new FileSpec(testJson);
-      const content = await file.readJson();
+      await testJson.writeJson({ key: 'value' });
+      const content = await testJson.readJson();
       expect(content).toEqual({ key: 'value' });
     });
 
     test('writeJson() writes JSON to file correctly', async () => {
-      const newFile = path.join(testDir, 'new.json');
-      const file = new FileSpec(newFile);
+      const file = new FileSpec(testDir, 'new.json');
       await file.writeJson({ newKey: 'newValue' });
-      const content = await fs.readFile(newFile, 'utf8');
+      const content = await file.readAsString();
       expect(JSON.parse(content)).toEqual({ newKey: 'newValue' });
     });
   });
 
   describe('File Hashing', () => {
     test('digest() returns SHA1 hash', async () => {
-      const file = new FileSpec(testFile);
-      const hash = await file.digest();
+      const hash = await testFile.digest();
       expect(typeof hash).toBe('string');
       expect(hash.length).toBe(40); // SHA1 is 40 chars
     });
 
     test('digest() returns SHA256 hash', async () => {
-      const file = new FileSpec(testFile);
-      const hash = await file.digest(DigestAlgorithm.sha256);
+      const hash = await testFile.digest(DigestAlgorithm.sha256);
       expect(typeof hash).toBe('string');
       expect(hash.length).toBe(64); // SHA256 is 64 chars
     });
@@ -121,8 +111,7 @@ describe('FileSpec', () => {
 
   describe('PDF Operations', () => {
     test('getPdfDate() returns creation date from PDF metadata', async () => {
-      const file = new FileSpec(pdfFile);
-      const date = await file.getPdfDate();
+      const date = await pdfFile.getPdfDate();
       expect(date).toBeInstanceOf(Date);
       if (date) {
         expect(date.toISOString()).toBe('2018-02-01T00:00:00.000Z');
@@ -198,5 +187,40 @@ describe('FileSpec read/write helpers', () => {
     await f.write(['one', 'two', 'three']);
     const lines = await f.readAsLines();
     expect(lines).toEqual(['one', 'two', 'three']);
+  });
+});
+
+describe('FileSystem Simulation for deno.json write', () => {
+  it('should read, modify, and write deno.json with 2-space indentation', async () => {
+    const fsTempDir = await FolderSpec.makeTemp();
+    const originalCwd = FolderSpec.cwd();
+    fsTempDir.chdir();
+
+    try {
+      const denoJsonFile = new FileSpec('deno.json');
+      // Simulate initial state: deno.json exists with version 1.0.0
+      await denoJsonFile.writeJson({ version: '1.0.0' });
+
+      // --- Simulate the file system operations of AppMain.run ---
+
+      // 1. Read deno.json content
+      const config = await denoJsonFile.readJson<{ version: string }>();
+
+      // 2. Modify the version in the in-memory config object
+      config.version = '1.0.1'; // Simulating the version bump logic
+
+      // 3. Write the modified config back to deno.json with 2-space indentation
+      await denoJsonFile.writeJson(config, null, 2);
+
+      // --- End simulation ---
+
+      // Verify the content of the written file
+      const content = await denoJsonFile.readAsString();
+      const expectedContent = JSON.stringify({ version: '1.0.1' }, null, 2);
+      expect(content).toBe(expectedContent);
+    } finally {
+      originalCwd.chdir();
+      await fsTempDir.remove({ recursive: true });
+    }
   });
 });

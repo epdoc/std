@@ -1,6 +1,6 @@
+import { FileSpec, FolderSpec, util } from '$fs';
 import { expect } from '@std/expect';
 import { afterEach, beforeEach, describe, test } from '@std/testing/bdd';
-import { FileSpec, FolderSpec, util } from '../src/mod.ts';
 
 describe('Safe Copy Operations', () => {
   let testDir: string;

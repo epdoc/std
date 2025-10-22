@@ -1,5 +1,20 @@
 # Changelog for @epdoc/fs
 
+## [1.0.0-alpha.4] - 2025-10-21
+
+- Centralize and provide better error handling. Improved implementations of various methods.
+
+## [1.0.0-alpha.4] - 2025-10-21
+
+- **Refactor**: Enhanced error handling across `FSSpecBase`, `FileSpec`, and `FolderSpec` classes.
+  - Centralized error wrapping using `this.asError()` for all `nfs` operations.
+  - Made `FSSpecBase.asError()` idempotent to simplify error propagation.
+  - Improved `FSSpecBase.stats()` to correctly handle `ENOENT` and throw classified errors for others.
+  - Added `try...catch` blocks to `FileSpec.makeTemp()`, `FileSpec.open()`, `FileSpec.writeJsonEx()`, `FSSpecBase.remove()`, `FSSpecBase.realPath()`, `FolderSpec.makeTemp()`, `FolderSpec.ensureDir()`, `FolderSpec.ensureParentDir()`, `FolderSpec.readDir()`, and `FolderSpec.moveTo()`.
+- **Consistency**: Ensured `clearInfo()` is called after operations that invalidate cached file information (e.g., `FileSpec.moveTo()`, `FolderSpec.moveTo()`, `FSSpecBase.remove()`, `FolderSpec.ensureDir()`).
+- **JSDoc**: Updated and improved JSDoc comments for `FileSpec.moveTo()`, `FileSpec.backup()`, `FileSpec.safeCopy()`, `FileSpec.equalTo()`, `FSSpecBase.info` getter, `FolderSpec.ensureDir()`, `FolderSpec.ensureParentDir()`, and `FolderSpec.mkdir()`.
+- **Tests**: Corrected `test/error.test.ts` to align with Node.js `fs.mkdir` behavior, expecting `Err.AlreadyExists` for file-blocking-directory-creation scenarios.
+
 ## [1.0.0-alpha.3] - 2025-10-20
 
 - Major refactoring with breaking changes.

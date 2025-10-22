@@ -13,7 +13,7 @@ import { FileSpec } from './filespec.ts';
 import type { FSSpec } from './fsspec.ts';
 import type { IRootableSpec, ISafeCopyableSpec } from './icopyable.ts';
 import { SymlinkSpec } from './symspec.ts';
-import type { FolderDiff, MoveOptions, TypedFSSpec } from './types.ts';
+import type { TypedFSSpec } from './types.ts';
 
 /**
  * An object representing a file system entry, which may be either a file or a
@@ -73,6 +73,11 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
     return new FolderSpec(process.cwd());
   }
 
+  chdir(): this {
+    process.chdir(this._f);
+    return this;
+  }
+
   /**
    * Creates a new temporary directory in the default directory for temporary
    * files, unless `dir` is specified. Other optional options include
@@ -108,18 +113,22 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
     const prefix = _.isString(opts.prefix) ? opts.prefix : 'tmp-';
     const mkdtempPrefix = path.join(tmpRoot, prefix);
 
-    // mkdtemp creates a new directory with a unique suffix appended to the prefix
-    const created = await nfs.mkdtemp(mkdtempPrefix);
+    try {
+      // mkdtemp creates a new directory with a unique suffix appended to the prefix
+      const created = await nfs.mkdtemp(mkdtempPrefix);
 
-    // If a suffix was requested, rename the created dir to include the suffix.
-    // Note: this is not atomic with mkdtemp and may collide; caller responsibility.
-    if (opts.suffix) {
-      const finalPath = `${created}${opts.suffix}`;
-      await nfs.rename(created, finalPath);
-      return new FolderSpec(finalPath);
+      // If a suffix was requested, rename the created dir to include the suffix.
+      // Note: this is not atomic with mkdtemp and may collide; caller responsibility.
+      if (opts.suffix) {
+        const finalPath = `${created}${opts.suffix}`;
+        await nfs.rename(created, finalPath);
+        return new FolderSpec(finalPath);
+      }
+
+      return new FolderSpec(created);
+    } catch (err: unknown) {
+      throw new FolderSpec(mkdtempPrefix).asError(err, 'makeTemp');
     }
-
-    return new FolderSpec(created);
   }
 
   /**
@@ -212,17 +221,50 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
   }
 
   /**
-   * Ensures there is a folder with this path.
-   * @returns {Promise<void>} A promise that resolves when the directory is ensured.
+   * Ensures that a directory exists at this path.
+   *
+   * This method is recursive, meaning it will create parent directories as
+   * needed, similar to `mkdir -p`. If the path already exists and is a
+   * directory, the method does nothing.
+   *
+   * @returns A promise that resolves when the directory is ensured.
+   * @throws {Error.NotADirectory} If the path exists but is a file.
    */
   async ensureDir(): Promise<void> {
-    await nfs.mkdir(this._f, { recursive: true });
+    try {
+      await nfs.mkdir(this._f, { recursive: true });
+      this.clearInfo();
+    } catch (err: unknown) {
+      throw this.asError(err, 'ensureDir');
+    }
   }
 
+  /**
+   * Ensures that the parent directory of this path exists.
+   *
+   * This method is recursive, meaning it will create parent directories as
+   * needed.
+   *
+   * @returns A promise that resolves when the parent directory is ensured.
+   * @throws {Error.NotADirectory} If the path exists but is a file.
+   */
   async ensureParentDir(): Promise<void> {
-    await nfs.mkdir(this.dirname, { recursive: true });
+    try {
+      await nfs.mkdir(this.dirname, { recursive: true });
+    } catch (err: unknown) {
+      throw this.asError(err, 'ensureParentDir');
+    }
   }
 
+  /**
+   * Creates a new subdirectory within this folder.
+   *
+   * @param name - The name of the subdirectory to create.
+   * @returns A promise that resolves with a new `FolderSpec` object
+   * representing the created subdirectory.
+   * @throws {Error.NotADirectory} If the path for the new subdirectory
+   * already exists as a file.
+   */
   async mkdir(name: FS.Name): Promise<FolderSpec> {
     const newFolder = new FolderSpec(this, name);
     await newFolder.ensureDir();
@@ -235,11 +277,15 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
    * @returns {Promise<FSSpecBase[]>} Array of BaseSpec objects for directory entries
    */
   async readDir(): Promise<(TypedFSSpec)[]> {
-    const dirents = await nfs.readdir(this._f, { withFileTypes: true });
-    const results = dirents
-      .map((d) => direntToSpec(this.path as FS.FolderPath, d))
-      .filter(Boolean) as (TypedFSSpec)[];
-    return results;
+    try {
+      const dirents = await nfs.readdir(this._f, { withFileTypes: true });
+      const results = dirents
+        .map((d) => direntToSpec(this.path as FS.FolderPath, d))
+        .filter(Boolean) as (TypedFSSpec)[];
+      return results;
+    } catch (err: unknown) {
+      throw this.asError(err, 'readDir');
+    }
   }
 
   /**
@@ -249,9 +295,8 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
    * @returns {Promise<FileSpec[]>} Array of FileSpec objects for matching files
    */
   async getFiles(regex?: RegExp): Promise<FileSpec[]> {
-    const dirents = await nfs.readdir(this._f, { withFileTypes: true });
-    const results = dirents
-      .map((d) => direntToSpec(this.path as FS.FolderPath, d))
+    const allEntries = await this.readDir();
+    const results = allEntries
       .filter((spec): spec is FileSpec => spec instanceof FileSpec && (!regex || regex.test(spec.filename)));
     return results;
   }
@@ -263,9 +308,8 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
    * @returns {Promise<FolderSpec[]>} Array of FolderSpec objects for matching folders
    */
   async getFolders(regex?: RegExp): Promise<FolderSpec[]> {
-    const dirents = await nfs.readdir(this._f, { withFileTypes: true });
-    const results = dirents
-      .map((d) => direntToSpec(this.path as FS.FolderPath, d))
+    const allEntries = await this.readDir();
+    const results = allEntries
       .filter((spec): spec is FolderSpec => spec instanceof FolderSpec && (!regex || regex.test(spec.filename)));
     return results;
   }
@@ -427,19 +471,17 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
    * @param options - Options to overwrite existing files.
    * @returns {Promise<void>} - A promise that resolves when the move is complete.
    */
-  async moveTo(dest: FS.FolderPath | FolderSpec, options?: MoveOptions): Promise<void> {
+  async moveTo(dest: FS.FolderPath | FolderSpec, options?: FS.MoveOptions): Promise<void> {
     const p: FS.FolderPath = dest instanceof FolderSpec ? dest.path : dest;
-
-    if (options?.overwrite) {
-      try {
-        await nfs.access(p);
+    try {
+      if (options?.overwrite) {
         await nfs.rm(p, { recursive: true, force: true });
-      } catch {
-        // Destination doesn't exist, which is fine
       }
+      await nfs.rename(this._f, p);
+      this.clearInfo();
+    } catch (err: unknown) {
+      throw this.asError(err, 'moveTo');
     }
-
-    return nfs.rename(this._f, p);
   }
 
   /**
@@ -485,8 +527,8 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
    * @param opts
    * @returns
    */
-  async getDiff(folder: FolderSpec, filter?: RegExp, opts: { checksum?: boolean } = {}): Promise<FolderDiff> {
-    const result: FolderDiff = { missing: [], added: [], diff: [] };
+  async getDiff(folder: FolderSpec, filter?: RegExp, opts: { checksum?: boolean } = {}): Promise<FS.FolderDiff> {
+    const result: FS.FolderDiff = { missing: [], added: [], diff: [] };
     let aFiles = await this.getFiles(filter);
     let bFiles = await folder.getFiles(filter);
     aFiles = FolderSpec.sortByFilename(aFiles) as FileSpec[];

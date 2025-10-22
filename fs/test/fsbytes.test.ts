@@ -1,9 +1,9 @@
+import { type FileCategory, type FileType, FSBytes } from '$fs';
 import { expect } from '@std/expect';
 import { afterAll, beforeAll, describe, test } from '@std/testing/bdd';
 import { Buffer } from 'node:buffer';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { type FileCategory, type FileType, FSBytes } from '../src/mod.ts';
 import { generateRobustPDF } from './pdfgen.ts';
 
 describe('FSBytes - File Type Detection', () => {

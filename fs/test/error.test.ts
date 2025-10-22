@@ -1,9 +1,9 @@
+import { Error as Err, FileSpec } from '$fs';
 import { expect } from '@std/expect';
 import { afterAll, beforeAll, describe, test } from '@std/testing/bdd';
 import * as fs from 'node:fs/promises';
 import os from 'node:os';
 import * as path from 'node:path';
-import { Error as Err, FileSpec } from '../src/mod.ts';
 
 describe('FSSpec error conditions', () => {
   let tmpDir: string;
@@ -35,9 +35,10 @@ describe('FSSpec error conditions', () => {
       await child.ensureParentDir();
       throw new Error('Expected ensureParentDir to throw NotADirectory');
     } catch (err) {
-      // some platforms may report EISDIR vs ENOTDIR; accept either specific mapping
+      // The underlying Node.js mkdir throws EEXIST when a file blocks directory creation.
+      // This is mapped to Err.AlreadyExists.
       expect(
-        err instanceof Err.NotADirectory || err instanceof Err.IsADirectory,
+        err instanceof Err.AlreadyExists,
       ).toBe(true);
     }
   });

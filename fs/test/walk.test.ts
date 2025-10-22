@@ -1,9 +1,9 @@
+import * as FS from '$fs';
 import { walk } from '$walk';
 import { expect } from '@std/expect';
 import { afterAll, beforeAll, describe, it } from '@std/testing/bdd';
 import { promises as nfs } from 'node:fs';
 import path from 'node:path';
-import * as FS from '../src/mod.ts';
 
 describe('walk', () => {
   let tmpDirSpec: FS.FolderSpec;

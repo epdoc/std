@@ -1,8 +1,8 @@
+import { FileSpec, FolderSpec } from '$fs';
 import { expect } from '@std/expect';
 import { afterAll, beforeAll, describe, test } from '@std/testing/bdd';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import { FileSpec, FolderSpec } from '../src/mod.ts';
 
 describe('FolderSpec', () => {
   let testDir: string;

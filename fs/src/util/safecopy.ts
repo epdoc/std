@@ -94,7 +94,7 @@ export async function safeCopyFile(
           throw new Error.AlreadyExists('File exists', { path: fsDest.path });
         }
       } else if (conflictStrategy?.type === fileConflictStrategyType.renameWithTilde) {
-        await fsDest.moveTo(fsDest.path + '~' as FilePath, { overwrite: true });
+        await fsDest.moveTo(new FileSpec(fsDest.path + '~' as FilePath), { overwrite: true });
         fsDest.clearInfo(); // Clear cached stats after move
       } else if (conflictStrategy?.type === fileConflictStrategyType.renameWithNumber) {
         const newPath = await fsDest.findAvailableIndexFilename(
@@ -103,7 +103,7 @@ export async function safeCopyFile(
           conflictStrategy.prefix,
         );
         if (newPath) {
-          await fsDest.moveTo(newPath, { overwrite: true });
+          await fsDest.moveTo(new FileSpec(newPath), { overwrite: true });
           fsDest.clearInfo(); // Clear cached stats after move
         } else if (conflictStrategy.errorIfExists) {
           throw new Error.AlreadyExists('File exists', { path: fsDest.path });

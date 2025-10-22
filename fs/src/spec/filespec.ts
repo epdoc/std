@@ -10,7 +10,6 @@ import {
 import { _, type DeepCopyOpts, type Dict, type Integer, stripJsonComments } from '@epdoc/type';
 import { assert } from '@std/assert';
 import { decodeBase64, encodeBase64 } from '@std/encoding';
-import * as dfs from '@std/fs';
 import { fromFileUrl } from '@std/path';
 import crypto from 'node:crypto';
 import { promises as nfs } from 'node:fs';
@@ -21,7 +20,6 @@ import { DigestAlgorithm } from '../consts.ts';
 import { FSBytes } from '../fsbytes.ts';
 import { asFilePath, isFilePath } from '../guards.ts';
 import type * as FS from '../types.ts';
-import type { FileInfo } from '../types.ts';
 import { FSSpecBase } from './basespec.ts';
 import { FolderSpec } from './folderspec.ts';
 import { FSSpec } from './fsspec.ts';
@@ -119,22 +117,26 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
     const prefix = _.isString(opts.prefix) ? opts.prefix : 'tmp-';
     const mkdtempPrefix = path.join(tmpRoot, prefix);
 
-    // Create a unique temp directory
-    const tmpDir = await nfs.mkdtemp(mkdtempPrefix);
+    try {
+      // Create a unique temp directory
+      const tmpDir = await nfs.mkdtemp(mkdtempPrefix);
 
-    // Generate a unique filename
-    const name = _.isFunction(crypto.randomUUID) ? crypto.randomUUID() : crypto.randomBytes(8).toString('hex');
+      // Generate a unique filename
+      const name = _.isFunction(crypto.randomUUID) ? crypto.randomUUID() : crypto.randomBytes(8).toString('hex');
 
-    let filePath = path.join(tmpDir, name);
-    if (opts?.suffix) {
-      filePath = `${filePath}${opts.suffix}`;
+      let filePath = path.join(tmpDir, name);
+      if (opts?.suffix) {
+        filePath = `${filePath}${opts.suffix}`;
+      }
+
+      // Create the file exclusively
+      const fh = await nfs.open(filePath, 'wx');
+      await fh.close();
+
+      return new FileSpec(filePath);
+    } catch (err: unknown) {
+      throw new FileSpec(mkdtempPrefix).asError(err, 'makeTemp');
     }
-
-    // Create the file exclusively
-    const fh = await nfs.open(filePath, 'wx');
-    await fh.close();
-
-    return new FileSpec(filePath);
   }
 
   /**
@@ -217,16 +219,6 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
     return this.add(os.userInfo().homedir, ...args);
   }
 
-  size(): Integer | undefined {
-    return this.info?.size;
-  }
-
-  getSize(): Promise<Integer | undefined> {
-    return this.stats().then((info) => {
-      return info?.size;
-    });
-  }
-
   /**
    * Looks at the extension of the filename to determine if it is one of the
    * listed types.
@@ -292,6 +284,11 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
     return REG.jsonc.test(this.extname);
   }
 
+  async size(force = false): Promise<Integer | undefined> {
+    const info = await this.stats(force);
+    return (info && _.isPosInteger(info.size)) ? info.size as Integer : undefined;
+  }
+
   /**
  * Asynchronously reads a specified number of bytes from the file and returns
  * them as an FSBytes instance. In order to determine what type of file this is,
@@ -335,38 +332,6 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
       this._info = undefined;
     }
     return this;
-  }
-
-  /**
-   * Returns a temporary file path by appending a tilde (~).
-   * @returns {Promise<FilePath>} A promise that resolves to the temporary file path.
-   * @deprecated
-   */
-  getUniquePath(): Promise<FS.FilePath> {
-    return Promise.resolve((this.path + '~') as FS.FilePath);
-  }
-
-  /**
-   * Returns a unique file path by appending a number if the file already exists.
-   * @returns {Promise<FilePath>} A promise that resolves to a unique file path.
-   * @deprecated
-   */
-  getUniqueFile(): Promise<FS.FilePath> {
-    return new Promise<FS.FilePath>((resolve) => {
-      let count = 0;
-      const sep = '-';
-      const prefix = 'copy';
-      const check = async (newFs: FileSpec) => {
-        const exists = await newFs.exists();
-        if (exists) {
-          const newFsDest = new FileSpec(this.dirname, this.basename + sep + prefix + _.pad(++count, 2) + this.extname);
-          check(newFsDest);
-        } else {
-          resolve(newFs.path);
-        }
-      };
-      check(this);
-    });
   }
 
   /**
@@ -420,19 +385,8 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    */
   async ensureParentDir(): Promise<void> {
     const parent = new FolderSpec(this.dirname);
-    let stats: FileInfo | undefined;
     try {
-      stats = await parent.stats();
-    } catch (err: unknown) {
-      throw this.asError(err, 'ensureParentDir');
-    }
-    if (stats?.exists) {
-      if (stats.isDirectory) return;
-      throw new Error.NotADirectory('Not a directory', { path: this._f, cause: 'ensureParentDir' });
-    }
-
-    try {
-      await nfs.mkdir(this.dirname, { recursive: true });
+      await parent.ensureDir();
     } catch (err: unknown) {
       throw this.asError(err, 'ensureParentDir');
     }
@@ -476,61 +430,15 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   //     });
   // }
 
-  /**
-   * Use checksums to test if this file is equal to path2
-   * @param path2
-   * @returns {Promise<boolean>} A promise that resolves with true if the files are equal, false otherwise.
-   */
-  async equalTo(arg: FS.FilePath | FileSpec | FSSpec, opts: FS.EqualOptions = { checksum: true }): Promise<boolean> {
-    if (arg instanceof FileSpec) {
-      return await this._equal(arg, opts);
-    }
-    if (arg instanceof FSSpec) {
-      const fs = await arg.resolvedType();
-      if (fs instanceof FileSpec) {
-        return await this._equal(fs, opts);
-      }
-      return false;
-    }
-    if (isFilePath(arg)) {
-      const fs = new FileSpec(arg);
-      const isFile = await fs.isFile();
-      if (isFile) {
-        return await this._equal(fs, opts);
-      }
-      return false;
-    }
-    // invalid usage -> throw a usage specific error subclass
-    throw this.asError('Invalid filesEqual argument', 'filesEqual');
-  }
-
-  protected async _equal(fs: FileSpec, opts: FS.EqualOptions = { checksum: true }): Promise<boolean> {
-    const aInfo = await this.stats();
-    const bInfo = await fs.stats();
-    if (!aInfo || !bInfo) {
-      return false;
-    }
-    if (!aInfo.isFile || !bInfo.isFile) {
-      return false;
-    }
-    if (aInfo.size !== bInfo.size) {
-      return false;
-    }
-    if (opts.checksum) {
-      const aChecksum = await this.digest();
-      const bChecksum = await fs.digest();
-      if (aChecksum !== bChecksum) {
-        return false;
-      }
-    }
-    return true;
-  }
-
   async open(opts: { read?: boolean; write?: boolean }): Promise<FileHandle> {
-    // map read/write flags to Node flags
-    const flags = opts.write ? (opts.read ? 'r+' : 'w') : 'r';
-    this.#file = await nfs.open(this._f, flags);
-    return this.#file;
+    try {
+      // map read/write flags to Node flags
+      const flags = opts.write ? (opts.read ? 'r+' : 'w') : 'r';
+      this.#file = await nfs.open(this._f, flags);
+      return this.#file;
+    } catch (err: unknown) {
+      throw this.asError(err, 'open');
+    }
   }
 
   close(): void {
@@ -649,7 +557,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    */
   async readJson<T = unknown>(): Promise<T> {
     try {
-      const s = (await nfs.readFile(this._f)).toString('utf8');
+      const s = await this.readAsString();
       if (this.isJsonc()) {
         // If the file is JSONC, strip comments before parsing
         return JSON.parse(stripJsonComments(s, { trailingCommas: true })) as T;
@@ -696,65 +604,11 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   }
 
   async writeJsonEx(value: unknown, options: DeepCopyOpts | null = null, space?: string | number): Promise<void> {
-    const text = _.jsonSerialize(value, options, space);
-    await nfs.writeFile(this._f, new TextEncoder().encode(text));
-  }
-
-  /**
-   * Performs a deep copy of the given data with optional transformations.
-   *
-   * This function is unique in that it supports:
-   *   - Recursively loading and merging JSON from URLs or file paths found in string values.
-   *   - Detecting and reconstructing RegExp objects from plain objects.
-   *   - Custom transformation or replacement of values during the copy.
-   *
-   * @param a - The data to deep copy.
-   * @param [options] - Options for the deep copy operation:
-   *   @param [options.replace=Dict] - If set, replaces keys with values throughout `a`.
-   *   @param [options.pre='{'] - Prefix string for detecting replacement strings and URLs in string values.
-   *   @param [options.post='}'] - Suffix string for detecting replacement strings and URLs in string values.
-   *   @param [options.includeUrl=false] - Recursively loads and merges JSON from URLs or file paths found in string values.
-   *   @param [options.detectRegExp=false] - If true, detects and reconstructs RegExp objects from plain objects using asRegExp.
-   * @returns {Promise<unknown>} A promise that resolves with the deeply copied and transformed data.
-   *
-   * @example
-   * // Deep copy with RegExp detection
-   * const copy = await file.#deepCopy(obj, { detectRegExp: true });
-   */
-  #deepCopy(a: unknown, options?: FS.FsDeepCopyOpts): Promise<unknown> {
-    const opts: FS.FsDeepCopyOpts = _.deepCopySetDefaultOpts(options);
-    if (opts.includeUrl && _.isNonEmptyString(a)) {
-      const urlTest = new RegExp(`^${opts.pre}(file|http|https):\/\/(.+)${opts.post}$`, 'i');
-      const p: string[] | null = a.match(urlTest);
-      if (_.isNonEmptyArray(p) && isFilePath(p[2])) {
-        const fs = new FileSpec(this.dirname, p[2]);
-        return fs.readJsonEx(opts).then((resp) => {
-          return Promise.resolve(resp);
-        });
-      } else {
-        return Promise.resolve(a);
-      }
-    } else if (_.isObject(a)) {
-      // @ts-ignore xxx
-      const re: RegExp = opts && opts.detectRegExp ? asRegExp(a) : undefined;
-      if (re && _.isDict(a)) {
-        return Promise.resolve(re);
-      } else {
-        const jobs: unknown[] = [];
-        const result2: Dict = {};
-        Object.keys(a).forEach((key) => {
-          // @ts-ignore fight the type system latter
-          const job = this.#deepCopy(a[key], opts).then((resp) => {
-            result2[key] = resp;
-          });
-          jobs.push(job);
-        });
-        return Promise.all(jobs).then((_resp) => {
-          return Promise.resolve(result2);
-        });
-      }
-    } else {
-      return Promise.resolve(_.deepCopy(a, opts));
+    try {
+      const text = _.jsonSerialize(value, options, space);
+      await nfs.writeFile(this._f, new TextEncoder().encode(text));
+    } catch (err: unknown) {
+      throw this.asError(err, 'writeJsonEx');
     }
   }
 
@@ -832,40 +686,167 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
     }
   }
 
+  /**
+   * Moves this file to a new location.
+   * @param dest - The destination. If a `FolderSpec` is provided, the file is
+   * moved into that folder. If a `FileSpec` is provided, the file is moved and
+   * renamed to the path of that `FileSpec`.
+   * @param options - Options for the move operation.
+   * @param {boolean} [options.overwrite=false] - If true, the destination file
+   * will be overwritten if it already exists.
+   * @returns A promise that resolves when the move is complete.
+   * @throws {Error.NotFound} If the source file does not exist.
+   * @throws {Error.AlreadyExists} If `options.overwrite` is false and the
+   * destination file already exists.
+   */
+  async moveTo(dest: FolderSpec | FileSpec, options?: FS.MoveOptions): Promise<void> {
+    if (!await this.exists()) {
+      throw new Error.NotFound('File does not exist', { code: 'ENOENT', path: this._f });
+    }
+
+    const destFile = (dest instanceof FileSpec) ? dest : new FileSpec(dest, this.filename);
+    await destFile.ensureParentDir();
+
+    try {
+      if (options?.overwrite) {
+        await nfs.rename(this._f, destFile.path);
+      } else {
+        const destExists = await destFile.exists(true);
+        if (destExists) {
+          throw new Error.AlreadyExists('Destination file already exists', { path: destFile.path });
+        }
+        await nfs.rename(this._f, destFile.path);
+      }
+      this.clearInfo();
+    } catch (err: unknown) {
+      throw this.asError(err, 'moveTo');
+    }
+  }
+
+  /**
+   * Safely copies the file to a new destination, with built-in handling for
+   * name conflicts to prevent accidental data loss.
+   *
+   * This method delegates to a shared `safeCopy` utility. If the destination
+   * file already exists, the default behavior is to back up the destination
+   * file by renaming it with a `~` suffix before performing the copy.
+   *
+   * @param destFile - The destination. If a `FolderSpec` or folder path is
+   * provided, the file is copied into it under its original name. If a
+   * `FileSpec` or file path is provided, it is copied to that exact path.
+   * @param opts - Options to control the copy behavior.
+   * @param {boolean} [opts.overwrite=false] - If true, directly overwrites the
+   * destination file without creating a backup.
+   * @param {FileConflictStrategy} [opts.conflictStrategy] - The strategy to use if
+   * the destination exists and `overwrite` is false. Defaults to renaming the
+   * destination with a tilde.
+   * @returns A promise that resolves when the copy operation is complete.
+   */
   safeCopy(destFile: FS.FilePath | FileSpec | FolderSpec | FSSpec, opts: SafeCopyOpts = {}): Promise<void> {
     return safeCopy(this, destFile, opts);
   }
 
   /**
-   * 'Backup' a file by moving it to a new filename. Use when copying a file to
-   * the same location or creating a new file at the same location.
-   * @param opts
-   * @returns {Promise<FilePath | undefined>} - Path to file if file was backed
-   * up, or true if the file didn't exist
+   * Backs up the current file by moving it to a new path, determined by the
+   * chosen strategy. This is useful for preserving a file before overwriting it.
+   * The `moveTo` operation is called with `overwrite: true`, ensuring the
+   * backup file is created.
+   * @param opts - The strategy for resolving a file conflict to generate the
+   * backup path. Defaults to renaming with a tilde (`~`).
+   * @param {'renameWithTilde' | 'renameWithNumber' | 'overwrite' | 'error'} [opts.type='renameWithTilde'] - The backup strategy.
+   *   - `renameWithTilde`: Appends a `~` to the filename.
+   *   - `renameWithNumber`: Appends an incrementing number (e.g., `-01`).
+   *   - `overwrite`: Uses the same path (no-op for backup path generation).
+   *   - `error`: Throws an error if the file exists (via `#getNewPath`).
+   * @param {boolean} [opts.errorIfExists=false] - If true, throws an error if the generated backup path already exists.
+   * @param {string} [opts.separator='-'] - Separator for `renameWithNumber`.
+   * @param {string} [opts.prefix=''] - Prefix for `renameWithNumber`.
+   * @param {number} [opts.limit=32] - Max attempts for `renameWithNumber`.
+   * @returns A promise that resolves with a `FileSpec` for the new backup
+   * file, or `undefined` if no backup path was generated.
+   * @throws {Error.NotFound} If the source file does not exist (from `moveTo`).
+   * @throws {Error.AlreadyExists} If the chosen backup strategy results in a
+   * path that already exists and `opts.errorIfExists` is true.
    */
   async backup(
     opts: FileConflictStrategy = { type: 'renameWithTilde', errorIfExists: false },
-  ): Promise<FS.FilePath | undefined> {
-    const stats = await this.stats();
-    if (!stats?.exists) {
-      // more specific NotFound subclass
-      throw new Error.NotFound('File does not exist', { code: 'ENOENT', path: this._f });
-    }
+  ): Promise<FileSpec | undefined> {
     const newPath: FS.FilePath | undefined = await this.#getNewPath(opts);
     if (newPath && isFilePath(newPath)) {
-      return this.moveTo(newPath, { overwrite: true })
-        .then(() => {
-          this._info = undefined; // Invalidate cache after move
-          return Promise.resolve(newPath);
-        })
-        .catch((err) => {
-          if (err instanceof Error.FSError) {
-            throw err;
-          }
-          throw this.asError(err, 'backup');
-        });
+      const newFile = new FileSpec(newPath);
+      await this.moveTo(newFile, { overwrite: true });
+      return newFile;
     }
-    return Promise.resolve(undefined);
+  }
+
+  /**
+   * Compares this file to another file to determine if they are equal.
+   *
+   * The comparison is done first by size. If the sizes are equal, it can
+   * optionally perform a checksum comparison for byte-for-byte equality.
+   *
+   * @param arg - The file to compare against. Can be a path string, a
+   * `FileSpec`, or a generic `FSSpec`.
+   * @param opts - Options to control the comparison.
+   * @param {boolean} [opts.checksum=true] - If true, performs a checksum
+   * comparison if the file sizes are identical. If false, only file sizes
+   * are compared.
+   * @returns A promise that resolves to `true` if the files are deemed equal,
+   * otherwise `false`.
+   */
+  async equalTo(arg: FS.FilePath | FileSpec | FSSpec, opts: FS.EqualOptions = { checksum: true }): Promise<boolean> {
+    if (arg instanceof FileSpec) {
+      return await this.#equal(arg, opts);
+    }
+    if (arg instanceof FSSpec) {
+      const fs = await arg.resolvedType();
+      if (fs instanceof FileSpec) {
+        return await this.#equal(fs, opts);
+      }
+      return false;
+    }
+    if (isFilePath(arg)) {
+      const fs = new FileSpec(arg);
+      const isFile = await fs.isFile();
+      if (isFile) {
+        return await this.#equal(fs, opts);
+      }
+      return false;
+    }
+    // invalid usage -> throw a usage specific error subclass
+    throw this.asError('Invalid filesEqual argument', 'filesEqual');
+  }
+
+  /**
+   * Returns a temporary file path by appending a tilde (~).
+   * @returns {Promise<FilePath>} A promise that resolves to the temporary file path.
+   * @deprecated
+   */
+  getUniquePath(): Promise<FS.FilePath> {
+    return Promise.resolve((this.path + '~') as FS.FilePath);
+  }
+
+  /**
+   * Returns a unique file path by appending a number if the file already exists.
+   * @returns {Promise<FilePath>} A promise that resolves to a unique file path.
+   * @deprecated
+   */
+  getUniqueFile(): Promise<FS.FilePath> {
+    return new Promise<FS.FilePath>((resolve) => {
+      let count = 0;
+      const sep = '-';
+      const prefix = 'copy';
+      const check = async (newFs: FileSpec) => {
+        const exists = await newFs.exists();
+        if (exists) {
+          const newFsDest = new FileSpec(this.dirname, this.basename + sep + prefix + _.pad(++count, 2) + this.extname);
+          check(newFsDest);
+        } else {
+          resolve(newFs.path);
+        }
+      };
+      check(this);
+    });
   }
 
   #getNewPath(opts: FileConflictStrategy): Promise<FS.FilePath | undefined> {
@@ -893,6 +874,86 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   }
 
   /**
+   * Performs a deep copy of the given data with optional transformations.
+   *
+   * This function is unique in that it supports:
+   *   - Recursively loading and merging JSON from URLs or file paths found in string values.
+   *   - Detecting and reconstructing RegExp objects from plain objects.
+   *   - Custom transformation or replacement of values during the copy.
+   *
+   * @param a - The data to deep copy.
+   * @param [options] - Options for the deep copy operation:
+   *   @param [options.replace=Dict] - If set, replaces keys with values throughout `a`.
+   *   @param [options.pre='{'] - Prefix string for detecting replacement strings and URLs in string values.
+   *   @param [options.post='}'] - Suffix string for detecting replacement strings and URLs in string values.
+   *   @param [options.includeUrl=false] - Recursively loads and merges JSON from URLs or file paths found in string values.
+   *   @param [options.detectRegExp=false] - If true, detects and reconstructs RegExp objects from plain objects using asRegExp.
+   * @returns {Promise<unknown>} A promise that resolves with the deeply copied and transformed data.
+   *
+   * @example
+   * // Deep copy with RegExp detection
+   * const copy = await file.#deepCopy(obj, { detectRegExp: true });
+   */
+  #deepCopy(a: unknown, options?: FS.FsDeepCopyOpts): Promise<unknown> {
+    const opts: FS.FsDeepCopyOpts = _.deepCopySetDefaultOpts(options);
+    if (opts.includeUrl && _.isNonEmptyString(a)) {
+      const urlTest = new RegExp(`^${opts.pre}(file|http|https):\/\/(.+)${opts.post}$`, 'i');
+      const p: string[] | null = a.match(urlTest);
+      if (_.isNonEmptyArray(p) && isFilePath(p[2])) {
+        const fs = new FileSpec(this.dirname, p[2]);
+        return fs.readJsonEx(opts).then((resp) => {
+          return Promise.resolve(resp);
+        });
+      } else {
+        return Promise.resolve(a);
+      }
+    } else if (_.isObject(a)) {
+      // @ts-ignore xxx
+      const re: RegExp = opts && opts.detectRegExp ? asRegExp(a) : undefined;
+      if (re && _.isDict(a)) {
+        return Promise.resolve(re);
+      } else {
+        const jobs: unknown[] = [];
+        const result2: Dict = {};
+        Object.keys(a).forEach((key) => {
+          // @ts-ignore fight the type system latter
+          const job = this.#deepCopy(a[key], opts).then((resp) => {
+            result2[key] = resp;
+          });
+          jobs.push(job);
+        });
+        return Promise.all(jobs).then((_resp) => {
+          return Promise.resolve(result2);
+        });
+      }
+    } else {
+      return Promise.resolve(_.deepCopy(a, opts));
+    }
+  }
+
+  async #equal(fs: FileSpec, opts: FS.EqualOptions = { checksum: true }): Promise<boolean> {
+    const aInfo = await this.stats();
+    const bInfo = await fs.stats();
+    if (!aInfo || !bInfo) {
+      return false;
+    }
+    if (!aInfo.isFile || !bInfo.isFile) {
+      return false;
+    }
+    if (aInfo.size !== bInfo.size) {
+      return false;
+    }
+    if (opts.checksum) {
+      const aChecksum = await this.digest();
+      const bChecksum = await fs.digest();
+      if (aChecksum !== bChecksum) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
    * Finds the next available indexed filename. For example, for `filename.ext`,
    * tries `filename-01.ext`, `filename-02.ext`, etc until it finds a filename
    * that is not used.
@@ -915,16 +976,5 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
     if (!looking && newFsDest instanceof FileSpec) {
       return newFsDest.path;
     }
-  }
-
-  /**
-   * Moves this file or folder to the location `dest`.
-   * @param dest - The new path for the file.
-   * @param options - Options to overwrite and dereference symlinks.
-   * @returns {Promise<void>} - A promise that resolves when the move is complete.
-   */
-  moveTo(dest: FS.Path | FolderSpec | FileSpec, options?: dfs.MoveOptions): Promise<void> {
-    const p: FS.Path = (dest instanceof FolderSpec || dest instanceof FileSpec) ? dest.path : dest;
-    return dfs.move(this._f, p, options);
   }
 }

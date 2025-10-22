@@ -39,6 +39,12 @@ export type Name = FileName | FolderName;
 
 export type PathSegment = FSSpecBase | string;
 
+export type FolderDiff = {
+  missing: Name[];
+  added: Name[];
+  diff: Name[];
+};
+
 export type FsDeepCopyOpts = DeepCopyOpts & {
   includeUrl?: unknown;
 };
@@ -80,6 +86,15 @@ export interface CopyOptions {
    *
    * @default {false} */
   preserveTimestamps?: boolean;
+}
+
+export interface MoveOptions {
+  /**
+   * Whether the destination file should be overwritten if it already exists.
+   *
+   * @default {false}
+   */
+  overwrite?: boolean;
 }
 
 /**

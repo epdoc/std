@@ -1,8 +1,8 @@
 // deno-lint-ignore-file no-explicit-any
+import { FileSpec } from '$fs';
 import { deepEquals } from '@epdoc/type';
 import { expect } from '@std/expect';
 import { afterAll, beforeEach, describe, test } from '@std/testing/bdd';
-import { FileSpec } from '../src/mod.ts';
 
 describe('JSON Extended Operations', () => {
   let testDir: string;
