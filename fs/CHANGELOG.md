@@ -1,5 +1,9 @@
 # Changelog for @epdoc/fs
 
+## [1.0.0-alpha.7] - 2025-10-23
+
+- Added JSDoc comments to FSSpecBase
+
 ## [1.0.0-alpha.5] - 2025-10-21
 
 - Resolved fs write to file race condition error due to nodejs library limitiations

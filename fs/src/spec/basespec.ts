@@ -70,13 +70,18 @@ export abstract class FSSpecBase {
     return this;
   }
 
+  /**
+   * Call if you are not sure whether we have a cached FileInfo object.
+   * @returns If we have an `info` property.
+   */
   hasInfo(): boolean {
     return this._info ? true : false;
   }
 
   /**
-   * Accesses the cached file information.
-   * This property is populated by calling the async `stats()` method.
+   * Accesses the cached file information. Only call if you know that we have a cached `info`
+   * property. `info` is populated by calling the async `stats()` method, or one of the other
+   * methods that retrieves stats.
    * @returns {FileInfo} The cached file info.
    * @throws {Error} If `stats()` has not been called yet.
    */
@@ -87,6 +92,8 @@ export abstract class FSSpecBase {
 
   /**
    * Asynchronously retrieves the stats for this file or folder.
+   * After this method has been called, the `info` property will be populated, and you can
+   * directly access properties like `info.exists`, `info.isFile`, etc.
    * @param {boolean} force - Force retrieval of the stats, even if they have
    * already been retrieved.
    * @returns {Promise<FileInfo | undefined>} A promise that resolves with the file's stats.
@@ -110,6 +117,11 @@ export abstract class FSSpecBase {
 
   /**
    * Asynchronously checks if this file or folder exists.
+   * This method uses a cached `FileInfo` object if available. If not, it will
+   * fetch the stats from the filesystem. If the cache might be stale, set `force`
+   * to `true` to ensure fresh data. After calling `stats()`, you can also
+   * access this value through the `info.exists` property.
+   * @param {boolean} force - When `true`, forces a refresh of the file stats cache.
    * @returns a promise with value true if this exists.
    */
   async exists(force = false): Promise<boolean> {
@@ -119,6 +131,11 @@ export abstract class FSSpecBase {
 
   /**
    * Asynchronously checks if the file system item is a file.
+   * This method uses a cached `FileInfo` object if available. If not, it will
+   * fetch the stats from the filesystem. If the cache might be stale, set `force`
+   * to `true` to ensure fresh data. After calling `stats()`, you can also
+   * access this value through the `info.isFile` property.
+   * @param {boolean} force - When `true`, forces a refresh of the file stats cache.
    * @returns {Promise<boolean>} A promise that resolves to true if it is a file.
    */
   async isFile(force = false): Promise<boolean> {
@@ -128,6 +145,11 @@ export abstract class FSSpecBase {
 
   /**
    * Asynchronously checks if the file system item is a folder.
+   * This method uses a cached `FileInfo` object if available. If not, it will
+   * fetch the stats from the filesystem. If the cache might be stale, set `force`
+   * to `true` to ensure fresh data. After calling `stats()`, you can also
+   * access this value through the `info.isDirectory` property.
+   * @param {boolean} force - When `true`, forces a refresh of the file stats cache.
    * @returns {Promise<boolean>} A promise that resolves to true if it is a folder.
    */
   async isFolder(force = false): Promise<boolean> {
@@ -135,6 +157,15 @@ export abstract class FSSpecBase {
     return info?.isDirectory === true;
   }
 
+  /**
+   * Asynchronously checks if the file system item is a directory.
+   * This method uses a cached `FileInfo` object if available. If not, it will
+   * fetch the stats from the filesystem. If the cache might be stale, set `force`
+   * to `true` to ensure fresh data. After calling `stats()`, you can also
+   * access this value through the `info.isDirectory` property.
+   * @param {boolean} force - When `true`, forces a refresh of the file stats cache.
+   * @returns {Promise<boolean>} A promise that resolves to true if it is a directory.
+   */
   async isDir(force = false): Promise<boolean> {
     const info = await this.stats(force);
     return info?.isDirectory === true;
@@ -142,6 +173,11 @@ export abstract class FSSpecBase {
 
   /**
    * Asynchronously checks if the file system item is a symlink.
+   * This method uses a cached `FileInfo` object if available. If not, it will
+   * fetch the stats from the filesystem. If the cache might be stale, set `force`
+   * to `true` to ensure fresh data. After calling `stats()`, you can also
+   * access this value through the `info.isSymlink` property.
+   * @param {boolean} force - When `true`, forces a refresh of the file stats cache.
    * @returns {Promise<boolean>} A promise that resolves to true if it is a symlink.
    */
   async isSymlink(force = false): Promise<boolean> {
@@ -151,6 +187,11 @@ export abstract class FSSpecBase {
 
   /**
    * Asynchronously retrieves the creation date of this file or folder.
+   * This method uses a cached `FileInfo` object if available. If not, it will
+   * fetch the stats from the filesystem. If the cache might be stale, set `force`
+   * to `true` to ensure fresh data. After calling `stats()`, you can also
+   * access this value through the `info.createdAt` property.
+   * @param {boolean} force - When `true`, forces a refresh of the file stats cache.
    * @returns {Promise<Date | undefined>} A promise that resolves to the creation date, or undefined if not available.
    */
   async createdAt(force = false): Promise<Date | null | undefined> {
