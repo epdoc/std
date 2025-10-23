@@ -1,11 +1,14 @@
 {
   "name": "@epdoc/fs",
-  "version": "1.0.0-alpha.5",
+  "version": "1.0.0-alpha.6",
   "description": "File system entry wrapper",
-  "exports": "./src/mod.ts",
   "tasks": {
     "test": "deno test -SERW",
     "test1": "deno test -SERW ./test/fs.test.ts"
+  },
+  "exports": {
+    ".": "./src/mod.ts",
+    "./fs": "./src/fs.ts"
   },
   "tests": {
     "include": [
@@ -30,7 +33,8 @@
     ]
   },
   "imports": {
-    "$fs": "./src/mod.ts",
+    "$mod": "./src/mod.ts",
+    "$fs": "./src/fs.ts",
     "$error": "./src/error/mod.ts",
     "$util": "./src/util/mod.ts",
     "$spec": "./src/spec/mod.ts",

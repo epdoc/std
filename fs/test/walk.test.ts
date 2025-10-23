@@ -1,4 +1,4 @@
-import * as FS from '$fs';
+import * as FS from '$mod';
 import { walk } from '$walk';
 import { expect } from '@std/expect';
 import { afterAll, beforeAll, describe, it } from '@std/testing/bdd';

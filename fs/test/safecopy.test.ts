@@ -1,4 +1,4 @@
-import { FileSpec, FolderSpec, util } from '$fs';
+import { FileSpec, FolderSpec, util } from '$mod';
 import { expect } from '@std/expect';
 import { afterEach, beforeEach, describe, test } from '@std/testing/bdd';
 

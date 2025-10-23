@@ -1,8 +1,9 @@
-import * as Error from '$error';
+import * as Err from '$error';
 import * as Spec from '$spec'; // Import Spec
 import { FileSpec, FolderSpec, type FSSpec, SymlinkSpec } from '$spec'; // Import Spec
 import type { WalkOptions } from '$walk';
 import { walk } from '$walk'; // Import walk from $walk
+import { _ } from '@epdoc/type';
 import path from 'node:path';
 import type { FilePath, Path } from '../types.ts';
 import { fileConflictStrategyType } from './consts.ts';
@@ -35,37 +36,37 @@ export async function safeCopy(
   const fsDest = await resolveType(dest);
 
   if (!fsSrc) {
-    throw new Error.NotFound('Source file undiscoverable', { path: String(src) });
+    throw new Err.NotFound('Source file undiscoverable', { path: (_.isString(src) ? src : src.path) });
   }
   if (!fsDest) {
-    throw new Error.NotFound('Destination file undiscoverable', { path: String(fsDest) });
+    throw new Err.NotFound('Destination file undiscoverable', { path: (_.isString(dest) ? dest : dest.path) });
   }
 
   // Check if src is a symlink
   if (fsSrc instanceof SymlinkSpec) {
     // use a specific error type from $error
-    throw new Error.InvalidData('Source cannot be a symlink', { path: fsSrc.path });
+    throw new Err.InvalidData('Source cannot be a symlink', { path: fsSrc.path });
   }
   // Check if dest is a symlink
   if (fsDest instanceof SymlinkSpec) {
     // use a specific error type from $error
-    throw new Error.InvalidData('Destination cannot be a symlink', { path: fsDest.path });
+    throw new Err.InvalidData('Destination cannot be a symlink', { path: fsDest.path });
   }
 
   // Ensure src exists
   const srcInfo = await fsSrc.stats();
   if (!srcInfo || !srcInfo.exists) {
-    throw new Error.NotFound('Source file not found', { path: fsSrc.path });
+    throw new Err.NotFound('Source file not found', { path: fsSrc.path });
   }
 
   if (src instanceof FileSpec) {
     if (!(fsDest instanceof FolderSpec || fsDest instanceof FileSpec)) {
-      throw new Error.InvalidData('Destination must be a FileSpec or FolderSpec');
+      throw new Err.InvalidData('Destination must be a FileSpec or FolderSpec');
     }
     await safeCopyFile(src, fsDest, options);
   } else if (src instanceof FolderSpec) {
     if (!(fsDest instanceof FolderSpec)) {
-      throw new Error.InvalidData('Destination must be a FolderSpec', { path: fsSrc.path });
+      throw new Err.InvalidData('Destination must be a FolderSpec', { path: fsSrc.path });
     }
     await safeCopyFolder(src, fsDest, options);
   }
@@ -91,7 +92,7 @@ export async function safeCopyFile(
         return;
       } else if (conflictStrategy?.type === fileConflictStrategyType.error) {
         if (conflictStrategy.errorIfExists) {
-          throw new Error.AlreadyExists('File exists', { path: fsDest.path });
+          throw new Err.AlreadyExists('File exists', { path: fsDest.path });
         }
       } else if (conflictStrategy?.type === fileConflictStrategyType.renameWithTilde) {
         await fsDest.moveTo(new FileSpec(fsDest.path + '~' as FilePath), { overwrite: true });
@@ -106,7 +107,7 @@ export async function safeCopyFile(
           await fsDest.moveTo(new FileSpec(newPath), { overwrite: true });
           fsDest.clearInfo(); // Clear cached stats after move
         } else if (conflictStrategy.errorIfExists) {
-          throw new Error.AlreadyExists('File exists', { path: fsDest.path });
+          throw new Err.AlreadyExists('File exists', { path: fsDest.path });
         }
       }
       // For 'overwrite' strategy, no action is needed here, proceed to copy
@@ -115,13 +116,13 @@ export async function safeCopyFile(
         await fsDest.ensureParentDir();
       } catch (err) {
         // map underlying error to FSError hierarchy
-        throw (err instanceof Error.FSError) ? err : new Error.FSError(String(err), { path: fsDest.path });
+        throw (err instanceof Err.Main) ? err : new Err.Main(String(err), { path: fsDest.path });
       }
     }
     try {
       await src.copyTo(fsDest.path, { overwrite: true, preserveTimestamps: true });
     } catch (err) {
-      throw (err instanceof Error.FSError) ? err : new Error.FSError(String(err), { path: fsDest.path });
+      throw (err instanceof Err.Main) ? err : new Err.Main(String(err), { path: fsDest.path });
     }
     if (options.move) {
       await src.remove();
@@ -137,7 +138,7 @@ export async function safeCopyFile(
       await src.remove();
     }
   } else {
-    throw new Error.InvalidData('Destination must be a FileSpec or FolderSpec');
+    throw new Err.InvalidData('Destination must be a FileSpec or FolderSpec');
   }
 }
 
@@ -177,7 +178,7 @@ export async function safeCopyFolder(
         await safeCopyFile(srcFile, new FileSpec(destEntryPath), options);
       } catch (err) {
         // propagate as project errors
-        throw (err instanceof Error.FSError) ? err : new Error.FSError(String(err), { path: destEntryPath });
+        throw (err instanceof Err.Main) ? err : new Err.Main(String(err), { path: destEntryPath as Path });
       }
     }
   }

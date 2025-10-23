@@ -1,4 +1,4 @@
-import { Error, FileSpec, FolderSpec, FSSpec } from '$fs';
+import * as FS from '$fs';
 import { expect } from '@std/expect';
 import { afterAll, beforeAll, describe, test } from '@std/testing/bdd';
 import * as fs from 'node:fs/promises';
@@ -20,21 +20,21 @@ describe('FSSpec', () => {
 
   describe('Type Resolution', () => {
     test('getResolvedType() returns FileSpec for file', async () => {
-      const fsspec = new FSSpec(testFile);
+      const fsspec = new FS.Spec(testFile);
       const resolved = await fsspec.resolvedType();
-      expect(resolved).toBeInstanceOf(FileSpec);
+      expect(resolved).toBeInstanceOf(FS.File);
     });
 
     test('getResolvedType() returns FolderSpec for folder', async () => {
-      const fsspec = new FSSpec(testDir);
+      const fsspec = new FS.Spec(testDir);
       const resolved = await fsspec.resolvedType();
-      expect(resolved).toBeInstanceOf(FolderSpec);
+      expect(resolved).toBeInstanceOf(FS.Folder);
     });
   });
 
   describe('Path Utilities', () => {
     test('constructor resolves path parts', () => {
-      const fsspec = new FSSpec(testDir, 'subdir', 'file.txt');
+      const fsspec = new FS.Spec(testDir, 'subdir', 'file.txt');
       expect(fsspec.path).toBe(path.join(testDir, 'subdir', 'file.txt'));
     });
   });
@@ -42,7 +42,7 @@ describe('FSSpec', () => {
   describe('Directory Operations', () => {
     test('ensureDir() creates directory if it does not exist', async () => {
       const newDir = path.join(testDir, 'new-directory');
-      const folder = new FolderSpec(newDir);
+      const folder = new FS.Folder(newDir);
       await folder.ensureDir();
 
       const exists = await folder.exists();
@@ -52,22 +52,22 @@ describe('FSSpec', () => {
 
   describe('Error Handling', () => {
     test('FSError can be instantiated with string', () => {
-      const error = new Error.FSError('Test error message');
-      expect(error).toBeInstanceOf(Error.FSError);
+      const error = new FS.Err.Main('Test error message');
+      expect(error).toBeInstanceOf(FS.Err.Main);
       expect(error.message).toBe('Test error message');
     });
 
     test('FSError can be instantiated with Error object', () => {
-      const originalError = new Error.FSError('Original error');
-      const fsError = new Error.FSError(originalError);
-      expect(fsError).toBeInstanceOf(Error.FSError);
+      const originalError = new FS.Err.Main('Original error');
+      const fsError = new FS.Err.Main(originalError);
+      expect(fsError).toBeInstanceOf(FS.Err.Main);
       expect(fsError.message).toBe('Original error');
     });
 
     test('NotFound preserves code and path', () => {
-      const notFound = new Error.NotFound('Not found', { code: 'ENOENT', path: '/tmp/missing' });
-      expect(notFound).toBeInstanceOf(Error.FSError);
-      expect(notFound).toBeInstanceOf(Error.NotFound);
+      const notFound = new FS.Err.NotFound('Not found', { code: 'ENOENT', path: '/tmp/missing' as FS.Path });
+      expect(notFound).toBeInstanceOf(FS.Err.Main);
+      expect(notFound).toBeInstanceOf(FS.Err.NotFound);
       expect(notFound.code).toBe('ENOENT');
       expect(notFound.path).toBe('/tmp/missing');
     });

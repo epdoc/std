@@ -1,4 +1,4 @@
-import { type FileCategory, type FileType, FSBytes } from '$fs';
+import { type FileCategory, type FileType, FSBytes } from '$mod';
 import { expect } from '@std/expect';
 import { afterAll, beforeAll, describe, test } from '@std/testing/bdd';
 import { Buffer } from 'node:buffer';

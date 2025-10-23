@@ -1,4 +1,4 @@
-import { DigestAlgorithm, FileSpec, FolderSpec } from '$fs';
+import { DigestAlgorithm, FileSpec, FolderSpec } from '$mod';
 import { expect } from '@std/expect';
 import { afterAll, beforeAll, describe, it, test } from '@std/testing/bdd';
 import { Buffer } from 'node:buffer';

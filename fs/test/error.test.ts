@@ -1,4 +1,4 @@
-import { Error as Err, FileSpec } from '$fs';
+import { Error as Err, FileSpec } from '$mod';
 import { expect } from '@std/expect';
 import { afterAll, beforeAll, describe, test } from '@std/testing/bdd';
 import * as fs from 'node:fs/promises';
@@ -61,7 +61,7 @@ describe('FSSpec error conditions', () => {
       await f.readJson();
       throw new Error('Expected readJson to throw');
     } catch (err) {
-      expect(err).toBeInstanceOf(Err.FSError);
+      expect(err).toBeInstanceOf(Err.Main);
       expect(err).not.toBeInstanceOf(Err.NotFound);
     }
   });

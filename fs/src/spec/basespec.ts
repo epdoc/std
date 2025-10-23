@@ -214,8 +214,8 @@ export abstract class FSSpecBase {
     }
   }
 
-  asError(error: unknown, cause?: string): Err.FSError {
-    if (error instanceof Err.FSError) {
+  asError(error: unknown, cause?: string): Err.Main {
+    if (error instanceof Err.Main) {
       return error;
     }
 
@@ -226,7 +226,7 @@ export abstract class FSSpecBase {
     const errWithCode = base as unknown as ErrWithCode;
 
     const code = errWithCode.code ?? (errWithCode.errno !== undefined ? String(errWithCode.errno) : undefined);
-    const opts: Err.FSErrorOptions = { path: this._f, cause, code };
+    const opts: Err.Options = { path: this._f, cause, code };
 
     const codeStr = String(code || '').toUpperCase();
 
@@ -245,9 +245,9 @@ export abstract class FSSpecBase {
       case 'EBADF':
         return new Err.BadResource(base, opts);
       case 'EIO':
-        return new Err.FSError(base, opts);
+        return new Err.Main(base, opts);
       case 'ENOTEMPTY':
-        return new Err.FSError(base, opts);
+        return new Err.Main(base, opts);
       case 'ETIMEDOUT':
         return new Err.TimedOut(base, opts);
       case 'EINTR':
@@ -289,10 +289,10 @@ export abstract class FSSpecBase {
       lowerCause.includes('create') || lowerCause.includes('rename') || lowerCause.includes('move') ||
       lowerCause.includes('unlink')
     ) {
-      return new Err.FSError(base, opts);
+      return new Err.Main(base, opts);
     }
 
     // Fallback to the generic FSError
-    return new Err.FSError(base, opts);
+    return new Err.Main(base, opts);
   }
 }

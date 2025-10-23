@@ -160,7 +160,7 @@ const fileHeaderEntries: [string, FileHeaderEntry][] = [
   ['ttc', { category: 'font', type: 'ttc', buffer: new Uint8Array([0x00, 0x01, 0x00, 0x00]) }],
 ] as const;
 
-export const FILE_HEADERS = new Map(fileHeaderEntries);
+export const FILE_HEADERS: Map<FileType, FileHeaderEntry> = new Map(fileHeaderEntries);
 
 /**
  * Represents the supported file types for header detection.

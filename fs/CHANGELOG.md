@@ -6,9 +6,13 @@
 
 ## [1.0.0-alpha.5] - 2025-10-21
 
-- **Fix**: Resolved a race condition in Deno's file system operations where `FileSpec.readAsString()` could return empty content if called immediately after a write operation. This issue was masked by asynchronous operations (e.g., logging) that introduced an artificial delay.
-  - Modified `FileSpec.writeJson()`, `FileSpec.writeJsonEx()`, and `FileSpec.write()` to explicitly flush data to disk using `fileHandle.sync()` after writing, ensuring data persistence before the write method returns.
-  - This fix improves the robustness of file write operations and resolves `AssertionError`s in test environments where timing is critical.
+- **Fix**: Resolved a race condition in Deno's file system operations where `FileSpec.readAsString()` could return empty
+  content if called immediately after a write operation. This issue was masked by asynchronous operations (e.g.,
+  logging) that introduced an artificial delay.
+  - Modified `FileSpec.writeJson()`, `FileSpec.writeJsonEx()`, and `FileSpec.write()` to explicitly flush data to disk
+    using `fileHandle.sync()` after writing, ensuring data persistence before the write method returns.
+  - This fix improves the robustness of file write operations and resolves `AssertionError`s in test environments where
+    timing is critical.
 
 ## [1.0.0-alpha.4] - 2025-10-21
 
@@ -20,10 +24,16 @@
   - Centralized error wrapping using `this.asError()` for all `nfs` operations.
   - Made `FSSpecBase.asError()` idempotent to simplify error propagation.
   - Improved `FSSpecBase.stats()` to correctly handle `ENOENT` and throw classified errors for others.
-  - Added `try...catch` blocks to `FileSpec.makeTemp()`, `FileSpec.open()`, `FileSpec.writeJsonEx()`, `FSSpecBase.remove()`, `FSSpecBase.realPath()`, `FolderSpec.makeTemp()`, `FolderSpec.ensureDir()`, `FolderSpec.ensureParentDir()`, `FolderSpec.readDir()`, and `FolderSpec.moveTo()`.
-- **Consistency**: Ensured `clearInfo()` is called after operations that invalidate cached file information (e.g., `FileSpec.moveTo()`, `FolderSpec.moveTo()`, `FSSpecBase.remove()`, `FolderSpec.ensureDir()`).
-- **JSDoc**: Updated and improved JSDoc comments for `FileSpec.moveTo()`, `FileSpec.backup()`, `FileSpec.safeCopy()`, `FileSpec.equalTo()`, `FSSpecBase.info` getter, `FolderSpec.ensureDir()`, `FolderSpec.ensureParentDir()`, and `FolderSpec.mkdir()`.
-- **Tests**: Corrected `test/error.test.ts` to align with Node.js `fs.mkdir` behavior, expecting `Err.AlreadyExists` for file-blocking-directory-creation scenarios.
+  - Added `try...catch` blocks to `FileSpec.makeTemp()`, `FileSpec.open()`, `FileSpec.writeJsonEx()`,
+    `FSSpecBase.remove()`, `FSSpecBase.realPath()`, `FolderSpec.makeTemp()`, `FolderSpec.ensureDir()`,
+    `FolderSpec.ensureParentDir()`, `FolderSpec.readDir()`, and `FolderSpec.moveTo()`.
+- **Consistency**: Ensured `clearInfo()` is called after operations that invalidate cached file information (e.g.,
+  `FileSpec.moveTo()`, `FolderSpec.moveTo()`, `FSSpecBase.remove()`, `FolderSpec.ensureDir()`).
+- **JSDoc**: Updated and improved JSDoc comments for `FileSpec.moveTo()`, `FileSpec.backup()`, `FileSpec.safeCopy()`,
+  `FileSpec.equalTo()`, `FSSpecBase.info` getter, `FolderSpec.ensureDir()`, `FolderSpec.ensureParentDir()`, and
+  `FolderSpec.mkdir()`.
+- **Tests**: Corrected `test/error.test.ts` to align with Node.js `fs.mkdir` behavior, expecting `Err.AlreadyExists` for
+  file-blocking-directory-creation scenarios.
 
 ## [1.0.0-alpha.3] - 2025-10-20
 

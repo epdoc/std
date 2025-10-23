@@ -23,12 +23,49 @@ file type detection.
 9. Read or walk folder contents
 10. PDF metadata extraction via a lightweight parser
 
-## Installation
+---
+
+## 📦 Install
 
 To install @epdoc/fs, run the following command in your project directory:
 
 ```bash
 deno add jsr:@epdoc/fs
+```
+
+### Importing the Library
+
+This library provides two distinct ways to import its functionality, separating the primary components from the file
+system utilities for cleaner usage.
+
+### 1\. Primary Export (Default)
+
+The main features of the library are available directly from the package name. Use a **named import** to access the
+functions and classes defined in the primary module (`./src/mod.ts`).
+
+```typescript
+import { mainFunction, MyClass } from '@my-scope/my-project';
+
+// Use the primary function
+mainFunction('Data');
+
+// Instantiate the main class
+const instance = new MyClass();
+```
+
+---
+
+### 2\. File System Utilities (Namespaced)
+
+The file system utilities are exposed under a dedicated namespace. Use a **namespace import** (`import * as FS`) on the
+`/fs` subpath to access all utilities from `./src/fs.ts` neatly grouped under the `FS` object.
+
+```typescript
+import * as FS from '@my-scope/my-project/fs';
+
+// Use the namespaced utilities
+FS.readDir('./path/to/files');
+FS.writeFile('output.txt', 'content');
 ```
 
 ## Usage

@@ -1,4 +1,4 @@
-import { FileSpec, FolderSpec } from '$fs';
+import { FileSpec, FolderSpec } from '$mod';
 import { expect } from '@std/expect';
 import { afterAll, beforeAll, describe, test } from '@std/testing/bdd';
 import * as fs from 'node:fs/promises';
