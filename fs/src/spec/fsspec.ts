@@ -145,14 +145,4 @@ export class FSSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec {
   ): Promise<void> {
     return safeCopy(this, destFile, opts);
   }
-
-  /**
-   * Compares the path of this instance with another FSSpec, FileSpec, or FolderSpec.
-   *
-   * @param val - The FS item to compare with.
-   * @returns {boolean} True if both items have the same path; otherwise, false.
-   */
-  equalPaths(val: FSSpec | FileSpec | FolderSpec): boolean {
-    return this.path === val.path;
-  }
 }

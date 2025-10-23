@@ -17,16 +17,20 @@ export abstract class FSSpecBase {
   protected _dirEntry: FSEntry | undefined;
 
   /**
-   * Clears the cached FileInfo, forcing a re-read on the next stats() call.
+   * Clears the cached `FileInfo` object. This forces a re-read from the
+   * filesystem on the next call to a method that relies on file stats (e.g.,
+   * `exists()`, `isFile()`).
    */
   clearInfo(): void {
     this._info = undefined;
   }
 
   /**
-   * Copies parameters from this FSSpec to the target FSSpec.
-   * @param target - The target FSSpec to copy parameters to.
-   * @returns {FSSpecBase} - The target FSSpec with copied parameters.
+   * Copies internal parameters (like cached `FileInfo`) from this instance to
+   * another `FSSpecBase` instance. This is useful when creating a more specific
+   * type (e.g., `FileSpec`) from a general one without re-fetching stats.
+   * @param target - The target `FSSpecBase` instance to receive the parameters.
+   * @returns The `target` instance with the parameters copied.
    */
   copyParamsTo(target: FSSpecBase): FSSpecBase {
     target._info = this._info;
@@ -35,8 +39,8 @@ export abstract class FSSpecBase {
   }
 
   /**
-   * Getter that returns the resolved file system path.
-   * @returns {FilePath} The full path of the file system item.
+   * Gets the full, resolved path of the file system item.
+   * @returns The file system path.
    */
   get path(): Path {
     return this._f;
@@ -44,26 +48,27 @@ export abstract class FSSpecBase {
 
   /**
    * Gets the directory portion of the file system path.
-   * For example, for '/path/to/file.name.html', returns '/path/to'.
-   * @returns {string} The directory name.
+   * For example, for `/path/to/file.name.html`, this returns `/path/to`.
+   * @returns The directory name.
    */
   get dirname(): string {
     return path.dirname(this._f);
   }
 
   /**
-   * Gets the filename (with extension) of the file system item.
-   * For example, for '/path/to/file.name.html', returns 'file.name.html'.
-   * @returns {string} The filename.
+   * Gets the filename (including extension) of the file system item.
+   * For example, for `/path/to/file.name.html`, this returns `file.name.html`.
+   * @returns The filename.
    */
   get filename(): string {
     return path.basename(this._f);
   }
 
   /**
-   * Sets the directory entry for this file system item.
-   * @param dirEntry - The FSEntry object, or undefined if not applicable.
-   * @returns {this} The current instance for chaining.
+   * Sets the directory entry for this file system item, typically when it is
+   * discovered during a directory walk.
+   * @param dirEntry - The `FSEntry` object from a directory listing.
+   * @returns The current instance for chaining.
    */
   setDirEntry(dirEntry: FSEntry | undefined): this {
     this._dirEntry = dirEntry;
@@ -71,19 +76,19 @@ export abstract class FSSpecBase {
   }
 
   /**
-   * Call if you are not sure whether we have a cached FileInfo object.
-   * @returns If we have an `info` property.
+   * Checks if a `FileInfo` object has been cached.
+   * @returns `true` if the `info` property is available, otherwise `false`.
    */
   hasInfo(): boolean {
     return this._info ? true : false;
   }
 
   /**
-   * Accesses the cached file information. Only call if you know that we have a cached `info`
-   * property. `info` is populated by calling the async `stats()` method, or one of the other
-   * methods that retrieves stats.
-   * @returns {FileInfo} The cached file info.
-   * @throws {Error} If `stats()` has not been called yet.
+   * Accesses the cached file information.
+   * This property is populated by calling an async method like `stats()`.
+   * Always check `hasInfo()` or call `stats()` before accessing this property.
+   * @returns The cached `FileInfo` object.
+   * @throws {Error} If file stats have not been previously read.
    */
   get info(): FileInfo {
     assert(this._info, 'File stats have not been read');
@@ -201,9 +206,10 @@ export abstract class FSSpecBase {
 
   /**
    * Removes this file or folder.
-   * @param options - Options for removing the file or folder.
-   * @param options.recursive - Recursively remove items if this is a folder.
-   * @returns {Promise<void>} - A promise that resolves when the file or folder is removed.
+   * @param options - Options for the remove operation.
+   * @param {boolean} [options.recursive=false] - If `true`, removes directories
+   * and their contents recursively. Required for non-empty directories.
+   * @returns A promise that resolves when the removal is complete.
    */
   async remove(options: RemoveOptions = {}): Promise<void> {
     if (await this.exists(true)) {
@@ -217,10 +223,15 @@ export abstract class FSSpecBase {
   }
 
   /**
-   * Copies this file or folder to the location `dest`.
-   * @param dest - The destination path.
-   * @param [options] - Options for the copy operation.
-   * @returns {Promise<void>} - A promise that resolves when the copy is complete.
+   * Copies this file to a new destination.
+   * This method is for files only and does not support directory copies.
+   * @param dest - The destination path for the new file.
+   * @param options - Options for the copy operation.
+   * @param {boolean} [options.overwrite=false] - If `true`, the destination file
+   * will be overwritten if it exists.
+   * @param {boolean} [options.preserveTimestamps=false] - If `true`, the access
+   * and modification times are copied from the source to the destination.
+   * @returns A promise that resolves when the copy is complete.
    */
   async copyTo(dest: Path, options?: CopyOptions): Promise<void> {
     try {
@@ -242,9 +253,9 @@ export abstract class FSSpecBase {
   }
 
   /**
-   * Asynchronously retrieves the canonicalized absolute path of the file system item.
-   * This resolves symbolic links and '..' or '.' segments.
-   * @returns {Promise<Path>} A promise that resolves to the canonicalized absolute path.
+   * Asynchronously retrieves the canonicalized absolute path of the file system
+   * item by resolving symbolic links, `..` segments, and `.` segments.
+   * @returns A promise that resolves to the canonicalized absolute path.
    */
   async realPath(): Promise<Path> {
     try {
@@ -255,6 +266,22 @@ export abstract class FSSpecBase {
     }
   }
 
+  /**
+   * Compares the path of this instance with another `FSSpecBase` instance.
+   * @param val - The FS item to compare against.
+   * @returns `true` if both items have the same path, otherwise `false`.
+   */
+  equalPaths(val: FSSpecBase): boolean {
+    return this.path === val.path;
+  }
+
+  /**
+   * Wraps a caught error in an appropriate `FSError` subclass, enriching it
+   * with context like the file path and operation that caused it.
+   * @param error - The original error, which can be of any type.
+   * @param cause - A string identifying the operation that failed (e.g., 'read').
+   * @returns An instance of an `FSError` subclass.
+   */
   asError(error: unknown, cause?: string): Err.Main {
     if (error instanceof Err.Main) {
       return error;

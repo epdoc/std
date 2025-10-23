@@ -1,5 +1,9 @@
 # Changelog for @epdoc/fs
 
+## [1.0.0-alpha.8] - 2025-10-23
+
+- Moved equalPaths method from FSSpec to FSSpecBase
+
 ## [1.0.0-alpha.7] - 2025-10-23
 
 - Added JSDoc comments to FSSpecBase
