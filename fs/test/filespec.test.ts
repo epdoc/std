@@ -93,6 +93,49 @@ describe('FileSpec', () => {
       const content = await file.readAsString();
       expect(JSON.parse(content)).toEqual({ newKey: 'newValue' });
     });
+
+    test('write() returns self', async () => {
+      const file = new FileSpec(testDir, 'write-self.txt');
+      const result = await file.write('test');
+      expect(result).toBe(file);
+    });
+
+    test('writeJson() returns self', async () => {
+      const file = new FileSpec(testDir, 'write-json-self.json');
+      const result = await file.writeJson({ test: 'test' });
+      expect(result).toBe(file);
+    });
+
+    test('moveTo() moves the file and returns the new FileSpec', async () => {
+      const srcFile = new FileSpec(testDir, 'move-src.txt');
+      await srcFile.write('move test');
+      const destFile = new FileSpec(testDir, 'move-dest.txt');
+
+      const newFile = await srcFile.moveTo(destFile);
+
+      expect(newFile).toBeInstanceOf(FileSpec);
+      expect(newFile.path).toBe(destFile.path);
+
+      const destExists = await destFile.exists();
+      expect(destExists).toBe(true);
+
+      const srcExists = await srcFile.exists();
+      expect(srcExists).toBe(false);
+    });
+
+    test('moveTo() moves the file', async () => {
+      const srcFile = new FileSpec(testDir, 'move-src2.txt');
+      await srcFile.write('move test');
+      const destFile = new FileSpec(testDir, 'move-dest2.txt');
+
+      await srcFile.moveTo(destFile);
+
+      const destExists = await destFile.exists(true);
+      expect(destExists).toBe(true);
+
+      const srcExists = await srcFile.exists(true);
+      expect(srcExists).toBe(false);
+    });
   });
 
   describe('File Hashing', () => {

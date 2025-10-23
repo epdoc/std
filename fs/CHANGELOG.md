@@ -1,5 +1,9 @@
 # Changelog for @epdoc/fs
 
+## [1.0.0-alpha.9] - 2025-10-23
+
+- FileSpec write and moveTo operations now return this or the new FileSpec
+
 ## [1.0.0-alpha.8] - 2025-10-23
 
 - Moved equalPaths method from FSSpec to FSSpecBase

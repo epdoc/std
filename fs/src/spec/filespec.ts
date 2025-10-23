@@ -603,7 +603,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
     return json as T;
   }
 
-  async writeJsonEx(value: unknown, options: DeepCopyOpts | null = null, space?: string | number): Promise<void> {
+  async writeJsonEx(value: unknown, options: DeepCopyOpts | null = null, space?: string | number): Promise<this> {
     const text = _.jsonSerialize(value, options, space);
     let fileHandle: FileHandle | undefined;
     try {
@@ -617,19 +617,20 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
         await fileHandle.close();
       }
     }
+    return this;
   }
 
   /**
    * Writes JSON data to the file.
    * Accepts the same replacer and space parameters as JSON.stringify.
    * @param data - The data to write as JSON.
-   * @returns {Promise<void>} A promise that resolves when the write operation is complete.
+   * @returns {Promise<void>} A promise that resolves to this when the write operation is complete.
    */
   async writeJson(
     data: unknown,
     replacer?: JsonReplacer,
     space?: string | number,
-  ): Promise<void> {
+  ): Promise<this> {
     const replacerArg = replacer as unknown as Parameters<typeof JSON.stringify>[1];
     const text = JSON.stringify(data, replacerArg, space);
     let fileHandle: FileHandle | undefined;
@@ -644,12 +645,13 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
         await fileHandle.close();
       }
     }
+    return this;
   }
 
   /**
    * Encodes input as base64 and writes to the file.
    * @param data - The data to encode and write as base64
-   * @returns {Promise<void>} A promise that resolves when the write completes
+   * @returns {Promise<void>} A promise that resolves to this when the write completes
    *
    * @example
    * // Write string as base64
@@ -661,9 +663,10 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * await file.writeBase64(bytes);
    * // File contains: SGVsbG8=
    */
-  async writeBase64(data: string | Uint8Array | ArrayBuffer): Promise<void> {
+  async writeBase64(data: string | Uint8Array | ArrayBuffer): Promise<this> {
     const encoded = encodeBase64(data);
     await this.write(encoded);
+    return this;
   }
 
   /**
@@ -674,7 +677,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    *   - string[]: Array of lines to join with newlines
    *   - Uint8Array: Raw binary data
    * @param [type='utf8'] - Text encoding (ignored for Uint8Array)
-   * @returns {Promise<void>} Promise that resolves when write completes
+   * @returns {Promise<void>} Promise that resolves to this when write completes
    *
    * @example
    * // Write text content
@@ -687,7 +690,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * const bytes = new Uint8Array([72, 101, 108, 108, 111]);
    * await file.write(bytes);
    */
-  async write(data: string | string[] | Uint8Array): Promise<void> {
+  async write(data: string | string[] | Uint8Array): Promise<this> {
     let fileHandle: FileHandle | undefined;
     try {
       fileHandle = await nfs.open(this._f, 'w');
@@ -705,6 +708,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
         await fileHandle.close();
       }
     }
+    return this;
   }
 
   /**
@@ -715,12 +719,12 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * @param options - Options for the move operation.
    * @param {boolean} [options.overwrite=false] - If true, the destination file
    * will be overwritten if it already exists.
-   * @returns A promise that resolves when the move is complete.
+   * @returns A promise that resolves to the new FileSpec.
    * @throws {Error.NotFound} If the source file does not exist.
    * @throws {Error.AlreadyExists} If `options.overwrite` is false and the
    * destination file already exists.
    */
-  async moveTo(dest: FolderSpec | FileSpec, options?: FS.MoveOptions): Promise<void> {
+  async moveTo(dest: FolderSpec | FileSpec, options?: FS.MoveOptions): Promise<FileSpec> {
     if (!await this.exists()) {
       throw new Error.NotFound('File does not exist', { code: 'ENOENT', path: this._f });
     }
@@ -742,6 +746,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
     } catch (err: unknown) {
       throw this.asError(err, 'moveTo');
     }
+    return destFile;
   }
 
   /**
