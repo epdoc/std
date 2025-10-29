@@ -1,7 +1,7 @@
 import { direntToSpec, resolvePathArgs, safeCopy, type SafeCopyOpts } from '$util';
 import { walk, type WalkOptions } from '$walk';
 import { _, type Dict } from '@epdoc/type';
-import { promises as nfs } from 'node:fs';
+import { type Dirent, promises as nfs } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
@@ -280,7 +280,7 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
     try {
       const dirents = await nfs.readdir(this._f, { withFileTypes: true });
       const results = dirents
-        .map((d) => direntToSpec(this.path as FS.FolderPath, d))
+        .map((d: Dirent) => direntToSpec(this.path as FS.FolderPath, d))
         .filter(Boolean) as (TypedFSSpec)[];
       return results;
     } catch (err: unknown) {
