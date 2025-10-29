@@ -1,5 +1,9 @@
 # Changelog for @epdoc/fs
 
+## [1.0.0] - 2025-10-29
+
+- Declare a release version v1.0.0
+
 ## [1.0.0-alpha.9] - 2025-10-23
 
 - FileSpec write and moveTo operations now return this or the new FileSpec
