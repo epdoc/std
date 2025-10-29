@@ -1,5 +1,9 @@
 # Changelog for @epdoc/fs
 
+## [1.0.1] - 2025-10-29
+
+- Update dependencies
+
 ## [1.0.0] - 2025-10-29
 
 - Declare a release version v1.0.0
