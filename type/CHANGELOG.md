@@ -1,5 +1,9 @@
 # Changelog for @epdoc/type
 
+## [1.1.18] - 2025-10-31
+
+- Added generics to pick and omit
+
 ## [1.1.17] - 2025-10-05
 
 - Fixed jsonSerialize Date serialization: it converts to an ISO string instead of a Date object, and we are going to

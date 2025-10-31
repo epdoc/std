@@ -736,7 +736,7 @@ function newError(msg: string, opts: Dict = {}): IError {
  * @param args - The keys to pick.
  * @returns A new object with the picked keys.
  */
-export function pick(obj: Dict, ...args: (string | number)[]): Dict {
+export function pick<T = Dict>(obj: Dict, ...args: (string | number)[]): T {
   // eslint-disable-line no-extend-native
   const result: Dict = {};
   if (Array.isArray(args[0])) {
@@ -747,7 +747,7 @@ export function pick(obj: Dict, ...args: (string | number)[]): Dict {
       result[key] = obj[key];
     }
   });
-  return result;
+  return result as T;
 }
 
 /**
@@ -756,7 +756,7 @@ export function pick(obj: Dict, ...args: (string | number)[]): Dict {
  * @param args - The keys to omit.
  * @returns A new object without the omitted keys.
  */
-export function omit(obj: Dict, ...args: (string | number)[]): Dict {
+export function omit<T = Dict>(obj: Dict, ...args: (string | number)[]): T {
   if (Array.isArray(args[0])) {
     args = args[0];
   }
@@ -765,7 +765,7 @@ export function omit(obj: Dict, ...args: (string | number)[]): Dict {
   keys.forEach((k) => {
     newObj[k] = obj[k];
   });
-  return newObj;
+  return newObj as T;
 }
 
 /**
