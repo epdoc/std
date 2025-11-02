@@ -1003,4 +1003,29 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
       return newFsDest.path;
     }
   }
+
+  /**
+   * Changes the owner of the file.
+   * @param uid - User ID
+   * @param gid - Group ID (optional)
+   */
+  async chown(uid: FS.UID, gid?: FS.GID): Promise<void> {
+    await nfs.chown(this._f, uid, gid ?? -1);
+  }
+
+  /**
+   * Changes the group of the file.
+   * @param gid - Group ID
+   */
+  async chgrp(gid: FS.GID): Promise<void> {
+    await nfs.chown(this._f, -1, gid);
+  }
+
+  /**
+   * Changes the permissions of the file.
+   * @param mode - File mode (permissions)
+   */
+  async chmod(mode: FS.Mode): Promise<void> {
+    await nfs.chmod(this._f, mode);
+  }
 }

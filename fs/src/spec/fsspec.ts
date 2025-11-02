@@ -1,5 +1,6 @@
 import { resolvePathArgs, safeCopy, type SafeCopyOpts } from '$util';
 import { fromFileUrl } from '@std/path';
+import { promises as nfs } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import type * as FS from '../types.ts';
@@ -144,5 +145,30 @@ export class FSSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec {
     opts: SafeCopyOpts = {},
   ): Promise<void> {
     return safeCopy(this, destFile, opts);
+  }
+
+  /**
+   * Changes the owner of the file system item.
+   * @param uid - User ID
+   * @param gid - Group ID (optional)
+   */
+  async chown(uid: FS.UID, gid?: FS.GID): Promise<void> {
+    await nfs.chown(this._f, uid, gid ?? -1);
+  }
+
+  /**
+   * Changes the group of the file system item.
+   * @param gid - Group ID
+   */
+  async chgrp(gid: FS.GID): Promise<void> {
+    await nfs.chown(this._f, -1, gid);
+  }
+
+  /**
+   * Changes the permissions of the file system item.
+   * @param mode - File mode (permissions)
+   */
+  async chmod(mode: FS.Mode): Promise<void> {
+    await nfs.chmod(this._f, mode);
   }
 }

@@ -559,4 +559,50 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
 
     return result;
   }
+
+  /**
+   * Changes the owner of the folder.
+   * @param uid - User ID
+   * @param gid - Group ID (optional)
+   * @param recursive - Apply recursively to all contents
+   */
+  async chown(uid: FS.UID, gid?: FS.GID, recursive = false): Promise<void> {
+    await nfs.chown(this._f, uid, gid ?? -1);
+    if (recursive) {
+      const entries = await this.walk({});
+      for (const entry of entries) {
+        await entry.chown(uid, gid);
+      }
+    }
+  }
+
+  /**
+   * Changes the group of the folder.
+   * @param gid - Group ID
+   * @param recursive - Apply recursively to all contents
+   */
+  async chgrp(gid: FS.GID, recursive = false): Promise<void> {
+    await nfs.chown(this._f, -1, gid);
+    if (recursive) {
+      const entries = await this.walk({});
+      for (const entry of entries) {
+        await entry.chgrp(gid);
+      }
+    }
+  }
+
+  /**
+   * Changes the permissions of the folder.
+   * @param mode - File mode (permissions)
+   * @param recursive - Apply recursively to all contents
+   */
+  async chmod(mode: FS.Mode, recursive = false): Promise<void> {
+    await nfs.chmod(this._f, mode);
+    if (recursive) {
+      const entries = await this.walk({});
+      for (const entry of entries) {
+        await entry.chmod(mode);
+      }
+    }
+  }
 }

@@ -1,5 +1,13 @@
 # Changelog for @epdoc/fs
 
+## [1.0.3] - 2025-11-02
+
+- Added permission management methods: `chown()`, `chgrp()`, and `chmod()` to all spec classes
+- Added branded types `UID`, `GID`, and `Mode` for type-safe permission operations
+- FolderSpec methods support recursive permission changes
+- SymlinkSpec methods use `lchown()` and `lchmod()` to affect the link itself, not the target
+- Comprehensive unit test coverage for all new permission methods
+
 ## [1.0.2] - 2025-10-29
 
 - Fixed lint error

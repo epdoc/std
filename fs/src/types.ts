@@ -39,6 +39,21 @@ export type Name = FileName | FolderName;
 
 export type PathSegment = FSSpecBase | string;
 
+/**
+ * Represents a user ID.
+ */
+export type UID = Brand<Integer, 'UID'>;
+
+/**
+ * Represents a group ID.
+ */
+export type GID = Brand<Integer, 'GID'>;
+
+/**
+ * Represents a file mode (permissions).
+ */
+export type Mode = Brand<Integer, 'Mode'>;
+
 export type FolderDiff = {
   missing: Name[];
   added: Name[];

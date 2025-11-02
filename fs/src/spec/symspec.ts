@@ -1,5 +1,7 @@
 import * as util from '$util';
+import { promises as nfs } from 'node:fs';
 import type { FilePath, FolderPath, PathSegment } from '../types.ts';
+import type * as FS from '../types.ts';
 import { FSSpecBase } from './basespec.ts';
 import type { FileSpec } from './filespec.ts';
 import type { FolderSpec } from './folderspec.ts';
@@ -44,5 +46,30 @@ export class SymlinkSpec extends FSSpecBase implements ICopyableSpec {
   override copyParamsTo(target: SymlinkSpec): SymlinkSpec {
     super.copyParamsTo(target);
     return target;
+  }
+
+  /**
+   * Changes the owner of the symlink (not the target).
+   * @param uid - User ID
+   * @param gid - Group ID (optional)
+   */
+  async chown(uid: FS.UID, gid?: FS.GID): Promise<void> {
+    await nfs.lchown(this._f, uid, gid ?? -1);
+  }
+
+  /**
+   * Changes the group of the symlink (not the target).
+   * @param gid - Group ID
+   */
+  async chgrp(gid: FS.GID): Promise<void> {
+    await nfs.lchown(this._f, -1, gid);
+  }
+
+  /**
+   * Changes the permissions of the symlink (not the target).
+   * @param mode - File mode (permissions)
+   */
+  async chmod(mode: FS.Mode): Promise<void> {
+    await nfs.lchmod(this._f, mode);
   }
 }

@@ -64,6 +64,9 @@ import * as FS from '@epdoc/fs/fs';
 - [FS.Path](./src/types.ts) - Represents a file or folder path.
 - [FS.Name](./src/types.ts) - Represents a file or folder name.
 - [FS.PathSegment](./src/types.ts) - Represents a segment of a path.
+- [FS.UID](./src/types.ts) - Represents a user ID for file ownership.
+- [FS.GID](./src/types.ts) - Represents a group ID for file ownership.
+- [FS.Mode](./src/types.ts) - Represents file permissions/mode.
 - [FS.FolderDiff](./src/types.ts) - Represents the difference between two folders.
 - [FS.FsDeepCopyOpts](./src/types.ts) - Options for deep copying with URL inclusion.
 - [FS.FsDeepJsonDeserializeOpts](./src/types.ts) - Options for deep JSON deserialization.

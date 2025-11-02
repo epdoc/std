@@ -5,6 +5,7 @@ import { assert } from '@std/assert';
 import * as fs from 'node:fs';
 import path from 'node:path';
 import type { CopyOptions, FileInfo, FSEntry, Path, RemoveOptions } from '../types.ts';
+import type * as FS from '../types.ts';
 
 /**
  * Abstract class representing a file system item, which may be of unknown type,
@@ -363,4 +364,23 @@ export abstract class FSSpecBase {
     // Fallback to the generic FSError
     return new Err.Main(base, opts);
   }
+
+  /**
+   * Changes the owner of the file system item.
+   * @param uid - User ID
+   * @param gid - Group ID (optional)
+   */
+  abstract chown(uid: FS.UID, gid?: FS.GID): Promise<void>;
+
+  /**
+   * Changes the group of the file system item.
+   * @param gid - Group ID
+   */
+  abstract chgrp(gid: FS.GID): Promise<void>;
+
+  /**
+   * Changes the permissions of the file system item.
+   * @param mode - File mode (permissions)
+   */
+  abstract chmod(mode: FS.Mode): Promise<void>;
 }

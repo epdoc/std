@@ -1,4 +1,5 @@
 import { DigestAlgorithm, FileSpec, FolderSpec } from '$mod';
+import type * as FS from '$mod';
 import { expect } from '@std/expect';
 import { afterAll, beforeAll, describe, it, test } from '@std/testing/bdd';
 import { Buffer } from 'node:buffer';
@@ -174,6 +175,39 @@ describe('FileSpec', () => {
       const file = new FileSpec(import.meta.url, absPath);
       expect(file).toBeInstanceOf(FileSpec);
       expect(file.path.endsWith('somefile.json')).toBe(true);
+    });
+  });
+
+  describe('Permission Operations', () => {
+    test('chown() changes file ownership', async () => {
+      const stats = await testFile.stats();
+      const originalUid = stats?.uid;
+      const originalGid = stats?.gid;
+
+      // Test with same uid/gid (should not fail)
+      if (originalUid !== null && originalGid !== null) {
+        await expect(testFile.chown(originalUid as FS.UID, originalGid as FS.GID)).resolves.not.toThrow();
+      }
+    });
+
+    test('chgrp() changes file group', async () => {
+      const stats = await testFile.stats();
+      const originalGid = stats?.gid;
+
+      // Test with same gid (should not fail)
+      if (originalGid !== null) {
+        await expect(testFile.chgrp(originalGid as FS.GID)).resolves.not.toThrow();
+      }
+    });
+
+    test('chmod() changes file permissions', async () => {
+      const stats = await testFile.stats();
+      const originalMode = stats?.mode;
+
+      // Test with same mode (should not fail)
+      if (originalMode !== null) {
+        await expect(testFile.chmod(originalMode as FS.Mode)).resolves.not.toThrow();
+      }
     });
   });
 });

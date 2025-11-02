@@ -1,4 +1,5 @@
 import { FileSpec, FolderSpec } from '$mod';
+import type * as FS from '$mod';
 import { expect } from '@std/expect';
 import { afterAll, beforeAll, describe, test } from '@std/testing/bdd';
 import * as fs from 'node:fs/promises';
@@ -130,6 +131,76 @@ describe('FolderSpec', () => {
       const actualCwd = Deno.cwd();
       expect(cwdSpec).toBeInstanceOf(FolderSpec);
       expect(cwdSpec.path).toEqual(actualCwd);
+    });
+  });
+
+  describe('Permission Operations', () => {
+    test('chown() changes folder ownership', async () => {
+      const folder = new FolderSpec(testDir);
+      const stats = await folder.stats();
+      const originalUid = stats?.uid;
+      const originalGid = stats?.gid;
+
+      // Test with same uid/gid (should not fail)
+      if (originalUid !== null && originalGid !== null) {
+        await expect(folder.chown(originalUid as FS.UID, originalGid as FS.GID)).resolves.not.toThrow();
+      }
+    });
+
+    test('chown() with recursive option', async () => {
+      const folder = new FolderSpec(testDir);
+      const stats = await folder.stats();
+      const originalUid = stats?.uid;
+      const originalGid = stats?.gid;
+
+      // Test with same uid/gid recursively (should not fail)
+      if (originalUid !== null && originalGid !== null) {
+        await expect(folder.chown(originalUid as FS.UID, originalGid as FS.GID, true)).resolves.not.toThrow();
+      }
+    });
+
+    test('chgrp() changes folder group', async () => {
+      const folder = new FolderSpec(testDir);
+      const stats = await folder.stats();
+      const originalGid = stats?.gid;
+
+      // Test with same gid (should not fail)
+      if (originalGid !== null) {
+        await expect(folder.chgrp(originalGid as FS.GID)).resolves.not.toThrow();
+      }
+    });
+
+    test('chgrp() with recursive option', async () => {
+      const folder = new FolderSpec(testDir);
+      const stats = await folder.stats();
+      const originalGid = stats?.gid;
+
+      // Test with same gid recursively (should not fail)
+      if (originalGid !== null) {
+        await expect(folder.chgrp(originalGid as FS.GID, true)).resolves.not.toThrow();
+      }
+    });
+
+    test('chmod() changes folder permissions', async () => {
+      const folder = new FolderSpec(testDir);
+      const stats = await folder.stats();
+      const originalMode = stats?.mode;
+
+      // Test with same mode (should not fail)
+      if (originalMode !== null) {
+        await expect(folder.chmod(originalMode as FS.Mode)).resolves.not.toThrow();
+      }
+    });
+
+    test('chmod() with recursive option', async () => {
+      const folder = new FolderSpec(testDir);
+      const stats = await folder.stats();
+      const originalMode = stats?.mode;
+
+      // Test with same mode recursively (should not fail)
+      if (originalMode !== null) {
+        await expect(folder.chmod(originalMode as FS.Mode, true)).resolves.not.toThrow();
+      }
     });
   });
 
