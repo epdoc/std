@@ -63,3 +63,60 @@ readableStream
 - [MDN Web Docs: ReadableStream](https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream)
 - [MDN Web Docs: WritableStream](https://developer.mozilla.org/en-US/docs/Web/API/WritableStream)
 - [MDN Web Docs: TransformStream](https://developer.mozilla.org/en-US/docs/Web/API/TransformStream)
+
+## Proposal: Web Stream Integration in FileSpec
+
+To enhance the `FileSpec` class and align it with modern asynchronous data handling, we propose integrating the Web Streams API for file reading and writing operations. This will provide a more efficient and flexible way to manage file I/O, especially for large files.
+
+### Reading with `readableStream()`
+
+We propose adding a `readableStream()` method to `FileSpec` that returns a `ReadableStream<Uint8Array>`. This will allow consumers to read file content incrementally, which is highly memory-efficient.
+
+**Proposed Implementation:**
+```typescript
+// In FileSpec class
+public async readableStream(): Promise<ReadableStream<Uint8Array>> {
+  const file = await Deno.open(this.path, { read: true });
+  return file.readable;
+}
+```
+
+### Writing with `writableStream()`
+
+Similarly, we propose a `writableStream()` method that returns a `WritableStream<Uint8Array>`. This will enable writing data to a file in a streaming fashion, for instance, directly from a network response.
+
+**Proposed Implementation:**
+```typescript
+// In FileSpec class
+public async writableStream(): Promise<WritableStream<Uint8Array>> {
+  const file = await Deno.open(this.path, { write: true, create: true });
+  return file.writable;
+}
+```
+
+### Benefits of Integration
+
+- **Memory Efficiency**: By streaming data, we avoid loading entire files into memory, which is crucial for large file processing.
+- **Composability**: Web Streams are highly composable, allowing `FileSpec` streams to be piped to or from other streams, such as those from `fetch` requests or other data sources.
+- **Backpressure Handling**: The Web Streams API automatically handles backpressure, ensuring that a fast-producing stream does not overwhelm a slow-consuming stream.
+
+### Example Usage
+
+**Example 1: Piping a network download directly to a file**
+```typescript
+const url = "https://example.com/large-file.zip";
+const fileSpec = new FileSpec("./downloaded-file.zip");
+
+const response = await fetch(url);
+if (response.body) {
+  const fileStream = await fileSpec.writableStream();
+  await response.body.pipeTo(fileStream);
+}
+```
+
+**Example 2: Reading a file and piping it to standard output**
+```typescript
+const fileSpec = new FileSpec("./my-large-log-file.log");
+const fileStream = await fileSpec.readableStream();
+await fileStream.pipeTo(Deno.stdout.writable);
+```
