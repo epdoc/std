@@ -38,6 +38,8 @@ type BaseOptions = {
   fractionalDigits?: Integer;
   hoursMinutesSeparator?: string;
   minutesSecondsSeparator?: string;
+  years?: Days;
+  yearsDisplay?: Display;
   days?: Days;
   daysDisplay?: Display;
   hours?: HMS;
@@ -62,7 +64,9 @@ export type Options =
   & Partial<{
     maxDisplay: Field;
     minDisplay: Field;
+    yearsDaysSeparator: string;
     daysHoursSeparator: string;
     secondsUnit: string;
     separator: string;
+    adaptiveDisplay: Display;
   }>;

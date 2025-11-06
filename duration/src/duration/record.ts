@@ -12,6 +12,7 @@ import type * as Duration from './types.ts';
  */
 export class DurationRecord {
   protected _ms: number = 0;
+  years: number = 0;
   days: number = 0;
   hours: number = 0;
   minutes: number = 0;
@@ -36,14 +37,23 @@ export class DurationRecord {
       // Duration.Fields.forEach((field) => {
       //   this.setField(field, Math.floor(this._ms / Time.Measures[field]) % Time.Ratios[field]);
       // });
-      this.days = Math.floor(this._ms / Time.Measures.days);
-      this.hours = Math.floor(this._ms / Time.Measures.hours) % Time.Ratios.hours;
-      this.minutes = Math.floor(this._ms / Time.Measures.minutes) % Time.Ratios.minutes;
-      this.seconds = Math.floor(this._ms / Time.Measures.seconds) % Time.Ratios.seconds;
-      this.milliseconds = Math.floor(this._ms) % Time.Ratios.milliseconds;
-      this.microseconds = Math.floor(this._ms * 1000) % Time.Ratios.microseconds;
-      this.nanoseconds = Math.floor(this._ms * 1000000) % Time.Ratios.nanoseconds;
+      this.years = Math.floor(this._ms / Time.Measures.years);
+      const remainingAfterYears = this._ms - (this.years * Time.Measures.years);
+      this.days = Math.floor(remainingAfterYears / Time.Measures.days);
+      const remainingAfterDays = remainingAfterYears - (this.days * Time.Measures.days);
+      this.hours = Math.floor(remainingAfterDays / Time.Measures.hours);
+      const remainingAfterHours = remainingAfterDays - (this.hours * Time.Measures.hours);
+      this.minutes = Math.floor(remainingAfterHours / Time.Measures.minutes);
+      const remainingAfterMinutes = remainingAfterHours - (this.minutes * Time.Measures.minutes);
+      this.seconds = Math.floor(remainingAfterMinutes / Time.Measures.seconds);
+      const remainingAfterSeconds = remainingAfterMinutes - (this.seconds * Time.Measures.seconds);
+      this.milliseconds = Math.floor(remainingAfterSeconds);
+      const remainingAfterMilliseconds = remainingAfterSeconds - this.milliseconds;
+      this.microseconds = Math.floor(remainingAfterMilliseconds * 1000);
+      const remainingAfterMicroseconds = remainingAfterMilliseconds - (this.microseconds / 1000);
+      this.nanoseconds = Math.floor(remainingAfterMicroseconds * 1000000);
     } else if (isDict(arg)) {
+      this.years = arg.years ?? 0;
       this.days = arg.days ?? 0;
       this.hours = arg.hours ?? 0;
       this.minutes = arg.minutes ?? 0;
@@ -109,6 +119,42 @@ export class DurationRecord {
   }
 
   /**
+   * Prune the record to display only the N most significant non-zero units.
+   * @param {number} maxUnits - The maximum number of non-zero units to keep (e.g., 2).
+   * @returns {this}
+   */
+  public pruneAdaptive(maxUnits: number = 2): this {
+    // Special case: if all fields are zero, don't prune anything
+    if (this.isZero()) {
+      return this;
+    }
+
+    let unitsKept = 0;
+    let startedCounting = false;
+
+    // Fields should be ordered from largest to smallest (e.g., years, days, hours...)
+    for (const fieldName of Fields) {
+      const fieldValue = this.getField(fieldName);
+
+      // Once we find the first non-zero field, start counting
+      if (!startedCounting && fieldValue !== 0) {
+        startedCounting = true;
+      }
+
+      // If we're counting, keep units up to the limit
+      if (startedCounting) {
+        unitsKept++;
+        
+        // If we've hit the limit, zero out all subsequent fields
+        if (unitsKept > maxUnits) {
+          this.setField(fieldName, 0);
+        }
+      }
+    }
+    return this;
+  }
+
+  /**
    * Prune the record to a maximum unit.
    * @param {Duration.Field} maxFieldName - The maximum unit to keep.
    * @returns {this}
@@ -136,6 +182,7 @@ export class DurationRecord {
    */
   isZero(): boolean {
     return (
+      this.years === 0 &&
       this.days === 0 &&
       this.hours === 0 &&
       this.minutes === 0 &&
@@ -152,13 +199,14 @@ export class DurationRecord {
    */
   public toTime(): Dict {
     return {
-      days: this.days,
-      hours: this.hours,
-      minutes: this.minutes,
-      seconds: this.seconds,
-      milliseconds: this.milliseconds,
-      microseconds: this.microseconds,
-      nanoseconds: this.nanoseconds,
+      years: Math.floor(this.years),
+      days: Math.floor(this.days),
+      hours: Math.floor(this.hours),
+      minutes: Math.floor(this.minutes),
+      seconds: Math.floor(this.seconds),
+      milliseconds: Math.floor(this.milliseconds),
+      microseconds: Math.floor(this.microseconds),
+      nanoseconds: Math.floor(this.nanoseconds),
     };
   }
 }

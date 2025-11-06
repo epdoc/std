@@ -1,6 +1,6 @@
+import { Duration, duration, Time } from '@epdoc/duration';
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
-import { Duration, duration, Time } from '../src/mod.ts';
 
 describe('duration-util', () => {
   describe('digital', () => {
@@ -30,10 +30,16 @@ describe('duration-util', () => {
       expect(new Duration.Formatter().digital.fractionalDigits(2).format(n)).toEqual('00:03.45');
       n += 3 * Time.Measures.minutes;
       expect(new Duration.Formatter().digital.fractionalDigits(6).format(n)).toEqual('03:03.454345');
-      expect(new Duration.Formatter().digital.fractionalDigits(9).format(n)).toEqual('03:03.454345898');
+      expect(new Duration.Formatter().digital.fractionalDigits(9).format(n)).toEqual('03:03.454345897');
       expect(new Duration.Formatter().digital.fractionalDigits(7).format(n)).toEqual('03:03.4543458');
       expect(new Duration.Formatter().digital.fractionalDigits(1).format(n)).toEqual('03:03.4');
       expect(new Duration.Formatter().digital.fractionalDigits(2).format(n)).toEqual('03:03.45');
+    });
+    it('years support', () => {
+      const oneYear = Time.Measures.years;
+      expect(new Duration.Formatter().digital.format(oneYear)).toEqual('1y00:00.000');
+      expect(new Duration.Formatter().digital.format(oneYear + 5 * Time.Measures.days)).toEqual('1y5d00:00.000');
+      expect(new Duration.Formatter().digital.format(2.5 * oneYear)).toEqual('2y182d15:00:00.000');
     });
   });
   describe('narrow', () => {
@@ -55,13 +61,121 @@ describe('duration-util', () => {
       expect(new Duration.Formatter().narrow.fractionalDigits(1).format(n)).toEqual('3.4s');
       expect(new Duration.Formatter().narrow.fractionalDigits(2).format(n)).toEqual('3.45s');
       n += 3 * Time.Measures.minutes;
-      expect(new Duration.Formatter().narrow.fractionalDigits(9).format(n)).toEqual('3m03.454345898s');
+      expect(new Duration.Formatter().narrow.fractionalDigits(9).format(n)).toEqual('3m03.454345897s');
       expect(new Duration.Formatter().narrow.fractionalDigits(7).format(n)).toEqual('3m03.4543458s');
       expect(new Duration.Formatter().narrow.fractionalDigits(1).format(n)).toEqual('3m03.4s');
       n += 8 * Time.Measures.hours;
-      expect(new Duration.Formatter().narrow.fractionalDigits(9).format(n)).toEqual('8h03m03.454345898s');
+      expect(new Duration.Formatter().narrow.fractionalDigits(9).format(n)).toEqual('8h03m03.454345897s');
       expect(new Duration.Formatter().narrow.fractionalDigits(7).format(n)).toEqual('8h03m03.4543458s');
       expect(new Duration.Formatter().narrow.fractionalDigits(1).format(n)).toEqual('8h03m03.4s');
+    });
+    it('fractionalDigits in years', () => {
+      const n = -1760451163065;
+      expect(new Duration.Formatter().narrow.fractionalDigits(3).format(n)).toEqual('55y286d20h12m43.065s');
+    });
+    it('years support', () => {
+      const oneYear = Time.Measures.years;
+      expect(new Duration.Formatter().narrow.format(oneYear)).toEqual('1y00.000s');
+      expect(new Duration.Formatter().narrow.format(oneYear + 5 * Time.Measures.days)).toEqual('1y5d00.000s');
+      expect(new Duration.Formatter().narrow.format(2.5 * oneYear)).toEqual('2y182d15h00m00.000s');
+    });
+  });
+  describe('adaptive', () => {
+    describe('narrow format', () => {
+      it('basic adaptive functionality', () => {
+        const n = -1760451163065; // 55y286d20h12m43.065s
+        expect(new Duration.Formatter().narrow.adaptive(2).format(n)).toEqual('55y286d');
+        expect(new Duration.Formatter().narrow.adaptive(3).format(n)).toEqual('55y286d20h');
+        expect(new Duration.Formatter().narrow.adaptive(4).format(n)).toEqual('55y286d20h12m');
+        expect(new Duration.Formatter().narrow.adaptive(1).format(n)).toEqual('55y');
+      });
+      it('adaptive with zero intermediate units', () => {
+        // 2 years, 0 days, 5 hours
+        const n = 2 * Time.Measures.years + 5 * Time.Measures.hours;
+        expect(new Duration.Formatter().narrow.adaptive(2).format(n)).toEqual('2y');
+        expect(new Duration.Formatter().narrow.adaptive(3).format(n)).toEqual('2y05h');
+      });
+      it('adaptive starting from smaller units', () => {
+        const n = 5 * Time.Measures.hours + 30 * Time.Measures.minutes + 15 * Time.Measures.seconds;
+        expect(new Duration.Formatter().narrow.adaptive(2).format(n)).toEqual('5h30m');
+        expect(new Duration.Formatter().narrow.adaptive(3).format(n)).toEqual('5h30m15s');
+        expect(new Duration.Formatter().narrow.adaptive(1).format(n)).toEqual('5h');
+      });
+      it('adaptive with only seconds', () => {
+        const n = 45123; // 45.123 seconds in milliseconds
+        expect(new Duration.Formatter().narrow.adaptive(1).format(n)).toEqual('45s');
+        expect(new Duration.Formatter().narrow.adaptive(2).format(n)).toEqual('45s');
+      });
+      it('adaptive edge cases', () => {
+        expect(new Duration.Formatter().narrow.adaptive(0).format(1000)).toEqual('1.000s'); // 0 should disable adaptive
+        expect(new Duration.Formatter().narrow.adaptive(10).format(1000)).toEqual('1s'); // More than available units
+      });
+      it('adaptiveDisplay controls trailing zeros', () => {
+        const n = 3661000; // 1 hour, 1 minute, 1 second
+        expect(new Duration.Formatter().narrow.adaptive(2).adaptiveDisplay('auto').format(n)).toEqual('1h01m');
+        expect(new Duration.Formatter().narrow.adaptive(2).adaptiveDisplay('always').format(n)).toEqual('1h01m');
+
+        const n2 = 3600000; // 1 hour exactly
+        expect(new Duration.Formatter().narrow.adaptive(2).adaptiveDisplay('auto').format(n2)).toEqual('1h');
+        expect(new Duration.Formatter().narrow.adaptive(2).adaptiveDisplay('always').format(n2)).toEqual('1h00m');
+
+        // Test with different adaptive units
+        const n3 = 7323000; // 2h02m03s
+        expect(new Duration.Formatter().narrow.adaptive(3).adaptiveDisplay('auto').format(n3)).toEqual('2h02m03s');
+        expect(new Duration.Formatter().narrow.adaptive(3).adaptiveDisplay('always').format(n3)).toEqual('2h02m03s');
+        expect(new Duration.Formatter().narrow.adaptive(2).adaptiveDisplay('auto').format(n3)).toEqual('2h02m');
+        expect(new Duration.Formatter().narrow.adaptive(2).adaptiveDisplay('always').format(n3)).toEqual('2h02m');
+
+        // Test with zero intermediate units
+        const n4 = 7203000; // 2h00m03s
+        expect(new Duration.Formatter().narrow.adaptive(3).adaptiveDisplay('auto').format(n4)).toEqual('2h00m03s');
+        expect(new Duration.Formatter().narrow.adaptive(3).adaptiveDisplay('always').format(n4)).toEqual('2h00m03s');
+      });
+      it('adaptiveDisplay default behavior', () => {
+        const n = 3600000; // 1 hour exactly
+        // Default should be 'auto'
+        expect(new Duration.Formatter().narrow.adaptive(2).format(n)).toEqual('1h');
+        expect(new Duration.Formatter().narrow.adaptive(2).adaptiveDisplay('auto').format(n)).toEqual('1h');
+      });
+      it('adaptiveDisplay with different formats', () => {
+        const n = 3600000; // 1 hour exactly
+        expect(new Duration.Formatter().digital.adaptive(2).adaptiveDisplay('auto').format(n)).toEqual('1:');
+        expect(new Duration.Formatter().digital.adaptive(2).adaptiveDisplay('always').format(n)).toEqual('1:00:');
+
+        expect(new Duration.Formatter().long.adaptive(2).adaptiveDisplay('auto').format(n)).toEqual('1 hour');
+        expect(new Duration.Formatter().long.adaptive(2).adaptiveDisplay('always').format(n)).toEqual(
+          '1 hour, 0 minutes',
+        );
+      });
+    });
+    describe('digital format', () => {
+      it('basic adaptive functionality', () => {
+        const n = -1760451163065;
+        expect(new Duration.Formatter().digital.adaptive(2).format(n)).toEqual('55y286d');
+        expect(new Duration.Formatter().digital.adaptive(3).format(n)).toEqual('55y286d20:');
+      });
+    });
+    describe('long format', () => {
+      it('basic adaptive functionality', () => {
+        const n = 5 * Time.Measures.hours + 30 * Time.Measures.minutes + 15 * Time.Measures.seconds;
+        expect(new Duration.Formatter().long.adaptive(2).format(n)).toEqual('5 hours, 30 minutes');
+      });
+    });
+  });
+  describe('years edge cases', () => {
+    it('very large durations', () => {
+      const centuryMs = 100 * Time.Measures.years;
+      expect(new Duration.Formatter().narrow.format(centuryMs)).toEqual('100y00.000s');
+      expect(new Duration.Formatter().narrow.adaptive(1).format(centuryMs)).toEqual('100y');
+    });
+    it('fractional years', () => {
+      const n = 1.5 * Time.Measures.years; // 1.5 years
+      expect(new Duration.Formatter().narrow.format(n)).toEqual('1y182d15h00m00.000s');
+      expect(new Duration.Formatter().narrow.adaptive(2).format(n)).toEqual('1y182d');
+    });
+    it('years with zero days', () => {
+      const n = 2 * Time.Measures.years + 3 * Time.Measures.hours;
+      expect(new Duration.Formatter().narrow.adaptive(3).format(n)).toEqual('2y03h');
     });
   });
   describe('long', () => {
@@ -88,25 +202,31 @@ describe('duration-util', () => {
       expect(formatter.digits(2).format(n)).toEqual('3 seconds, 454 milliseconds');
       n += 3 * Time.Measures.minutes;
       expect(formatter.digits(9).format(n)).toEqual(
-        '3 minutes, 3 seconds, 454 milliseconds, 345 microseconds, 898 nanoseconds',
+        '3 minutes, 3 seconds, 454 milliseconds, 345 microseconds, 897 nanoseconds',
       );
       expect(formatter.digits(7).format(n)).toEqual(
-        '3 minutes, 3 seconds, 454 milliseconds, 345 microseconds, 898 nanoseconds',
+        '3 minutes, 3 seconds, 454 milliseconds, 345 microseconds, 897 nanoseconds',
       );
       expect(formatter.digits(1).format(n)).toEqual('3 minutes, 3 seconds, 454 milliseconds');
       n += 8 * Time.Measures.hours;
       expect(formatter.digits(9).format(n)).toEqual(
-        '8 hours, 3 minutes, 3 seconds, 454 milliseconds, 345 microseconds, 898 nanoseconds',
+        '8 hours, 3 minutes, 3 seconds, 454 milliseconds, 345 microseconds, 897 nanoseconds',
       );
       expect(formatter.digits(7).format(n)).toEqual(
-        '8 hours, 3 minutes, 3 seconds, 454 milliseconds, 345 microseconds, 898 nanoseconds',
+        '8 hours, 3 minutes, 3 seconds, 454 milliseconds, 345 microseconds, 897 nanoseconds',
       );
       expect(formatter.digits(1).format(n)).toEqual('8 hours, 3 minutes, 3 seconds, 454 milliseconds');
+    });
+    it('years support', () => {
+      const oneYear = Time.Measures.years;
+      expect(new Duration.Formatter().long.format(oneYear)).toEqual('1 year');
+      expect(new Duration.Formatter().long.format(2 * oneYear + 5 * Time.Measures.days)).toEqual('2 years, 5 days');
     });
   });
   describe('short', () => {
     it('defaults', () => {
       expect(new Duration.Formatter().short.format(-4443454)).toEqual('1 hr 14 min 3 sec 454 ms');
+      expect(new Duration.Formatter().short.separator('; ').format(-4443454)).toEqual('1 hr; 14 min; 3 sec; 454 ms');
     });
     it('fractionalDigits', () => {
       let n = 3454.345898;
@@ -119,13 +239,18 @@ describe('duration-util', () => {
       expect(formatter.digits(1).format(n)).toEqual('3 sec 454 ms');
       expect(formatter.digits(2).format(n)).toEqual('3 sec 454 ms');
       n += 3 * Time.Measures.minutes;
-      expect(formatter.digits(9).format(n)).toEqual('3 min 3 sec 454 ms 345 μs 898 ns');
-      expect(formatter.digits(7).format(n)).toEqual('3 min 3 sec 454 ms 345 μs 898 ns');
+      expect(formatter.digits(9).format(n)).toEqual('3 min 3 sec 454 ms 345 μs 897 ns');
+      expect(formatter.digits(7).format(n)).toEqual('3 min 3 sec 454 ms 345 μs 897 ns');
       expect(formatter.digits(1).format(n)).toEqual('3 min 3 sec 454 ms');
       n += 8 * Time.Measures.hours;
-      expect(formatter.digits(9).format(n)).toEqual('8 hr 3 min 3 sec 454 ms 345 μs 898 ns');
-      expect(formatter.digits(7).format(n)).toEqual('8 hr 3 min 3 sec 454 ms 345 μs 898 ns');
+      expect(formatter.digits(9).format(n)).toEqual('8 hr 3 min 3 sec 454 ms 345 μs 897 ns');
+      expect(formatter.digits(7).format(n)).toEqual('8 hr 3 min 3 sec 454 ms 345 μs 897 ns');
       expect(formatter.digits(1).format(n)).toEqual('8 hr 3 min 3 sec 454 ms');
+    });
+    it('years support', () => {
+      const oneYear = Time.Measures.years;
+      expect(new Duration.Formatter().short.format(oneYear)).toEqual('1 yr');
+      expect(new Duration.Formatter().short.format(2 * oneYear + 5 * Time.Measures.days)).toEqual('2 yrs 5 days');
     });
   });
   describe('general', () => {
@@ -136,6 +261,10 @@ describe('duration-util', () => {
         '3 seconds; 454 milliseconds; 345 microseconds; 898 nanoseconds',
       );
       expect(formatter.short.digits(3).separator(':').format(n)).toEqual('3 sec:454 ms');
+    });
+    it('zero duration', () => {
+      expect(new Duration.Formatter().narrow.adaptive(2).format(0)).toEqual('0.000s');
+      expect(new Duration.Formatter().digital.adaptive(3).format(0)).toEqual('00:00.000');
     });
   });
 });

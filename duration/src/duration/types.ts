@@ -13,6 +13,7 @@ export type Field = keyof typeof Time.Measures;
  * A type representing the options for a duration record.
  */
 export type RecordOptions = Partial<{
+  years: number;
   days: number;
   hours: number;
   minutes: number;

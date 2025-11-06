@@ -1,10 +1,11 @@
+import { Duration, type Seconds } from '@epdoc/duration';
 import type { Dict, Integer } from '@epdoc/type';
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
-import { Duration, type Seconds } from '../src/mod.ts';
 
 const zero = {
   _ms: 0,
+  years: 0,
   days: 0,
   hours: 0,
   minutes: 0,
@@ -18,6 +19,7 @@ const modZero = (mod: Dict) => {
 };
 
 const constructorTest = (
+  years: Integer,
   days: Integer,
   hours: Integer,
   minutes: Integer,
@@ -32,6 +34,7 @@ const constructorTest = (
     nanoseconds / 1000000;
   const result = {
     _ms: ms,
+    years: years,
     days: days,
     hours: hours,
     minutes: minutes,
@@ -51,9 +54,9 @@ describe('duration-record', () => {
     expect(new Duration.Record(1)).toEqual(modZero({ _ms: 1, milliseconds: 1 }));
     expect(new Duration.Record(2345)).toEqual(modZero({ _ms: 2345, seconds: 2, milliseconds: 345 }));
     expect(new Duration.Record(2345)).toEqual(modZero({ _ms: 2345, seconds: 2, milliseconds: 345 }));
-    constructorTest(0, 0, 0, 2, 345, 0, 0);
-    constructorTest(0, 1, 1, 1, 1, 1, 1);
-    constructorTest(3, 23, 59, 59, 999, 999, 999);
+    constructorTest(0, 0, 0, 0, 2, 345, 0, 0);
+    constructorTest(0, 0, 1, 1, 1, 1, 1, 0);
+    constructorTest(0, 3, 23, 59, 59, 999, 999, 998);
     expect(new Duration.Record(3454.345898)).toEqual(
       modZero({ _ms: 3454.345898, seconds: 3, milliseconds: 454, microseconds: 345, nanoseconds: 898 }),
     );

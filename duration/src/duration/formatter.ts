@@ -22,6 +22,7 @@ const DEFAULT: Record<Format.Style, Format.Options> = {
     hoursMinutesSeparator: ':',
     minutesSecondsSeparator: ':',
     fractionalDigits: 3,
+    adaptiveDisplay: 'auto',
     // minDisplay: 'milliseconds',
     hours: '2-digit',
     hoursDisplay: 'auto',
@@ -33,6 +34,7 @@ const DEFAULT: Record<Format.Style, Format.Options> = {
     minutesSecondsSeparator: 'm',
     secondsUnit: 's',
     fractionalDigits: 3,
+    adaptiveDisplay: 'auto',
     // minDisplay: 'milliseconds',
     daysDisplay: 'auto',
     hoursDisplay: 'auto',
@@ -45,6 +47,7 @@ const DEFAULT: Record<Format.Style, Format.Options> = {
   long: {
     style: 'long',
     fractionalDigits: 3,
+    adaptiveDisplay: 'auto',
     microsecondsDisplay: 'auto',
     nanosecondsDisplay: 'auto',
     separator: ', ',
@@ -52,6 +55,7 @@ const DEFAULT: Record<Format.Style, Format.Options> = {
   short: {
     style: 'short',
     fractionalDigits: 3,
+    adaptiveDisplay: 'auto',
     separator: ' ',
   },
 };
@@ -61,7 +65,7 @@ const DEFAULT: Record<Format.Style, Format.Options> = {
  */
 export class DurationFormatter {
   // @ts-ignore it gets initialized when it's first used, if not previously initialized
-  protected _opts: Duration.Options;
+  protected _opts: Duration.Options & { maxAdaptiveUnits?: Integer };
 
   /**
    * Construct a new `DurationFormatter` instance.
@@ -162,6 +166,28 @@ export class DurationFormatter {
     this._opts.minDisplay = field;
     return this;
   }
+
+  /**
+   * Set the maximum number of significant non-zero units to display.
+   * A value of 0 or undefined disables adaptive pruning.
+   * @param {Integer} units - The maximum number of units (e.g., 2).
+   * @returns {this}
+   */
+  public adaptive(units: Integer): this {
+    this._opts.maxAdaptiveUnits = units;
+    return this;
+  }
+
+  /**
+   * Set adaptive display mode for trailing zeros.
+   * @param {Format.Display} display - 'auto' to suppress trailing zeros, 'always' to show them
+   * @returns {this}
+   */
+  public adaptiveDisplay(display: Format.Display): this {
+    this._opts.adaptiveDisplay = display;
+    return this;
+  }
+
   /**
    * Define a custom format by overwriting the already-set format options.
    * @param opts The `FormatMsName` name of one of the preset formats, or a
@@ -204,6 +230,60 @@ export class DurationFormatter {
       .pruneMin(this._opts.minDisplay)
       .pruneMax(this._opts.maxDisplay);
 
+    // Apply adaptive pruning after min/max pruning
+    if (isInteger(this._opts.maxAdaptiveUnits) && this._opts.maxAdaptiveUnits > 0) {
+      // Special case: if all fields are zero, don't apply adaptive pruning
+      if (!time.isZero()) {
+        time.pruneAdaptive(this._opts.maxAdaptiveUnits);
+        
+        // Apply adaptiveDisplay setting to control trailing zeros
+        if (this._opts.adaptiveDisplay === 'auto') {
+          // Suppress trailing zeros - set all zero fields to 'auto'
+          if (time.seconds === 0) this._opts.secondsDisplay = 'auto';
+          if (time.minutes === 0) this._opts.minutesDisplay = 'auto';
+          if (time.hours === 0) this._opts.hoursDisplay = 'auto';
+          if (time.days === 0) this._opts.daysDisplay = 'auto';
+          if (time.years === 0) this._opts.yearsDisplay = 'auto';
+        } else if (this._opts.adaptiveDisplay === 'always') {
+          // Show trailing zeros within the adaptive window only
+          // First, suppress all trailing zeros
+          if (time.seconds === 0) this._opts.secondsDisplay = 'auto';
+          if (time.minutes === 0) this._opts.minutesDisplay = 'auto';
+          if (time.hours === 0) this._opts.hoursDisplay = 'auto';
+          if (time.days === 0) this._opts.daysDisplay = 'auto';
+          if (time.years === 0) this._opts.yearsDisplay = 'auto';
+          
+          // Then force display of zero units within the adaptive window
+          const fields = ['years', 'days', 'hours', 'minutes', 'seconds'] as const;
+          let unitsFromStart = 0;
+          let foundFirstNonZero = false;
+          
+          for (const field of fields) {
+            const value = time[field];
+            if (!foundFirstNonZero && value > 0) {
+              foundFirstNonZero = true;
+            }
+            if (foundFirstNonZero) {
+              unitsFromStart++;
+              if (unitsFromStart <= this._opts.maxAdaptiveUnits) {
+                // Force display of units within adaptive window (even if zero)
+                if (field === 'seconds') this._opts.secondsDisplay = 'always';
+                else if (field === 'minutes') this._opts.minutesDisplay = 'always';
+                else if (field === 'hours') this._opts.hoursDisplay = 'always';
+                else if (field === 'days') this._opts.daysDisplay = 'always';
+                else if (field === 'years') this._opts.yearsDisplay = 'always';
+              }
+            }
+          }
+        }
+        
+        // When adaptive formatting includes seconds, treat them as whole units (separate from milliseconds)
+        if (this._opts.maxAdaptiveUnits > 0 && time.seconds > 0) {
+          this._opts.fractionalDigits = 0;
+        }
+      }
+    }
+
     if (this._opts.style === 'digital') {
       return this.formatDigital(time);
     } else if (this._opts.style === 'narrow') {
@@ -214,7 +294,7 @@ export class DurationFormatter {
 
   protected formatToParts(time: DurationRecord, opts: Format.Options): Duration.Part[] {
     // @ts-ignore DurationFormat is not yet in TS
-    return new Intl.DurationFormat('en', opts ? opts : this._opts).formatToParts(time);
+    return new Intl.DurationFormat('en', opts ? opts : this._opts).formatToParts(time.toTime());
   }
 
   protected formatLong(time: DurationRecord): string {
@@ -233,6 +313,7 @@ export class DurationFormatter {
       }
     }
 
+    // Pass the plain object from DurationRecord.toTime() to Intl.DurationFormat
     const parts: Duration.Part[] = this.formatToParts(time, opts);
     const result: string[] = [];
     parts.forEach((part: Duration.Part) => {
@@ -250,20 +331,31 @@ export class DurationFormatter {
 
   protected formatNarrow(time: DurationRecord): string {
     const opts: Format.Options = Object.assign({}, this._opts, { style: 'digital' });
+    
+    // Flags to track when to remove leading zeros from time units
     let bRemoveMinutesLeadingZero = false;
     let bRemoveSecondsLeadingZero = false;
-    if (time.days == 0) {
-      opts.hours = 'numeric';
-      opts.hoursDisplay = 'auto';
-      if (time.hours == 0) {
-        opts.minutes = 'numeric';
-        bRemoveMinutesLeadingZero = true;
-        if (time.minutes == 0) {
-          opts.seconds = 'numeric';
-          bRemoveSecondsLeadingZero = true;
+    
+    // Cascade formatting based on the largest non-zero time unit
+    // This creates adaptive formatting where smaller units become the primary display
+    if (time.years == 0) {
+      if (time.days == 0) {
+        // No years or days: hours become the primary unit, use numeric format (no leading zeros)
+        opts.hours = 'numeric';
+        opts.hoursDisplay = 'auto';
+        if (time.hours == 0) {
+          // No hours: minutes become the primary unit, remove leading zero
+          opts.minutes = 'numeric';
+          bRemoveMinutesLeadingZero = true;
+          if (time.minutes == 0) {
+            // No minutes: seconds become the primary unit, remove leading zero
+            opts.seconds = 'numeric';
+            bRemoveSecondsLeadingZero = true;
+          }
         }
       }
     }
+    // Pass the plain object from DurationRecord.toTime() to Intl.DurationFormat
     const parts: Duration.Part[] = this.formatToParts(time, opts);
 
     // Remove leading zeros from seconds and minutes if needed
@@ -291,19 +383,25 @@ export class DurationFormatter {
 
   protected formatDigital(time: DurationRecord): string {
     const opts: Format.Options = Object.assign({}, this._opts);
-    if (time.days == 0) {
+    if (time.years == 0 && time.days == 0) {
       opts.hours = 'numeric';
       opts.hoursDisplay = 'auto';
     }
+    // Pass the plain object from DurationRecord.toTime() to Intl.DurationFormat
     const parts: Duration.Part[] = this.formatToParts(time, opts);
     return this._formatDigital(parts);
   }
 
   protected _formatDigital(parts: Duration.Part[]): string {
     const result: string[] = [];
+    let hasSeconds = false;
+    
     parts.forEach((part: Duration.Part) => {
       if (part.unit && REG.isNumeric.test(part.type)) {
-        if (part.unit === 'day') {
+        if (part.unit === 'year') {
+          result.push(part.value);
+          result.push(this._opts.yearsDaysSeparator ?? 'y');
+        } else if (part.unit === 'day') {
           result.push(part.value);
           result.push(this._opts.daysHoursSeparator ?? 'd');
         } else if (part.unit === 'hour') {
@@ -320,12 +418,14 @@ export class DurationFormatter {
           result.push(this._opts.minutesSecondsSeparator ?? ':');
         } else if (part.unit === 'second' && part.type === 'integer') {
           result.push(part.value);
+          hasSeconds = true;
         } else if (part.unit === 'second' && (part.type === 'fraction' || part.type === 'decimal')) {
           result.push(part.value);
+          hasSeconds = true;
         }
       }
     });
-    if (this._opts.secondsUnit) {
+    if (this._opts.secondsUnit && hasSeconds) {
       result.push(this._opts.secondsUnit);
     }
     return result.join('');

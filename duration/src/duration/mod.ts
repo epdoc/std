@@ -5,4 +5,5 @@
 export { Fields } from './consts.ts';
 export { DurationFormatter as Formatter } from './formatter.ts';
 export { DurationRecord as Record } from './record.ts';
+export { humanize } from './humanize.ts';
 export * from './types.ts';
