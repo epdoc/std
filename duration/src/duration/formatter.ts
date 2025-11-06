@@ -46,6 +46,9 @@ const DEFAULT: Record<Custom.DurationUnitStyle, Custom.DurationFormatOptions> = 
     hoursMinutesSeparator: (locale) => {
       return I18n.translate(locale, 'hourSuffix');
     },
+    minutesSecondsSeparator: (locale) => {
+      return I18n.translate(locale, 'minuteSuffix');
+    },
     secondsUnit: (locale) => {
       return I18n.translate(locale, 'secondSuffix');
     },
@@ -82,14 +85,22 @@ const DEFAULT: Record<Custom.DurationUnitStyle, Custom.DurationFormatOptions> = 
 export class DurationFormatter {
   // @ts-ignore it gets initialized when it's first used, if not previously initialized
   protected _opts: Duration.Options & { maxAdaptiveUnits?: Integer };
+  protected _locale = 'en';
 
   /**
    * Construct a new `DurationFormatter` instance.
    * @param {Custom.DurationFormatOptions} format - Defines the format.
    */
-  constructor(format?: Custom.DurationFormatOptions) {
-    if (format) {
-      this._opts = Object.assign({}, format);
+  constructor(format?: Custom.DurationFormatOptions);
+  constructor(locale: string, format?: Custom.DurationFormatOptions);
+  constructor(arg0?: string | Custom.DurationFormatOptions, arg1?: Custom.DurationFormatOptions) {
+    if (typeof arg0 === 'string') {
+      this._locale = arg0;
+      if (arg1) {
+        this._opts = Object.assign({}, arg1);
+      }
+    } else if (arg0) {
+      this._opts = Object.assign({}, arg0);
     }
   }
 
@@ -150,6 +161,11 @@ export class DurationFormatter {
    */
   digits(digits: Integer): this {
     this._opts.fractionalDigits = digits;
+    return this;
+  }
+
+  locale(val: string): this {
+    this._locale = val;
     return this;
   }
 
@@ -311,7 +327,7 @@ export class DurationFormatter {
   protected formatToParts(time: DurationRecord, opts: Custom.DurationFormatOptions): Duration.Part[] {
     const intlOpts: Intl2.DurationFormatOptions = convertOptionsToDurationFormat(opts);
     // @ts-ignore DurationFormat is not yet in TS
-    return new Intl.DurationFormat('en', intlOpts).formatToParts(time.toTime());
+    return new Intl.DurationFormat(this._locale, intlOpts).formatToParts(time.toTime());
   }
 
   protected formatLong(time: DurationRecord): string {
@@ -417,10 +433,10 @@ export class DurationFormatter {
       if (part.unit && REG.isNumeric.test(part.type)) {
         if (part.unit === 'year' && _.isFunction(this._opts.yearsDaysSeparator)) {
           result.push(part.value);
-          result.push(this._opts.yearsDaysSeparator(this._opts.locale));
+          result.push(this._opts.yearsDaysSeparator(this._locale));
         } else if (part.unit === 'day' && _.isFunction(this._opts.daysHoursSeparator)) {
           result.push(part.value);
-          result.push(this._opts.daysHoursSeparator(this._opts.locale));
+          result.push(this._opts.daysHoursSeparator(this._locale));
         } else if (part.unit === 'hour' && _.isFunction(this._opts.hoursMinutesSeparator)) {
           // if (time.days > 0 && part.type === 'integer') {
           //   result.push(`0${part.value}`.slice(-2));
@@ -429,10 +445,10 @@ export class DurationFormatter {
           //   // do something
           // }
           result.push(part.value);
-          result.push(this._opts.hoursMinutesSeparator(this._opts.locale));
+          result.push(this._opts.hoursMinutesSeparator(this._locale));
         } else if (part.unit === 'minute' && _.isFunction(this._opts.minutesSecondsSeparator)) {
           result.push(part.value);
-          result.push(this._opts.minutesSecondsSeparator(this._opts.locale));
+          result.push(this._opts.minutesSecondsSeparator(this._locale));
         } else if (part.unit === 'second' && part.type === 'integer') {
           result.push(part.value);
           hasSeconds = true;
@@ -443,7 +459,7 @@ export class DurationFormatter {
       }
     });
     if (this._opts.secondsUnit && hasSeconds) {
-      result.push(this._opts.secondsUnit(this._opts.locale));
+      result.push(this._opts.secondsUnit(this._locale));
     }
     return result.join('');
   }

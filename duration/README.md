@@ -1,16 +1,16 @@
 # @epdoc/duration
 
-A comprehensive TypeScript duration formatting library that extends beyond what's available in
-[moment.js](https://github.com/moment/moment) or requires complex wrapper logic with
-[Intl.DurationFormat](https://tc39.es/proposal-intl-duration-format/#sec-intl-durationformat-constructor).
+A TypeScript duration formatting library that extends beyond what's available in
+[moment.js](https://github.com/moment/moment) or that requires complex wrapper logic with
+[Intl.DurationFormat](https://tc39.es/proposal-intl-duration-format/#sec-intl-durationformat-constructor). Uses
+Intl.DurationFormat under the hood.
 
 ## Features
 
 - **Multiple Format Styles**: Digital, narrow, long, and short formats
-- **Adaptive Formatting**: Automatically show only the most significant time units
-- **Human-Readable Durations**: Convert durations to conversational text like "2 hours", "about 3 minutes", "now"
+- **Adaptive Formatting**: Automatically show only the N most significant time units
 - **Humanize Function**: Standalone function for natural language duration descriptions with optional suffixes
-- **Years Support**: Handle durations spanning years with proper calculations
+- **Years Support**: Handle durations spanning years with proper calculations (uses 365.25 days per year)
 - **Flexible Configuration**: Constructor-based or fluent method chaining
 - **Precision Control**: Configurable fractional digits for sub-second precision
 - **Trailing Zero Control**: Show or hide trailing zeros in adaptive mode
@@ -304,6 +304,9 @@ import type { EpochMilliseconds, EpochSeconds, HrMilliseconds, Milliseconds, Min
 - `EpochSeconds`: Integer
 - `Minutes`: number
 - `Seconds`: number
+-
+
+Note: These are not Branded types
 
 ## Comparison with Other Libraries
 

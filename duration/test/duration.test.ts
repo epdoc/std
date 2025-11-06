@@ -1,4 +1,4 @@
-import { Duration, duration, Time } from '@epdoc/duration';
+import { Duration, duration, Time } from '../src/mod.ts';
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 
@@ -265,6 +265,51 @@ describe('duration-util', () => {
     it('zero duration', () => {
       expect(new Duration.Formatter().narrow.adaptive(2).format(0)).toEqual('0.000s');
       expect(new Duration.Formatter().digital.adaptive(3).format(0)).toEqual('00:00.000');
+    });
+  });
+  describe('internationalization', () => {
+    describe('French (fr)', () => {
+      let n = 3454.345898 + 3 * Time.Measures.minutes + 8 * Time.Measures.hours;
+      // Intl.DurationFormatter add narrow spaces
+      const r1 = new Duration.Formatter('fr').short.separator('; ').format(-4443454);
+      expect(r1.replace(/[^\S ]/g, ' ')).toEqual('1 h; 14 min; 3 s; 454 ms');
+      const r2 = new Duration.Formatter('fr').short.digits(9).format(n);
+      expect(r2.replace(/[^\S ]/g, ' ')).toEqual('8 h 3 min 3 s 454 ms 345 μs 897 ns');
+      n += +452 * Time.Measures.days;
+      const r3 = new Duration.Formatter('fr').long.digits(6).format(n);
+      expect(r3.replace(/[^\S ]/g, ' ')).toEqual(
+        '1 an, 87 jours, 2 heures, 3 minutes, 3 secondes, 454 millisecondes, 345 microsecondes',
+      );
+      const n2 = -1760451163065;
+      expect(new Duration.Formatter('fr').digital.adaptive(2).format(n2)).toEqual('55a286j');
+    });
+    describe('Spanish (es)', () => {
+      let n = 3454.345898 + 3 * Time.Measures.minutes + 8 * Time.Measures.hours;
+      // Intl.DurationFormatter add narrow spaces
+      const r1 = new Duration.Formatter('es').short.separator('; ').format(-4443454);
+      expect(r1.replace(/[^\S ]/g, ' ')).toEqual('1 h; 14 min; 3 s; 454 ms');
+      const r2 = new Duration.Formatter('es').short.digits(9).format(n);
+      expect(r2.replace(/[^\S ]/g, ' ')).toEqual('8 h 3 min 3 s 454 ms 345 μs 897 ns');
+      n += +452 * Time.Measures.days;
+      const r3 = new Duration.Formatter('es').long.digits(6).format(n);
+      expect(r3.replace(/[^\S ]/g, ' ')).toEqual(
+        '1 año, 87 días, 2 horas, 3 minutos, 3 segundos, 454 milisegundos, 345 microsegundos',
+      );
+      const n2 = -1760451163065;
+      expect(new Duration.Formatter('es').digital.adaptive(2).format(n2)).toEqual('55a286d');
+    });
+    describe('Chinese (zh)', () => {
+      let n = 3454.345898 + 3 * Time.Measures.minutes + 8 * Time.Measures.hours;
+      // Intl.DurationFormatter add narrow spaces
+      const r1 = new Duration.Formatter('zh').short.format(-4443454);
+      expect(r1.replace(/[^\S ]/g, ' ')).toEqual('1小时14分钟3秒454毫秒');
+      const r2 = new Duration.Formatter('zh').short.digits(9).format(n);
+      expect(r2.replace(/[^\S ]/g, ' ')).toEqual('8小时3分钟3秒454毫秒345微秒897纳秒');
+      n += +452 * Time.Measures.days;
+      const r3 = new Duration.Formatter('zh').long.digits(6).format(n);
+      expect(r3.replace(/[^\S ]/g, ' ')).toEqual('1年87天2小时3分钟3秒钟454毫秒345微秒');
+      const n2 = -1760451163065;
+      expect(new Duration.Formatter('zh').digital.adaptive(2).format(n2)).toEqual('55年286天');
     });
   });
 });

@@ -2,7 +2,7 @@ import { humanize } from '@epdoc/duration';
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 
-describe('TimeFormatter', () => {
+describe('Humanize', () => {
   describe('immediate time ranges', () => {
     it("handles 'now' correctly", () => {
       expect(humanize(0)).toBe('now');

@@ -51,7 +51,7 @@ new Duration.Formatter()
 - ✅ Adaptive formatting (unique feature)
 - ✅ Humanize function for natural language descriptions
 - ✅ Internationalization support (English, French, Spanish, Chinese)
-- ✅ Full years support with leap year calculations
+- ✅ Full years support with leap year calculations (ie. years are 365.25 days)
 - ✅ Fluent API with method chaining
 - ✅ Extensive customization options
 - ✅ Uses modern Intl.DurationFormat internally
@@ -274,8 +274,8 @@ new Duration.Formatter().long.format(ms);
 
 ```typescript
 // Before
-new Intl.DurationFormat('en', { style: 'narrow' })
-  .format({ hours: 1, minutes: 30 });
+new Intl.DurationFormat('fr', { style: 'narrow' })
+  .format({ heures: 1, minutes: 30 });
 
 // After
 import { Duration } from '@epdoc/duration';
