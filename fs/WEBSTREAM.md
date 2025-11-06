@@ -176,6 +176,99 @@ try {
 }
 ```
 
+### High-Level `FileSpecWriter`
+
+Your suggestion for a higher-level wrapper is excellent. While the standard `WritableStream` is powerful, a convenience wrapper can significantly improve the developer experience for common tasks. We can introduce a `FileSpecWriter` class.
+
+A `FileSpecWriter` would be obtained from a `FileSpec` instance and would provide a simplified API for writing data without needing to manually handle encoders or the stream writer.
+
+**Proposed `FileSpecWriter` API:**
+
+```typescript
+class FileSpecWriter {
+  private _writer: WritableStreamDefaultWriter<Uint8Array>;
+  private _stream: WritableStream<Uint8Array>;
+  private _encoder: TextEncoder;
+
+  constructor(stream: WritableStream<Uint8Array>) {
+    this._stream = stream;
+    this._writer = stream.getWriter();
+    this._encoder = new TextEncoder();
+  }
+
+  /**
+   * Writes a chunk of data. Strings will be automatically encoded as UTF-8.
+   */
+  async write(data: string | Uint8Array): Promise<void> {
+    const chunk = typeof data === 'string' ? this._encoder.encode(data) : data;
+    await this._writer.write(chunk);
+  }
+
+  /**
+   * Writes a line of text, automatically appending a newline character.
+   */
+  async writeLine(line: string): Promise<void> {
+    await this.write(line + '\n');
+  }
+
+  /**
+   * Closes the writer and the underlying file stream.
+   */
+  async close(): Promise<void> {
+    this._writer.releaseLock();
+    await this._stream.close();
+  }
+}
+
+// Proposed method on FileSpec to get the writer
+public async writer(): Promise<FileSpecWriter> {
+  const stream = await this.writableStream();
+  return new FileSpecWriter(stream);
+}
+```
+
+**Example Usage:**
+
+```typescript
+const fileSpec = new FileSpec("./log.txt");
+const writer = await fileSpec.writer();
+
+try {
+  await writer.writeLine("Log started at " + new Date().toISOString());
+  await writer.write("This is a log entry.");
+  await writer.write(" And another one.");
+} finally {
+  await writer.close();
+}
+```
+
+#### What about filters like Base64?
+
+The idea of filters is best addressed by `TransformStream`, which is the standard Web Streams primitive for data transformation. While we could add methods like `writeBase64()` to our `FileSpecWriter`, the most flexible and idiomatic approach is to use `pipeThrough()`.
+
+Here's how you could implement a Base64 encoding stream:
+
+```typescript
+// A TransformStream for base64 encoding could be created
+// (implementation not shown for brevity)
+const base64Encoder = new TransformStream(/* ... */);
+
+const fileSpec = new FileSpec("./data.b64");
+const fileStream = await fileSpec.writableStream();
+
+// Manually create a readable stream and pipe it through the encoder
+const readable = new ReadableStream({
+  start(controller) {
+    controller.enqueue("some data");
+    controller.close();
+  }
+});
+
+await readable.pipeThrough(base64Encoder).pipeTo(fileStream);
+```
+
+Given this, adding many encoding/decoding methods directly to `FileSpecWriter` might be redundant. The `write` and `writeLine` methods provide a significant convenience for the most common case (writing text), while complex transformations can still be handled by the standard `TransformStream` mechanism. This strikes a good balance between convenience and API surface area.
+
 ### Benefits of Integration
 
 - **Memory Efficiency**: By streaming data, we avoid loading entire files into memory, which is crucial for large file processing.
