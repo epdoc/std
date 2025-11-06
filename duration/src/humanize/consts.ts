@@ -5,7 +5,7 @@ interface TimeThreshold {
   getBaseString: (value: number, locale: string) => string;
 }
 
-const timeThresholds: TimeThreshold[] = [
+export const timeThresholds: TimeThreshold[] = [
   // Immediate range - high precision
   {
     threshold: 0,
@@ -113,46 +113,3 @@ const timeThresholds: TimeThreshold[] = [
     getBaseString: (_, locale) => getTranslations(locale).overYear,
   },
 ];
-
-export interface HumanizeOptions {
-  locale?: string;
-  withSuffix?: boolean;
-}
-
-export function humanize(ms: number, options: HumanizeOptions | boolean = {}): string {
-  // Handle legacy boolean parameter for withSuffix
-  const opts = typeof options === 'boolean' ? { withSuffix: options } : options;
-  const { locale = 'en', withSuffix = false } = opts;
-  
-  const isNegative = ms < 0;
-  const absoluteMs = Math.abs(ms);
-  const translations = getTranslations(locale);
-
-  // Find the appropriate threshold
-  let selectedThreshold = timeThresholds[0];
-  for (const threshold of timeThresholds) {
-    if (absoluteMs <= threshold.threshold) {
-      selectedThreshold = threshold;
-      break;
-    }
-  }
-
-  // If we exceed the largest threshold, use the last one
-  if (absoluteMs > timeThresholds[timeThresholds.length - 1].threshold) {
-    selectedThreshold = timeThresholds[timeThresholds.length - 1];
-    // For very large values, use years
-    const years = Math.round(absoluteMs / (365.25 * 24 * 60 * 60 * 1000));
-    const base = translations.aboutYears(years);
-
-    if (!withSuffix) return base;
-    return isNegative ? translations.suffixAgo(base) : translations.suffixIn(base);
-  }
-
-  const base = selectedThreshold.getBaseString(absoluteMs, locale);
-
-  if (!withSuffix) return base;
-
-  if (base === translations.now) return base;
-
-  return isNegative ? translations.suffixAgo(base) : translations.suffixIn(base);
-}

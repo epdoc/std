@@ -1,13 +1,12 @@
-/**
- * A class for formatting durations into strings.
- * @module
- */
-import type * as Format from '../format.ts';
 import type { HrMilliseconds, Milliseconds } from '../time-types.ts';
 import { DurationRecord } from './record.ts';
 import type * as Duration from './types.ts';
 // import { formatToParts } from './intl-duration-format.ts';
-import { type Integer, isDict, isInteger } from '@epdoc/type';
+import { _, type Integer, isDict, isInteger } from '@epdoc/type';
+import { convertOptionsToDurationFormat } from './converter.ts';
+import type * as Custom from './format.ts';
+import * as I18n from './i18n.ts';
+import type * as Intl2 from './intl.ts';
 
 const REG = {
   isSepWhitespace: /^[,\s]+$/,
@@ -15,12 +14,21 @@ const REG = {
   isLeadingZero: new RegExp(/^0\d$/),
 };
 
-const DEFAULT: Record<Format.Style, Format.Options> = {
+const DEFAULT: Record<Custom.DurationUnitStyle, Custom.DurationFormatOptions> = {
   digital: {
     style: 'digital',
-    daysHoursSeparator: 'd',
-    hoursMinutesSeparator: ':',
-    minutesSecondsSeparator: ':',
+    yearsDaysSeparator: (locale) => {
+      return I18n.translate(locale, 'yearSuffix');
+    },
+    daysHoursSeparator: (locale) => {
+      return I18n.translate(locale, 'daySuffix');
+    },
+    hoursMinutesSeparator: (_locale) => {
+      return ':';
+    },
+    minutesSecondsSeparator: (_locale) => {
+      return ':';
+    },
     fractionalDigits: 3,
     adaptiveDisplay: 'auto',
     // minDisplay: 'milliseconds',
@@ -29,10 +37,18 @@ const DEFAULT: Record<Format.Style, Format.Options> = {
   },
   narrow: {
     style: 'narrow',
-    daysHoursSeparator: 'd',
-    hoursMinutesSeparator: 'h',
-    minutesSecondsSeparator: 'm',
-    secondsUnit: 's',
+    yearsDaysSeparator: (locale) => {
+      return I18n.translate(locale, 'yearSuffix');
+    },
+    daysHoursSeparator: (locale) => {
+      return I18n.translate(locale, 'daySuffix');
+    },
+    hoursMinutesSeparator: (locale) => {
+      return I18n.translate(locale, 'hourSuffix');
+    },
+    secondsUnit: (locale) => {
+      return I18n.translate(locale, 'secondSuffix');
+    },
     fractionalDigits: 3,
     adaptiveDisplay: 'auto',
     // minDisplay: 'milliseconds',
@@ -69,9 +85,9 @@ export class DurationFormatter {
 
   /**
    * Construct a new `DurationFormatter` instance.
-   * @param {Format.Options} format - Defines the format.
+   * @param {Custom.DurationFormatOptions} format - Defines the format.
    */
-  constructor(format?: Format.Options) {
+  constructor(format?: Custom.DurationFormatOptions) {
     if (format) {
       this._opts = Object.assign({}, format);
     }
@@ -107,10 +123,10 @@ export class DurationFormatter {
 
   /**
    * Set the style of the format.
-   * @param {Format.Style} style - The style to use.
+   * @param {Custom.Style} style - The style to use.
    * @returns {this}
    */
-  style(style: Format.Style): this {
+  style(style: Custom.DurationUnitStyle): this {
     if (DEFAULT[style]) {
       this._opts = Object.assign({}, DEFAULT[style]);
     }
@@ -180,10 +196,10 @@ export class DurationFormatter {
 
   /**
    * Set adaptive display mode for trailing zeros.
-   * @param {Format.Display} display - 'auto' to suppress trailing zeros, 'always' to show them
+   * @param {Custom.Display} display - 'auto' to suppress trailing zeros, 'always' to show them
    * @returns {this}
    */
-  public adaptiveDisplay(display: Format.Display): this {
+  public adaptiveDisplay(display: Intl2.DurationUnitDisplay): this {
     this._opts.adaptiveDisplay = display;
     return this;
   }
@@ -195,7 +211,7 @@ export class DurationFormatter {
    * values.
    * @returns this
    */
-  public options(format?: Format.Options): this {
+  public options(format?: Custom.DurationFormatOptions): this {
     if (format) {
       this._opts = Object.assign({}, format);
     }
@@ -204,10 +220,10 @@ export class DurationFormatter {
 
   /**
    * Apply a set of format options to the current options.
-   * @param {Format.Options} format - The options to apply.
+   * @param {Custom.DurationFormatOptions} format - The options to apply.
    * @returns {this}
    */
-  public apply(format?: Format.Options): this {
+  public apply(format?: Custom.DurationFormatOptions): this {
     if (!isDict(this._opts)) {
       this._opts = Object.assign({}, DEFAULT.digital, format);
     } else {
@@ -292,13 +308,14 @@ export class DurationFormatter {
     return this.formatLong(time);
   }
 
-  protected formatToParts(time: DurationRecord, opts: Format.Options): Duration.Part[] {
+  protected formatToParts(time: DurationRecord, opts: Custom.DurationFormatOptions): Duration.Part[] {
+    const intlOpts: Intl2.DurationFormatOptions = convertOptionsToDurationFormat(opts);
     // @ts-ignore DurationFormat is not yet in TS
-    return new Intl.DurationFormat('en', opts ? opts : this._opts).formatToParts(time.toTime());
+    return new Intl.DurationFormat('en', intlOpts).formatToParts(time.toTime());
   }
 
   protected formatLong(time: DurationRecord): string {
-    const opts: Format.Options = Object.assign({ fractionalDigits: 0, separator: ' ' }, this._opts);
+    const opts: Custom.DurationFormatOptions = Object.assign({ fractionalDigits: 0, separator: ' ' }, this._opts);
 
     if (opts.fractionalDigits === 0) {
       time.milliseconds = 0;
@@ -330,7 +347,7 @@ export class DurationFormatter {
   }
 
   protected formatNarrow(time: DurationRecord): string {
-    const opts: Format.Options = Object.assign({}, this._opts, { style: 'digital' });
+    const opts: Custom.DurationFormatOptions = Object.assign({}, this._opts, { style: 'digital' });
 
     // Flags to track when to remove leading zeros from time units
     let bRemoveMinutesLeadingZero = false;
@@ -382,7 +399,7 @@ export class DurationFormatter {
   }
 
   protected formatDigital(time: DurationRecord): string {
-    const opts: Format.Options = Object.assign({}, this._opts);
+    const opts: Custom.DurationFormatOptions = Object.assign({}, this._opts);
     if (time.years == 0 && time.days == 0) {
       opts.hours = 'numeric';
       opts.hoursDisplay = 'auto';
@@ -398,13 +415,13 @@ export class DurationFormatter {
 
     parts.forEach((part: Duration.Part) => {
       if (part.unit && REG.isNumeric.test(part.type)) {
-        if (part.unit === 'year') {
+        if (part.unit === 'year' && _.isFunction(this._opts.yearsDaysSeparator)) {
           result.push(part.value);
-          result.push(this._opts.yearsDaysSeparator ?? 'y');
-        } else if (part.unit === 'day') {
+          result.push(this._opts.yearsDaysSeparator(this._opts.locale));
+        } else if (part.unit === 'day' && _.isFunction(this._opts.daysHoursSeparator)) {
           result.push(part.value);
-          result.push(this._opts.daysHoursSeparator ?? 'd');
-        } else if (part.unit === 'hour') {
+          result.push(this._opts.daysHoursSeparator(this._opts.locale));
+        } else if (part.unit === 'hour' && _.isFunction(this._opts.hoursMinutesSeparator)) {
           // if (time.days > 0 && part.type === 'integer') {
           //   result.push(`0${part.value}`.slice(-2));
           //   result.push(this._opts.hoursMinutesSeparator ?? ':');
@@ -412,10 +429,10 @@ export class DurationFormatter {
           //   // do something
           // }
           result.push(part.value);
-          result.push(this._opts.hoursMinutesSeparator ?? ':');
-        } else if (part.unit === 'minute') {
+          result.push(this._opts.hoursMinutesSeparator(this._opts.locale));
+        } else if (part.unit === 'minute' && _.isFunction(this._opts.minutesSecondsSeparator)) {
           result.push(part.value);
-          result.push(this._opts.minutesSecondsSeparator ?? ':');
+          result.push(this._opts.minutesSecondsSeparator(this._opts.locale));
         } else if (part.unit === 'second' && part.type === 'integer') {
           result.push(part.value);
           hasSeconds = true;
@@ -426,7 +443,7 @@ export class DurationFormatter {
       }
     });
     if (this._opts.secondsUnit && hasSeconds) {
-      result.push(this._opts.secondsUnit);
+      result.push(this._opts.secondsUnit(this._opts.locale));
     }
     return result.join('');
   }

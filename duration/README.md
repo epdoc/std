@@ -137,7 +137,8 @@ new Duration.Formatter().narrow.adaptive(2).adaptiveDisplay('always').format(one
 
 ## Humanize Function
 
-The `humanize` function provides natural language descriptions of durations, perfect for user-facing messages. It supports internationalization with built-in translations for English, French, Spanish, and Chinese:
+The `humanize` function provides natural language descriptions of durations, perfect for user-facing messages. It
+supports internationalization with built-in translations for English, French, Spanish, and Chinese:
 
 ```typescript
 import { humanize } from '@epdoc/duration';
@@ -177,7 +178,7 @@ console.log(humanize(31536000000)); // "about a year"
 
 - **English (en)**: Default locale
 - **French (fr)**: Full translation support
-- **Spanish (es)**: Full translation support  
+- **Spanish (es)**: Full translation support
 - **Chinese (zh)**: Full translation support
 
 The humanize function uses intelligent thresholds to provide contextually appropriate descriptions:
@@ -306,7 +307,8 @@ import type { EpochMilliseconds, EpochSeconds, HrMilliseconds, Milliseconds, Min
 
 ## Comparison with Other Libraries
 
-For a detailed comparison with other duration formatting libraries including @std/duration, Moment.js, and Intl.DurationFormat, see [COMPARISON.md](./COMPARISON.md).
+For a detailed comparison with other duration formatting libraries including @std/duration, Moment.js, and
+Intl.DurationFormat, see [COMPARISON.md](./COMPARISON.md).
 
 ## License
 

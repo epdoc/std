@@ -2,10 +2,15 @@
  * A class for representing a duration of time as a record of time units.
  * @module
  */
-import { type Dict, isDict } from '@epdoc/type';
+import { _, type Dict } from '@epdoc/type';
 import * as Time from '../consts.ts';
 import { Fields } from './consts.ts';
+import type * as Intl2 from './intl.ts';
 import type * as Duration from './types.ts';
+
+function isDurationRecord(val: unknown): val is Intl2.DurationRecord {
+  return _.isDict(val);
+}
 
 /**
  * A class for representing a duration of time as a record of time units.
@@ -24,9 +29,9 @@ export class DurationRecord {
 
   /**
    * Construct a new `DurationRecord` instance.
-   * @param {number | Duration.RecordOptions} arg - The duration in milliseconds or a record of time units.
+   * @param {number | Intl2.DurationRecord} arg - The duration in milliseconds or a record of time units.
    */
-  constructor(arg: number | Duration.RecordOptions) {
+  constructor(arg: number | Intl2.DurationRecord) {
     if (typeof arg === 'number') {
       if (arg < 0) {
         this._ms = -arg;
@@ -52,7 +57,7 @@ export class DurationRecord {
       this.microseconds = Math.floor(remainingAfterMilliseconds * 1000);
       const remainingAfterMicroseconds = remainingAfterMilliseconds - (this.microseconds / 1000);
       this.nanoseconds = Math.floor(remainingAfterMicroseconds * 1000000);
-    } else if (isDict(arg)) {
+    } else if (isDurationRecord(arg)) {
       this.years = arg.years ?? 0;
       this.days = arg.days ?? 0;
       this.hours = arg.hours ?? 0;

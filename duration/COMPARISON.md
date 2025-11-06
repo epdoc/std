@@ -5,17 +5,17 @@ tool for your needs.
 
 ## Quick Decision Matrix
 
-| Need                        | @epdoc/duration | @std/duration | Moment.js | Intl.DurationFormat |
-| --------------------------- | --------------- | ------------- | --------- | ------------------- |
-| **Simple formatting**       | ✅              | ✅            | ✅        | ✅                  |
-| **Humanize function**       | ✅              | ❌            | ✅        | ❌                  |
-| **Years support**           | ✅              | ❌            | ✅        | ✅                  |
-| **Adaptive formatting**     | ✅              | ❌            | ❌        | ❌                  |
+| Need                          | @epdoc/duration | @std/duration | Moment.js | Intl.DurationFormat |
+| ----------------------------- | --------------- | ------------- | --------- | ------------------- |
+| **Simple formatting**         | ✅              | ✅            | ✅        | ✅                  |
+| **Humanize function**         | ✅              | ❌            | ✅        | ❌                  |
+| **Years support**             | ✅              | ❌            | ✅        | ✅                  |
+| **Adaptive formatting**       | ✅              | ❌            | ❌        | ❌                  |
 | **Internationalized strings** | ✅ (4 locales)  | ❌            | ✅        | ✅                  |
-| **Bundle size**             | Medium          | Small         | Large     | Native              |
-| **Browser support**         | Modern          | Modern        | All       | Modern              |
-| **Customization**           | High            | Low           | Medium    | Low                 |
-| **Learning curve**          | Medium          | Low           | High      | Medium              |
+| **Bundle size**               | Medium          | Small         | Large     | Native              |
+| **Browser support**           | Modern          | Modern        | All       | Modern              |
+| **Customization**             | High            | Low           | Medium    | Low                 |
+| **Learning curve**            | Medium          | Low           | High      | Medium              |
 
 ## Detailed Comparison
 
@@ -334,8 +334,9 @@ new Duration.Formatter().narrow.format(5400000); // 1.5 hours in ms
 ## Conclusion
 
 **@epdoc/duration** fills a unique niche by providing advanced duration formatting features not available in other
-libraries, particularly adaptive formatting, humanize function for natural language descriptions with internationalization support, and comprehensive customization options. It's the best choice when you need
-more than basic formatting but don't want the overhead of a full date/time library like Moment.js.
+libraries, particularly adaptive formatting, humanize function for natural language descriptions with
+internationalization support, and comprehensive customization options. It's the best choice when you need more than
+basic formatting but don't want the overhead of a full date/time library like Moment.js.
 
-For simple use cases, @std/duration is sufficient. For complex applications requiring adaptive display, humanize functionality with i18n support, years support,
-and extensive customization, @epdoc/duration is the optimal choice.
+For simple use cases, @std/duration is sufficient. For complex applications requiring adaptive display, humanize
+functionality with i18n support, years support, and extensive customization, @epdoc/duration is the optimal choice.

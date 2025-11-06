@@ -4,8 +4,8 @@
  */
 import { type CompareResult, isInteger } from '@epdoc/type';
 import * as Time from './consts.ts';
+import type * as Format from './duration/format.ts';
 import * as Duration from './duration/mod.ts';
-import type * as Format from './format.ts';
 import type { EpochMilliseconds, EpochSeconds, Milliseconds } from './time-types.ts';
 
 /**
@@ -70,9 +70,9 @@ export function isEpochSeconds(val: unknown): val is EpochSeconds {
 
 /**
  * Factory function to create a new Duration.Formatter instance.
- * @param {Format.Options} format - Defines the format.
+ * @param {Format.DurationFormatOptions} format - Defines the format.
  * @returns {Duration.Formatter} A new Duration.Formatter instance.
  */
-export function duration(format?: Format.Options): Duration.Formatter {
+export function duration(format?: Format.DurationFormatOptions): Duration.Formatter {
   return new Duration.Formatter(format);
 }

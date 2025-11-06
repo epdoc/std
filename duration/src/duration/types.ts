@@ -10,20 +10,6 @@ import type * as Time from '../consts.ts';
 export type Field = keyof typeof Time.Measures;
 
 /**
- * A type representing the options for a duration record.
- */
-export type RecordOptions = Partial<{
-  years: number;
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
-  milliseconds: number;
-  microseconds: number;
-  nanoseconds: number;
-}>;
-
-/**
  * A type representing a part of a formatted duration string.
  */
 export type Part = {
