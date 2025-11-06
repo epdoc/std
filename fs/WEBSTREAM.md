@@ -157,6 +157,25 @@ const fileSpec = new FileSpec("data.bin");
 await fileSpec.pipeTo(Deno.stdout.writable);
 ```
 
+#### Incremental Writing to a File
+
+For scenarios where data is generated or received in chunks and needs to be written to a file without piping an entire `ReadableStream`, you can obtain a writer from the `WritableStream` and write data incrementally.
+
+```typescript
+const fileSpec = new FileSpec("./output.txt");
+const writableStream = await fileSpec.writableStream();
+const writer = writableStream.getWriter();
+
+try {
+  await writer.write(new TextEncoder().encode("First chunk of data."));
+  await writer.write(new TextEncoder().encode("Second chunk of data."));
+  // ... write more chunks
+} finally {
+  writer.releaseLock(); // Release the lock on the writer
+  await writableStream.close(); // Close the stream, flushing any buffered data
+}
+```
+
 ### Benefits of Integration
 
 - **Memory Efficiency**: By streaming data, we avoid loading entire files into memory, which is crucial for large file processing.
