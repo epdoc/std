@@ -1,111 +1,158 @@
-import type { HrMilliseconds, Milliseconds } from '../time-types.ts';
+import { getTranslations } from './i18n.ts';
 
-/**
- * Convert duration to human-readable text (e.g., "2 hours", "about 3 minutes").
- * Uses intelligent "about" prefix for significantly rounded values.
- *
- * @param ms - The duration in milliseconds
- * @param withSuffix - Whether to add "ago" or "in" suffix based on sign
- * @returns Human-readable duration string
- *
- * @example
- * ```ts
- * humanize(0) // "now"
- * humanize(1000) // "a second"
- * humanize(90000) // "about 2 minutes" (1.5 min rounded)
- * humanize(120000) // "2 minutes" (exact)
- * humanize(5400000, true) // "in about 2 hours"
- * humanize(-90000, true) // "about 2 minutes ago"
- * ```
- */
-export function humanize(ms: Milliseconds | HrMilliseconds, withSuffix: boolean = false): string {
-  const absMs = Math.abs(ms);
+interface TimeThreshold {
+  threshold: number;
+  getBaseString: (value: number, locale: string) => string;
+}
+
+const timeThresholds: TimeThreshold[] = [
+  // Immediate range - high precision
+  {
+    threshold: 0,
+    getBaseString: (_, locale) => getTranslations(locale).now,
+  },
+  {
+    threshold: 2000,
+    getBaseString: (_, locale) => getTranslations(locale).moment,
+  },
+
+  // Second scale - precise around the 1-minute boundary
+  {
+    threshold: 52.5 * 1000, // Under a minute
+    getBaseString: (ms, locale) => {
+      const seconds = Math.round(ms / 1000);
+      return getTranslations(locale).aboutSeconds(seconds);
+    },
+  },
+  // Minute scale - precise around the 1-minute boundary
+  {
+    threshold: 70 * 1000,
+    getBaseString: (_, locale) => getTranslations(locale).aboutMinute,
+  },
+  {
+    threshold: 90 * 1000,
+    getBaseString: (_, locale) => getTranslations(locale).overMinute,
+  },
+  {
+    threshold: 110 * 1000,
+    getBaseString: (_, locale) => getTranslations(locale).underMinutes(2),
+  },
+
+  // Minutes 2-59 - use actual numbers
+  {
+    threshold: 57 * 60 * 1000, // Just under 1 hour
+    getBaseString: (ms, locale) => {
+      const minutes = Math.round(ms / (60 * 1000));
+      return getTranslations(locale).aboutMinutes(minutes);
+    },
+  },
+
+  // Hour scale - precise around the 1-hour boundary
+  {
+    threshold: 1.2 * 60 * 60 * 1000, // 1.2 hours
+    getBaseString: (_, locale) => getTranslations(locale).aboutHour,
+  },
+  {
+    threshold: 1.5 * 60 * 60 * 1000, // 1.5 hours
+    getBaseString: (_, locale) => getTranslations(locale).overHour,
+  },
+
+  // Hours 3-23 - use actual numbers
+  {
+    threshold: 23.49 * 60 * 60 * 1000, // 23.5 hours
+    getBaseString: (ms, locale) => {
+      const hours = Math.round(ms / (60 * 60 * 1000));
+      return getTranslations(locale).aboutHours(hours);
+    },
+  },
+
+  // Day scale - precise around the 1-day boundary
+  {
+    threshold: 1.1 * 24 * 60 * 60 * 1000, // 1.1 days
+    getBaseString: (_, locale) => getTranslations(locale).aboutDay,
+  },
+  {
+    threshold: 1.5 * 24 * 60 * 60 * 1000, // 1.5 days
+    getBaseString: (_, locale) => getTranslations(locale).overDay,
+  },
+
+  // Days 2-13 - use actual numbers
+  {
+    threshold: 13.5 * 24 * 60 * 60 * 1000, // 13.5 days
+    getBaseString: (ms, locale) => {
+      const days = Math.round(ms / (24 * 60 * 60 * 1000));
+      return getTranslations(locale).aboutDays(days);
+    },
+  },
+
+  // Week scale - switch around 2 weeks
+  {
+    threshold: 7.5 * 7 * 24 * 60 * 60 * 1000,
+    getBaseString: (ms, locale) => {
+      const weeks = Math.round(ms / (7 * 24 * 60 * 60 * 1000));
+      return getTranslations(locale).aboutWeeks(weeks);
+    },
+  },
+
+  // Month scale
+  {
+    threshold: 49 * 7 * 24 * 60 * 60 * 1000, // 11.5 months
+    getBaseString: (ms, locale) => {
+      const months = Math.round(ms / (30 * 24 * 60 * 60 * 1000));
+      return getTranslations(locale).aboutMonths(months);
+    },
+  },
+
+  // Year scale
+  {
+    threshold: 1.2 * 365 * 24 * 60 * 60 * 1000, // 1.2 years
+    getBaseString: (_, locale) => getTranslations(locale).aboutYear,
+  },
+  {
+    threshold: 1.5 * 365 * 24 * 60 * 60 * 1000, // 1.5 years
+    getBaseString: (_, locale) => getTranslations(locale).overYear,
+  },
+];
+
+export interface HumanizeOptions {
+  locale?: string;
+  withSuffix?: boolean;
+}
+
+export function humanize(ms: number, options: HumanizeOptions | boolean = {}): string {
+  // Handle legacy boolean parameter for withSuffix
+  const opts = typeof options === 'boolean' ? { withSuffix: options } : options;
+  const { locale = 'en', withSuffix = false } = opts;
+  
   const isNegative = ms < 0;
+  const absoluteMs = Math.abs(ms);
+  const translations = getTranslations(locale);
 
-  // Handle zero duration
-  if (absMs === 0) {
-    const base = 'now';
-    if (!withSuffix) return base;
-    return base; // "now" doesn't need suffix
+  // Find the appropriate threshold
+  let selectedThreshold = timeThresholds[0];
+  for (const threshold of timeThresholds) {
+    if (absoluteMs <= threshold.threshold) {
+      selectedThreshold = threshold;
+      break;
+    }
   }
 
-  // Handle sub-second durations
-  if (absMs < 1000) {
-    const base = 'a moment';
+  // If we exceed the largest threshold, use the last one
+  if (absoluteMs > timeThresholds[timeThresholds.length - 1].threshold) {
+    selectedThreshold = timeThresholds[timeThresholds.length - 1];
+    // For very large values, use years
+    const years = Math.round(absoluteMs / (365.25 * 24 * 60 * 60 * 1000));
+    const base = translations.aboutYears(years);
+
     if (!withSuffix) return base;
-    return isNegative ? `${base} ago` : `in ${base}`;
+    return isNegative ? translations.suffixAgo(base) : translations.suffixIn(base);
   }
 
-  // Handle 1-44 seconds
-  if (absMs < 45000) {
-    const seconds = Math.round(absMs / 1000);
-    const base = seconds === 1 ? 'a second' : `${seconds} seconds`;
-    if (!withSuffix) return base;
-    return isNegative ? `${base} ago` : `in ${base}`;
-  }
+  const base = selectedThreshold.getBaseString(absoluteMs, locale);
 
-  if (absMs < 55000) { // 45-89 seconds
-    const base = 'less than a minute';
-    if (!withSuffix) return base;
-    return isNegative ? `${base} ago` : `in ${base}`;
-  }
-
-  if (absMs < 65000) { // 45-89 seconds
-    const base = 'a minute';
-    if (!withSuffix) return base;
-    return isNegative ? `${base} ago` : `in ${base}`;
-  }
-
-  if (absMs < 90000) { // 45-89 seconds
-    const base = 'over a minute';
-    if (!withSuffix) return base;
-    return isNegative ? `${base} ago` : `in ${base}`;
-  }
-
-  if (absMs < 2700000) { // < 45 minutes
-    const minutes = Math.round(absMs / 60000);
-    const exactMinutes = absMs / 60000;
-    const diff = Math.abs(minutes - exactMinutes);
-    // Use "about" when rounding changes the value significantly (>20% off)
-    const base = diff > 0.2 ? `about ${minutes} minutes` : `${minutes} minutes`;
-    if (!withSuffix) return base;
-    return isNegative ? `${base} ago` : `in ${base}`;
-  }
-
-  if (absMs < 5400000) { // 45-89 minutes
-    const base = 'an hour';
-    if (!withSuffix) return base;
-    return isNegative ? `${base} ago` : `in ${base}`;
-  }
-
-  if (absMs < 129600000) { // < 36 hours (1.5 days)
-    const hours = Math.round(absMs / 3600000);
-    const exactHours = absMs / 3600000;
-    const diff = Math.abs(hours - exactHours);
-    // Use "about" when rounding changes the value significantly (>20% off)
-    const base = diff > 0.2 ? `about ${hours} hours` : `${hours} hours`;
-    if (!withSuffix) return base;
-    return isNegative ? `${base} ago` : `in ${base}`;
-  }
-
-  if (absMs < 259200000) { // 36-71 hours
-    const base = 'a day';
-    if (!withSuffix) return base;
-    return isNegative ? `${base} ago` : `in ${base}`;
-  }
-
-  if (absMs < 15552000000) { // < 180 days (6 months)
-    const days = Math.round(absMs / 86400000);
-    const exactDays = absMs / 86400000;
-    const diff = Math.abs(days - exactDays);
-    // Use "about" when rounding changes the value significantly (>20% off)
-    const base = diff > 0.2 ? `about ${days} days` : `${days} days`;
-    if (!withSuffix) return base;
-    return isNegative ? `${base} ago` : `in ${base}`;
-  }
-
-  const years = Math.round(absMs / (365.25 * 24 * 60 * 60 * 1000));
-  const base = years === 1 ? 'a year' : `${years} years`;
   if (!withSuffix) return base;
-  return isNegative ? `${base} ago` : `in ${base}`;
+
+  if (base === translations.now) return base;
+
+  return isNegative ? translations.suffixAgo(base) : translations.suffixIn(base);
 }

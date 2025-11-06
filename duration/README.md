@@ -1,11 +1,15 @@
 # @epdoc/duration
 
-A comprehensive TypeScript duration formatting library that extends beyond what's available in [moment.js](https://github.com/moment/moment) or requires complex wrapper logic with [Intl.DurationFormat](https://tc39.es/proposal-intl-duration-format/#sec-intl-durationformat-constructor).
+A comprehensive TypeScript duration formatting library that extends beyond what's available in
+[moment.js](https://github.com/moment/moment) or requires complex wrapper logic with
+[Intl.DurationFormat](https://tc39.es/proposal-intl-duration-format/#sec-intl-durationformat-constructor).
 
 ## Features
 
 - **Multiple Format Styles**: Digital, narrow, long, and short formats
 - **Adaptive Formatting**: Automatically show only the most significant time units
+- **Human-Readable Durations**: Convert durations to conversational text like "2 hours", "about 3 minutes", "now"
+- **Humanize Function**: Standalone function for natural language duration descriptions with optional suffixes
 - **Years Support**: Handle durations spanning years with proper calculations
 - **Flexible Configuration**: Constructor-based or fluent method chaining
 - **Precision Control**: Configurable fractional digits for sub-second precision
@@ -14,11 +18,16 @@ A comprehensive TypeScript duration formatting library that extends beyond what'
 ## Quick Start
 
 ```typescript
-import { Duration } from '@epdoc/duration';
+import { Duration, humanize } from '@epdoc/duration';
 
 // Basic usage
 console.log(new Duration.Formatter().narrow.format(3661000)); // "1h01m01s"
 console.log(new Duration.Formatter().digital.format(3661000)); // "1:01:01.000"
+
+// Human-readable descriptions
+console.log(humanize(3661000)); // "about an hour"
+console.log(humanize(3661000, true)); // "in about an hour"
+console.log(humanize(-3661000, true)); // "about an hour ago"
 
 // Adaptive formatting - show only 2 most significant units
 console.log(new Duration.Formatter().narrow.adaptive(2).format(7323000)); // "2h02m"
@@ -29,18 +38,20 @@ console.log(new Duration.Formatter().narrow.adaptive(2).format(7323000)); // "2h
 The Duration Formatter supports two distinct usage patterns:
 
 ### 1. Constructor Configuration
+
 Set all options upfront and use directly:
 
 ```typescript
 const formatter = new Duration.Formatter({
   style: 'short',
   separator: '; ',
-  fractionalDigits: 0
+  fractionalDigits: 0,
 });
 console.log(formatter.format(3661000)); // "1 hr; 1 min; 1 sec"
 ```
 
 ### 2. Fluent Method Chaining
+
 Build configuration step-by-step:
 
 ```typescript
@@ -51,39 +62,44 @@ const result = new Duration.Formatter()
   .format(3661000); // "1 hr; 1 min; 1 sec"
 ```
 
-**⚠️ Important**: Don't mix both patterns. When you call a style method (`.short`, `.narrow`, etc.), it resets to that style's defaults, overriding any constructor options.
+**⚠️ Important**: Don't mix both patterns. When you call a style method (`.short`, `.narrow`, etc.), it resets to that
+style's defaults, overriding any constructor options.
 
 ## Format Styles
 
 ### Digital Format
+
 Time-like display with colons:
 
 ```typescript
-new Duration.Formatter().digital.format(3661000);        // "1:01:01.000"
+new Duration.Formatter().digital.format(3661000); // "1:01:01.000"
 new Duration.Formatter().digital.digits(0).format(3661000); // "1:01:01"
 ```
 
 ### Narrow Format
+
 Compact with unit suffixes:
 
 ```typescript
-new Duration.Formatter().narrow.format(3661000);         // "1h01m01s"
-new Duration.Formatter().narrow.format(7323000);         // "2h02m03s"
+new Duration.Formatter().narrow.format(3661000); // "1h01m01s"
+new Duration.Formatter().narrow.format(7323000); // "2h02m03s"
 ```
 
 ### Long Format
+
 Full unit names:
 
 ```typescript
-new Duration.Formatter().long.format(3661000);           // "1 hour, 1 minute, 1 second"
+new Duration.Formatter().long.format(3661000); // "1 hour, 1 minute, 1 second"
 new Duration.Formatter().long.separator(' | ').format(3661000); // "1 hour | 1 minute | 1 second"
 ```
 
 ### Short Format
+
 Abbreviated unit names:
 
 ```typescript
-new Duration.Formatter().short.format(3661000);          // "1 hr 1 min 1 sec"
+new Duration.Formatter().short.format(3661000); // "1 hr 1 min 1 sec"
 new Duration.Formatter().short.separator('; ').format(3661000); // "1 hr; 1 min; 1 sec"
 ```
 
@@ -95,14 +111,14 @@ Adaptive formatting shows only the N most significant time units, making duratio
 const duration = 7323000; // 2 hours, 2 minutes, 3 seconds
 
 // Show 2 most significant units
-new Duration.Formatter().narrow.adaptive(2).format(duration);  // "2h02m"
+new Duration.Formatter().narrow.adaptive(2).format(duration); // "2h02m"
 
-// Show 3 most significant units  
-new Duration.Formatter().narrow.adaptive(3).format(duration);  // "2h02m03s"
+// Show 3 most significant units
+new Duration.Formatter().narrow.adaptive(3).format(duration); // "2h02m03s"
 
 // Works with all formats
 new Duration.Formatter().digital.adaptive(2).format(duration); // "2:02:"
-new Duration.Formatter().long.adaptive(2).format(duration);    // "2 hours, 2 minutes"
+new Duration.Formatter().long.adaptive(2).format(duration); // "2 hours, 2 minutes"
 ```
 
 ### Adaptive Display Control
@@ -113,11 +129,67 @@ Control how trailing zeros are displayed in adaptive mode:
 const oneHour = 3600000; // 1 hour exactly
 
 // 'auto' (default) - suppress trailing zeros
-new Duration.Formatter().narrow.adaptive(2).adaptiveDisplay('auto').format(oneHour);   // "1h"
+new Duration.Formatter().narrow.adaptive(2).adaptiveDisplay('auto').format(oneHour); // "1h"
 
 // 'always' - show trailing zeros within adaptive window
 new Duration.Formatter().narrow.adaptive(2).adaptiveDisplay('always').format(oneHour); // "1h00m"
 ```
+
+## Humanize Function
+
+The `humanize` function provides natural language descriptions of durations, perfect for user-facing messages. It supports internationalization with built-in translations for English, French, Spanish, and Chinese:
+
+```typescript
+import { humanize } from '@epdoc/duration';
+
+// Basic usage - returns natural descriptions
+console.log(humanize(0)); // "now"
+console.log(humanize(1500)); // "a moment"
+console.log(humanize(30000)); // "30 seconds"
+console.log(humanize(300000)); // "about 5 minutes"
+console.log(humanize(3600000)); // "about an hour"
+console.log(humanize(86400000)); // "about a day"
+
+// With suffix - adds "ago" or "in" for past/future context
+console.log(humanize(30000, true)); // "in 30 seconds"
+console.log(humanize(-30000, true)); // "30 seconds ago"
+console.log(humanize(3600000, true)); // "in about an hour"
+console.log(humanize(-3600000, true)); // "about an hour ago"
+
+// Internationalization support
+console.log(humanize(30000, { locale: 'fr' })); // "30 secondes"
+console.log(humanize(30000, { locale: 'es' })); // "30 segundos"
+console.log(humanize(30000, { locale: 'zh' })); // "30秒"
+
+// With suffixes in different languages
+console.log(humanize(30000, { locale: 'fr', withSuffix: true })); // "dans 30 secondes"
+console.log(humanize(-30000, { locale: 'es', withSuffix: true })); // "hace 30 segundos"
+console.log(humanize(30000, { locale: 'zh', withSuffix: true })); // "30秒后"
+
+// Handles various time ranges intelligently
+console.log(humanize(90000)); // "over a minute"
+console.log(humanize(5400000)); // "over an hour"
+console.log(humanize(129600000)); // "over a day"
+console.log(humanize(31536000000)); // "about a year"
+```
+
+### Supported Locales
+
+- **English (en)**: Default locale
+- **French (fr)**: Full translation support
+- **Spanish (es)**: Full translation support  
+- **Chinese (zh)**: Full translation support
+
+The humanize function uses intelligent thresholds to provide contextually appropriate descriptions:
+
+- **Immediate**: "now", "a moment"
+- **Seconds**: "about 10 seconds", "30 seconds"
+- **Minutes**: "about a minute", "over a minute", "5 minutes"
+- **Hours**: "about an hour", "over an hour", "8 hours"
+- **Days**: "about a day", "over a day", "10 days"
+- **Weeks**: "about 2 weeks", "5 weeks"
+- **Months**: "about 3 months", "8 months"
+- **Years**: "about a year", "over a year", "3 years"
 
 ## Years Support
 
@@ -126,36 +198,39 @@ Handle long durations spanning years:
 ```typescript
 const oneYear = 365.25 * 24 * 60 * 60 * 1000; // ~1 year in milliseconds
 
-new Duration.Formatter().narrow.format(oneYear);           // "1y0d"
-new Duration.Formatter().long.format(oneYear);             // "1 year"
+new Duration.Formatter().narrow.format(oneYear); // "1y0d"
+new Duration.Formatter().long.format(oneYear); // "1 year"
 new Duration.Formatter().narrow.format(oneYear + 86400000); // "1y1d"
 ```
 
 ## Configuration Options
 
 ### Fractional Digits
+
 Control sub-second precision:
 
 ```typescript
-new Duration.Formatter().narrow.digits(0).format(1500);    // "1s"
-new Duration.Formatter().narrow.digits(3).format(1500);    // "1.500s"
-new Duration.Formatter().digital.digits(6).format(1500);   // "00:01.500000"
+new Duration.Formatter().narrow.digits(0).format(1500); // "1s"
+new Duration.Formatter().narrow.digits(3).format(1500); // "1.500s"
+new Duration.Formatter().digital.digits(6).format(1500); // "00:01.500000"
 ```
 
 ### Separators
+
 Customize separators between units:
 
 ```typescript
-new Duration.Formatter().long.separator(' | ').format(3661000);  // "1 hour | 1 minute | 1 second"
-new Duration.Formatter().short.separator('; ').format(3661000);  // "1 hr; 1 min; 1 sec"
+new Duration.Formatter().long.separator(' | ').format(3661000); // "1 hour | 1 minute | 1 second"
+new Duration.Formatter().short.separator('; ').format(3661000); // "1 hr; 1 min; 1 sec"
 ```
 
 ### Min/Max Display
+
 Limit which units are shown:
 
 ```typescript
-new Duration.Formatter().narrow.min('seconds').format(3661000);  // "1h01m01s"
-new Duration.Formatter().narrow.max('minutes').format(3661000);  // "61m01s"
+new Duration.Formatter().narrow.min('seconds').format(3661000); // "1h01m01s"
+new Duration.Formatter().narrow.max('minutes').format(3661000); // "61m01s"
 ```
 
 ## Complete Example
@@ -166,7 +241,7 @@ import { Duration } from '@epdoc/duration';
 const durations = [1500, 3661000, 7323000, 86400000];
 
 console.log('=== Basic Formats ===');
-durations.forEach(ms => {
+durations.forEach((ms) => {
   console.log(`${ms}ms:`);
   console.log(`  Digital: ${new Duration.Formatter().digital.format(ms)}`);
   console.log(`  Narrow:  ${new Duration.Formatter().narrow.format(ms)}`);
@@ -189,6 +264,7 @@ console.log(`  always: ${new Duration.Formatter().narrow.adaptive(2).adaptiveDis
 ```
 
 Output:
+
 ```
 === Basic Formats ===
 1500ms:
@@ -218,14 +294,7 @@ Output:
 ## Type Definitions
 
 ```typescript
-import type { 
-  EpochMilliseconds, 
-  EpochSeconds, 
-  HrMilliseconds, 
-  Milliseconds, 
-  Minutes,
-  Seconds 
-} from '@epdoc/duration';
+import type { EpochMilliseconds, EpochSeconds, HrMilliseconds, Milliseconds, Minutes, Seconds } from '@epdoc/duration';
 ```
 
 - `Milliseconds`: Integer
@@ -234,6 +303,10 @@ import type {
 - `EpochSeconds`: Integer
 - `Minutes`: number
 - `Seconds`: number
+
+## Comparison with Other Libraries
+
+For a detailed comparison with other duration formatting libraries including @std/duration, Moment.js, and Intl.DurationFormat, see [COMPARISON.md](./COMPARISON.md).
 
 ## License
 

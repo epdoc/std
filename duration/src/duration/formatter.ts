@@ -235,7 +235,7 @@ export class DurationFormatter {
       // Special case: if all fields are zero, don't apply adaptive pruning
       if (!time.isZero()) {
         time.pruneAdaptive(this._opts.maxAdaptiveUnits);
-        
+
         // Apply adaptiveDisplay setting to control trailing zeros
         if (this._opts.adaptiveDisplay === 'auto') {
           // Suppress trailing zeros - set all zero fields to 'auto'
@@ -252,12 +252,12 @@ export class DurationFormatter {
           if (time.hours === 0) this._opts.hoursDisplay = 'auto';
           if (time.days === 0) this._opts.daysDisplay = 'auto';
           if (time.years === 0) this._opts.yearsDisplay = 'auto';
-          
+
           // Then force display of zero units within the adaptive window
           const fields = ['years', 'days', 'hours', 'minutes', 'seconds'] as const;
           let unitsFromStart = 0;
           let foundFirstNonZero = false;
-          
+
           for (const field of fields) {
             const value = time[field];
             if (!foundFirstNonZero && value > 0) {
@@ -276,7 +276,7 @@ export class DurationFormatter {
             }
           }
         }
-        
+
         // When adaptive formatting includes seconds, treat them as whole units (separate from milliseconds)
         if (this._opts.maxAdaptiveUnits > 0 && time.seconds > 0) {
           this._opts.fractionalDigits = 0;
@@ -331,11 +331,11 @@ export class DurationFormatter {
 
   protected formatNarrow(time: DurationRecord): string {
     const opts: Format.Options = Object.assign({}, this._opts, { style: 'digital' });
-    
+
     // Flags to track when to remove leading zeros from time units
     let bRemoveMinutesLeadingZero = false;
     let bRemoveSecondsLeadingZero = false;
-    
+
     // Cascade formatting based on the largest non-zero time unit
     // This creates adaptive formatting where smaller units become the primary display
     if (time.years == 0) {
@@ -395,7 +395,7 @@ export class DurationFormatter {
   protected _formatDigital(parts: Duration.Part[]): string {
     const result: string[] = [];
     let hasSeconds = false;
-    
+
     parts.forEach((part: Duration.Part) => {
       if (part.unit && REG.isNumeric.test(part.type)) {
         if (part.unit === 'year') {

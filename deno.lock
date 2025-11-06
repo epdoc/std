@@ -27,6 +27,7 @@
     "jsr:@std/path@^1.1.2": "1.1.2",
     "jsr:@std/testing@1.0.16": "1.0.16",
     "jsr:@std/testing@^1.0.15": "1.0.16",
+    "jsr:@std/testing@^1.0.16": "1.0.16",
     "npm:@types/node@*": "22.12.0",
     "npm:moment@2.30.1": "2.30.1"
   },
@@ -266,7 +267,9 @@
       },
       "duration": {
         "dependencies": [
-          "jsr:@epdoc/type@^1.1.17"
+          "jsr:@epdoc/type@^1.1.17",
+          "jsr:@std/expect@^1.0.17",
+          "jsr:@std/testing@^1.0.16"
         ]
       },
       "fs": {

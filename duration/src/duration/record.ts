@@ -144,7 +144,7 @@ export class DurationRecord {
       // If we're counting, keep units up to the limit
       if (startedCounting) {
         unitsKept++;
-        
+
         // If we've hit the limit, zero out all subsequent fields
         if (unitsKept > maxUnits) {
           this.setField(fieldName, 0);

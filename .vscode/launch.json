@@ -89,26 +89,6 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "daterange: test/date-range.test.ts",
-      "cwd": "${workspaceFolder}",
-      "attachSimplePort": 9229,
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "env": {
-        "LAUNCHGEN": "true"
-      },
-      "runtimeArgs": [
-        "test",
-        "-A",
-        "--inspect-brk",
-        "${workspaceFolder}/daterange/test/date-range.test.ts"
-      ],
-      "presentation": {
-        "group": "daterange"
-      }
-    },
-    {
-      "type": "node",
-      "request": "launch",
       "name": "daterange: examples/cli.ts",
       "program": "${workspaceFolder}/daterange/examples/cli.ts",
       "cwd": "${workspaceFolder}",
@@ -353,6 +333,26 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "fs: test/symspec.test.ts",
+      "cwd": "${workspaceFolder}",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
+      "runtimeArgs": [
+        "test",
+        "-A",
+        "--inspect-brk",
+        "${workspaceFolder}/fs/test/symspec.test.ts"
+      ],
+      "presentation": {
+        "group": "fs"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "fs: test/fsbytes.test.ts",
       "cwd": "${workspaceFolder}",
       "attachSimplePort": 9229,
@@ -365,6 +365,26 @@
         "-A",
         "--inspect-brk",
         "${workspaceFolder}/fs/test/fsbytes.test.ts"
+      ],
+      "presentation": {
+        "group": "fs"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "fs: test/walk.test.ts",
+      "cwd": "${workspaceFolder}",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
+      "runtimeArgs": [
+        "test",
+        "-A",
+        "--inspect-brk",
+        "${workspaceFolder}/fs/test/walk.test.ts"
       ],
       "presentation": {
         "group": "fs"
@@ -473,6 +493,26 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "duration: test/humanize.test.ts",
+      "cwd": "${workspaceFolder}",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
+      "runtimeArgs": [
+        "test",
+        "-A",
+        "--inspect-brk",
+        "${workspaceFolder}/duration/test/humanize.test.ts"
+      ],
+      "presentation": {
+        "group": "duration"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "duration: examples/duration.run.ts",
       "cwd": "${workspaceFolder}",
       "attachSimplePort": 9229,
@@ -486,6 +526,26 @@
         "--inspect-brk"
       ],
       "program": "${workspaceFolder}/duration/examples/duration.run.ts",
+      "presentation": {
+        "group": "duration"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "duration: examples/humanize.run.ts",
+      "cwd": "${workspaceFolder}",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
+      "runtimeArgs": [
+        "run",
+        "-A",
+        "--inspect-brk"
+      ],
+      "program": "${workspaceFolder}/duration/examples/humanize.run.ts",
       "presentation": {
         "group": "duration"
       }

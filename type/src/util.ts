@@ -769,10 +769,10 @@ export function omit<T = Dict>(obj: Dict, ...args: (string | number)[]): T {
 }
 
 /**
- * Pads a number with leading zeros to a specified width.
- * @param n - The number to pad.
+ * Pads a number or string with leading characters to a specified width.
+ * @param n - The number or string to pad.
  * @param width - The total width of the resulting string.
- * @param [z='0'] - The character to use for padding.
+ * @param [z='0'] - The character to use for padding. Defaults to 0, as is used for numbers.
  * @returns The padded string.
  * @deprecated Use String.padStart() instead.
  * @example
@@ -782,7 +782,7 @@ export function omit<T = Dict>(obj: Dict, ...args: (string | number)[]): T {
  * console.log(paddedNum); // '0005'
  * ```
  */
-export function pad(n: number, width: number, z: string = '0'): string {
+export function pad(n: number | string, width: number, z: string = '0'): string {
   const sn = String(n);
   return sn.length >= width ? sn : new Array(width - sn.length + 1).join(z) + sn;
 }

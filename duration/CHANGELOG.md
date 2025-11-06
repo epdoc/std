@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+- Added `humanize` function for natural language duration descriptions
+- Added internationalization support for humanize function (English, French, Spanish, Chinese)
+- Updated documentation to include humanize function examples and usage
+- Enhanced comparison documentation with internationalized strings analysis
+
 ## [0.2.3] - 2025-10-05
 
 - Update @epdoc/type dependency.

@@ -1,108 +1,146 @@
-import { expect } from 'jsr:@std/expect@1.0.17';
-import { describe, it } from 'jsr:@std/testing@1.0.16/bdd';
-import { humanize } from '../src/duration/humanize.ts';
+import { humanize } from '@epdoc/duration';
+import { expect } from '@std/expect';
+import { describe, it } from '@std/testing/bdd';
 
-describe('humanize', () => {
-  describe('basic humanization', () => {
-    it('should handle zero and small durations', () => {
-      expect(humanize(0)).toEqual('now');
-      expect(humanize(500)).toEqual('a moment');
-      expect(humanize(1000)).toEqual('a second');
-      expect(humanize(2000)).toEqual('2 seconds');
+describe('TimeFormatter', () => {
+  describe('immediate time ranges', () => {
+    it("handles 'now' correctly", () => {
+      expect(humanize(0)).toBe('now');
+      expect(humanize(0, true)).toBe('now');
     });
 
-    it('should handle seconds to minutes transition', () => {
-      expect(humanize(44999)).toEqual('45 seconds'); // rounds to 45
-      expect(humanize(45000)).toEqual('less than a minute');
-      expect(humanize(89999)).toEqual('over a minute');
-      expect(humanize(90000)).toEqual('about 2 minutes');
+    it('formats moments appropriately', () => {
+      expect(humanize(250)).toBe('a moment');
+      expect(humanize(499)).toBe('a moment');
+      expect(humanize(500)).toBe('a moment');
+      expect(humanize(1999)).toBe('a moment');
+      expect(humanize(2000)).toBe('a moment');
     });
 
-    it('should handle larger durations', () => {
-      expect(humanize(3600000)).toEqual('an hour');
-      expect(humanize(86400000)).toEqual('24 hours');
-    });
-  });
-
-  describe('with suffix', () => {
-    it('should handle zero specially', () => {
-      expect(humanize(0, true)).toEqual('now');
-    });
-
-    it('should add appropriate suffixes', () => {
-      expect(humanize(500, true)).toEqual('in a moment');
-      expect(humanize(-500, true)).toEqual('a moment ago');
-      expect(humanize(1000, true)).toEqual('in a second');
-      expect(humanize(-1000, true)).toEqual('a second ago');
-      expect(humanize(45000, true)).toEqual('in less than a minute');
-      expect(humanize(-45000, true)).toEqual('less than a minute ago');
+    it('applies suffixes to moments correctly', () => {
+      expect(humanize(250, true)).toBe('in a moment');
+      expect(humanize(-250, true)).toBe('a moment ago');
+      expect(humanize(1000, true)).toBe('in a moment');
+      expect(humanize(-1000, true)).toBe('a moment ago');
     });
   });
 
-  describe('threshold boundaries', () => {
-    it('should handle sub-second thresholds', () => {
-      expect(humanize(999)).toEqual('a moment');
-      expect(humanize(1000)).toEqual('a second');
-    });
-
-    it('should handle second to minute thresholds', () => {
-      expect(humanize(44999)).toEqual('45 seconds');
-      expect(humanize(45000)).toEqual('a minute');
-      expect(humanize(89999)).toEqual('a minute');
-      expect(humanize(90000)).toEqual('about 2 minutes'); // 1.5 min rounds to about 2
-    });
-
-    it('should handle minute to hour thresholds', () => {
-      expect(humanize(2699999)).toEqual('45 minutes'); // 44.99 min rounds to 45
-      expect(humanize(2700000)).toEqual('an hour'); // 45 min
-      expect(humanize(5399999)).toEqual('an hour'); // 89.99 min
-      expect(humanize(5400000)).toEqual('about 2 hours'); // 90 min = 1.5 hr rounds to about 2
+  describe('seconds transitions', () => {
+    it('handles less than a minute', () => {
+      expect(humanize(10 * 1000)).toBe('about 10 seconds');
+      expect(humanize(30 * 1000)).toBe('30 seconds');
+      expect(humanize(52.4 * 1000)).toBe('52 seconds');
     });
   });
 
-  describe('about vs exact', () => {
-    it('should use exact values when no significant rounding', () => {
-      expect(humanize(120000)).toEqual('2 minutes'); // exactly 2 minutes
-      expect(humanize(7200000)).toEqual('2 hours'); // exactly 2 hours
+  describe('minute transitions', () => {
+    it('transitions to about a minute', () => {
+      expect(humanize(52.5 * 1000)).toBe('53 seconds');
+      expect(humanize(52.51 * 1000)).toBe('about a minute');
+      expect(humanize(70 * 1000)).toBe('about a minute');
+      expect(humanize(90 * 1000)).toBe('over a minute');
     });
 
-    it('should use "about" for significantly rounded values', () => {
-      expect(humanize(90000)).toEqual('about 2 minutes'); // 1.5 min -> about 2
-      expect(humanize(138000)).toEqual('about 2 minutes'); // 2.3 min -> about 2
-      expect(humanize(5400000)).toEqual('about 2 hours'); // 1.5 hr -> about 2
-      expect(humanize(8640000)).toEqual('about 2 hours'); // 2.4 hr -> about 2
+    it('shows precise minutes up to 57', () => {
+      expect(humanize(2.5 * 60 * 1000 - 1)).toBe('about 2 minutes');
+      expect(humanize(3 * 60 * 1000)).toBe('about 3 minutes');
+      expect(humanize(10 * 60 * 1000)).toBe('about 10 minutes');
+      expect(humanize(17 * 60 * 1000)).toBe('17 minutes');
+      expect(humanize(56.9 * 60 * 1000)).toBe('57 minutes');
     });
 
-    it('should handle close to exact values', () => {
-      // Close to exact - no "about"
-      const oneYear = 365.25 * 24 * 60 * 60 * 1000;
-      const twoDays = 2 * 24 * 60 * 60 * 1000;
-      expect(humanize(oneYear + twoDays)).toEqual('a year'); // 1yr + 2days ≈ 1yr
-    });
-  });
-
-  describe('fractional values', () => {
-    it('should handle fractional rounding with about', () => {
-      expect(humanize(90000)).toEqual('about 2 minutes'); // 1.5 minutes -> about 2 minutes (rounded)
-      expect(humanize(5400000)).toEqual('about 2 hours'); // 1.5 hours -> about 2 hours (rounded)
-      expect(humanize(138000)).toEqual('about 2 minutes'); // 2.3 minutes -> about 2 minutes
-      expect(humanize(3500)).toEqual('4 seconds'); // 3.5 seconds -> 4 seconds (rounded)
-      expect(humanize(146880000)).toEqual('a day'); // 1.7 days -> a day
-    });
-
-    it('should handle fractional values with suffix', () => {
-      expect(humanize(5400000, true)).toEqual('in about 2 hours'); // 1.5 hours with suffix
-      expect(humanize(-90000, true)).toEqual('about 2 minutes ago'); // -1.5 minutes with suffix
+    it('applies suffixes to minute ranges', () => {
+      expect(humanize(30 * 1000, true)).toBe('in 30 seconds');
+      expect(humanize(-30 * 1000, true)).toBe('30 seconds ago');
+      expect(humanize(5 * 60 * 1000, true)).toBe('in about 5 minutes');
+      expect(humanize(-5 * 60 * 1000, true)).toBe('about 5 minutes ago');
     });
   });
 
-  describe('years', () => {
-    it('should handle year durations', () => {
-      const oneYear = 365.25 * 24 * 60 * 60 * 1000;
-      expect(humanize(oneYear)).toEqual('a year');
-      expect(humanize(oneYear * 2)).toEqual('2 years');
-      expect(humanize(oneYear, true)).toEqual('in a year');
-      expect(humanize(-oneYear, true)).toEqual('a year ago');
+  describe('hour transitions', () => {
+    it('transitions from minutes to hours smoothly', () => {
+      expect(humanize(57 * 60 * 1000)).toBe('57 minutes');
+      expect(humanize(57.01 * 60 * 1000)).toBe('about an hour');
+      expect(humanize(1.2 * 60 * 60 * 1000)).toBe('about an hour');
+      expect(humanize(1.5 * 60 * 60 * 1000)).toBe('over an hour');
+    });
+
+    it('shows precise hours up to 23', () => {
+      expect(humanize(2.5 * 60 * 60 * 1000 - 1)).toBe('about 2 hours');
+      expect(humanize(3 * 60 * 60 * 1000)).toBe('about 3 hours');
+      expect(humanize(6 * 60 * 60 * 1000)).toBe('about 6 hours');
+      expect(humanize(12 * 60 * 60 * 1000)).toBe('12 hours');
+      expect(humanize(23.4 * 60 * 60 * 1000)).toBe('23 hours');
+    });
+
+    it('applies suffixes to hour ranges', () => {
+      expect(humanize(1.5 * 60 * 60 * 1000, true)).toBe('in over an hour');
+      expect(humanize(-1.5 * 60 * 60 * 1000, true)).toBe('over an hour ago');
+      expect(humanize(8 * 60 * 60 * 1000, true)).toBe('in about 8 hours');
+    });
+  });
+
+  describe('internationalization', () => {
+    describe('French (fr)', () => {
+      it('handles basic time ranges', () => {
+        expect(humanize(0, { locale: 'fr' })).toBe('maintenant');
+        expect(humanize(1500, { locale: 'fr' })).toBe('un instant');
+        expect(humanize(30000, { locale: 'fr' })).toBe('30 secondes');
+        expect(humanize(300000, { locale: 'fr' })).toBe('environ 5 minutes');
+        expect(humanize(3600000, { locale: 'fr' })).toBe('environ une heure');
+      });
+
+      it('handles suffixes correctly', () => {
+        expect(humanize(30000, { locale: 'fr', withSuffix: true })).toBe('dans 30 secondes');
+        expect(humanize(-30000, { locale: 'fr', withSuffix: true })).toBe('il y a 30 secondes');
+        expect(humanize(3600000, { locale: 'fr', withSuffix: true })).toBe('dans environ une heure');
+      });
+    });
+
+    describe('Spanish (es)', () => {
+      it('handles basic time ranges', () => {
+        expect(humanize(0, { locale: 'es' })).toBe('ahora');
+        expect(humanize(1500, { locale: 'es' })).toBe('un momento');
+        expect(humanize(30000, { locale: 'es' })).toBe('30 segundos');
+        expect(humanize(300000, { locale: 'es' })).toBe('cerca de 5 minutos');
+        expect(humanize(3600000, { locale: 'es' })).toBe('cerca de una hora');
+      });
+
+      it('handles suffixes correctly', () => {
+        expect(humanize(30000, { locale: 'es', withSuffix: true })).toBe('en 30 segundos');
+        expect(humanize(-30000, { locale: 'es', withSuffix: true })).toBe('hace 30 segundos');
+        expect(humanize(3600000, { locale: 'es', withSuffix: true })).toBe('en cerca de una hora');
+      });
+    });
+
+    describe('Chinese (zh)', () => {
+      it('handles basic time ranges', () => {
+        expect(humanize(0, { locale: 'zh' })).toBe('现在');
+        expect(humanize(1500, { locale: 'zh' })).toBe('片刻');
+        expect(humanize(30000, { locale: 'zh' })).toBe('30秒');
+        expect(humanize(300000, { locale: 'zh' })).toBe('大约5分钟');
+        expect(humanize(3600000, { locale: 'zh' })).toBe('大约一小时');
+      });
+
+      it('handles suffixes correctly', () => {
+        expect(humanize(30000, { locale: 'zh', withSuffix: true })).toBe('30秒后');
+        expect(humanize(-30000, { locale: 'zh', withSuffix: true })).toBe('30秒前');
+        expect(humanize(3600000, { locale: 'zh', withSuffix: true })).toBe('大约一小时后');
+      });
+    });
+
+    describe('fallback to English', () => {
+      it('uses English for unsupported locales', () => {
+        expect(humanize(30000, { locale: 'de' })).toBe('30 seconds');
+        expect(humanize(30000, { locale: 'invalid', withSuffix: true })).toBe('in 30 seconds');
+      });
+    });
+
+    describe('backward compatibility', () => {
+      it('supports legacy boolean parameter', () => {
+        expect(humanize(30000, true)).toBe('in 30 seconds');
+        expect(humanize(-30000, true)).toBe('30 seconds ago');
+      });
     });
   });
 });
