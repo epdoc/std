@@ -269,6 +269,41 @@ await readable.pipeThrough(base64Encoder).pipeTo(fileStream);
 
 Given this, adding many encoding/decoding methods directly to `FileSpecWriter` might be redundant. The `write` and `writeLine` methods provide a significant convenience for the most common case (writing text), while complex transformations can still be handled by the standard `TransformStream` mechanism. This strikes a good balance between convenience and API surface area.
 
+### Design Rationale: `FileSpecWriter` vs. Direct API
+
+A key design decision was whether to introduce a `FileSpecWriter` class or to add writing methods directly to the `FileSpec` class itself.
+
+**Option 1: Separate `FileSpecWriter` Class (Chosen Approach)**
+
+This approach involves a dedicated writer class, used like this:
+```typescript
+const writer = await fileSpec.writer();
+await writer.write("hello");
+await writer.close();
+```
+- **Pros:**
+    - **Clear Lifecycle:** The `writer` object is explicitly created, used, and closed. This makes resource management (like file handles and stream locks) very explicit and less prone to leaks.
+    - **Separation of Concerns:** `FileSpec` remains a stateless object responsible for representing a location on the filesystem. `FileSpecWriter` is responsible for the stateful *act* of writing.
+- **Cons:**
+    - Slightly more verbose.
+
+**Option 2: Writing Methods Directly on `FileSpec`**
+
+This approach would involve adding stateful writing methods to `FileSpec`:
+```typescript
+await fileSpec.write("hello");
+await fileSpec.close(); // A close method would be mandatory
+```
+- **Pros:**
+    - Less verbose and feels more direct.
+- **Cons:**
+    - **Complex State Management:** The `FileSpec` object would have to become stateful, managing an internal writer, stream, and lock. This makes the class more complex and prone to errors (e.g., calling `write()` and `read()` interchangeably).
+    - **Ambiguous Lifecycle:** It's less obvious that `fileSpec.close()` is mandatory to release the file handle, making resource leaks more likely.
+
+**Recommendation:**
+
+The separate `FileSpecWriter` is the more robust and safer design. The explicitness of its lifecycle is a feature, as it prevents common resource management errors. It allows `FileSpec` to remain a simple, reusable, and stateless object, which is a better long-term architectural choice.
+
 ### Benefits of Integration
 
 - **Memory Efficiency**: By streaming data, we avoid loading entire files into memory, which is crucial for large file processing.
