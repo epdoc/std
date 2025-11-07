@@ -23,6 +23,73 @@ file type detection.
 9. Read or walk folder contents
 10. PDF metadata extraction via a lightweight parser
 
+### Web Stream API
+
+The `FileSpec` class now includes methods for working with Web Streams, providing an efficient way to handle file I/O
+for large files.
+
+- `readableStream(): Promise<ReadableStream<Uint8Array>>` Returns a `ReadableStream` for reading the file's content.
+
+- `writableStream(): Promise<WritableStream<Uint8Array>>` Returns a `WritableStream` for writing to the file.
+
+- `pipeFrom(source: ReadableStream<Uint8Array>): Promise<void>` Pipes a `ReadableStream` to the file.
+
+- `pipeTo(destination: WritableStream<Uint8Array>): Promise<void>` Pipes the file's content to a `WritableStream`.
+
+- `writer(): Promise<FileSpecWriter>` Returns a `FileSpecWriter` instance for more convenient writing.
+
+#### FileSpecWriter
+
+The `FileSpecWriter` class provides a higher-level abstraction for writing to a file.
+
+- `write(data: string | Uint8Array): Promise<void>` Writes a chunk of data.
+
+- `writeLine(line: string): Promise<void>` Writes a line of text with a newline character.
+
+- `close(): Promise<void>` Closes the writer and the underlying file stream.
+
+#### Usage Examples
+
+**Piping a network download directly to a file:**
+
+```typescript
+import { FileSpec } from '@epdoc/fs';
+
+const url = 'https://example.com/large-file.zip';
+const fileSpec = new FileSpec('./downloaded-file.zip');
+
+const response = await fetch(url);
+if (response.body) {
+  await fileSpec.pipeFrom(response.body);
+}
+```
+
+**Reading a file and piping it to standard output:**
+
+```typescript
+import { FileSpec } from '@epdoc/fs';
+
+const fileSpec = new FileSpec('./my-large-log-file.log');
+await fileSpec.pipeTo(Deno.stdout.writable);
+```
+
+**Using the FileSpecWriter:**
+
+```typescript
+import { FileSpec } from '@epdoc/fs';
+
+const fileSpec = new FileSpec('./log.txt');
+const writer = await fileSpec.writer();
+
+try {
+  await writer.writeLine('Log started at ' + new Date().toISOString());
+  await writer.write('This is a log entry.');
+  await writer.write(' And another one.');
+} finally {
+  await writer.close();
+}
+```
+
 ---
 
 ## 📦 Install

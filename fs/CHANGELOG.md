@@ -1,5 +1,9 @@
 # Changelog for @epdoc/fs
 
+## [1.1.0] - 2025-11-06
+
+- Added WebStream support to FileSpec
+
 ## [1.0.3] - 2025-11-02
 
 - Added permission management methods: `chown()`, `chgrp()`, and `chmod()` to all spec classes
