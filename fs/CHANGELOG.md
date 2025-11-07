@@ -1,5 +1,9 @@
 # Changelog for @epdoc/fs
 
+## [1.1.1] - 2025-11-07
+
+- Modified exports namespaces to add filespecwriter
+
 ## [1.1.0] - 2025-11-06
 
 - Added WebStream support to FileSpec
