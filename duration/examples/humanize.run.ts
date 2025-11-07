@@ -1,4 +1,4 @@
-import { Duration, humanize } from '@epdoc/duration';
+import { Duration, humanize } from '../src/mod.ts';
 
 console.log(`
 Demonstrates the output of humanize() and Duration.Formatter for an ever-increasing value.
