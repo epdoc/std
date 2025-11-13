@@ -1,5 +1,11 @@
 export * as Err from '$error';
-export { FileSpec as File, FileSpecWriter as Writer, FolderSpec as Folder, FSSpec as Spec, SymlinkSpec as Symlink } from '$spec';
+export {
+  FileSpec as File,
+  FileSpecWriter as Writer,
+  FolderSpec as Folder,
+  FSSpec as Spec,
+  SymlinkSpec as Symlink,
+} from '$spec';
 export type { JsonReplacer, TypedFSSpec as Typed } from '$spec';
 export { DigestAlgorithm } from './consts.ts';
 export { FSBytes as Bytes } from './fsbytes.ts';

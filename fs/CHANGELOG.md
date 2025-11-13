@@ -1,5 +1,9 @@
 # Changelog for @epdoc/fs
 
+## [1.1.3] - 2025-11-13
+
+- Update dependencies
+
 ## [1.1.1] - 2025-11-07
 
 - Modified exports namespaces to add filespecwriter
