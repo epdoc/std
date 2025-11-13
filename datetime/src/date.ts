@@ -282,6 +282,9 @@ export class DateEx {
       }
 
       const offsetString = timeZoneNamePart.value as GMTTZ; // e.g., "GMT-05:00"
+      if (offsetString === 'GMT') {
+        return 0 as TzMinutes;
+      }
 
       // Regex to extract hours and minutes, handling both positive and negative offsets.
       const match = offsetString.match(/GMT([+-])(\d{1,2}):?(\d{2})?/);

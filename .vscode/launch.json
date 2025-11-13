@@ -393,6 +393,26 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "fs: test/webstream.test.ts",
+      "cwd": "${workspaceFolder}",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
+      "runtimeArgs": [
+        "test",
+        "-A",
+        "--inspect-brk",
+        "${workspaceFolder}/fs/test/webstream.test.ts"
+      ],
+      "presentation": {
+        "group": "fs"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "fs: test/jsonex.test.ts",
       "cwd": "${workspaceFolder}",
       "attachSimplePort": 9229,

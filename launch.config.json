@@ -1,5 +1,7 @@
 {
+  "$schema": "https://raw.githubusercontent.com/epdoc/tools/master/packages/launchgen/schemas/v2/launch.schema.json",
   "launch": {
+    "groups": {},
     "port": 9229,
     "console": "internalConsole",
     "excludes": [
@@ -8,7 +10,6 @@
       "**/.*",
       "**/.*/**"
     ],
-    "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-    "groups": []
+    "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno"
   }
 }
