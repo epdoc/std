@@ -731,41 +731,167 @@ function newError(msg: string, opts: Dict = {}): IError {
 }
 
 /**
- * Picks specified keys from the given object.
- * @param obj - The object to pick from.
- * @param args - The keys to pick.
- * @returns A new object with the picked keys.
+ * Type-safe utility function to pick properties from an object.
+ *
+ * @overview Provides multiple signatures for flexible usage:
+ * - Type-safe version with array of keys
+ * - Type-safe version with spread keys
+ * - Legacy version for untyped objects
+ *
+ * @example
+ * // Type-safe with array (recommended)
+ * const result1 = pick(obj, ['id', 'name'] as const);
+ *
+ * @example
+ * // Type-safe with spread arguments
+ * const result2 = pick(obj, 'id', 'name');
+ *
+ * @example
+ * // Legacy usage with untyped objects
+ * const result3 = pick(untypedObj, 'id', 'name');
  */
-export function pick<T = Dict>(obj: Dict, ...args: (string | number)[]): T {
-  // eslint-disable-line no-extend-native
-  const result: Dict = {};
+
+/**
+ * Picks specified keys from an object using an array of keys.
+ * @typeParam T - The type of the source object
+ * @typeParam K - The keys to pick from the object
+ * @param obj - The source object to pick properties from
+ * @param keys - Array of keys to pick from the object
+ * @returns A new object containing only the picked properties
+ */
+export function pick<T extends object, K extends keyof T>(
+  obj: T,
+  keys: K[],
+): Pick<T, K>;
+
+/**
+ * Picks specified keys from an object using spread arguments.
+ * @typeParam T - The type of the source object
+ * @typeParam K - The keys to pick from the object
+ * @param obj - The source object to pick properties from
+ * @param keys - Spread arguments of keys to pick from the object
+ * @returns A new object containing only the picked properties
+ */
+export function pick<T extends object, K extends keyof T>(
+  obj: T,
+  ...keys: K[]
+): Pick<T, K>;
+
+/**
+ * Legacy pick function for untyped objects (backward compatibility).
+ * @typeParam T - The return type (defaults to Dict)
+ * @param obj - The source object to pick properties from
+ * @param args - Keys to pick as string, number, or array
+ * @returns A new object containing only the picked properties
+ */
+export function pick<T = Dict>(obj: Dict, ...args: (string | number)[]): T;
+
+/**
+ * Implementation of the pick function.
+ * @param obj - The source object
+ * @param args - Keys to pick (array or spread arguments)
+ * @returns A new object with the picked properties
+ */
+export function pick<T extends object>(obj: T, ...args: unknown[]): unknown {
+  const result: Partial<T> = {};
+  let keys: (keyof T)[];
+
   if (Array.isArray(args[0])) {
-    args = args[0];
+    keys = args[0] as (keyof T)[];
+  } else {
+    keys = args as (keyof T)[];
   }
-  args.forEach((key) => {
+
+  keys.forEach((key) => {
     if (obj[key] !== undefined) {
       result[key] = obj[key];
     }
   });
-  return result as T;
+
+  return result;
 }
 
 /**
- * Omits specified keys from the given object.
- * @param obj - The object to omit from.
- * @param args - The keys to omit.
- * @returns A new object without the omitted keys.
+ * Type-safe utility function to omit properties from an object.
+ *
+ * @overview Provides multiple signatures for flexible usage:
+ * - Type-safe version with array of keys
+ * - Type-safe version with spread keys
+ * - Legacy version for untyped objects
+ *
+ * @example
+ * // Type-safe with array (recommended)
+ * const result1 = omit(obj, ['sensitive', 'internal'] as const);
+ *
+ * @example
+ * // Type-safe with spread arguments
+ * const result2 = omit(obj, 'sensitive', 'internal');
+ *
+ * @example
+ * // Legacy usage with untyped objects
+ * const result3 = omit(untypedObj, 'sensitive', 'internal');
  */
-export function omit<T = Dict>(obj: Dict, ...args: (string | number)[]): T {
+
+/**
+ * Omits specified keys from an object using an array of keys.
+ * @typeParam T - The type of the source object
+ * @typeParam K - The keys to omit from the object
+ * @param obj - The source object to omit properties from
+ * @param keys - Array of keys to omit from the object
+ * @returns A new object without the omitted properties
+ */
+export function omit<T extends object, K extends keyof T>(
+  obj: T,
+  keys: K[],
+): Omit<T, K>;
+
+/**
+ * Omits specified keys from an object using spread arguments.
+ * @typeParam T - The type of the source object
+ * @typeParam K - The keys to omit from the object
+ * @param obj - The source object to omit properties from
+ * @param keys - Spread arguments of keys to omit from the object
+ * @returns A new object without the omitted properties
+ */
+export function omit<T extends object, K extends keyof T>(
+  obj: T,
+  ...keys: K[]
+): Omit<T, K>;
+
+/**
+ * Legacy omit function for untyped objects (backward compatibility).
+ * @typeParam T - The return type (defaults to Dict)
+ * @param obj - The source object to omit properties from
+ * @param args - Keys to omit as string, number, or array
+ * @returns A new object without the omitted properties
+ */
+export function omit<T = Dict>(obj: Dict, ...args: (string | number)[]): T;
+
+/**
+ * Implementation of the omit function.
+ * @param obj - The source object
+ * @param args - Keys to omit (array or spread arguments)
+ * @returns A new object without the omitted properties
+ */
+export function omit<T extends object>(obj: T, ...args: unknown[]): unknown {
+  let keysToOmit: (keyof T)[];
+
   if (Array.isArray(args[0])) {
-    args = args[0];
+    keysToOmit = args[0] as (keyof T)[];
+  } else {
+    keysToOmit = args as (keyof T)[];
   }
-  const keys = Object.keys(obj).filter((key) => args.indexOf(key) < 0);
-  const newObj: Dict = {};
-  keys.forEach((k) => {
-    newObj[k] = obj[k];
+
+  const result: Partial<T> = {};
+  const allKeys = Object.keys(obj) as (keyof T)[];
+
+  allKeys.forEach((key) => {
+    if (!keysToOmit.includes(key)) {
+      result[key] = obj[key];
+    }
   });
-  return newObj as T;
+
+  return result;
 }
 
 /**

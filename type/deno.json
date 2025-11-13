@@ -1,12 +1,13 @@
 {
   "name": "@epdoc/type",
-  "version": "1.1.18",
+  "version": "1.1.19",
   "exports": {
     ".": "./src/mod.ts"
   },
   "tasks": {
     "test": "deno test -SERW",
-    "lint": "deno lint"
+    "lint": "deno lint",
+    "check": "deno check *.json src test"
   },
   "imports": {
     "@std/encoding": "jsr:@std/encoding@^1.0.10"

@@ -1,5 +1,9 @@
 # Changelog for @epdoc/type
 
+## [1.1.19] - 2025-11-13
+
+- Add better generic support to pick and omit functions
+
 ## [1.1.18] - 2025-10-31
 
 - Added generics to pick and omit
