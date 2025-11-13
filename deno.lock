@@ -6,6 +6,7 @@
     "jsr:@epdoc/response@~0.1.6": "0.1.6",
     "jsr:@epdoc/string@~0.1.5": "0.1.5",
     "jsr:@epdoc/type@1.0.3": "1.0.3",
+    "jsr:@epdoc/type@^1.1.17": "1.1.19",
     "jsr:@epdoc/type@^1.1.19": "1.1.19",
     "jsr:@std/assert@^1.0.14": "1.0.15",
     "jsr:@std/assert@^1.0.15": "1.0.15",
@@ -265,7 +266,7 @@
       },
       "datetime": {
         "dependencies": [
-          "jsr:@epdoc/type@^1.1.17",
+          "jsr:@epdoc/type@^1.1.19",
           "jsr:@std/expect@^1.0.17"
         ]
       },
@@ -297,7 +298,7 @@
       "string": {
         "dependencies": [
           "jsr:@epdoc/datetime@^2.0.1",
-          "jsr:@epdoc/type@^1.1.17",
+          "jsr:@epdoc/type@^1.1.19",
           "jsr:@std/assert@^1.0.15"
         ]
       },

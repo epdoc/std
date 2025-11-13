@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.2] - 2025-11-13
+
+- Update dependencies
+
 ## [2.0.1] - 2025-10-13
 
 - Bump version to 2.0.0
