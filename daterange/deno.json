@@ -1,15 +1,16 @@
 {
   "name": "@epdoc/daterange",
-  "version": "0.2.15",
+  "version": "0.2.16",
   "exports": {
     ".": "./src/mod.ts"
   },
   "tasks": {
-    "test": "deno test ./test/date-range.test.ts"
+    "test": "deno test ./test/date-range.test.ts",
+    "check": "deno check *.json src test examples"
   },
   "imports": {
-    "@epdoc/datetime": "jsr:@epdoc/datetime@^2.0.1",
-    "@epdoc/type": "jsr:@epdoc/type@^1.1.17",
+    "@epdoc/datetime": "jsr:@epdoc/datetime@^2.0.3",
+    "@epdoc/type": "jsr:@epdoc/type@^1.1.19",
     "@std/cli": "jsr:@std/cli@^1.0.23"
   }
 }

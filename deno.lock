@@ -2,6 +2,7 @@
   "version": "5",
   "specifiers": {
     "jsr:@epdoc/datetime@^2.0.1": "2.0.1",
+    "jsr:@epdoc/datetime@^2.0.3": "2.0.3",
     "jsr:@epdoc/duration@~0.2.3": "0.2.3",
     "jsr:@epdoc/response@~0.1.6": "0.1.6",
     "jsr:@epdoc/string@~0.1.5": "0.1.5",
@@ -39,6 +40,9 @@
     },
     "@epdoc/datetime@2.0.1": {
       "integrity": "4afda1be7f94c7859e6a56c447b6e4eac05b5e9653797c0d707d58cbe415fe24"
+    },
+    "@epdoc/datetime@2.0.3": {
+      "integrity": "fd3de3540f58ea9f86caba29c859f583531d9237cec2aa6bee33ad49ff5581c3"
     },
     "@epdoc/duration@0.2.3": {
       "integrity": "e8c05070df55466a33938d950f81b26fb7f803e5a9b491cda60607016cf0dcab"
@@ -259,8 +263,8 @@
     "members": {
       "daterange": {
         "dependencies": [
-          "jsr:@epdoc/datetime@^2.0.1",
-          "jsr:@epdoc/type@^1.1.17",
+          "jsr:@epdoc/datetime@^2.0.3",
+          "jsr:@epdoc/type@^1.1.19",
           "jsr:@std/cli@^1.0.23"
         ]
       },
