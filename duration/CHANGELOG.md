@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.1] - 2025-11-13
+
+- Fix import path being rewritten to @epdoc/duration by deno prettier
+
 ## [0.3.0] - 2025-11-06
 
 - Added `humanize` function for natural language duration descriptions

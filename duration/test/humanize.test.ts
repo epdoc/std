@@ -1,6 +1,6 @@
-import { humanize } from '@epdoc/duration';
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
+import { humanize } from '../src/mod.ts';
 
 describe('Humanize', () => {
   describe('immediate time ranges', () => {
