@@ -1,8 +1,8 @@
 import { FileSpec } from '@epdoc/fs';
+import { catchAsArray as safe } from '@epdoc/response';
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 import { resolve } from 'node:path';
-import { catchAsArray as safe } from './mod.ts';
 
 const pwd: string = import.meta.dirname as string;
 
@@ -41,7 +41,7 @@ describe('safe', () => {
         expect(error.constructor.name).toBe('NotFound');
         // @ts-ignore xxx
         expect(error.path).toBe(path);
-        expect(error.cause).toBe('readTextFile');
+        expect(error.cause).toBe('readAsString');
         // @ts-ignore xxx
         expect(error.code).toBe('ENOENT');
       }
