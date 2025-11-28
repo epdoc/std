@@ -1,5 +1,9 @@
 # Changelog for @epdoc/fs
 
+## [1.1.4] - 2025-11-28
+
+- Exposed functions from util/resolve-types.ts
+
 ## [1.1.3] - 2025-11-13
 
 - Update dependencies

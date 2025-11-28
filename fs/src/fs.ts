@@ -14,5 +14,6 @@ export * from './guards.ts';
 export * from './types.ts';
 export * from './util/consts.ts';
 export * from './util/fileinfo.ts';
+export * from './util/resolve-type.ts';
 export * from './util/types.ts';
 export { cwd } from './utils.ts';
