@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.8] - 2025-11-28
+
+- Updated dependencies
+
 ## [0.1.7] - 2025-11-13
 
 - Update depdendencies and fix deno.json
