@@ -11,6 +11,6 @@
   "imports": {
     "@epdoc/datetime": "jsr:@epdoc/datetime@^2.0.3",
     "@epdoc/type": "jsr:@epdoc/type@^1.1.19",
-    "@std/cli": "jsr:@std/cli@^1.0.23"
+    "@std/cli": "jsr:@std/cli@^1.0.24"
   }
 }
