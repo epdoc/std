@@ -215,7 +215,7 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
     return new FolderSpec(fullPath);
   }
 
-  home(...args: string[]): FolderSpec {
+  static home(...args: string[]): FolderSpec {
     const fullPath = path.resolve(os.userInfo().homedir, ...args);
     return new FolderSpec(fullPath);
   }

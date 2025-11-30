@@ -128,7 +128,7 @@ export class FSSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec {
    * console.log(homeFs.path); // e.g. '/Users/yourUsername/Documents/Projects'
    */
 
-  home(...args: string[]): FSSpec {
+  static home(...args: string[]): FSSpec {
     const fullPath = path.resolve(os.userInfo().homedir, ...args);
     return new FSSpec(fullPath);
   }

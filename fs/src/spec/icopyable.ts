@@ -11,7 +11,6 @@ export interface ICopyableSpec {
 
 export interface IRootableSpec {
   add(...args: string[]): FolderSpec | FileSpec | FSSpec;
-  home(...args: string[]): FolderSpec | FileSpec | FSSpec;
 }
 
 export interface ISafeCopyableSpec {

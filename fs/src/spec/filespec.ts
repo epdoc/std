@@ -22,12 +22,12 @@ import { FSBytes } from '../fsbytes.ts';
 import { asFilePath, isFilePath } from '../guards.ts';
 import type * as FS from '../types.ts';
 import { FSSpecBase } from './basespec.ts';
+import { FileSpecWriter } from './filespecwriter.ts';
 import { FolderSpec } from './folderspec.ts';
 import { FSSpec } from './fsspec.ts';
 import type { ICopyableSpec, IRootableSpec, ISafeCopyableSpec } from './icopyable.ts';
 import { PDFMetadataReader } from './readpdf.ts';
 import type { JsonReplacer } from './types.ts';
-import { FileSpecWriter } from './filespecwriter.ts';
 
 const REG = {
   pdf: /\.pdf$/i,
@@ -217,8 +217,9 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * const homeFs = fs.home('Documents', 'Projects', 'my_file.txt');
    * console.log(homeFs.path); // e.g. '/Users/yourUsername/Documents/Projects/my_file.txt'
    */
-  home(...args: string[]): FileSpec {
-    return this.add(os.userInfo().homedir, ...args);
+  static home(...args: string[]): FileSpec {
+    const fullPath = path.resolve(os.userInfo().homedir, ...args);
+    return new FileSpec(fullPath);
   }
 
   /**
