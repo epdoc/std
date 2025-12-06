@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.7] - 2025-12-06
+
+- formatting change
+
 ## [2.0.6] - 2025-12-06
 
 - Added d and H support for datetime format string
