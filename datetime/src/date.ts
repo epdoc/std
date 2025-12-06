@@ -237,30 +237,44 @@ export class DateEx {
   private static formatInternal(d: Date, format: string): string {
     let f = String(format);
 
-    // Use Intl.DateTimeFormat for month names
-    // Must check MMMM before MMM to avoid partial replacement
+    // Use placeholder strategy to avoid conflicts between tokens
+    // Use placeholders that don't contain any token characters (M, d, H, y, m, s, S)
+    // Use only underscores and numbers to be completely safe
+    // Step 1: Replace month names with safe placeholders
+    const placeholders: Record<string, string> = {};
+
     if (f.includes('MMMM')) {
       const monthLong = new Intl.DateTimeFormat('en-US', { month: 'long', timeZone: 'UTC' }).format(d);
-      f = f.replace('MMMM', monthLong);
+      const placeholder = '___1___';
+      placeholders[placeholder] = monthLong;
+      f = f.replace('MMMM', placeholder);
     }
     if (f.includes('MMM')) {
       const monthShort = new Intl.DateTimeFormat('en-US', { month: 'short', timeZone: 'UTC' }).format(d);
-      f = f.replace('MMM', monthShort);
+      const placeholder = '___2___';
+      placeholders[placeholder] = monthShort;
+      f = f.replace('MMM', placeholder);
     }
 
-    // Replace remaining tokens
+    // Step 2: Replace numeric/time tokens
     // Must check longer tokens before shorter ones to avoid partial replacement
     f = f
       .replace('yyyy', String(d.getUTCFullYear()))
       .replace('MM', String(d.getUTCMonth() + 1).padStart(2, '0'))
-      .replace('M', String(d.getUTCMonth() + 1))
       .replace('dd', String(d.getUTCDate()).padStart(2, '0'))
-      .replace('d', String(d.getUTCDate()))
       .replace('HH', String(d.getUTCHours()).padStart(2, '0'))
-      .replace('H', String(d.getUTCHours()))
       .replace('mm', String(d.getUTCMinutes()).padStart(2, '0'))
       .replace('ss', String(d.getUTCSeconds()).padStart(2, '0'))
-      .replace('SSS', String(d.getUTCMilliseconds()).padStart(3, '0'));
+      .replace('SSS', String(d.getUTCMilliseconds()).padStart(3, '0'))
+      .replace('M', String(d.getUTCMonth() + 1))
+      .replace('d', String(d.getUTCDate()))
+      .replace('H', String(d.getUTCHours()));
+
+    // Step 3: Replace placeholders with actual month names
+    for (const [placeholder, value] of Object.entries(placeholders)) {
+      f = f.replace(placeholder, value);
+    }
+
     return f;
   }
 
