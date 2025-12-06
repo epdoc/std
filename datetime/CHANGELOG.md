@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.4] - 2025-12-06
+
+- Updated dependencies
+
 ## [2.0.3] - 2025-11-13
 
 - Fix TZ parsing bug for TZ=GMT
