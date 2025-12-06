@@ -562,13 +562,46 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   }
 
   /**
-   * Reads the file as JSON and parses it.
-   * @returns {Promise<unknown>} A promise that resolves with the parsed JSON content.
-   */
-  async readJson<T = unknown>(): Promise<T> {
+   * Reads the file as JSON and parses it, optionally stripping comments for JSONC files.
+   * Supports both standard JSON and JSON-with-comments (JSONC) formats.
+   *
+   * @template T - The expected type of the parsed JSON data. Defaults to `unknown`.
+   * @param {boolean} [opts.stripComments=false] - Whether to strip comments before parsing.
+   *                                           If `true`, comments will always be stripped.
+   *                                           If `false` and the file is JSONC, comments will still be stripped.
+   * @returns {Promise<T>} A promise that resolves with the parsed JSON content of type `T`.
+   * @throws {Error} If the file cannot be read or contains invalid JSON.
+   *                  The error is wrapped with additional context about the file.
+   *
+   * @example
+   * // Basic usage - automatically strips comments for .jsonc files
+   * const data = await file.readJson();
+   *
+   * @example
+   * // Explicitly strip comments for any JSON file
+   * const data = await file.readJson({ stripComments: true });
+   *
+   * @example
+   * // Use type parameter for better TypeScript support
+   * interface Config {
+   *   name: string;
+   *   port: number;
+   * }
+   * const config = await file.readJson<Config>();
+   *
+   * @remarks
+   * This method uses `stripJsonComments` internally for comment removal.
+   * When `stripComments` is `true` or the file is JSONC, trailing commas are also supported.
+   *
+   * @see {@link isJsonc} - Method that determines if the file should be treated as JSONC
+   * @see {@link readAsString} - Underlying method that reads the file content
+   *
+   * @async
+   * @category File Operations
+   */ async readJson<T = unknown>(opts: { stripComments?: boolean } = {}): Promise<T> {
     try {
       const s = await this.readAsString();
-      if (this.isJsonc()) {
+      if (opts.stripComments || this.isJsonc()) {
         // If the file is JSONC, strip comments before parsing
         return JSON.parse(stripJsonComments(s, { trailingCommas: true })) as T;
       }

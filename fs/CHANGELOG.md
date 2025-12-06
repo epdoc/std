@@ -1,5 +1,9 @@
 # Changelog for @epdoc/fs
 
+## [1.2.2] - 2025-12-06
+
+- Added stripComments option to launchgen
+
 ## [1.2.1] - 2025-12-06
 
 - Updated dependencies
