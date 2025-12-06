@@ -132,6 +132,32 @@ describe('date-util', () => {
     expect(new DateEx(d).format('yyyyMMdd_HHmmss')).toEqual('19971125_061314');
     expect(new DateEx(d).formatUTC('yyyyMMdd_HHmmss')).toEqual('19971125_121314');
   });
+  describe('format with month names', () => {
+    const d = new Date('2024-01-15T12:30:45.123Z');
+    it('MMMM (full month name)', () => {
+      expect(new DateEx(d).formatUTC('MMMM yyyy')).toEqual('January 2024');
+    });
+    it('MMM (abbreviated month name)', () => {
+      expect(new DateEx(d).formatUTC('MMM dd, yyyy')).toEqual('Jan 15, 2024');
+    });
+    it('MM (zero-padded month number)', () => {
+      expect(new DateEx(d).formatUTC('yyyy-MM-dd')).toEqual('2024-01-15');
+    });
+    it('M (month number without padding)', () => {
+      expect(new DateEx(d).formatUTC('M/dd/yyyy')).toEqual('1/15/2024');
+    });
+    it('combined format', () => {
+      expect(new DateEx(d).formatUTC('dd MMM yyyy HH:mm:ss')).toEqual('15 Jan 2024 12:30:45');
+    });
+    it('full format with milliseconds', () => {
+      expect(new DateEx(d).formatUTC('MMMM dd, yyyy HH:mm:ss.SSS')).toEqual('January 15, 2024 12:30:45.123');
+    });
+    it('December test', () => {
+      const dDec = new Date('2024-12-25T00:00:00Z');
+      expect(new DateEx(dDec).formatUTC('MMMM dd, yyyy')).toEqual('December 25, 2024');
+      expect(new DateEx(dDec).formatUTC('MMM dd')).toEqual('Dec 25');
+    });
+  });
   it('julianDate', () => {
     const d = new Date('1997-11-25T12:13:14.456Z');
     expect(new DateEx(d).julianDate()).toEqual(2450778);

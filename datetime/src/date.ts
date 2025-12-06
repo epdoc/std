@@ -189,7 +189,10 @@ export class DateEx {
    *
    * The format string can contain the following tokens:
    * - `yyyy`: Full year (e.g., 2024)
-   * - `MM`: Month (01-12)
+   * - `MMMM`: Full month name (e.g., January)
+   * - `MMM`: Abbreviated month name (e.g., Jan)
+   * - `MM`: Month number with zero padding (01-12)
+   * - `M`: Month number without zero padding (1-12)
    * - `dd`: Day of the month (01-31)
    * - `HH`: Hours (00-23)
    * - `mm`: Minutes (00-59)
@@ -208,7 +211,17 @@ export class DateEx {
   /**
    * Formats the date as a string in UTC using a custom format.
    *
-   * See the `format` method for a list of available format tokens.
+   * Available format tokens:
+   * - `yyyy`: Full year (e.g., 2024)
+   * - `MMMM`: Full month name (e.g., January)
+   * - `MMM`: Abbreviated month name (e.g., Jan)
+   * - `MM`: Month number with zero padding (01-12)
+   * - `M`: Month number without zero padding (1-12)
+   * - `dd`: Day of the month (01-31)
+   * - `HH`: Hours (00-23)
+   * - `mm`: Minutes (00-59)
+   * - `ss`: Seconds (00-59)
+   * - `SSS`: Milliseconds (000-999)
    *
    * @param format The format string.
    * @returns The formatted date string in UTC.
@@ -219,9 +232,24 @@ export class DateEx {
 
   private static formatInternal(d: Date, format: string): string {
     let f = String(format);
+
+    // Use Intl.DateTimeFormat for month names
+    // Must check MMMM before MMM to avoid partial replacement
+    if (f.includes('MMMM')) {
+      const monthLong = new Intl.DateTimeFormat('en-US', { month: 'long', timeZone: 'UTC' }).format(d);
+      f = f.replace('MMMM', monthLong);
+    }
+    if (f.includes('MMM')) {
+      const monthShort = new Intl.DateTimeFormat('en-US', { month: 'short', timeZone: 'UTC' }).format(d);
+      f = f.replace('MMM', monthShort);
+    }
+
+    // Replace remaining tokens
+    // Must check MM before M to avoid partial replacement
     f = f
       .replace('yyyy', String(d.getUTCFullYear()))
       .replace('MM', String(d.getUTCMonth() + 1).padStart(2, '0'))
+      .replace('M', String(d.getUTCMonth() + 1))
       .replace('dd', String(d.getUTCDate()).padStart(2, '0'))
       .replace('HH', String(d.getUTCHours()).padStart(2, '0'))
       .replace('mm', String(d.getUTCMinutes()).padStart(2, '0'))
