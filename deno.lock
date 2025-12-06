@@ -278,7 +278,7 @@
       },
       "duration": {
         "dependencies": [
-          "jsr:@epdoc/type@^1.1.19",
+          "jsr:@epdoc/type@^1.1.20",
           "jsr:@std/expect@^1.0.17",
           "jsr:@std/testing@^1.0.16"
         ]
