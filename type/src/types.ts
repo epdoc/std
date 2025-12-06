@@ -68,6 +68,80 @@ export type ExactlyOne<T, K extends keyof T = keyof T> = {
   [P in K]: { [Q in P]: T[P] } & { [Q in Exclude<K, P>]?: never };
 }[K];
 
+/**
+ * Extracts only the known (explicitly defined) property keys from a type,
+ * excluding keys from index signatures (like `[key: string]` or `[key: number]`).
+ *
+ * This is useful for types that have both explicitly defined properties
+ * and an index signature, allowing you to work with only the known properties
+ * in a type-safe manner.
+ *
+ * @template T - The type from which to extract known keys
+ * @returns A union type of the known property keys (as string literals)
+ *
+ * @example
+ * ```typescript
+ * type Example = {
+ *   name: string;
+ *   age: number;
+ *   [key: string]: unknown; // Index signature
+ * };
+ *
+ * type KnownExampleKeys = KnownKeys<Example>;
+ * // Result: "name" | "age"
+ *
+ * // Without KnownKeys:
+ * type AllKeys = keyof Example;
+ * // Result: "name" | "age" | string | number
+ * // (includes index signature keys, which is usually not desired)
+ * ```
+ *
+ * @example
+ * ```typescript
+ * // Real-world usage with configuration objects
+ * type Config = {
+ *   apiUrl: string;
+ *   timeout: number;
+ *   retries: number;
+ *   [key: string]: string | number; // Allow additional string/number config
+ * };
+ *
+ * type RequiredConfigKeys = KnownKeys<Config>;
+ * // Result: "apiUrl" | "timeout" | "retries"
+ *
+ * // Type-safe iteration over required config
+ * const requiredKeys: RequiredConfigKeys[] = ['apiUrl', 'timeout', 'retries'];
+ * ```
+ *
+ * @example
+ * ```typescript
+ * // Creating a type-safe getter function
+ * function getKnownProperty<T>(
+ *   obj: T,
+ *   key: KnownKeys<T>
+ * ): T[typeof key] {
+ *   return obj[key];
+ * }
+ *
+ * const config: Config = { apiUrl: '...', timeout: 5000, retries: 3 };
+ * const url = getKnownProperty(config, 'apiUrl'); // Type: string
+ * // getKnownProperty(config, 'someUnknownKey'); // Type error!
+ * ```
+ *
+ * @note This type uses conditional type inference to filter out index signatures.
+ * The logic works by mapping over keys and replacing index signature keys with `never`,
+ * then extracting the non-`never` values.
+ *
+ * @see {@link https://www.typescriptlang.org/docs/handbook/2/keyof-types.html keyof Types}
+ * @see {@link https://www.typescriptlang.org/docs/handbook/2/indexed-access-types.html Indexed Access Types}
+ * @see {@link https://www.typescriptlang.org/docs/handbook/2/conditional-types.html Conditional Types}
+ */
+export type KnownKeys<T> = {
+  [K in keyof T]: string extends K ? never : number extends K ? never : K;
+} extends { [_ in keyof T]: infer U } ? U extends never ? never
+  : U
+  : never;
+
 export type LowerCaseChar =
   | 'a'
   | 'b'
