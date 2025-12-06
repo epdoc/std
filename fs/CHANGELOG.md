@@ -1,5 +1,9 @@
 # Changelog for @epdoc/fs
 
+## [1.2.1] - 2025-12-06
+
+- Updated dependencies
+
 ## [1.2.0] - 2025-11-30
 
 - Fixed home method to be static
