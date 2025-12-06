@@ -193,8 +193,10 @@ export class DateEx {
    * - `MMM`: Abbreviated month name (e.g., Jan)
    * - `MM`: Month number with zero padding (01-12)
    * - `M`: Month number without zero padding (1-12)
-   * - `dd`: Day of the month (01-31)
-   * - `HH`: Hours (00-23)
+   * - `dd`: Day of the month with zero padding (01-31)
+   * - `d`: Day of the month without zero padding (1-31)
+   * - `HH`: Hours with zero padding (00-23)
+   * - `H`: Hours without zero padding (0-23)
    * - `mm`: Minutes (00-59)
    * - `ss`: Seconds (00-59)
    * - `SSS`: Milliseconds (000-999)
@@ -217,8 +219,10 @@ export class DateEx {
    * - `MMM`: Abbreviated month name (e.g., Jan)
    * - `MM`: Month number with zero padding (01-12)
    * - `M`: Month number without zero padding (1-12)
-   * - `dd`: Day of the month (01-31)
-   * - `HH`: Hours (00-23)
+   * - `dd`: Day of the month with zero padding (01-31)
+   * - `d`: Day of the month without zero padding (1-31)
+   * - `HH`: Hours with zero padding (00-23)
+   * - `H`: Hours without zero padding (0-23)
    * - `mm`: Minutes (00-59)
    * - `ss`: Seconds (00-59)
    * - `SSS`: Milliseconds (000-999)
@@ -245,13 +249,15 @@ export class DateEx {
     }
 
     // Replace remaining tokens
-    // Must check MM before M to avoid partial replacement
+    // Must check longer tokens before shorter ones to avoid partial replacement
     f = f
       .replace('yyyy', String(d.getUTCFullYear()))
       .replace('MM', String(d.getUTCMonth() + 1).padStart(2, '0'))
       .replace('M', String(d.getUTCMonth() + 1))
       .replace('dd', String(d.getUTCDate()).padStart(2, '0'))
+      .replace('d', String(d.getUTCDate()))
       .replace('HH', String(d.getUTCHours()).padStart(2, '0'))
+      .replace('H', String(d.getUTCHours()))
       .replace('mm', String(d.getUTCMinutes()).padStart(2, '0'))
       .replace('ss', String(d.getUTCSeconds()).padStart(2, '0'))
       .replace('SSS', String(d.getUTCMilliseconds()).padStart(3, '0'));

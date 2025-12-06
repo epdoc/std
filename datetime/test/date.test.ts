@@ -158,6 +158,34 @@ describe('date-util', () => {
       expect(new DateEx(dDec).formatUTC('MMM dd')).toEqual('Dec 25');
     });
   });
+  describe('format with unpadded day and hour', () => {
+    it('d (day without padding)', () => {
+      const d1 = new Date('2024-01-05T00:00:00Z');
+      expect(new DateEx(d1).formatUTC('M/d/yyyy')).toEqual('1/5/2024');
+      const d15 = new Date('2024-01-15T00:00:00Z');
+      expect(new DateEx(d15).formatUTC('M/d/yyyy')).toEqual('1/15/2024');
+    });
+    it('dd (day with padding)', () => {
+      const d = new Date('2024-01-05T00:00:00Z');
+      expect(new DateEx(d).formatUTC('MM/dd/yyyy')).toEqual('01/05/2024');
+    });
+    it('H (hour without padding)', () => {
+      const d1 = new Date('2024-01-15T03:30:45Z');
+      expect(new DateEx(d1).formatUTC('H:mm:ss')).toEqual('3:30:45');
+      const d12 = new Date('2024-01-15T12:30:45Z');
+      expect(new DateEx(d12).formatUTC('H:mm:ss')).toEqual('12:30:45');
+      const d0 = new Date('2024-01-15T00:30:45Z');
+      expect(new DateEx(d0).formatUTC('H:mm:ss')).toEqual('0:30:45');
+    });
+    it('HH (hour with padding)', () => {
+      const d = new Date('2024-01-15T03:30:45Z');
+      expect(new DateEx(d).formatUTC('HH:mm:ss')).toEqual('03:30:45');
+    });
+    it('combined d and H', () => {
+      const d = new Date('2024-01-05T03:30:45Z');
+      expect(new DateEx(d).formatUTC('M/d/yyyy H:mm:ss')).toEqual('1/5/2024 3:30:45');
+    });
+  });
   it('julianDate', () => {
     const d = new Date('1997-11-25T12:13:14.456Z');
     expect(new DateEx(d).julianDate()).toEqual(2450778);

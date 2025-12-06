@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.6] - 2025-12-06
+
+- Added d and H support for datetime format string
+
 ## [2.0.5] - 2025-12-06
 
 - Added support for MMMM and MMM in datetime format string
