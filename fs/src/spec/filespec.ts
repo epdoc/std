@@ -1084,6 +1084,26 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
     return Writable.toWeb(nodeStream) as WritableStream<Uint8Array>;
   }
 
+  /**
+   * Creates a Node.js readable stream for reading the file.
+   * Useful when working with Node.js libraries that expect Node streams.
+   * @returns A promise that resolves to a Node.js Readable stream
+   */
+  public async nodeReadableStream(): Promise<NodeJS.ReadableStream> {
+    const file = await this.open({ read: true });
+    return file.createReadStream();
+  }
+
+  /**
+   * Creates a Node.js writable stream for writing to the file.
+   * Useful when working with Node.js libraries that expect Node streams.
+   * @returns A promise that resolves to a Node.js Writable stream
+   */
+  public async nodeWritableStream(): Promise<NodeJS.WritableStream> {
+    const file = await this.open({ write: true, create: true });
+    return file.createWriteStream();
+  }
+
   public async pipeFrom(source: ReadableStream<Uint8Array>): Promise<void> {
     const destination = await this.writableStream();
     await source.pipeTo(destination);

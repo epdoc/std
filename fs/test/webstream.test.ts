@@ -1,6 +1,7 @@
 import { FileSpec, FolderSpec } from '../src/mod.ts';
 import { expect } from '@std/expect';
 import { afterAll, beforeAll, describe, it } from '@std/testing/bdd';
+import { Readable, Writable } from 'node:stream';
 import { TextDecoder, TextEncoder } from 'node:util'; // Using node:util for TextEncoder/Decoder
 
 describe('FileSpec Web Stream API', () => {
@@ -43,6 +44,60 @@ describe('FileSpec Web Stream API', () => {
 
       await writer.write(new TextEncoder().encode(content));
       await writer.close();
+
+      const fileContent = await testFile.readAsString();
+      expect(fileContent).toBe(content);
+    });
+  });
+
+  describe('nodeReadableStream()', () => {
+    it('should return a Node.js Readable stream that reads file content', async () => {
+      const content = 'Hello, Node Streams!';
+      await testFile.write(content);
+
+      const nodeStream = await testFile.nodeReadableStream();
+      let receivedContent = '';
+
+      await new Promise<void>((resolve, reject) => {
+        nodeStream.on('data', (chunk: Buffer) => {
+          receivedContent += chunk.toString();
+        });
+        nodeStream.on('end', () => resolve());
+        nodeStream.on('error', reject);
+      });
+
+      expect(receivedContent).toBe(content);
+    });
+  });
+
+  describe('nodeWritableStream()', () => {
+    it('should return a Node.js Writable stream that writes to the file', async () => {
+      const content = 'Writing with Node.js Writable stream.';
+      const nodeStream = await testFile.nodeWritableStream();
+
+      await new Promise<void>((resolve, reject) => {
+        nodeStream.write(content, (err) => {
+          if (err) reject(err);
+          else {
+            nodeStream.end(() => resolve());
+          }
+        });
+      });
+
+      const fileContent = await testFile.readAsString();
+      expect(fileContent).toBe(content);
+    });
+
+    it('should work with pipe from Node.js Readable', async () => {
+      const content = 'Piping from Node.js Readable to file.';
+      const readable = Readable.from([content]);
+      const writable = await testFile.nodeWritableStream();
+
+      await new Promise<void>((resolve, reject) => {
+        readable.pipe(writable);
+        writable.on('finish', () => resolve());
+        writable.on('error', reject);
+      });
 
       const fileContent = await testFile.readAsString();
       expect(fileContent).toBe(content);
