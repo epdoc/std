@@ -1,7 +1,8 @@
 import { FileSpec, FolderSpec } from '../src/mod.ts';
 import { expect } from '@std/expect';
 import { afterAll, beforeAll, describe, it } from '@std/testing/bdd';
-import { Readable, Writable } from 'node:stream';
+import { Readable } from 'node:stream';
+import type { Buffer } from 'node:buffer';
 import { TextDecoder, TextEncoder } from 'node:util'; // Using node:util for TextEncoder/Decoder
 
 describe('FileSpec Web Stream API', () => {

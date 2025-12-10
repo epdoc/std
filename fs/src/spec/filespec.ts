@@ -12,8 +12,7 @@ import { assert } from '@std/assert';
 import { decodeBase64, encodeBase64 } from '@std/encoding';
 import { fromFileUrl } from '@std/path';
 import crypto from 'node:crypto';
-import { promises as nfs } from 'node:fs';
-import type { FileHandle } from 'node:fs/promises';
+import fs, { promises as nfs } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { Readable, Writable } from 'node:stream';
@@ -45,7 +44,7 @@ const BUFSIZE = 2 * 8192;
  * Class representing a file system entry when it is known to be a file.
  */
 export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec, ISafeCopyableSpec {
-  #file?: FileHandle;
+  #file?: nfs.FileHandle;
 
   /**
    * Public constructor for FileSpec.
@@ -433,7 +432,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   //     });
   // }
 
-  async open(opts: { read?: boolean; write?: boolean; create?: boolean }): Promise<FileHandle> {
+  async open(opts: { read?: boolean; write?: boolean; create?: boolean }): Promise<nfs.FileHandle> {
     try {
       // map read/write flags to Node flags
       let flags = 'r';
@@ -648,7 +647,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
 
   async writeJsonEx(value: unknown, options: DeepCopyOpts | null = null, space?: string | number): Promise<this> {
     const text = _.jsonSerialize(value, options, space);
-    let fileHandle: FileHandle | undefined;
+    let fileHandle: nfs.FileHandle | undefined;
     try {
       fileHandle = await nfs.open(this._f, 'w');
       await fileHandle.write(new TextEncoder().encode(text));
@@ -676,7 +675,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   ): Promise<this> {
     const replacerArg = replacer as unknown as Parameters<typeof JSON.stringify>[1];
     const text = JSON.stringify(data, replacerArg, space);
-    let fileHandle: FileHandle | undefined;
+    let fileHandle: nfs.FileHandle | undefined;
     try {
       fileHandle = await nfs.open(this._f, 'w');
       await fileHandle.write(new TextEncoder().encode(text));
@@ -734,7 +733,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * await file.write(bytes);
    */
   async write(data: string | string[] | Uint8Array): Promise<this> {
-    let fileHandle: FileHandle | undefined;
+    let fileHandle: nfs.FileHandle | undefined;
     try {
       fileHandle = await nfs.open(this._f, 'w');
       if (data instanceof Uint8Array) {
@@ -1072,22 +1071,55 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
     await nfs.chmod(this._f, mode);
   }
 
+  /**
+   * Creates a Web Streams API ReadableStream for reading from the file.
+   * This returns a modern web-compatible stream that works with fetch(), Response.body,
+   * and other Web APIs. Use this for modern JavaScript/TypeScript applications.
+   *
+   * @returns A promise that resolves to a Web Streams API ReadableStream
+   * @example
+   * ```typescript
+   * const webStream = await file.readableStream();
+   * const reader = webStream.getReader();
+   * const { value, done } = await reader.read();
+   * ```
+   */
   public async readableStream(): Promise<ReadableStream<Uint8Array>> {
     const file = await this.open({ read: true });
     const nodeStream = file.createReadStream();
     return Readable.toWeb(nodeStream) as ReadableStream<Uint8Array>;
   }
 
-  public async writableStream(): Promise<WritableStream<Uint8Array>> {
-    const file = await this.open({ write: true, create: true });
-    const nodeStream = file.createWriteStream();
+  /**
+   * Creates a Web Streams API WritableStream for writing to the file.
+   * This returns a modern web-compatible stream that works with fetch(), Response.body,
+   * and other Web APIs. Use this for modern JavaScript/TypeScript applications.
+   *
+   * @returns A promise that resolves to a Web Streams API WritableStream
+   * @example
+   * ```typescript
+   * const webStream = await file.writableStream();
+   * const writer = webStream.getWriter();
+   * await writer.write(new TextEncoder().encode('Hello World'));
+   * await writer.close();
+   * ```
+   */
+  public writableStream(): WritableStream<Uint8Array> {
+    const nodeStream = fs.createWriteStream(this.path);
     return Writable.toWeb(nodeStream) as WritableStream<Uint8Array>;
   }
 
   /**
    * Creates a Node.js readable stream for reading the file.
-   * Useful when working with Node.js libraries that expect Node streams.
+   * This returns a Node.js stream compatible with libraries like PDFKit, Express, etc.
+   * Use this when working with Node.js libraries that expect Node.js streams.
+   *
    * @returns A promise that resolves to a Node.js Readable stream
+   * @example
+   * ```typescript
+   * const nodeStream = await file.nodeReadableStream();
+   * nodeStream.pipe(someWritableStream);
+   * ```
    */
   public async nodeReadableStream(): Promise<NodeJS.ReadableStream> {
     const file = await this.open({ read: true });
@@ -1096,12 +1128,21 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
 
   /**
    * Creates a Node.js writable stream for writing to the file.
-   * Useful when working with Node.js libraries that expect Node streams.
-   * @returns A promise that resolves to a Node.js Writable stream
+   * This returns a Node.js stream compatible with libraries like PDFKit, Express, etc.
+   * Use this when working with Node.js libraries that expect Node.js streams.
+   * PDFKit specifically requires this type of stream for proper PDF generation.
+   *
+   * @returns A Node.js Writable stream (synchronous, no Promise needed)
+   * @example
+   * ```typescript
+   * const nodeStream = file.nodeWritableStream();
+   * pdfDoc.pipe(nodeStream); // PDFKit example
+   * nodeStream.write('Hello World');
+   * nodeStream.end();
+   * ```
    */
-  public async nodeWritableStream(): Promise<NodeJS.WritableStream> {
-    const file = await this.open({ write: true, create: true });
-    return file.createWriteStream();
+  public nodeWritableStream(): NodeJS.WritableStream {
+    return fs.createWriteStream(this.path);
   }
 
   public async pipeFrom(source: ReadableStream<Uint8Array>): Promise<void> {
