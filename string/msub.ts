@@ -29,9 +29,9 @@ export type InitOptions = {
 
 /**
  * Allowed types for substitution parameters.
- * @typedef {string | number | boolean | Date} SubParam
+ * @typedef {unknown} SubParam
  */
-export type SubParam = string | number | boolean | Date;
+export type SubParam = unknown;
 
 /**
  * Allowed types for parameters in the replace method.
