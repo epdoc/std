@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/duration",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Duration formatting",
   "exports": {
     ".": "./src/mod.ts"
@@ -10,7 +10,7 @@
     "check": "deno check src test *.json examples"
   },
   "imports": {
-    "@epdoc/type": "jsr:@epdoc/type@^1.1.20",
+    "@epdoc/type": "jsr:@epdoc/type@^1.2.1",
     "@std/expect": "jsr:@std/expect@^1.0.17",
     "@std/testing": "jsr:@std/testing@^1.0.16"
   }
