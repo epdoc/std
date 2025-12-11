@@ -1,5 +1,9 @@
 # Changelog for @epdoc/fs
 
+## [1.2.8] - 2025-12-11
+
+- Updated dependencies
+
 ## [1.2.7] - 2025-12-10
 
 - Fixes to writable streams

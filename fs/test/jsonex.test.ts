@@ -97,7 +97,7 @@ describe('JSON Extended Operations', () => {
         HOME: testDir,
         USER: 'testuser',
       };
-      await testFilePath.writeJsonEx(data, { replace: replaceMap });
+      await testFilePath.writeJsonEx(data, { replace: replaceMap, pre: '{', post: '}' });
 
       // Read without replacement to check raw content
       const rawReadData = await testFilePath.readJsonEx({}) as any;
@@ -105,7 +105,7 @@ describe('JSON Extended Operations', () => {
       expect(rawReadData.message).toEqual(`Hello from testuser!`);
 
       // Read with replacement
-      const readDataWithReplace = await testFilePath.readJsonEx({ replace: replaceMap }) as any;
+      const readDataWithReplace = await testFilePath.readJsonEx({ replace: replaceMap, pre: '{', post: '}' }) as any;
       expect(readDataWithReplace.path).toEqual(`${testDir}/documents/config.json`);
       expect(readDataWithReplace.message).toEqual(`Hello from testuser!`);
     });
@@ -125,8 +125,8 @@ describe('JSON Extended Operations', () => {
       };
 
       const replaceMap = { HOME: testDir };
-      await testFilePath.writeJsonEx(nestedData, { replace: replaceMap });
-      const readData = await testFilePath.readJsonEx({ replace: replaceMap }) as any;
+      await testFilePath.writeJsonEx(nestedData, { replace: replaceMap, pre: '{', post: '}' });
+      const readData = await testFilePath.readJsonEx({ replace: replaceMap, pre: '{', post: '}' }) as any;
 
       expect(readData.version).toEqual(nestedData.version);
 
