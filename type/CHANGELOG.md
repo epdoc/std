@@ -1,5 +1,9 @@
 # Changelog for @epdoc/type
 
+## [1.2.1] - 2025-12-10
+
+- Added missing export that was needed elsewhere
+
 ## [1.2.0] - 2025-12-10
 
 - Refactored deepCopy and jsonSerialize code to allow msubLite or msub, to split into multiple files.

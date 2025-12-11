@@ -1,6 +1,4 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
-import type { DigitChar, ExactlyOne, IError, LetterChar, LowerCaseChar, UpperCaseChar } from '../src/mod.ts';
+import type { DigitChar, ExactlyOne, IError, LetterChar, LowerCaseChar, UpperCaseChar } from '@epdoc/type';
 import {
   asBoolean,
   asDate,
@@ -35,10 +33,12 @@ import {
   isTrue,
   isValidDate,
   isWholeNumber,
-  msub,
+  msubLite,
   pad,
   underscoreCapitalize,
-} from '../src/mod.ts';
+} from '@epdoc/type';
+import { expect } from '@std/expect';
+import { describe, it } from '@std/testing/bdd';
 
 describe('util', () => {
   describe('number', () => {
@@ -470,30 +470,30 @@ describe('util', () => {
       });
     });
   });
-  describe('msub', () => {
+  describe('msubLite', () => {
     it('replaces simple keys', () => {
-      expect(msub('Hello ${name}!', { name: 'World' })).toBe('Hello World!');
+      expect(msubLite('Hello ${name}!', { name: 'World' })).toBe('Hello World!');
     });
     it('leaves unknown keys unchanged', () => {
-      expect(msub('Hello ${name}!', {})).toBe('Hello ${name}!');
+      expect(msubLite('Hello ${name}!', {})).toBe('Hello ${name}!');
     });
     it('works with custom delimiters', () => {
-      expect(msub('Hello <<name>>!', { name: 'World' }, '<<', '>>')).toBe('Hello World!');
+      expect(msubLite('Hello <<name>>!', { name: 'World' }, '<<', '>>')).toBe('Hello World!');
     });
     it('replaces multiple occurrences', () => {
-      expect(msub('${a} and ${a}', { a: 'x' })).toBe('x and x');
+      expect(msubLite('${a} and ${a}', { a: 'x' })).toBe('x and x');
     });
     it('works with adjacent keys', () => {
-      expect(msub('${a}${b}', { a: 'x', b: 'y' })).toBe('xy');
+      expect(msubLite('${a}${b}', { a: 'x', b: 'y' })).toBe('xy');
     });
     it('returns original string if no replacements', () => {
-      expect(msub('no keys here', { a: 'x' })).toBe('no keys here');
+      expect(msubLite('no keys here', { a: 'x' })).toBe('no keys here');
     });
     it('handles empty string', () => {
-      expect(msub('', { a: 'x' })).toBe('');
+      expect(msubLite('', { a: 'x' })).toBe('');
     });
     it('handles missing delimiters gracefully', () => {
-      expect(msub('Hello ${name}!', { name: 'World' }, '', '')).toBe('Hello ${name}!');
+      expect(msubLite('Hello ${name}!', { name: 'World' }, '', '')).toBe('Hello ${name}!');
     });
   });
 
