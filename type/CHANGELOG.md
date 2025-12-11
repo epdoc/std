@@ -1,5 +1,9 @@
 # Changelog for @epdoc/type
 
+## [1.2.0] - 2025-12-10
+
+- Refactored deepCopy and jsonSerialize code to allow msubLite or msub, to split into multiple files.
+
 ## [1.1.20] - 2025-12-06
 
 - Added export type KnownKeys<T>

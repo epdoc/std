@@ -1,5 +1,5 @@
-import * as _ from './util.ts';
 import type { Integer } from './types.ts';
+import * as _ from './utils.ts';
 
 const REGEX = {
   typeSplit: new RegExp(/\s*[,\|]{1}\s*/),

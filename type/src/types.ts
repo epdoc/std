@@ -224,12 +224,21 @@ export type DeepCopyFn = (a: unknown, opts: DeepCopyOpts) => unknown;
 /**
  * Options for deep copying an object.
  */
-export type DeepCopyOpts = {
-  replace?: Record<string, string>;
+export type MSubFn = (s: string, replace: Record<string, unknown>, pre?: string, post?: string) => string;
+
+export type DeepCopyCommonOpts = {
   detectRegExp?: boolean;
   pre?: string;
   post?: string;
 };
+
+export type DeepCopyOpts =
+  & DeepCopyCommonOpts
+  & (
+    | { replace?: never; msubFn?: never } // No replacements
+    | { replace: Record<string, string>; msubFn?: never } // Simple string replacements
+    | { replace: Record<string, unknown>; msubFn: MSubFn } // Complex replacements with function
+  );
 
 export type JsonDeserializeOpts = DeepCopyOpts & {
   stripComments?: StripJsonCommentsOpts;
