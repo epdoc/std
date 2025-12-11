@@ -311,7 +311,7 @@
       },
       "response": {
         "dependencies": [
-          "jsr:@epdoc/type@^1.2.0",
+          "jsr:@epdoc/type@^1.2.1",
           "jsr:@std/assert@^1.0.16"
         ]
       },
