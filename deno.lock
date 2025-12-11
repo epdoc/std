@@ -9,6 +9,7 @@
     "jsr:@epdoc/type@1.0.3": "1.0.3",
     "jsr:@epdoc/type@^1.1.20": "1.1.20",
     "jsr:@epdoc/type@^1.2.0": "1.2.0",
+    "jsr:@epdoc/type@^1.2.1": "1.2.1",
     "jsr:@std/assert@^1.0.14": "1.0.16",
     "jsr:@std/assert@^1.0.15": "1.0.16",
     "jsr:@std/assert@^1.0.16": "1.0.16",
@@ -69,6 +70,12 @@
     },
     "@epdoc/type@1.2.0": {
       "integrity": "68f2321c84c2a0c56265d64f40b337eb6c1c31b6eacd2442bb1992432b80922b",
+      "dependencies": [
+        "jsr:@std/encoding@^1.0.10"
+      ]
+    },
+    "@epdoc/type@1.2.1": {
+      "integrity": "d049eb7628c7a1b2e08fe96ae30d01a774f0a23f41cb738db0a40dfe9dbca8d4",
       "dependencies": [
         "jsr:@std/encoding@^1.0.10"
       ]
@@ -275,7 +282,7 @@
       },
       "datetime": {
         "dependencies": [
-          "jsr:@epdoc/type@^1.2.0",
+          "jsr:@epdoc/type@^1.2.1",
           "jsr:@std/expect@^1.0.17"
         ]
       },
