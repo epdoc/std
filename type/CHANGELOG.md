@@ -1,5 +1,9 @@
 # Changelog for @epdoc/type
 
+## [1.2.2] - 2025-12-13
+
+- Improved pad method, now accepts negative padding
+
 ## [1.2.1] - 2025-12-10
 
 - Added missing export that was needed elsewhere

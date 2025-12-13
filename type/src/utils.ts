@@ -865,22 +865,52 @@ export function omit<T extends object>(obj: T, ...args: unknown[]): unknown {
 }
 
 /**
- * Pads a number or string with leading characters to a specified width.
- * @param n - The number or string to pad.
- * @param width - The total width of the resulting string.
- * @param [z='0'] - The character to use for padding. Defaults to 0, as is used for numbers.
- * @returns The padded string.
- * @deprecated Use String.padStart() instead.
+ * Pad a value to specified width. Positive width pads left, negative pads right.
+ * Default left padding: numbers use '0', strings use space.
+ * Default right padding: always uses space.
+ * Infinity/NaN are treated as strings (space padding).
+ *
+ * @param n - Value to pad (converted to string)
+ * @param width - Target width: positive for left padding, negative for right
+ * @param padChar - Padding character (optional - smart default based on context)
+ * @returns Padded string
+ *
  * @example
- * ```typescript
- * const num = 5;
- * const paddedNum = String(num).padStart(4, '0');
- * console.log(paddedNum); // '0005'
- * ```
+ * pad(42, 5)          // "00042" (number, left pad default '0')
+ * pad(42, -5)         // "42   " (number, right pad default space)
+ * pad("42", 5)        // "   42" (string, left pad default space)
+ * pad("42", -5)       // "42   " (string, right pad default space)
+ * pad(Infinity, 8)    // " Infinity" (Infinity treated as string)
+ * pad(NaN, 5)         // "  NaN" (NaN treated as string)
+ * pad(-42, 5)         // "-0042" (negative number, padding after sign)
+ * pad(-42, -6)        // "-42   " (negative number, right pad space)
  */
-export function pad(n: number | string, width: number, z: string = '0'): string {
-  const sn = String(n);
-  return sn.length >= width ? sn : new Array(width - sn.length + 1).join(z) + sn;
+export function pad(n: number, width: Integer, padChar?: string): string;
+export function pad(n: string, width: Integer, padChar?: string): string;
+export function pad(n: unknown, width: Integer, padChar?: string): string {
+  // Implementation handles all types
+  const actualN = n instanceof Number ? Number(n) : n;
+  const isNum = typeof actualN === 'number';
+  const str = String(actualN);
+  const absWidth = Math.abs(width);
+  const isRightPad = width < 0;
+
+  const isFiniteNumber = isNum && Number.isFinite(actualN);
+  const paddingChar = padChar ? padChar[0] : (!isNum || isRightPad || !isFiniteNumber) ? ' ' : '0';
+
+  if (str.length >= absWidth) {
+    return str;
+  }
+
+  if (!isRightPad && isNum && actualN < 0 && isFiniteNumber) {
+    const digits = str.slice(1);
+    const paddingNeeded = absWidth - str.length;
+    const padding = paddingChar.repeat(paddingNeeded);
+    return '-' + padding + digits;
+  }
+
+  const padding = paddingChar.repeat(absWidth - str.length);
+  return isRightPad ? str + padding : padding + str;
 }
 
 /**
@@ -893,8 +923,6 @@ export function roundNumber(num: number, dec: number = 3): number {
   const factor = Math.pow(10, dec);
   return Math.round(num * factor) / factor;
 }
-
-// json-utils.ts
 
 /**
  * Compares two values for deep equality.
