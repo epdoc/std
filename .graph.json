@@ -1,0 +1,9 @@
+{
+  "type": ["duration", "datetime", "string", "daterange", "response", "fs"],
+  "string": ["fs"],
+  "fs": [],
+  "duration": [],
+  "datetime": ["fs", "daterange", "string"],
+  "daterange": [],
+  "response": ["fs"]
+}
