@@ -186,6 +186,20 @@ describe('date-util', () => {
       expect(new DateEx(d).formatUTC('M/d/yyyy H:mm:ss')).toEqual('1/5/2024 3:30:45');
     });
   });
+  describe('format with weekday names', () => {
+    const d = new Date('2024-01-15T12:30:45.123Z'); // This is a Monday
+    it('EEEE (full weekday name)', () => {
+      expect(new DateEx(d).formatUTC('EEEE, MMMM dd, yyyy')).toEqual('Monday, January 15, 2024');
+    });
+    it('EEE (abbreviated weekday name)', () => {
+      expect(new DateEx(d).formatUTC('EEE, MMM dd, yyyy')).toEqual('Mon, Jan 15, 2024');
+    });
+    it('EE (short weekday name)', () => {
+      const d = new DateEx(new Date('2024-01-15T12:30:45.123Z'));
+      const s = d.formatUTC('EE, M/dd/yyyy');
+      expect(s).toEqual('M, 1/15/2024');
+    });
+  });
   it('julianDate', () => {
     const d = new Date('1997-11-25T12:13:14.456Z');
     expect(new DateEx(d).julianDate()).toEqual(2450778);

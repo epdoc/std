@@ -200,6 +200,9 @@ export class DateEx {
    * - `mm`: Minutes (00-59)
    * - `ss`: Seconds (00-59)
    * - `SSS`: Milliseconds (000-999)
+   * - `EEEE`: Full weekday name (e.g., Monday)
+   * - `EEE`: Abbreviated weekday name (e.g., Mon)
+   * - `EE`: Short weekday name (e.g., Mo)
    *
    * @param format The format string.
    * @returns The formatted date string.
@@ -226,6 +229,9 @@ export class DateEx {
    * - `mm`: Minutes (00-59)
    * - `ss`: Seconds (00-59)
    * - `SSS`: Milliseconds (000-999)
+   * - `EEEE`: Full weekday name (e.g., Monday)
+   * - `EEE`: Abbreviated weekday name (e.g., Mon)
+   * - `EE`: Short weekday name (e.g., Mo)
    *
    * @param format The format string.
    * @returns The formatted date string in UTC.
@@ -238,25 +244,44 @@ export class DateEx {
     let f = String(format);
 
     // Use placeholder strategy to avoid conflicts between tokens
-    // Use placeholders that don't contain any token characters (M, d, H, y, m, s, S)
     // Use only underscores and numbers to be completely safe
-    // Step 1: Replace month names with safe placeholders
     const placeholders: Record<string, string> = {};
 
+    // Step 1: Replace day names with safe placeholders
+    if (f.includes('EEEE')) {
+      const weekdayLong = new Intl.DateTimeFormat('en-US', { weekday: 'long', timeZone: 'UTC' }).format(d);
+      const placeholder = '___1___';
+      placeholders[placeholder] = weekdayLong;
+      f = f.replace('EEEE', placeholder);
+    }
+    if (f.includes('EEE')) {
+      const weekdayShort = new Intl.DateTimeFormat('en-US', { weekday: 'short', timeZone: 'UTC' }).format(d);
+      const placeholder = '___2___';
+      placeholders[placeholder] = weekdayShort;
+      f = f.replace('EEE', placeholder);
+    }
+    if (f.includes('EE')) {
+      const weekdayNarrow = new Intl.DateTimeFormat('en-US', { weekday: 'narrow', timeZone: 'UTC' }).format(d);
+      const placeholder = '___3___';
+      placeholders[placeholder] = weekdayNarrow;
+      f = f.replace('EE', placeholder);
+    }
+
+    // Step 2: Replace month names with safe placeholders
     if (f.includes('MMMM')) {
       const monthLong = new Intl.DateTimeFormat('en-US', { month: 'long', timeZone: 'UTC' }).format(d);
-      const placeholder = '___1___';
+      const placeholder = '___4___';
       placeholders[placeholder] = monthLong;
       f = f.replace('MMMM', placeholder);
     }
     if (f.includes('MMM')) {
       const monthShort = new Intl.DateTimeFormat('en-US', { month: 'short', timeZone: 'UTC' }).format(d);
-      const placeholder = '___2___';
+      const placeholder = '___5___';
       placeholders[placeholder] = monthShort;
       f = f.replace('MMM', placeholder);
     }
 
-    // Step 2: Replace numeric/time tokens
+    // Step 3: Replace numeric/time tokens
     // Must check longer tokens before shorter ones to avoid partial replacement
     f = f
       .replace('yyyy', String(d.getUTCFullYear()))
@@ -270,7 +295,7 @@ export class DateEx {
       .replace('d', String(d.getUTCDate()))
       .replace('H', String(d.getUTCHours()));
 
-    // Step 3: Replace placeholders with actual month names
+    // Step 4: Replace placeholders with actual month names
     for (const [placeholder, value] of Object.entries(placeholders)) {
       f = f.replace(placeholder, value);
     }

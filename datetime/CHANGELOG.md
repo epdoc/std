@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.12] - 2025-12-15
+
+- Added weekday to date format
+
 ## [2.0.11] - 2025-12-14
 
 - update dependencies
