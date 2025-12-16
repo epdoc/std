@@ -1,5 +1,9 @@
 # Changelog for @epdoc/fs
 
+## [1.2.11] - 2025-12-16
+
+- Updated dependencies
+
 ## [1.2.10] - 2025-12-15
 
 - Updated dependencies

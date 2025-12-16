@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/fs",
-  "version": "1.2.10",
+  "version": "1.2.11",
   "description": "Type-safe file system operations with FileSpec, FolderSpec, and streaming support for Node.js and Deno",
   "tasks": {
     "test": "deno test -SERW test",
@@ -41,9 +41,9 @@
     "$util": "./src/util/mod.ts",
     "$spec": "./src/spec/mod.ts",
     "$walk": "./src/walk/mod.ts",
-    "@epdoc/datetime": "jsr:@epdoc/datetime@^2.0.12",
+    "@epdoc/datetime": "jsr:@epdoc/datetime@^2.0.13",
     "@epdoc/response": "jsr:@epdoc/response@^0.1.11",
-    "@epdoc/string": "jsr:@epdoc/string@^0.1.13",
+    "@epdoc/string": "jsr:@epdoc/string@^0.1.15",
     "@epdoc/type": "jsr:@epdoc/type@^1.2.2",
     "@std/bytes": "jsr:@std/bytes@^1.0.6",
     "@std/encoding": "jsr:@std/encoding@^1.0.10",
