@@ -261,7 +261,7 @@
     "members": {
       "daterange": {
         "dependencies": [
-          "jsr:@epdoc/datetime@^2.0.12",
+          "jsr:@epdoc/datetime@^2.0.13",
           "jsr:@epdoc/type@^1.2.2",
           "jsr:@std/cli@^1.0.24"
         ]
