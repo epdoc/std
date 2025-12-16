@@ -304,13 +304,13 @@ export class DateEx {
   }
 
   /**
-   * Get the Julian Day.
-   * @returns A number which is the Julian Day
+   * Get the Julian Day. Dates at noon return round numbers.
+   * @returns A number which is the Julian Day.
    * @see [Julian day](https://en.wikipedia.org/wiki/Julian_day)
    */
   public julianDate(): JulianDay {
     this.validate();
-    return Math.floor(this._date.getTime() / 86400000 + 2440587.5);
+    return this._date.getTime() / 86400000 + 2440587.5;
   }
 
   /**

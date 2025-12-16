@@ -1,6 +1,6 @@
+import { DateEx, dateEx, type IANATZ, type ISOTZ, type TzMinutes, util } from '@epdoc/datetime';
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
-import { DateEx, dateEx, type IANATZ, type ISOTZ, type TzMinutes, util } from '../src/mod.ts';
 
 // TODO: remove skip when deno date is fixed
 
@@ -202,7 +202,9 @@ describe('date-util', () => {
   });
   it('julianDate', () => {
     const d = new Date('1997-11-25T12:13:14.456Z');
-    expect(new DateEx(d).julianDate()).toEqual(2450778);
+    expect(new DateEx(d).julianDate()).toBeCloseTo(2450778.0091950926, 6);
+    const d1 = new Date('2024-12-30T12:00:00Z');
+    expect(new DateEx(d1).julianDate()).toEqual(2460675);
   });
   describe('googleSheetsDate', () => {
     it('should convert a UTC date to a Google Sheets serial number', () => {
