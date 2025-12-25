@@ -15,6 +15,7 @@ import crypto from 'node:crypto';
 import fs, { promises as nfs } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import process from 'node:process';
 import { Readable, Writable } from 'node:stream';
 import { DigestAlgorithm } from '../consts.ts';
 import { FSBytes } from '../fsbytes.ts';
@@ -218,6 +219,17 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    */
   static home(...args: string[]): FileSpec {
     const fullPath = path.resolve(os.userInfo().homedir, ...args);
+    return new FileSpec(fullPath);
+  }
+
+  /**
+   * Constructs a new FileSpec instance rooted at the current working directory.
+   *
+   * @param args - Additional path segments to append after the home directory.
+   * @returns {FileSpec} A new FileSpec instance for the specified path.
+   */
+  static cwd(...args: string[]): FileSpec {
+    const fullPath = path.resolve(process.cwd(), ...args);
     return new FileSpec(fullPath);
   }
 

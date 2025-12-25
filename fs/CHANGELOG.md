@@ -1,5 +1,9 @@
 # Changelog for @epdoc/fs
 
+## [1.2.12] - 2025-12-25
+
+- Added FS.File.cwd(params) to create a new FS.File object
+
 ## [1.2.11] - 2025-12-16
 
 - Updated dependencies
