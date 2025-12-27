@@ -1,5 +1,9 @@
 # Changelog for @epdoc/fs
 
+## [1.2.13] - 2025-12-27
+
+- Fixed FSSpec.resolvedType so that it returns undefined for non existant files
+
 ## [1.2.12] - 2025-12-25
 
 - Added FS.File.cwd(params) to create a new FS.File object

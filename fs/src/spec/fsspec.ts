@@ -91,11 +91,12 @@ export class FSSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec {
    * Async retrieve the resolved file system item type after obtaining file
    * statistics. This will call getStats().
    * @returns {Promise<FSSpec | FolderSpec | FileSpec | SymlinkSpec>} A promise
-   * resolving to the specific type instance.
+   * resolving to the specific type instance. Undefined if the file does not exist.
    */
   async resolvedType(force = false): Promise<TypedFSSpec | undefined> {
-    await this.stats(force);
-    return this.cachedResolveType();
+    if (await this.stats(force)) {
+      return this.cachedResolveType();
+    }
   }
 
   /**

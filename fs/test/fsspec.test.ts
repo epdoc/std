@@ -1,4 +1,4 @@
-import * as FS from '$fs';
+import * as FS from '@epdoc/fs/fs';
 import { expect } from '@std/expect';
 import { afterAll, beforeAll, describe, test } from '@std/testing/bdd';
 import * as fs from 'node:fs/promises';
@@ -29,6 +29,11 @@ describe('FSSpec', () => {
       const fsspec = new FS.Spec(testDir);
       const resolved = await fsspec.resolvedType();
       expect(resolved).toBeInstanceOf(FS.Folder);
+    });
+    test('getResolvedType() returns FolderSpec for non existant file', async () => {
+      const fsspec = new FS.Spec('__xxx__');
+      const resolved = await fsspec.resolvedType();
+      expect(resolved).toBeUndefined();
     });
   });
 
