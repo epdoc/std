@@ -1,5 +1,9 @@
 # Changelog for @epdoc/fs
 
+## [1.2.14] - 2025-12-31
+
+- Updated dependencies
+
 ## [1.2.13] - 2025-12-27
 
 - Fixed FSSpec.resolvedType so that it returns undefined for non existant files

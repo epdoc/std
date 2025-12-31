@@ -1,11 +1,11 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@epdoc/datetime@^2.0.13": "2.0.13",
     "jsr:@epdoc/datetime@^2.0.14": "2.0.14",
     "jsr:@epdoc/duration@~0.2.3": "0.2.3",
+    "jsr:@epdoc/response@~0.1.12": "0.1.12",
+    "jsr:@epdoc/string@~0.1.16": "0.1.16",
     "jsr:@epdoc/type@1.0.3": "1.0.3",
-    "jsr:@epdoc/type@^1.2.2": "1.2.2",
     "jsr:@epdoc/type@^1.2.4": "1.2.4",
     "jsr:@std/assert@^1.0.14": "1.0.16",
     "jsr:@std/assert@^1.0.15": "1.0.16",
@@ -21,11 +21,10 @@
     "jsr:@std/fmt@*": "1.0.8",
     "jsr:@std/fmt@^1.0.8": "1.0.8",
     "jsr:@std/fs@^1.0.19": "1.0.21",
-    "jsr:@std/fs@^1.0.20": "1.0.21",
+    "jsr:@std/fs@^1.0.21": "1.0.21",
     "jsr:@std/internal@^1.0.10": "1.0.12",
     "jsr:@std/internal@^1.0.12": "1.0.12",
     "jsr:@std/path@^1.1.2": "1.1.4",
-    "jsr:@std/path@^1.1.3": "1.1.4",
     "jsr:@std/path@^1.1.4": "1.1.4",
     "jsr:@std/testing@^1.0.15": "1.0.16",
     "jsr:@std/testing@^1.0.16": "1.0.16",
@@ -45,14 +44,20 @@
     "@epdoc/duration@0.2.3": {
       "integrity": "e8c05070df55466a33938d950f81b26fb7f803e5a9b491cda60607016cf0dcab"
     },
+    "@epdoc/response@0.1.12": {
+      "integrity": "9f348f29b10d61eb7cf2b219018a53f30fb71b3211732667408225259c75112b",
+      "dependencies": [
+        "jsr:@std/assert@^1.0.16"
+      ]
+    },
+    "@epdoc/string@0.1.16": {
+      "integrity": "1a1eb9d6e0a9415fa404444fc521666189bf57043b32642b9593a4cb28bda020",
+      "dependencies": [
+        "jsr:@std/assert@^1.0.16"
+      ]
+    },
     "@epdoc/type@1.0.3": {
       "integrity": "fec5a44cb1568c77e41ff2139e5503da9291d302ddf3443ed02dca68f7307045"
-    },
-    "@epdoc/type@1.2.2": {
-      "integrity": "24d40406abd44e7586235347de70edf3bf5a14bf75f2a77427c800354f038dee",
-      "dependencies": [
-        "jsr:@std/encoding@^1.0.10"
-      ]
     },
     "@epdoc/type@1.2.4": {
       "integrity": "460b17042b3542e4d784703945462c988d8d4d77dec1031bdadb7cc4d098eda0",
@@ -275,14 +280,14 @@
       },
       "fs": {
         "dependencies": [
-          "jsr:@epdoc/datetime@^2.0.13",
-          "jsr:@epdoc/response@~0.1.11",
-          "jsr:@epdoc/string@~0.1.15",
-          "jsr:@epdoc/type@^1.2.2",
+          "jsr:@epdoc/datetime@^2.0.14",
+          "jsr:@epdoc/response@~0.1.12",
+          "jsr:@epdoc/string@~0.1.16",
+          "jsr:@epdoc/type@^1.2.4",
           "jsr:@std/bytes@^1.0.6",
           "jsr:@std/encoding@^1.0.10",
-          "jsr:@std/fs@^1.0.20",
-          "jsr:@std/path@^1.1.3"
+          "jsr:@std/fs@^1.0.21",
+          "jsr:@std/path@^1.1.4"
         ]
       },
       "response": {
