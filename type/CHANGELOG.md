@@ -1,5 +1,9 @@
 # Changelog for @epdoc/type
 
+## [1.2.4] - 2025-12-31
+
+- Formatting update
+
 ## [1.2.3] - 2025-12-31
 
 - Added hasOnlyAllowedProperties method to @epdoc/type
