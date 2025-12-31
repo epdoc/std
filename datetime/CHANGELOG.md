@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.14] - 2025-12-31
+
+- Updated dependencies
+
 ## [2.0.13] - 2025-12-16
 
 - Fixed DateEx julianDate to not apply Math.floor to return value

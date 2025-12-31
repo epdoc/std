@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/datetime",
-  "version": "2.0.13",
+  "version": "2.0.14",
   "exports": "./src/mod.ts",
   "tasks": {
     "test": "deno test -A test",
@@ -8,7 +8,7 @@
     "check": "deno check src test"
   },
   "imports": {
-    "@epdoc/type": "jsr:@epdoc/type@^1.2.2",
+    "@epdoc/type": "jsr:@epdoc/type@^1.2.4",
     "@std/expect": "jsr:@std/expect@^1.0.17"
   }
 }
