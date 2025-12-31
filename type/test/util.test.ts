@@ -8,6 +8,7 @@ import {
   asString,
   camel2dash,
   dash2camel,
+  hasOnlyAllowedProperties,
   hasValue,
   isArray,
   isBoolean,
@@ -345,6 +346,38 @@ describe('util', () => {
       expect(isDict(obj)).toBe(true); // or true if you want to allow these
     });
   });
+  describe('hasOnlyAllowedProperties', () => {
+    it('should return true if all properties are allowed', () => {
+      const obj = { a: 1, b: 2 };
+      const allowed = ['a', 'b', 'c'] as const;
+      expect(hasOnlyAllowedProperties(obj, allowed)).toBe(true);
+    });
+
+    it('should return false if there are extra properties', () => {
+      const obj = { a: 1, b: 2, d: 3 };
+      const allowed = ['a', 'b', 'c'] as const;
+      expect(hasOnlyAllowedProperties(obj, allowed)).toBe(false);
+    });
+
+    it('should return true for an empty object', () => {
+      const obj = {};
+      const allowed = ['a', 'b'] as const;
+      expect(hasOnlyAllowedProperties(obj, allowed)).toBe(true);
+    });
+
+    it('should return true if no properties are allowed and object is empty', () => {
+      const obj = {};
+      const allowed: string[] = [];
+      expect(hasOnlyAllowedProperties(obj, allowed)).toBe(true);
+    });
+
+    it('should return false if no properties are allowed and object is not empty', () => {
+      const obj = { a: 1 };
+      const allowed: string[] = [];
+      expect(hasOnlyAllowedProperties(obj, allowed)).toBe(false);
+    });
+  });
+
   describe('misc', () => {
     const _obj = {
       a: 'b',

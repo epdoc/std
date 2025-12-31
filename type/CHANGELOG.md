@@ -1,5 +1,9 @@
 # Changelog for @epdoc/type
 
+## [1.2.3] - 2025-12-31
+
+- Added hasOnlyAllowedProperties method to @epdoc/type
+
 ## [1.2.2] - 2025-12-13
 
 - Improved pad method, now accepts negative padding

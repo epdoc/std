@@ -315,6 +315,28 @@ export function isDict(val: unknown): val is Dict {
 }
 
 /**
+ * Type guard to check if an object has only properties from a specified list of allowed properties.
+ *
+ * @param obj - The object to check.
+ * @param allowedProperties - A list of allowed property names.
+ * @returns True if the object contains only allowed properties, false otherwise.
+ *
+ * @example
+ * const val: unknown = { a: 1, b: 2 };
+ * if (isDict(val) && hasOnlyAllowedProperties(val, ['a', 'b'] as const)) {
+ *   // Within this block, val is typed as Record<'a' | 'b', unknown>
+ *   console.log(val.a);
+ * }
+ */
+export function hasOnlyAllowedProperties<T extends string>(
+  obj: Record<string, unknown>,
+  allowedProperties: readonly T[],
+): obj is Record<T, unknown> {
+  const allowedSet = new Set(allowedProperties as readonly string[]);
+  return Object.keys(obj).every((key) => allowedSet.has(key));
+}
+
+/**
  * Type guard to check if an unknown value is a valid RegExpDef object.
  * It ensures that the value is an object with either a non-empty 'pattern'
  * or a non-empty 'regex' property (but not both).
