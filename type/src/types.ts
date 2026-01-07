@@ -8,7 +8,7 @@ export type Integer = number;
  * keys to be PropertyKey, then look elsewhere or submit a pull request to add
  * it as a separate type.
  */
-export type Dict = Record<string, unknown>;
+export type Dict<T = unknown> = Record<string, T>;
 
 /**
  * Result of a comparison between two Dict objects.
