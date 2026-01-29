@@ -10,9 +10,9 @@ export interface PDFMetadata {
 }
 
 export class PDFMetadataReader {
-  static #INFO_REGEX = /\/Info\s+(\d+\s+\d+\s+R)/;
-  static #OBJ_REGEX = /^(\d+)\s+(\d+)\s+obj$/;
-  static #DATE_REGEX = /D:(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/;
+  // static #INFO_REGEX = /\/Info\s+(\d+\s+\d+\s+R)/;
+  // static #OBJ_REGEX = /^(\d+)\s+(\d+)\s+obj$/;
+  // static #DATE_REGEX = /D:(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/;
   static #TRAILER_REGEX = /trailer\s*<<([^>]*)>>/is;
   static #XREF_TABLE_REGEX = /xref(?:\r?\n|\r)(\d+)\s+(\d+)([\s\S]*?)trailer/;
 
