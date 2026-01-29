@@ -1,8 +1,22 @@
 # Changelog for @epdoc/fs
 
-## [1.2.15] - 2026-01-29
+## [1.2.16] - 2026-01-29
 
-- Added readYaml and writeYaml methods that dynamically load @std/yaml
+- feat: Added `readYaml` and `writeYaml` methods that dynamically load @std/yaml
+- feat: modernize JSON read/write API with unified interface and safe write support
+- Add `WriteJsonOptions` and `ReadJsonOptions` for clean, modern API
+- Unify `writeJson`() to support both legacy (`replacer`, `space`) and modern ({ `space`, `safe`, `deepCopy` })
+  signatures
+- Add safe write functionality with automatic backup/restore on failure
+- Unify `readJson()` to handle both standard `JSON.parse()` and deep copy deserialization
+- Deprecate `writeJsonEx()` and `readJsonEx()` in favor of unified methods
+- Add comprehensive type guards for parameter detection
+- Maintain full backward compatibility for existing code
+- Add test coverage for new parameter combinations
+- Fix error handling to consistently return FSError instances
+
+Breaking: None - all changes are backward compatible Migration: `writeJsonEx(data, opts)` →
+`writeJson(data, { deepCopy: opts })` `readJsonEx(opts)` → `readJson({ deepCopy: true, ...opts })`
 
 ## [1.2.14] - 2025-12-31
 

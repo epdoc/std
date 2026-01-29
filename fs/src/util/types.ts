@@ -1,4 +1,5 @@
-import type { Integer } from '@epdoc/type';
+import type { DeepCopyOpts, Integer, StripJsonCommentsOpts } from '@epdoc/type';
+import type { JsonReplacer } from '../spec/types.ts';
 import type { fileConflictStrategyType } from './consts.ts';
 
 /**
@@ -8,8 +9,21 @@ export type FileConflictStrategy =
   | { type: 'renameWithTilde'; errorIfExists?: boolean }
   | {
     type: 'renameWithNumber';
-    separator?: string;
     limit?: Integer;
+    separator?: string;
+    prefix?: string;
+    errorIfExists?: boolean;
+  }
+  | {
+    type: 'renameWithDatetime';
+    format?: string;
+    separator?: string;
+    prefix?: string;
+    errorIfExists?: boolean;
+  }
+  | {
+    type: 'renameWithEpochMs';
+    separator?: string;
     prefix?: string;
     errorIfExists?: boolean;
   }
@@ -22,6 +36,31 @@ export type FileConflictStrategy =
  * This type is derived from the keys of the `fileConflictStrategyType` object.
  */
 export type FileConflictStrategyType = (typeof fileConflictStrategyType)[keyof typeof fileConflictStrategyType];
+
+export type SafeWriteOptions = {
+  safe?: boolean;
+  backupStrategy?: FileConflictStrategy;
+};
+
+export type WriteJsonOptions = SafeWriteOptions & {
+  // JSON formatting
+  replacer?: JsonReplacer;
+  space?: string | Integer;
+
+  // Deep copy serialization (uses _.jsonSerialize vs JSON.stringify)
+  deepCopy?: DeepCopyOpts | boolean; // defaults to false
+};
+
+export type ReadJsonOptions = {
+  // Deep copy deserialization (uses _.jsonDeserialize vs JSON.parse)
+  deepCopy?: boolean; // defaults to false
+
+  // JSON comment stripping
+  stripComments?: StripJsonCommentsOpts;
+
+  // Only applicable when deepCopy is true
+  includeUrl?: unknown;
+};
 
 export type SafeCopyOptsBase = {
   /**

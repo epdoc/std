@@ -7,6 +7,7 @@ import {
   safeCopy,
   type SafeCopyOpts,
 } from '$util';
+import { DateEx } from '@epdoc/datetime';
 import { _, type DeepCopyOpts, type Dict, type Integer, stripJsonComments } from '@epdoc/type';
 import { assert } from '@std/assert';
 import { decodeBase64, encodeBase64 } from '@std/encoding';
@@ -21,6 +22,7 @@ import { DigestAlgorithm } from '../consts.ts';
 import { FSBytes } from '../fsbytes.ts';
 import { asFilePath, isFilePath } from '../guards.ts';
 import type * as FS from '../types.ts';
+import type { ReadJsonOptions, SafeWriteOptions as WriteOptions, WriteJsonOptions } from '../util/types.ts';
 import { FSSpecBase } from './basespec.ts';
 import { FileSpecWriter } from './filespecwriter.ts';
 import { FolderSpec } from './folderspec.ts';
@@ -610,14 +612,34 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * @async
    * @category File Operations
    */
-  async readJson<T = unknown>(opts: { stripComments?: boolean } = {}): Promise<T> {
+  async readJson<T = unknown>(options?: ReadJsonOptions): Promise<T> {
     try {
-      const s = await this.readAsString();
-      if (opts.stripComments || this.isJsonc()) {
-        // If the file is JSONC, strip comments before parsing
-        return JSON.parse(stripJsonComments(s, { trailingCommas: true })) as T;
+      const opts = options || {};
+      let text = await this.readAsString();
+
+      // Handle comment stripping first (works with both modes)
+      if (opts.stripComments) {
+        text = stripJsonComments(text, opts.stripComments);
       }
-      return JSON.parse(s) as T;
+
+      if (opts.deepCopy) {
+        // Use _.jsonDeserialize for special type reconstruction
+        const deepCopyOpts = {
+          includeUrl: opts.includeUrl,
+          stripComments: opts.stripComments,
+        };
+        const json = _.jsonDeserialize(text, deepCopyOpts);
+
+        // Apply deep copy processing if includeUrl is enabled
+        if (opts.includeUrl) {
+          return (await this.#deepCopy(json, deepCopyOpts)) as T;
+        }
+
+        return json as T;
+      } else {
+        // Standard JSON.parse
+        return JSON.parse(text) as T;
+      }
     } catch (err) {
       throw this.asError(err, 'readJson');
     }
@@ -648,25 +670,127 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * @example
    * // Recursively load and merge referenced files
    * const data = await file.deepReadJson({ includeUrl: true });
+   *
+   * @deprecated Use readJson() with deepCopy option instead.
    */
-  async readJsonEx<T = unknown>(opts: FS.FsDeepJsonDeserializeOpts = {}): Promise<T> {
-    const data = await this.readAsString();
-    const json = _.jsonDeserialize(data, opts);
-    if (opts.includeUrl || opts.detectRegExp) {
-      return (await this.#deepCopy(json, opts)) as T;
-    }
-    return json as T;
+  readJsonEx<T = unknown>(opts: FS.FsDeepJsonDeserializeOpts = {}): Promise<T> {
+    return this.readJson<T>({
+      deepCopy: true,
+      includeUrl: opts.includeUrl,
+      stripComments: opts.stripComments,
+    });
   }
 
-  async writeJsonEx(value: unknown, options: DeepCopyOpts | null = null, space?: string | number): Promise<this> {
-    const text = _.jsonSerialize(value, options, space);
+  /**
+   * @param value
+   * @param options
+   * @param space
+   * @param opts
+   * @returns
+   * @deprecated use writeJson() instead.
+   */
+  writeJsonEx(
+    value: unknown,
+    options: DeepCopyOpts | null = null,
+    space?: string | number,
+    writeOpts?: WriteOptions,
+  ): Promise<this> {
+    // Always use jsonSerialize for writeJsonEx to maintain backward compatibility
+    const opts: WriteJsonOptions = {
+      deepCopy: options || true, // Use true for default deep copy behavior
+      space: space,
+      safe: writeOpts?.safe,
+      backupStrategy: writeOpts?.backupStrategy,
+    };
+    return this.#writeJsonWithDeepCopy(value, opts);
+  }
+
+  /**
+   * Writes JSON data to the file with flexible parameter handling.
+   *
+   * This method supports multiple parameter combinations to provide maximum flexibility:
+   * - Basic usage: writeJson(data)
+   * - With safe write: writeJson(data, { safe: true }) // uses renameWithTilde
+   * - With formatting: writeJson(data, replacer, space)
+   * - With deep copy: writeJson(data, deepCopyOpts)
+   * - Combined options: writeJson(data, replacer, space, { safe: true })
+   * - And many other combinations...
+   *
+   * Uses a high-durability write strategy: opens a file handle, writes the encoded
+   * JSON string, and explicitly calls sync() to ensure data is flushed to disk.
+   *
+   * @param data - The data to write as JSON
+   * @param args - Variable arguments that can include replacer, space, deepCopyOpts, and safeWriteOpts
+   * @returns A promise that resolves to this instance
+   * @throws {Error} If the file cannot be written or data cannot be synced to disk
+   *
+   * @example
+   * // Basic usage
+   * await file.writeJson({ key: 'value' });
+   *
+   * // With formatting
+   * await file.writeJson(data, null, 2);
+   *
+   * // With safe write (creates backup)
+   * await file.writeJson(data, { safe: true });
+   *
+   * // With deep copy options
+   * await file.writeJson(data, { detectRegExp: true });
+   *
+   * // Combined: formatting + safe write
+   * await file.writeJson(data, null, 2, { safe: true });
+   */
+  writeJson(data: unknown, writeOpts?: WriteJsonOptions): Promise<this>;
+  writeJson(data: unknown, replacer?: JsonReplacer, space?: string | number): Promise<this>;
+  writeJson(
+    data: unknown,
+    optsOrReplacer?: WriteJsonOptions | JsonReplacer,
+    space?: string | number,
+  ): Promise<this> {
+    let opts: WriteJsonOptions;
+
+    // Determine if using modern options object or legacy parameters
+    if (space !== undefined || !_.isDict(optsOrReplacer)) {
+      // Legacy signature: writeJson(data, replacer, space)
+      opts = {
+        replacer: optsOrReplacer as JsonReplacer,
+        space: space,
+      };
+    } else {
+      // Modern signature: writeJson(data, options)
+      opts = (optsOrReplacer as WriteJsonOptions) || {};
+    }
+
+    // Execute appropriate write strategy
+    if (opts.deepCopy) {
+      return this.#writeJsonWithDeepCopy(data, opts);
+    }
+
+    if (opts?.safe) {
+      return this.#writeSafe(
+        (file) => file.writeJson(data, { ...opts, safe: false }),
+        opts.backupStrategy,
+      );
+    }
+
+    // Direct write implementation
+    return this.#writeJsonDirect(data, opts);
+  }
+
+  /**
+   * Direct JSON write implementation without safe write features.
+   * @private
+   */
+  async #writeJsonDirect(data: unknown, opts?: WriteJsonOptions): Promise<this> {
+    const replacerArg = opts?.replacer as unknown as Parameters<typeof JSON.stringify>[1];
+    const text = JSON.stringify(data, replacerArg, opts?.space);
     let fileHandle: nfs.FileHandle | undefined;
     try {
       fileHandle = await nfs.open(this._f, 'w');
       await fileHandle.write(new TextEncoder().encode(text));
       await fileHandle.sync(); // Ensure data is flushed to disk
-    } catch (err: unknown) {
-      throw this.asError(err, 'writeJsonEx');
+    } catch (err) {
+      throw this.asError(err, 'writeJson');
     } finally {
       if (fileHandle) {
         await fileHandle.close();
@@ -676,28 +800,30 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   }
 
   /**
-   * Writes JSON data to the file.
-   * Accepts the same replacer and space parameters as JSON.stringify.
-   * This method uses a high-durability write strategy: it opens a file handle,
-   * writes the encoded YAML string, and explicitly calls `sync()` to ensure
-   * the data is flushed to the physical storage device before closing.
-   * @param data - The data to write as JSON.
-   * @returns {Promise<void>} A promise that resolves to this when the write operation is complete.
+   * Private implementation for JSON serialization with deep copy options.
+   * Used by both writeJson and writeJsonEx for consistency.
+   * @private
    */
-  async writeJson(
+  async #writeJsonWithDeepCopy(
     data: unknown,
-    replacer?: JsonReplacer,
-    space?: string | number,
+    opts: WriteJsonOptions,
   ): Promise<this> {
-    const replacerArg = replacer as unknown as Parameters<typeof JSON.stringify>[1];
-    const text = JSON.stringify(data, replacerArg, space);
+    if (opts?.safe) {
+      return this.#writeSafe(
+        (file) => file.#writeJsonWithDeepCopy(data, { ...opts, safe: false }),
+        opts.backupStrategy,
+      );
+    }
+
+    const deepCopyOpts = typeof opts.deepCopy === 'object' ? opts.deepCopy : {};
+    const text = _.jsonSerialize(data, deepCopyOpts, opts.space);
     let fileHandle: nfs.FileHandle | undefined;
     try {
       fileHandle = await nfs.open(this._f, 'w');
       await fileHandle.write(new TextEncoder().encode(text));
       await fileHandle.sync(); // Ensure data is flushed to disk
-    } catch (err) {
-      throw this.asError(err);
+    } catch (err: unknown) {
+      throw this.asError(err, 'writeJsonWithDeepCopy');
     } finally {
       if (fileHandle) {
         await fileHandle.close();
@@ -729,18 +855,27 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * the data is flushed to the physical storage device before closing.
    * The `@std/yaml` dependency is loaded dynamically only when this method is called.
    * @param data - The data to write as YAML.
-   * @param opts - Options for the YAML stringifier (e.g., indent, skipInvalid).
+   * @param yamlOpts - Options for the YAML stringifier (e.g., indent, skipInvalid).
    * @returns {Promise<this>} A promise that resolves to this instance.
    * @throws {Error} If the file cannot be written or data cannot be synced to disk.
    */
   async writeYaml(
     data: unknown,
-    opts?: Parameters<typeof import('@std/yaml').stringify>[1],
+    opts?: {
+      yaml?: Parameters<typeof import('@std/yaml').stringify>[1];
+      write?: WriteOptions;
+    },
   ): Promise<this> {
+    if (opts?.write?.safe) {
+      return this.#writeSafe(
+        (file) => file.writeYaml(data, { yaml: opts.yaml }),
+        opts.write.backupStrategy,
+      );
+    }
     let fileHandle: nfs.FileHandle | undefined;
     try {
       const { stringify } = await import('@std/yaml');
-      const text = stringify(data, opts);
+      const text = stringify(data, opts?.yaml);
 
       fileHandle = await nfs.open(this._f, 'w');
       await fileHandle.write(new TextEncoder().encode(text));
@@ -751,6 +886,33 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
       if (fileHandle) {
         await fileHandle.close();
       }
+    }
+    return this;
+  }
+
+  async #writeSafe(
+    writeFn: (file: FileSpec) => Promise<FileSpec>,
+    backupStrategy?: FileConflictStrategy,
+  ): Promise<this> {
+    let fsBackup: FileSpec | undefined;
+    try {
+      // Only backup if file exists
+      if (await this.exists()) {
+        fsBackup = await this.backup(backupStrategy);
+        // Note: backup() moves the original file, so no verification needed here
+      }
+
+      const fsTmp = await FileSpec.makeTemp({
+        prefix: 'safe-write-',
+        suffix: path.extname(this.path),
+      });
+      await writeFn(fsTmp);
+      await fsTmp.moveTo(this);
+    } catch (e) {
+      if (fsBackup) {
+        await fsBackup.moveTo(this);
+      }
+      throw e;
     }
     return this;
   }
@@ -770,9 +932,9 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * await file.writeBase64(bytes);
    * // File contains: SGVsbG8=
    */
-  async writeBase64(data: string | Uint8Array | ArrayBuffer): Promise<this> {
+  async writeBase64(data: string | Uint8Array | ArrayBuffer, opts?: WriteOptions): Promise<this> {
     const encoded = encodeBase64(data);
-    await this.write(encoded);
+    await this.write(encoded, opts);
     return this;
   }
 
@@ -797,7 +959,13 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * const bytes = new Uint8Array([72, 101, 108, 108, 111]);
    * await file.write(bytes);
    */
-  async write(data: string | string[] | Uint8Array): Promise<this> {
+  async write(data: string | string[] | Uint8Array, opts?: WriteOptions): Promise<this> {
+    if (opts?.safe) {
+      return this.#writeSafe(
+        (file) => file.write(data),
+        opts.backupStrategy,
+      );
+    }
     let fileHandle: nfs.FileHandle | undefined;
     try {
       fileHandle = await nfs.open(this._f, 'w');
@@ -982,28 +1150,69 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
     });
   }
 
-  #getNewPath(opts: FileConflictStrategy): Promise<FS.FilePath | undefined> {
-    return new Promise((resolve, reject) => {
-      if (opts.type === fileConflictStrategyType.renameWithTilde) {
-        resolve(asFilePath(this.path + '~')); // Changed to return string directly
-      } else if (opts.type === fileConflictStrategyType.renameWithNumber) {
-        const limit = _.isInteger(opts.limit) ? opts.limit : 32;
-        this.findAvailableIndexFilename(limit, opts.separator, opts.prefix).then((resp) => {
-          if (!resp && opts.errorIfExists) {
-            reject(new Error.AlreadyExists('File exists', { code: 'EEXIST', path: this._f }));
-          } else {
-            resolve(resp);
-          }
-        });
-      } else if (opts.type === 'overwrite') {
-        resolve(this.path); // Changed to return string directly
-      } else {
-        if (opts.errorIfExists) {
-          reject(new Error.AlreadyExists('File exists', { code: 'EEXIST', path: this._f }));
-        }
-        resolve(undefined);
+  async #getNewPath(opts: FileConflictStrategy): Promise<FS.FilePath | undefined> {
+    if (opts.type === fileConflictStrategyType.renameWithTilde) {
+      return asFilePath(this.path + '~'); // Changed to return string directly
+    } else if (opts.type === fileConflictStrategyType.renameWithNumber) {
+      const limit = _.isInteger(opts.limit) ? opts.limit : 32;
+      const resp = await this.findAvailableIndexFilename(limit, opts.separator, opts.prefix);
+      if (!resp && opts.errorIfExists) {
+        throw new Error.AlreadyExists('File exists', { code: 'EEXIST', path: this._f });
       }
-    });
+      return resp;
+    } else if (opts.type === fileConflictStrategyType.renameWithDatetime) {
+      const sep = opts.separator || '-';
+      const prefix = opts.prefix || '';
+      const ds = new DateEx().format(opts.format || 'yyyyMMddHHmmssSSS');
+      const newFsDest = new FileSpec(this.dirname, this.basename + sep + prefix + ds + this.extname);
+      const exists = await newFsDest.exists();
+      if (exists && opts.errorIfExists) {
+        throw new Error.AlreadyExists('File exists', { code: 'EEXIST', path: newFsDest.path });
+      }
+      return newFsDest.path;
+    } else if (opts.type === fileConflictStrategyType.renameWithEpochMs) {
+      const sep = opts.separator || '-';
+      const prefix = opts.prefix || '';
+      const ds = new Date().getTime().toString();
+      const newFsDest = new FileSpec(this.dirname, this.basename + sep + prefix + ds + this.extname);
+      const exists = await newFsDest.exists();
+      if (exists && opts.errorIfExists) {
+        throw new Error.AlreadyExists('File exists', { code: 'EEXIST', path: newFsDest.path });
+      }
+      return newFsDest.path;
+    } else if (opts.type === 'overwrite') {
+      return this.path; // Changed to return string directly
+    } else {
+      if (opts.errorIfExists) {
+        throw new Error.AlreadyExists('File exists', { code: 'EEXIST', path: this._f });
+      }
+      return undefined;
+    }
+  }
+
+  /**
+   * Finds the next available indexed filename. For example, for `filename.ext`,
+   * tries `filename-01.ext`, `filename-02.ext`, etc until it finds a filename
+   * that is not used.
+   * @param [limit=32] - The maximum number of attempts to find an available filename.
+   * @param [sep='-'] - The separator to use between the filename and the index.
+   * @returns {Promise<FilePath | undefined>} A promise that resolves with an available file path, or undefined if not found.
+   */
+  async findAvailableIndexFilename(
+    _limit: Integer = 32,
+    sep: string = '-',
+    prefix: string = '',
+  ): Promise<FS.FilePath | undefined> {
+    let newFsDest: FileSpec | undefined;
+    let count = 0;
+    let looking = true;
+    while (looking) {
+      newFsDest = new FileSpec(this.dirname, this.basename + sep + prefix + _.pad(++count, 2) + this.extname);
+      looking = await newFsDest.exists();
+    }
+    if (!looking && newFsDest instanceof FileSpec) {
+      return newFsDest.path;
+    }
   }
 
   /**
@@ -1084,31 +1293,6 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
       }
     }
     return true;
-  }
-
-  /**
-   * Finds the next available indexed filename. For example, for `filename.ext`,
-   * tries `filename-01.ext`, `filename-02.ext`, etc until it finds a filename
-   * that is not used.
-   * @param [limit=32] - The maximum number of attempts to find an available filename.
-   * @param [sep='-'] - The separator to use between the filename and the index.
-   * @returns {Promise<FilePath | undefined>} A promise that resolves with an available file path, or undefined if not found.
-   */
-  async findAvailableIndexFilename(
-    _limit: Integer = 32,
-    sep: string = '-',
-    prefix: string = '',
-  ): Promise<FS.FilePath | undefined> {
-    let newFsDest: FileSpec | undefined;
-    let count = 0;
-    let looking = true;
-    while (looking) {
-      newFsDest = new FileSpec(this.dirname, this.basename + sep + prefix + _.pad(++count, 2) + this.extname);
-      looking = await newFsDest.exists();
-    }
-    if (!looking && newFsDest instanceof FileSpec) {
-      return newFsDest.path;
-    }
   }
 
   /**

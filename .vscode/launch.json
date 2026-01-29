@@ -213,6 +213,26 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "type: test/pad.test.ts",
+      "cwd": "${workspaceFolder}",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
+      "runtimeArgs": [
+        "test",
+        "-A",
+        "--inspect-brk",
+        "${workspaceFolder}/type/test/pad.test.ts"
+      ],
+      "presentation": {
+        "group": "type"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "type: test/json.test.ts",
       "cwd": "${workspaceFolder}",
       "attachSimplePort": 9229,

@@ -1,6 +1,8 @@
-import { isFunction, isNonEmptyString, isObject } from '@epdoc/type';
+import { _ } from '@epdoc/type';
 import type { Stats } from 'node:fs';
 import type { FileBasename, FileExt, FileName, FilePath, FolderName, FolderPath } from './types.ts';
+import { fileConflictStrategyType } from './util/consts.ts';
+import type { FileConflictStrategyType } from './util/types.ts';
 
 /**
  * Converts a raw string to a branded FileBasename.
@@ -44,30 +46,41 @@ export function asFilePath(a: FolderPath | string, b?: FileName): FilePath {
 }
 
 export function isFileName(val: unknown): val is FileName {
-  return isNonEmptyString(val);
+  return _.isNonEmptyString(val);
 }
 export function isFolderPath(val: unknown): val is FolderPath {
-  return isNonEmptyString(val);
+  return _.isNonEmptyString(val);
 }
 export function isFilePath(val: unknown): val is FilePath {
-  return isNonEmptyString(val);
+  return _.isNonEmptyString(val);
 }
 export function isFileBasename(val: unknown): val is FileBasename {
-  return isNonEmptyString(val);
+  return _.isNonEmptyString(val);
 }
 export function isFileExt(val: unknown): val is FileExt {
-  return isNonEmptyString(val);
+  return _.isNonEmptyString(val);
 }
 export function isFolderName(val: unknown): val is FolderName {
-  return isNonEmptyString(val);
+  return _.isNonEmptyString(val);
 }
 
 /**
  * Type guard to check if an object is a Node.js Stats instance
  */
 export function isNodeStats(val: unknown): val is Stats {
-  return isObject(val) &&
+  return _.isDict(val) &&
     'isFile' in val && 'isDirectory' in val && 'isSymbolicLink' in val &&
-    isFunction(val.isFile) && isFunction(val.isDirectory) && isFunction(val.isSymbolicLink) &&
+    _.isFunction(val.isFile) && _.isFunction(val.isDirectory) && _.isFunction(val.isSymbolicLink) &&
     'mode' in val && 'size' in val;
+}
+
+/**
+ * Checks if a given value is a valid FileConflictStrategyType.
+ *
+ * @param value The value to check.
+ * @returns True if the value is a valid FileConflictStrategyType, false otherwise.
+ */
+export function isFileConflictStrategyType(value: unknown): value is FileConflictStrategyType {
+  return _.isString(value) &&
+    Object.values(fileConflictStrategyType).includes(value as unknown as FileConflictStrategyType);
 }

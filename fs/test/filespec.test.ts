@@ -1,5 +1,5 @@
-import { DigestAlgorithm, FileSpec, FolderSpec } from '$mod';
 import type * as FS from '$mod';
+import { DigestAlgorithm, FileSpec, FolderSpec } from '$mod';
 import { expect } from '@std/expect';
 import { afterAll, beforeAll, describe, it, test } from '@std/testing/bdd';
 import { Buffer } from 'node:buffer';
@@ -248,6 +248,114 @@ describe('FileSpec read/write helpers', () => {
     await f.writeJson(obj, null, 2);
     const parsed = await f.readJson<typeof obj>();
     expect(parsed).toEqual(obj);
+  });
+
+  it('writeJson() with SafeWriteOptions creates backup', async () => {
+    const filePath = path.join(tmpDir, 'safe-write.json');
+    const f = new FileSpec(filePath);
+
+    // Create initial file
+    await f.writeJson({ version: '1.0.0' });
+
+    // Write with safe option
+    await f.writeJson({ version: '2.0.0' }, { safe: true });
+
+    const content = await f.readJson();
+    expect(content).toEqual({ version: '2.0.0' });
+
+    // Check backup exists
+    const backupFile = new FileSpec(filePath + '~');
+    expect(await backupFile.exists()).toBe(true);
+    const backupContent = await backupFile.readJson();
+    expect(backupContent).toEqual({ version: '1.0.0' });
+  });
+
+  it('writeJson() with replacer and SafeWriteOptions', async () => {
+    const filePath = path.join(tmpDir, 'replacer-safe.json');
+    const f = new FileSpec(filePath);
+
+    const data = { secret: 'hidden', public: 'visible' };
+    const replacer = (key: string, value: unknown) => key === 'secret' ? undefined : value;
+
+    await f.writeJson(data, { replacer, space: 2, safe: true });
+
+    const content = await f.readJson();
+    expect(content).toEqual({ public: 'visible' });
+  });
+
+  it('writeJson() with space and DeepCopyOpts', async () => {
+    const filePath = path.join(tmpDir, 'space-deepcopy.json');
+    const f = new FileSpec(filePath);
+
+    const data = { path: '{HOME}/test' };
+    const deepCopyOpts = { replace: { HOME: '/users/test' }, pre: '{', post: '}' };
+
+    await f.writeJson(data, { space: 2, deepCopy: deepCopyOpts });
+
+    const rawContent = await f.readAsString();
+    expect(rawContent).toContain('/users/test');
+    expect(rawContent).toContain('  '); // 2-space indentation
+  });
+
+  it('writeJson() with DeepCopyOpts and SafeWriteOptions', async () => {
+    const filePath = path.join(tmpDir, 'deepcopy-safe.json');
+    const f = new FileSpec(filePath);
+
+    // Create initial file
+    await f.writeJson({ env: 'dev' });
+
+    const data = { env: '{ENV}', version: '1.0' };
+    const deepCopyOpts = { replace: { ENV: 'prod' }, pre: '{', post: '}' };
+
+    await f.writeJson(data, { deepCopy: deepCopyOpts, safe: true });
+
+    const content = await f.readJson();
+    expect(content).toEqual({ env: 'prod', version: '1.0' });
+
+    // Verify backup exists
+    const backupFile = new FileSpec(filePath + '~');
+    expect(await backupFile.exists()).toBe(true);
+  });
+
+  it('writeJson() parameter order flexibility', async () => {
+    const filePath = path.join(tmpDir, 'param-order.json');
+    const f = new FileSpec(filePath);
+
+    const data = { test: 'value' };
+
+    // Test: data, space, deepCopyOpts, safeWriteOpts
+    const deepCopyOpts = { detectRegExp: true };
+    await f.writeJson(data, { space: 2, deepCopy: deepCopyOpts, safe: true });
+
+    const content = await f.readJson();
+    expect(content).toEqual(data);
+
+    const rawContent = await f.readAsString();
+    expect(rawContent).toContain('  '); // 2-space indentation
+  });
+
+  it('writeJson() with only SafeWriteOptions (no other params)', async () => {
+    const filePath = path.join(tmpDir, 'only-safe.json');
+    const f = new FileSpec(filePath);
+
+    const data = { simple: 'test' };
+    await f.writeJson(data, { safe: true });
+
+    const content = await f.readJson();
+    expect(content).toEqual(data);
+  });
+
+  it('writeJson() with only DeepCopyOpts (no other params)', async () => {
+    const filePath = path.join(tmpDir, 'only-deepcopy.json');
+    const f = new FileSpec(filePath);
+
+    const data = { path: '{HOME}' };
+    const deepCopyOpts = { replace: { HOME: '/test' }, pre: '{', post: '}' };
+
+    await f.writeJson(data, { deepCopy: deepCopyOpts });
+
+    const content = await f.readJson();
+    expect(content).toEqual({ path: '/test' });
   });
 
   it('writeBase64/readAsString(base64) encode and decode correctly', async () => {

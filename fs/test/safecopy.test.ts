@@ -94,5 +94,56 @@ describe('Safe Copy Operations', () => {
       const backupContent = await backupFile.readAsString();
       expect(backupContent).toBe('dest file');
     });
+
+    test('renameWithDatetime strategy renames destination with timestamp', async () => {
+      await destFile.write('dest file');
+      const opts: util.SafeCopyOpts = {
+        conflictStrategy: {
+          type: util.fileConflictStrategyType.renameWithDatetime,
+          format: 'yyyyMMdd',
+          separator: '_',
+          prefix: 'backup',
+        },
+      };
+      await srcFile.safeCopy(destFile, opts);
+
+      const content = await destFile.readAsString();
+      expect(content).toBe('source file');
+
+      // Since we can't predict exact time, we check pattern
+      const entries = await destFolder.getFiles();
+      const backupFile = entries.find((e) => e.basename.startsWith('file_backup'));
+      expect(backupFile).toBeDefined();
+      if (backupFile instanceof FileSpec) {
+        const backupContent = await backupFile.readAsString();
+        expect(backupContent).toBe('dest file');
+      }
+    });
+
+    test('renameWithEpochMs strategy renames destination with epoch', async () => {
+      await destFile.write('dest file');
+      const opts: util.SafeCopyOpts = {
+        conflictStrategy: {
+          type: util.fileConflictStrategyType.renameWithEpochMs,
+          separator: '.',
+          prefix: 'old',
+        },
+      };
+      await srcFile.safeCopy(destFile, opts);
+
+      const content = await destFile.readAsString();
+      expect(content).toBe('source file');
+
+      const entries = await destFolder.getFiles();
+      const backupFile = entries.find((e) => e.basename.startsWith('file.old'));
+      expect(backupFile).toBeDefined();
+      if (backupFile instanceof FileSpec) {
+        const backupContent = await backupFile.readAsString();
+        expect(backupContent).toBe('dest file');
+        // Check if suffix is numeric (epoch)
+        const suffix = backupFile.basename.split('old').pop();
+        expect(Number(suffix)).not.toBeNaN();
+      }
+    });
   });
 });
