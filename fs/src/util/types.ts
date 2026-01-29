@@ -62,6 +62,11 @@ export type ReadJsonOptions = {
   includeUrl?: unknown;
 };
 
+export type WriteYamlOptions = {
+  yaml?: Parameters<typeof import('@std/yaml').stringify>[1];
+  write?: SafeWriteOptions;
+};
+
 export type SafeCopyOptsBase = {
   /**
    * Don't actually move or copy the file, just execute the logic around it
