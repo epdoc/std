@@ -7,27 +7,28 @@
     "jsr:@epdoc/string@~0.1.16": "0.1.16",
     "jsr:@epdoc/type@1.0.3": "1.0.3",
     "jsr:@epdoc/type@^1.2.4": "1.2.4",
-    "jsr:@std/assert@^1.0.14": "1.0.16",
-    "jsr:@std/assert@^1.0.15": "1.0.16",
-    "jsr:@std/assert@^1.0.16": "1.0.16",
+    "jsr:@std/assert@^1.0.14": "1.0.17",
+    "jsr:@std/assert@^1.0.15": "1.0.17",
+    "jsr:@std/assert@^1.0.16": "1.0.17",
+    "jsr:@std/assert@^1.0.17": "1.0.17",
     "jsr:@std/bytes@^1.0.5": "1.0.5",
     "jsr:@std/bytes@^1.0.6": "1.0.6",
     "jsr:@std/cli@*": "1.0.20",
-    "jsr:@std/cli@^1.0.25": "1.0.25",
-    "jsr:@std/data-structures@^1.0.9": "1.0.9",
+    "jsr:@std/cli@^1.0.25": "1.0.26",
+    "jsr:@std/data-structures@^1.0.10": "1.0.10",
     "jsr:@std/encoding@*": "1.0.9",
     "jsr:@std/encoding@^1.0.10": "1.0.10",
     "jsr:@std/expect@^1.0.17": "1.0.17",
     "jsr:@std/fmt@*": "1.0.8",
     "jsr:@std/fmt@^1.0.8": "1.0.8",
-    "jsr:@std/fs@^1.0.19": "1.0.21",
-    "jsr:@std/fs@^1.0.21": "1.0.21",
+    "jsr:@std/fs@^1.0.22": "1.0.22",
     "jsr:@std/internal@^1.0.10": "1.0.12",
     "jsr:@std/internal@^1.0.12": "1.0.12",
-    "jsr:@std/path@^1.1.2": "1.1.4",
     "jsr:@std/path@^1.1.4": "1.1.4",
-    "jsr:@std/testing@^1.0.15": "1.0.16",
-    "jsr:@std/testing@^1.0.16": "1.0.16",
+    "jsr:@std/testing@^1.0.15": "1.0.17",
+    "jsr:@std/testing@^1.0.16": "1.0.17",
+    "jsr:@std/yaml@*": "1.0.11",
+    "jsr:@std/yaml@^1.0.11": "1.0.11",
     "npm:@types/node@*": "22.12.0",
     "npm:moment@2.30.1": "2.30.1"
   },
@@ -65,8 +66,8 @@
         "jsr:@std/encoding@^1.0.10"
       ]
     },
-    "@std/assert@1.0.16": {
-      "integrity": "6a7272ed1eaa77defe76e5ff63ca705d9c495077e2d5fd0126d2b53fc5bd6532",
+    "@std/assert@1.0.17": {
+      "integrity": "df5ebfffe77c03b3fa1401e11c762cc8f603d51021c56c4d15a8c7ab45e90dbe",
       "dependencies": [
         "jsr:@std/internal@^1.0.12"
       ]
@@ -80,14 +81,14 @@
     "@std/cli@1.0.20": {
       "integrity": "a8c384a2c98cec6ec6a2055c273a916e2772485eb784af0db004c5ab8ba52333"
     },
-    "@std/cli@1.0.25": {
-      "integrity": "1f85051b370c97a7a9dfc6ba626e7ed57a91bea8c081597276d1e78d929d8c91",
+    "@std/cli@1.0.26": {
+      "integrity": "53679a2b041406f15c3ff193986852595f3d11ba7b9d4b0c71a42589662e8fb5",
       "dependencies": [
         "jsr:@std/internal@^1.0.12"
       ]
     },
-    "@std/data-structures@1.0.9": {
-      "integrity": "033d6e17e64bf1f84a614e647c1b015fa2576ae3312305821e1a4cb20674bb4d"
+    "@std/data-structures@1.0.10": {
+      "integrity": "f574f86b0e07c69b9edc555fcc814b57d29258bad39fd5a34ba8a80ecf033cfe"
     },
     "@std/encoding@1.0.9": {
       "integrity": "025b8f18eb1749bc30d1353bf48b77d1eb5e35610220fa226f5a046b9240c5d7"
@@ -105,11 +106,11 @@
     "@std/fmt@1.0.8": {
       "integrity": "71e1fc498787e4434d213647a6e43e794af4fd393ef8f52062246e06f7e372b7"
     },
-    "@std/fs@1.0.21": {
-      "integrity": "d720fe1056d78d43065a4d6e0eeb2b19f34adb8a0bc7caf3a4dbf1d4178252cd",
+    "@std/fs@1.0.22": {
+      "integrity": "de0f277a58a867147a8a01bc1b181d0dfa80bfddba8c9cf2bacd6747bcec9308",
       "dependencies": [
         "jsr:@std/internal@^1.0.12",
-        "jsr:@std/path@^1.1.4"
+        "jsr:@std/path"
       ]
     },
     "@std/internal@1.0.6": {
@@ -130,15 +131,18 @@
         "jsr:@std/internal@^1.0.12"
       ]
     },
-    "@std/testing@1.0.16": {
-      "integrity": "a917ffdeb5924c9be436dc78bc32e511760e14d3a96e49c607fc5ecca86d0092",
+    "@std/testing@1.0.17": {
+      "integrity": "87bdc2700fa98249d48a17cd72413352d3d3680dcfbdb64947fd0982d6bbf681",
       "dependencies": [
-        "jsr:@std/assert@^1.0.15",
+        "jsr:@std/assert@^1.0.17",
         "jsr:@std/data-structures",
-        "jsr:@std/fs@^1.0.19",
+        "jsr:@std/fs",
         "jsr:@std/internal@^1.0.12",
-        "jsr:@std/path@^1.1.2"
+        "jsr:@std/path"
       ]
+    },
+    "@std/yaml@1.0.11": {
+      "integrity": "bd139ce77f2d06cbed3713c8b26d301d2a2e12ecc7986130a268107e212143ee"
     }
   },
   "npm": {
@@ -286,8 +290,9 @@
           "jsr:@epdoc/type@^1.2.4",
           "jsr:@std/bytes@^1.0.6",
           "jsr:@std/encoding@^1.0.10",
-          "jsr:@std/fs@^1.0.21",
-          "jsr:@std/path@^1.1.4"
+          "jsr:@std/fs@^1.0.22",
+          "jsr:@std/path@^1.1.4",
+          "jsr:@std/yaml@^1.0.11"
         ]
       },
       "response": {

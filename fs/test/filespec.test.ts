@@ -265,6 +265,42 @@ describe('FileSpec read/write helpers', () => {
     const lines = await f.readAsLines();
     expect(lines).toEqual(['one', 'two', 'three']);
   });
+
+  it('writeYaml() then readYaml() work correctly with generics', async () => {
+    const filePath = path.join(tmpDir, 'data.yaml');
+    const f = new FileSpec(filePath);
+    interface MyData {
+      name: string;
+      tags: string[];
+      active: boolean;
+      nested: {
+        value: number;
+      };
+    }
+    const obj: MyData = {
+      name: 'Test Project',
+      tags: ['typescript', 'deno'],
+      active: true,
+      nested: { value: 42 },
+    };
+
+    // Test writeYaml returns self
+    const result = await f.writeYaml(obj);
+    expect(result).toBe(f);
+
+    // Test readYaml with generic type
+    const parsed = await f.readYaml<MyData>();
+    expect(parsed).toEqual(obj);
+    expect(parsed.name).toBe('Test Project');
+    expect(parsed.nested.value).toBe(42);
+  });
+
+  it('readYaml() throws error for invalid yaml', async () => {
+    const filePath = path.join(tmpDir, 'invalid.yaml');
+    const f = new FileSpec(filePath);
+    await f.write('invalid: [ : : ]');
+    await expect(f.readYaml()).rejects.toThrow();
+  });
 });
 
 describe('FileSystem Simulation for deno.json write', () => {

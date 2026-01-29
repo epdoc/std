@@ -1,5 +1,9 @@
 # Changelog for @epdoc/fs
 
+## [1.2.15] - 2026-01-29
+
+- Added readYaml and writeYaml methods that dynamically load @std/yaml
+
 ## [1.2.14] - 2025-12-31
 
 - Updated dependencies

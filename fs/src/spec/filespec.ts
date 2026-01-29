@@ -609,7 +609,8 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    *
    * @async
    * @category File Operations
-   */ async readJson<T = unknown>(opts: { stripComments?: boolean } = {}): Promise<T> {
+   */
+  async readJson<T = unknown>(opts: { stripComments?: boolean } = {}): Promise<T> {
     try {
       const s = await this.readAsString();
       if (opts.stripComments || this.isJsonc()) {
@@ -677,6 +678,9 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   /**
    * Writes JSON data to the file.
    * Accepts the same replacer and space parameters as JSON.stringify.
+   * This method uses a high-durability write strategy: it opens a file handle,
+   * writes the encoded YAML string, and explicitly calls `sync()` to ensure
+   * the data is flushed to the physical storage device before closing.
    * @param data - The data to write as JSON.
    * @returns {Promise<void>} A promise that resolves to this when the write operation is complete.
    */
@@ -694,6 +698,55 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
       await fileHandle.sync(); // Ensure data is flushed to disk
     } catch (err) {
       throw this.asError(err);
+    } finally {
+      if (fileHandle) {
+        await fileHandle.close();
+      }
+    }
+    return this;
+  }
+
+  /**
+   * Reads the file as YAML and parses it.
+   * The @std/yaml dependency is loaded dynamically only when this method is called.
+   * @template T - The expected type of the parsed YAML data.
+   * @returns {Promise<T>} A promise that resolves with the parsed YAML content.
+   */
+  async readYaml<T = unknown>(): Promise<T> {
+    try {
+      const { parse } = await import('@std/yaml');
+      const s = await this.readAsString();
+      return parse(s) as T;
+    } catch (err) {
+      throw this.asError(err, 'readYaml');
+    }
+  }
+
+  /**
+   * Writes data to the file in YAML format.
+   * This method uses a high-durability write strategy: it opens a file handle,
+   * writes the encoded YAML string, and explicitly calls `sync()` to ensure
+   * the data is flushed to the physical storage device before closing.
+   * The `@std/yaml` dependency is loaded dynamically only when this method is called.
+   * @param data - The data to write as YAML.
+   * @param opts - Options for the YAML stringifier (e.g., indent, skipInvalid).
+   * @returns {Promise<this>} A promise that resolves to this instance.
+   * @throws {Error} If the file cannot be written or data cannot be synced to disk.
+   */
+  async writeYaml(
+    data: unknown,
+    opts?: Parameters<typeof import('@std/yaml').stringify>[1],
+  ): Promise<this> {
+    let fileHandle: nfs.FileHandle | undefined;
+    try {
+      const { stringify } = await import('@std/yaml');
+      const text = stringify(data, opts);
+
+      fileHandle = await nfs.open(this._f, 'w');
+      await fileHandle.write(new TextEncoder().encode(text));
+      await fileHandle.sync(); // Ensure data is flushed to disk
+    } catch (err) {
+      throw this.asError(err, 'writeYaml');
     } finally {
       if (fileHandle) {
         await fileHandle.close();
