@@ -244,7 +244,7 @@ export abstract class FSSpecBase {
    * @param options - Options for the copy operation.
    * @param {boolean} [options.overwrite=false] - If `true`, the destination file
    * will be overwritten if it exists.
-   * @param {boolean} [options.preserveTimestamps=false] - If `true`, the access
+   * @param {boolean} [options.preserveTimestamps=true] - If `true`, the access
    * and modification times are copied from the source to the destination.
    * @returns A promise that resolves when the copy is complete.
    */
@@ -256,7 +256,7 @@ export abstract class FSSpecBase {
       }
       await fs.promises.copyFile(this._f, dest, flags);
 
-      if (options?.preserveTimestamps) {
+      if (options?.preserveTimestamps !== false) {
         const sourceInfo = await this.stats();
         if (sourceInfo?.atime && sourceInfo?.modifiedAt) {
           await fs.promises.utimes(dest, sourceInfo.atime, sourceInfo.modifiedAt);
