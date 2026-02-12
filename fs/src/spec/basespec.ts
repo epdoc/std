@@ -4,8 +4,8 @@ import { _ } from '@epdoc/type';
 import { assert } from '@std/assert';
 import * as fs from 'node:fs';
 import path from 'node:path';
-import type { CopyOptions, FileInfo, FSEntry, Path, RemoveOptions } from '../types.ts';
 import type * as FS from '../types.ts';
+import type { CopyOptions, FileInfo, FSEntry, Path, RemoveOptions } from '../types.ts';
 
 /**
  * Abstract class representing a file system item, which may be of unknown type,
@@ -203,6 +203,20 @@ export abstract class FSSpecBase {
   async createdAt(force = false): Promise<Date | null | undefined> {
     const info = await this.stats(force);
     return info?.createdAt;
+  }
+
+  /**
+   * Asynchronously retrieves the modification date of this file or folder.
+   * This method uses a cached `FileInfo` object if available. If not, it will
+   * fetch the stats from the filesystem. If the cache might be stale, set `force`
+   * to `true` to ensure fresh data. After calling `stats()`, you can also
+   * access this value through the `info.modifiedAt` property.
+   * @param {boolean} force - When `true`, forces a refresh of the file stats cache.
+   * @returns {Promise<Date | undefined>} A promise that resolves to the modification date, or undefined if not available.
+   */
+  async modifiedAt(force = false): Promise<Date | null | undefined> {
+    const info = await this.stats(force);
+    return info?.modifiedAt;
   }
 
   /**
