@@ -1,5 +1,10 @@
 # Changelog for @epdoc/fs
 
+## [1.2.17] - 2026-02-13
+
+- Changed copyTo default to preserve timestamps.
+- Added modifiedAt method to basespec.ts.
+
 ## [1.2.16] - 2026-01-29
 
 - feat: Added `readYaml` and `writeYaml` methods that dynamically load @std/yaml
