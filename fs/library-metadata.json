@@ -2,39 +2,50 @@
   "package": "@epdoc/fs",
   "version": "1.2.17",
   "purpose": "Type-safe async filesystem operations for Deno (Node.js/Bun support in progress): FileSpec, FolderSpec, streaming, and file-type detection",
-  "quickStart": "import { FileSpec, FolderSpec } from '@epdoc/fs';\n\nconst f = new FileSpec('./data.json');\nif (await f.exists()) {\n  const data = await f.readJson<MyType>();\n}\n\nconst dir = new FolderSpec('./output');\nawait dir.create();",
+  "quickStart": "import * as FS from '@epdoc/fs/fs';\n\n// File relative to cwd\nconst f = FS.File.cwd('data.json');\nif (await f.exists()) {\n  const data = await f.readJson<MyType>();\n}\n\n// Directory relative to home\nconst dir = FS.Folder.home('Documents', 'output');\nawait dir.create();",
   "keyExports": [
-    "FileSpec — file operations: read/write/copy/move/exists, JSON, Base64, Web Streams",
-    "FolderSpec — directory operations: list, create, walk",
-    "FileSpecWriter — streaming file writer with writeLine() support",
-    "Walk namespace — recursive directory traversal utilities",
-    "Error namespace — filesystem-specific error types",
-    "util namespace — path helper functions",
-    "DigestAlgorithm — checksum/digest constants"
+    "FS.File (FileSpec) — file I/O: exists(), readJson<T>(), readAsString(), readAsLines(), writeJson(), write(), copy(), moveTo(), backup(), checksum(), Web Streams",
+    "FS.File.cwd(...parts) — static factory: FileSpec rooted at process.cwd()",
+    "FS.File.home(...parts) — static factory: FileSpec rooted at user home directory",
+    "FS.Folder (FolderSpec) — directory ops: exists(), create(), list(), walk()",
+    "FS.Folder.cwd() — static factory: FolderSpec for current working directory",
+    "FS.Folder.home(...parts) — static factory: FolderSpec rooted at user home directory",
+    "FS.Writer (FileSpecWriter) — returned by f.writer(); writeLine() / write() / close() for streaming writes",
+    "FS.Err — filesystem error namespace",
+    "FS.Bytes (FSBytes) — byte-level file utilities",
+    "Walk namespace (from primary import) — recursive directory traversal",
+    "util namespace (from primary import) — path helper functions"
   ],
   "dependencies": {
     "internal": [],
-    "external": []
+    "external": ["@std/fs", "@std/path", "@std/encoding", "@std/bytes", "@std/yaml", "@epdoc/datetime", "@epdoc/response", "@epdoc/string", "@epdoc/type"]
   },
   "keyPatterns": [
     {
-      "name": "FileSpec for all file I/O",
-      "description": "Use FileSpec instead of custom file-handling code; covers readText, writeText, readJson, writeJson, exists, copy, move, Base64, and Web Streams",
-      "file": "src/spec/file-spec.ts"
+      "name": "Preferred import style",
+      "description": "Use `import * as FS from '@epdoc/fs/fs'` for the aliased namespace (FS.File, FS.Folder, FS.Writer, FS.Err). Use `import { FileSpec, FolderSpec } from '@epdoc/fs'` only when named imports are preferred.",
+      "file": "src/fs.ts"
     },
     {
-      "name": "Web Streams pipe",
-      "description": "f.readableStream() / f.writableStream() / f.pipeFrom(stream) / f.pipeTo(dest) for efficient large-file I/O",
-      "file": "src/spec/file-spec.ts"
+      "name": "Factory methods over constructors",
+      "description": "Prefer FS.File.cwd('rel/path') or FS.File.home('rel/path') over new FS.File(absolutePath) when the path is relative to cwd or home. Same pattern applies to FS.Folder.",
+      "file": "src/spec/filespec.ts",
+      "lines": "222-243"
     },
     {
-      "name": "FileSpecWriter streaming",
-      "description": "f.writer() returns a FileSpecWriter; call writeLine()/write() then close() for chunked streaming writes",
-      "file": "src/spec/file-spec-writer.ts"
+      "name": "JSON file I/O",
+      "description": "f.readJson<T>() reads and parses JSON (supports stripComments option). f.writeJson(data) serializes and writes. Both are async.",
+      "file": "src/spec/filespec.ts",
+      "lines": "615-760"
+    },
+    {
+      "name": "Streaming writes",
+      "description": "const w = await f.writer(); then w.writeLine(str) / w.write(data) / w.close() — for chunked or large file writes without loading full content into memory.",
+      "file": "src/spec/filespec.ts"
     }
   ],
   "architecture": {
-    "flow": "$spec (FileSpec/FolderSpec) + $error + $util + $walk + fsheaders (file-type detection) → mod.ts",
-    "keyDesign": "Uses deno.json import aliases ($spec, $error, $util, $walk) for internal submodule references; actively being ported to Node.js/Bun"
+    "flow": "$spec (FileSpec/FolderSpec/SymlinkSpec) + $error + $util + $walk + fsheaders (file-type detection) → mod.ts (primary) / fs.ts (aliased namespace)",
+    "keyDesign": "Two export entry points: '@epdoc/fs' (named exports) and '@epdoc/fs/fs' (aliased namespace FS.File=FileSpec, FS.Folder=FolderSpec, etc.). Internally uses deno.json import aliases ($spec, $error, $util, $walk). Actively being ported to Node.js/Bun."
   }
 }

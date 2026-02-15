@@ -4,6 +4,7 @@ This file provides project-specific context for AI agents working in this reposi
 
 For universal conventions, load the following skills:
 - Deno project conventions: load the `/deno-guidelines` skill
+- **@epdoc/std library API reference**: load the `/epdoc-std` skill — do this before writing any type checks, filesystem code, string manipulation, or date handling
 - Library documentation files: load the `/deno-library-docs` skill
 - JSDoc commenting standards: load the `/jsdoc` skill
 - Git workflow and version bumping: load the `/git` skill
