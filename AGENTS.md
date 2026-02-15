@@ -8,6 +8,18 @@ For universal conventions, load the following skills:
 - JSDoc commenting standards: load the `/jsdoc` skill
 - Git workflow and version bumping: load the `/git` skill
 
+### Committing and Publishing
+
+Before committing or bumping versions in this repository, load the `/git` skill. Two slash commands are available:
+
+- **`/commit`** — for non-publishable changes: docs, task additions, metadata, configuration, `.gitignore`, test scaffolding. Performs a plain `git commit` with no version bump.
+- **`/bump`** — for publishable changes: bug fixes, new or changed exports, behavioral changes, dependency updates. Runs `bump -g` (and optionally `-c` / `-t`) from within the affected workspace directory.
+
+**Decision guide:**
+- Would a consumer of the published JSR package care about this change? → `/bump`
+- Is this purely internal housekeeping? → `/commit`
+- When in doubt, ask before bumping.
+
 ---
 
 ## Project Architecture
