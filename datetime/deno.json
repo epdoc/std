@@ -3,8 +3,8 @@
   "version": "2.0.14",
   "exports": "./src/mod.ts",
   "tasks": {
-    "libdocs": "deno doc --json src/mod.ts > library-docs.json",
-    "prepublish": "deno fmt && deno task lint && deno task check && deno task test",
+    "docs": "deno doc --json src/mod.ts > library-docs.json",
+    "prepublish": "deno fmt && deno task lint && deno task check && deno task test && deno task docs",
     "test": "deno test -A test",
     "lint": "deno lint src test deno.json",
     "check": "deno check src test"

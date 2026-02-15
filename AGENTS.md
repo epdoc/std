@@ -48,15 +48,15 @@ defines the workspace members. Each package is published to JSR under the `@epdo
 
 ### Package Entry Points
 
-| Package            | Entry Point     | Version |
-| ------------------ | --------------- | ------- |
-| `@epdoc/daterange` | `src/mod.ts`    | 0.2.24  |
-| `@epdoc/datetime`  | `src/mod.ts`    | 2.0.14  |
-| `@epdoc/duration`  | `src/mod.ts`    | 0.3.7   |
-| `@epdoc/fs`        | `src/mod.ts`    | 1.2.17  |
-| `@epdoc/response`  | `mod.ts` (root) | 0.1.12  |
-| `@epdoc/string`    | `mod.ts` (root) | 0.1.16  |
-| `@epdoc/type`      | `src/mod.ts`    | 1.2.4   |
+| Package            | Entry Point     |
+| ------------------ | --------------- |
+| `@epdoc/daterange` | `src/mod.ts`    |
+| `@epdoc/datetime`  | `src/mod.ts`    |
+| `@epdoc/duration`  | `src/mod.ts`    |
+| `@epdoc/fs`        | `src/mod.ts`    |
+| `@epdoc/response`  | `mod.ts` (root) |
+| `@epdoc/string`    | `mod.ts` (root) |
+| `@epdoc/type`      | `src/mod.ts`    |
 
 > Note: `@epdoc/string` and `@epdoc/response` place their entry point at the workspace root (`mod.ts`), not under
 > `src/`.
@@ -156,26 +156,11 @@ deno task docs          # Generate docs via _scripts/gen_docs.ts
 Run from within a **workspace directory**:
 
 ```bash
-deno fmt                # Format all code
-deno task lint          # Lint that workspace
-deno task check         # Type-check that workspace
-deno task test          # Run that workspace's tests
 deno task prepublish    # Run fmt, lint, check and test
 deno task docs          # Generate or regenerate library-docs.json, generate library-metadata.json if it does not exist
 deno publish            # Publish to JSR
 deno update             # Update project's dependencies. Add --latest for latest
 bump -g "message"       # Bump version, commit, and push (uses @epdoc/bump)
-bump -gt "message"      # Also create and push a git tag
-```
-
-### Generating Library Documentation
-
-```bash
-# From within a workspace directory (src/mod.ts entry point)
-deno doc --json src/mod.ts > library-docs.json
-
-# For workspaces with root-level mod.ts (string, response)
-deno doc --json mod.ts > library-docs.json
 ```
 
 ---
