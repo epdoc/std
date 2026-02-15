@@ -1,0 +1,32 @@
+{
+  "package": "@epdoc/type",
+  "version": "1.2.4",
+  "purpose": "Foundational type guards, deep-copy utilities, JSON serialization, and dictionary helpers for TypeScript/Deno",
+  "quickStart": "import { isString, isNumber, isDate, _ } from '@epdoc/type';\n\nif (isString(val)) { /* val is string */ }\nconst copy = _.deepCopy(obj, { replace: { key: 'value' } });",
+  "keyExports": [
+    "isString, isNumber, isBoolean, isDate, isArray, isObject, etc. — runtime type guard functions",
+    "_ namespace (combiner.ts) — deepCopy with optional string substitution",
+    "stripJsonComments — remove comments from JSON before parsing",
+    "dictutil functions — dictionary/object manipulation helpers"
+  ],
+  "dependencies": {
+    "internal": [],
+    "external": ["@std/encoding"]
+  },
+  "keyPatterns": [
+    {
+      "name": "Type guards",
+      "description": "Use isString(val), isNumber(val), isDate(val), etc. instead of typeof or instanceof checks for consistent runtime type safety",
+      "file": "src/types.ts"
+    },
+    {
+      "name": "Deep copy with substitution",
+      "description": "_.deepCopy(obj, { replace: { key: 'value' } }) performs a deep clone and substitutes ${key} placeholders in string values",
+      "file": "src/combiner.ts"
+    }
+  ],
+  "architecture": {
+    "flow": "types.ts (guards) + combiner.ts (deep copy) + dictutil.ts (dict ops) + strip-comments.ts → mod.ts",
+    "keyDesign": "Zero internal @epdoc dependencies; this is the foundational package all others depend on"
+  }
+}

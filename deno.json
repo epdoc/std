@@ -8,6 +8,7 @@
     "lint": "deno lint",
     "test": "deno test -A",
     "docs": "deno run -A _scripts/gen_docs.ts",
+    "libdocs": "deno task --cwd datetime libdocs && deno task --cwd type libdocs && deno task --cwd duration libdocs && deno task --cwd daterange libdocs && deno task --cwd fs libdocs && deno task --cwd string libdocs && deno task --cwd response libdocs",
     "check": "deno check type datetime duration daterange fs string response"
   },
   "imports": {

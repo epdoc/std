@@ -1,0 +1,25 @@
+{
+  "package": "@epdoc/string",
+  "version": "0.1.16",
+  "purpose": "Advanced string manipulation utilities including extension helpers and template substitution (msub)",
+  "quickStart": "import { msub } from '@epdoc/string';\n\nconst result = msub.simple('Hello, ${name}!', { name: 'World' });\n// 'Hello, World!'",
+  "keyExports": [
+    "ex.ts exports — string extension helper functions",
+    "msub namespace — string substitution: msub.simple() for basic, msub.advanced() for complex patterns"
+  ],
+  "dependencies": {
+    "internal": ["@epdoc/datetime", "@epdoc/type"],
+    "external": ["@std/assert"]
+  },
+  "keyPatterns": [
+    {
+      "name": "msub substitution",
+      "description": "msub namespace provides simple ${key} substitution (msub.simple) and advanced pattern-based substitution (msub.advanced) for template strings",
+      "file": "msub.ts"
+    }
+  ],
+  "architecture": {
+    "flow": "ex.ts (string helpers) + msub.ts (substitution) → mod.ts",
+    "keyDesign": "Flat workspace layout (no src/ directory); entry point is mod.ts at workspace root; test files also at root"
+  }
+}

@@ -5,6 +5,8 @@
     ".": "./src/mod.ts"
   },
   "tasks": {
+    "libdocs": "deno doc --json src/mod.ts > library-docs.json",
+    "prepublish": "deno fmt && deno lint && deno task check && deno task test",
     "test": "deno test ./test/date-range.test.ts",
     "check": "deno check *.json src test examples"
   },

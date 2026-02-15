@@ -1,0 +1,31 @@
+{
+  "package": "@epdoc/response",
+  "version": "0.1.12",
+  "purpose": "Consistent API response helpers with safe error wrapping, returning results as typed objects or arrays",
+  "quickStart": "import { catchAsArray, catchAsObj } from '@epdoc/response';\n\nconst result = await catchAsArray.run(() => riskyOperation());\n// result is [error, null] or [null, value]",
+  "keyExports": [
+    "apires.ts exports — API result types and helpers",
+    "catchAsArray namespace — wrap async calls, returning [error, result] tuple arrays",
+    "catchAsObj namespace — wrap async calls, returning { error, result } objects"
+  ],
+  "dependencies": {
+    "internal": ["@epdoc/type"],
+    "external": ["@std/assert"]
+  },
+  "keyPatterns": [
+    {
+      "name": "catchAsArray error handling",
+      "description": "Use catchAsArray.run(fn) to execute async operations and receive a [error, value] tuple, avoiding try/catch boilerplate",
+      "file": "catch-array.ts"
+    },
+    {
+      "name": "catchAsObj error handling",
+      "description": "Use catchAsObj.run(fn) to execute async operations and receive a { error, value } object for named access",
+      "file": "catch-obj.ts"
+    }
+  ],
+  "architecture": {
+    "flow": "apires.ts (types) + catch-array.ts + catch-obj.ts → mod.ts",
+    "keyDesign": "Flat workspace layout (no src/ directory); provides two error-wrapping patterns so callers can choose their preferred style"
+  }
+}

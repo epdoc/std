@@ -1,0 +1,26 @@
+{
+  "package": "@epdoc/daterange",
+  "version": "0.2.24",
+  "purpose": "Date range creation and management built on @epdoc/datetime, with utilities for representing and manipulating date intervals",
+  "quickStart": "import { DateRange } from '@epdoc/daterange';\n\nconst range = new DateRange(startDate, endDate);\nconsole.log(range.contains(someDate));",
+  "keyExports": [
+    "DateRange — primary class for representing a date interval",
+    "date-ranges.ts exports — additional range helpers and factories",
+    "util functions — date range utility helpers"
+  ],
+  "dependencies": {
+    "internal": ["@epdoc/datetime", "@epdoc/type"],
+    "external": ["@std/cli"]
+  },
+  "keyPatterns": [
+    {
+      "name": "DateRange construction",
+      "description": "Create ranges from start/end DateEx instances or raw Date values; use utility functions in util.ts for common range presets",
+      "file": "src/date-ranges.ts"
+    }
+  ],
+  "architecture": {
+    "flow": "date-ranges.ts (DateRange class) + types.ts + util.ts → mod.ts",
+    "keyDesign": "Thin layer over @epdoc/datetime providing interval semantics; depends on DateEx for date representation"
+  }
+}

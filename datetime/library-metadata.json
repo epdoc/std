@@ -1,0 +1,31 @@
+{
+  "package": "@epdoc/datetime",
+  "version": "2.0.14",
+  "purpose": "Enhanced Date wrapper with timezone management, ISO 8601 formatting, and interop with Google Sheets and PDF date formats",
+  "quickStart": "import { dateEx } from '@epdoc/datetime';\n\nconst d = dateEx(new Date());\nconsole.log(d.toISOLocalString()); // ISO 8601 with local offset\nconsole.log(d.toGoogleSheetsSerial()); // Google Sheets serial number",
+  "keyExports": [
+    "DateEx — class wrapping Date with extended formatting and conversion methods",
+    "dateEx() — factory function to create a DateEx instance",
+    "util namespace — date utility functions"
+  ],
+  "dependencies": {
+    "internal": ["@epdoc/type"],
+    "external": ["@std/expect"]
+  },
+  "keyPatterns": [
+    {
+      "name": "DateEx factory",
+      "description": "Use dateEx(date?) to create instances rather than new DateEx(); accepts Date, string, number, or nothing for now",
+      "file": "src/date.ts"
+    },
+    {
+      "name": "ISO with timezone offset",
+      "description": "toISOLocalString() produces ISO 8601 format with the local timezone offset instead of UTC Z suffix",
+      "file": "src/date.ts"
+    }
+  ],
+  "architecture": {
+    "flow": "date.ts (DateEx class) + types.ts + utils.ts → mod.ts",
+    "keyDesign": "Wraps native Date; provides fluent API for timezone, formatting, Julian Day, Google Sheets, and PDF date interop"
+  }
+}

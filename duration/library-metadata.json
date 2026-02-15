@@ -1,0 +1,33 @@
+{
+  "package": "@epdoc/duration",
+  "version": "0.3.7",
+  "purpose": "Duration formatting with adaptive modes, multiple style presets, and humanize function for natural language descriptions",
+  "quickStart": "import { Duration, humanize } from '@epdoc/duration';\n\nconsole.log(new Duration.Formatter().narrow.format(3661000)); // '1h01m01s'\nconsole.log(humanize(3661000)); // 'about an hour'\nconsole.log(humanize(-3661000, true)); // 'about an hour ago'",
+  "keyExports": [
+    "Duration namespace — Duration.Formatter class with fluent builder API",
+    "humanize(ms, future?) — natural language duration description",
+    "Time namespace — time constant values (ms per second, minute, hour, etc.)",
+    "Format namespace — format utility functions",
+    "supportedLocales — list of supported locale strings"
+  ],
+  "dependencies": {
+    "internal": ["@epdoc/type"],
+    "external": ["@std/expect", "@std/testing"]
+  },
+  "keyPatterns": [
+    {
+      "name": "Fluent formatter",
+      "description": "Chain style presets (.narrow, .digital, .long, .short) and options (.adaptive(n), fractionalDigits(n)) on Duration.Formatter before calling .format(ms)",
+      "file": "src/duration/mod.ts"
+    },
+    {
+      "name": "Humanize",
+      "description": "humanize(ms) returns a locale-sensitive natural language string; pass true as second arg to include future tense prefix",
+      "file": "src/humanize/mod.ts"
+    }
+  ],
+  "architecture": {
+    "flow": "consts.ts (Time) + duration/format.ts + duration/i18n.ts + duration/mod.ts (Formatter) + humanize/mod.ts → mod.ts",
+    "keyDesign": "Builds on Intl.DurationFormat with adaptive significant-unit selection and humanize mode not available in the standard API"
+  }
+}

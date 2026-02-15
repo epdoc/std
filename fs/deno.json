@@ -3,6 +3,8 @@
   "version": "1.2.17",
   "description": "Type-safe file system operations with FileSpec, FolderSpec, and streaming support for Node.js and Deno",
   "tasks": {
+    "libdocs": "deno doc --json src/mod.ts > library-docs.json",
+    "prepublish": "deno fmt && deno task lint && deno task check && deno task test",
     "test": "deno test -SERW test",
     "test1": "deno test -SERW ./test/fs.test.ts",
     "lint": "deno lint *.json *.ts src test",
