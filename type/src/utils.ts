@@ -1199,3 +1199,11 @@ export function underscoreCapitalize(str: string): string {
       return $1.toUpperCase().replace('_', ' ');
     });
 }
+/**
+ * Escapes a string for use in a regular expression.
+ * @param str - The string to escape.
+ * @returns The escaped string.
+ */
+export function escapeRegExp(str: string): string {
+  return str.replace(REGEX.escMatch, '\\$&');
+}

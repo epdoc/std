@@ -13,19 +13,33 @@ export type FileConflictStrategy =
     separator?: string;
     prefix?: string;
     errorIfExists?: boolean;
+    keep?: { ms?: Integer; generations?: Integer };
   }
   | {
+    /**
+     * @remarks
+     * When `keep` is used with this strategy, the age is determined by parsing the timestamp from the filename.
+     * The timestamp is assumed to be in local time. Use `renameWithEpochMs` for cross-timezone reliability IF
+     * you are rotating backups with short time periods.
+     */
     type: 'renameWithDatetime';
     format?: string;
     separator?: string;
     prefix?: string;
     errorIfExists?: boolean;
+    keep?: { ms?: Integer; generations?: Integer };
   }
   | {
+    /**
+     * @remarks
+     * When `keep` is used with this strategy, the age is determined by parsing the epoch milliseconds from the filename.
+     * This is recommended for cross-timezone reliability.
+     */
     type: 'renameWithEpochMs';
     separator?: string;
     prefix?: string;
     errorIfExists?: boolean;
+    keep?: { ms?: Integer; generations?: Integer };
   }
   | { type: 'overwrite'; errorIfExists?: boolean }
   | { type: 'skip'; errorIfExists?: boolean }

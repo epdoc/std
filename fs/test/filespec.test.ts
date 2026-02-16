@@ -1,5 +1,6 @@
 import type * as FS from '$mod';
 import { DigestAlgorithm, FileSpec, FolderSpec } from '$mod';
+import { _ } from '@epdoc/type';
 import { expect } from '@std/expect';
 import { afterAll, beforeAll, describe, it, test } from '@std/testing/bdd';
 import { Buffer } from 'node:buffer';
@@ -457,5 +458,94 @@ describe('FileSystem Simulation for deno.json write', () => {
       originalCwd.chdir();
       await fsTempDir.remove({ recursive: true });
     }
+  });
+});
+
+describe('FileSpec Backup Rotation', () => {
+  let testDir: FolderSpec;
+  const originalCwd = FolderSpec.cwd();
+
+  beforeAll(async () => {
+    testDir = await FolderSpec.makeTemp({ prefix: 'backup_rotation_test_' });
+    testDir.chdir();
+  });
+
+  afterAll(async () => {
+    originalCwd.chdir();
+    await testDir.remove({ recursive: true });
+  });
+
+  describe('Tilde Suffix with keep option', () => {
+    it('renameWithNumber results in ~ suffix when keep is used', async () => {
+      const file = new FileSpec('num_test.txt');
+      await file.write('content1');
+      await file.backup({ type: 'renameWithNumber', keep: { generations: 5 } });
+
+      const backupFiles = await testDir.getFiles(/num_test-01\.txt~/);
+      expect(backupFiles.length).toBe(1);
+    });
+
+    it('renameWithDatetime results in ~ suffix when keep is used', async () => {
+      const file = new FileSpec('date_test.txt');
+      await file.write('content1');
+      await file.backup({ type: 'renameWithDatetime', keep: { generations: 5 } });
+
+      const backupFiles = await testDir.getFiles(/date_test-.*\.txt~/);
+      expect(backupFiles.length).toBe(1);
+    });
+  });
+
+  describe('Rotation Logic', () => {
+    it('rotates by generations', async () => {
+      const file = new FileSpec('gen_test.txt');
+      await file.write('v1');
+      await file.backup({ type: 'renameWithNumber', keep: { generations: 2 } }); // backup 1: v1~
+      await file.write('v2');
+      await file.backup({ type: 'renameWithNumber', keep: { generations: 2 } }); // backup 1: v2~, backup 2: v1~
+      await file.write('v3');
+      await file.backup({ type: 'renameWithNumber', keep: { generations: 2 } }); // should keep v3~ and v2~, delete v1~
+
+      const backupFiles = await testDir.getFiles(/gen_test-.*\.txt~/);
+      expect(backupFiles.length).toBe(2);
+    });
+
+    it('rotates by age (ms)', async () => {
+      const file = new FileSpec('age_test.txt');
+      await file.write('v1');
+      await file.backup({ type: 'renameWithEpochMs', keep: { ms: 100 } });
+
+      await _.delayPromise(200);
+
+      await file.write('v2');
+      await file.backup({ type: 'renameWithEpochMs', keep: { ms: 100 } }); // should trigger rotation of v1~
+
+      const backupFiles = await testDir.getFiles(/age_test-.*\.txt~/);
+      // v2~ is new, v1~ should be deleted because it is > 100ms old
+      expect(backupFiles.length).toBe(1);
+    });
+
+    it('rotates by both ms AND generations', async () => {
+      const file = new FileSpec('both_test.txt');
+
+      // Create 3 backups very quickly
+      await file.write('v1');
+      await file.backup({ type: 'renameWithEpochMs', keep: { ms: 500, generations: 2 } });
+      await file.write('v2');
+      await file.backup({ type: 'renameWithEpochMs', keep: { ms: 500, generations: 2 } });
+      await file.write('v3');
+      await file.backup({ type: 'renameWithEpochMs', keep: { ms: 500, generations: 2 } });
+
+      let backupFiles = await testDir.getFiles(/both_test-.*\.txt~/);
+      // Should have 3 backups because they are NOT older than 500ms yet, even though count > 2
+      expect(backupFiles.length).toBe(3);
+
+      await _.delayPromise(600);
+
+      await file.write('v4');
+      await file.backup({ type: 'renameWithEpochMs', keep: { ms: 500, generations: 2 } });
+
+      backupFiles = await testDir.getFiles(/both_test-.*\.txt~/);
+      expect(backupFiles.length).toBe(2);
+    });
   });
 });

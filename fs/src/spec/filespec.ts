@@ -1078,8 +1078,103 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
     if (newPath && isFilePath(newPath)) {
       const newFile = new FileSpec(newPath);
       await this.moveTo(newFile, { overwrite: true });
+      if ('keep' in opts && opts.keep) {
+        await this.#rotateBackups(opts.keep, opts);
+      }
       return newFile;
     }
+  }
+
+  async #rotateBackups(
+    keep: { ms?: Integer; generations?: Integer },
+    strategy: FileConflictStrategy,
+  ): Promise<void> {
+    const parent = this.parentFolder();
+    const allFiles = await parent.getFiles();
+    const backupFiles: { file: FileSpec; time: number }[] = [];
+
+    // Identify relevant backup files and determine their time
+    for (const file of allFiles) {
+      const time = await this.#getBackupTime(file, strategy);
+      if (time !== undefined && file.filename.endsWith('~')) {
+        backupFiles.push({ file, time });
+      }
+    }
+
+    // Sort by time, newest first
+    backupFiles.sort((a, b) => b.time - a.time);
+
+    const toDelete: FileSpec[] = [];
+    const now = new Date().getTime();
+
+    for (let i = 0; i < backupFiles.length; i++) {
+      const { file, time } = backupFiles[i];
+      const age = now - time;
+      const isTooOld = keep.ms !== undefined && age > keep.ms;
+      const isExtraGeneration = keep.generations !== undefined && i >= keep.generations;
+
+      if (keep.ms !== undefined && keep.generations !== undefined) {
+        // Both set: delete if both conditions are met
+        if (isTooOld && isExtraGeneration) {
+          toDelete.push(file);
+        }
+      } else if (isTooOld || isExtraGeneration) {
+        // Only one set: delete if either condition is met
+        toDelete.push(file);
+      }
+    }
+
+    for (const file of toDelete) {
+      await file.remove();
+    }
+  }
+
+  async #getBackupTime(file: FileSpec, strategy: FileConflictStrategy): Promise<number | undefined> {
+    const filename = file.filename;
+    const base = this.basename;
+    const ext = this.extname;
+    const sep = ('separator' in strategy && _.isString(strategy.separator)) ? strategy.separator : '-';
+    const prefix = ('prefix' in strategy && _.isString(strategy.prefix)) ? strategy.prefix : '';
+
+    let time: number | undefined;
+
+    if (strategy.type === 'renameWithEpochMs') {
+      const pattern = new RegExp(
+        `^${_.escapeRegExp(base)}${_.escapeRegExp(sep)}${_.escapeRegExp(prefix)}(\\d+)${_.escapeRegExp(ext)}~$`,
+      );
+      const match = filename.match(pattern);
+      if (match) {
+        time = parseInt(match[1]);
+      }
+    } else if (strategy.type === 'renameWithDatetime') {
+      const pattern = new RegExp(
+        `^${_.escapeRegExp(base)}${_.escapeRegExp(sep)}${_.escapeRegExp(prefix)}(.+)${_.escapeRegExp(ext)}~$`,
+      );
+      const match = filename.match(pattern);
+      if (match) {
+        try {
+          // DateEx can parse many formats, but we'll try to use the provided format if possible
+          // For now, let's use DateEx to parse the string
+          const ds = match[1];
+          const dex = new DateEx(ds);
+          if (!isNaN(dex.date.getTime())) {
+            time = dex.date.getTime();
+          }
+        } catch {
+          // Fallback to mtime
+        }
+      }
+    } else if (strategy.type === 'renameWithNumber') {
+      const pattern = new RegExp(
+        `^${_.escapeRegExp(base)}${_.escapeRegExp(sep)}${_.escapeRegExp(prefix)}\\d+${_.escapeRegExp(ext)}~$`,
+      );
+      if (pattern.test(filename)) {
+        const stats = await file.stats();
+        time = stats?.modifiedAt?.getTime();
+      }
+    }
+
+    return time;
   }
 
   /**
@@ -1153,11 +1248,12 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   }
 
   async #getNewPath(opts: FileConflictStrategy): Promise<FS.FilePath | undefined> {
+    const tilde = ('keep' in opts && opts.keep) ? '~' : '';
     if (opts.type === fileConflictStrategyType.renameWithTilde) {
       return asFilePath(this.path + '~'); // Changed to return string directly
     } else if (opts.type === fileConflictStrategyType.renameWithNumber) {
       const limit = _.isInteger(opts.limit) ? opts.limit : 32;
-      const resp = await this.findAvailableIndexFilename(limit, opts.separator, opts.prefix);
+      const resp = await this.findAvailableIndexFilename(limit, opts.separator, opts.prefix, tilde);
       if (!resp && opts.errorIfExists) {
         throw new Error.AlreadyExists('File exists', { code: 'EEXIST', path: this._f });
       }
@@ -1166,7 +1262,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
       const sep = opts.separator || '-';
       const prefix = opts.prefix || '';
       const ds = new DateEx().format(opts.format || 'yyyyMMddHHmmssSSS');
-      const newFsDest = new FileSpec(this.dirname, this.basename + sep + prefix + ds + this.extname);
+      const newFsDest = new FileSpec(this.dirname, this.basename + sep + prefix + ds + this.extname + tilde);
       const exists = await newFsDest.exists();
       if (exists && opts.errorIfExists) {
         throw new Error.AlreadyExists('File exists', { code: 'EEXIST', path: newFsDest.path });
@@ -1176,7 +1272,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
       const sep = opts.separator || '-';
       const prefix = opts.prefix || '';
       const ds = new Date().getTime().toString();
-      const newFsDest = new FileSpec(this.dirname, this.basename + sep + prefix + ds + this.extname);
+      const newFsDest = new FileSpec(this.dirname, this.basename + sep + prefix + ds + this.extname + tilde);
       const exists = await newFsDest.exists();
       if (exists && opts.errorIfExists) {
         throw new Error.AlreadyExists('File exists', { code: 'EEXIST', path: newFsDest.path });
@@ -1198,18 +1294,24 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * that is not used.
    * @param [limit=32] - The maximum number of attempts to find an available filename.
    * @param [sep='-'] - The separator to use between the filename and the index.
+   * @param [prefix=''] - A prefix to add before the index.
+   * @param [suffix=''] - A suffix to add after the extension.
    * @returns {Promise<FilePath | undefined>} A promise that resolves with an available file path, or undefined if not found.
    */
   async findAvailableIndexFilename(
     _limit: Integer = 32,
     sep: string = '-',
     prefix: string = '',
+    suffix: string = '',
   ): Promise<FS.FilePath | undefined> {
     let newFsDest: FileSpec | undefined;
     let count = 0;
     let looking = true;
     while (looking) {
-      newFsDest = new FileSpec(this.dirname, this.basename + sep + prefix + _.pad(++count, 2) + this.extname);
+      newFsDest = new FileSpec(
+        this.dirname,
+        this.basename + sep + prefix + _.pad(++count, 2) + this.extname + suffix,
+      );
       looking = await newFsDest.exists();
     }
     if (!looking && newFsDest instanceof FileSpec) {
