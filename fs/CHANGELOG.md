@@ -1,5 +1,9 @@
 # Changelog for @epdoc/fs
 
+## [1.2.19] - 2026-02-16
+
+- Added keep option to backups for backup file rotation
+
 ## [1.2.18] - 2026-02-15
 
 - Allow add newline after final } for git-friendly formatting
