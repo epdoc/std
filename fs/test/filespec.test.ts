@@ -265,15 +265,15 @@ describe('FileSpec read/write helpers', () => {
     expect(parsed).toEqual(obj);
   });
 
-  it('writeJson() with SafeWriteOptions creates backup', async () => {
+  it('writeJson() with safe and backupStrategy creates backup', async () => {
     const filePath = path.join(tmpDir, 'safe-write.json');
     const f = new FileSpec(filePath);
 
     // Create initial file
     await f.writeJson({ version: '1.0.0' });
 
-    // Write with safe option
-    await f.writeJson({ version: '2.0.0' }, { safe: true });
+    // Write with safe and explicit backupStrategy
+    await f.writeJson({ version: '2.0.0' }, { safe: true, backupStrategy: { type: 'renameWithTilde' } });
 
     const content = await f.readJson();
     expect(content).toEqual({ version: '2.0.0' });
@@ -322,7 +322,7 @@ describe('FileSpec read/write helpers', () => {
     const data = { env: '{ENV}', version: '1.0' };
     const deepCopyOpts = { replace: { ENV: 'prod' }, pre: '{', post: '}' };
 
-    await f.writeJson(data, { deepCopy: deepCopyOpts, safe: true });
+    await f.writeJson(data, { deepCopy: deepCopyOpts, safe: true, backupStrategy: { type: 'renameWithTilde' } });
 
     const content = await f.readJson();
     expect(content).toEqual({ env: 'prod', version: '1.0' });
@@ -358,6 +358,53 @@ describe('FileSpec read/write helpers', () => {
 
     const content = await f.readJson();
     expect(content).toEqual(data);
+  });
+
+  it('writeJson() with backupStrategy only (no safe) creates backup', async () => {
+    const filePath = path.join(tmpDir, 'backup-only.json');
+    const f = new FileSpec(filePath);
+
+    await f.writeJson({ version: '1.0.0' });
+    await f.writeJson({ version: '2.0.0' }, { backupStrategy: { type: 'renameWithTilde' } });
+
+    const content = await f.readJson();
+    expect(content).toEqual({ version: '2.0.0' });
+
+    const backupFile = new FileSpec(filePath + '~');
+    expect(await backupFile.exists()).toBe(true);
+    const backupContent = await backupFile.readJson();
+    expect(backupContent).toEqual({ version: '1.0.0' });
+  });
+
+  it('writeJson() with safe only (no backupStrategy) does not create backup', async () => {
+    const filePath = path.join(tmpDir, 'safe-no-backup.json');
+    const f = new FileSpec(filePath);
+
+    await f.writeJson({ version: '1.0.0' });
+    await f.writeJson({ version: '2.0.0' }, { safe: true });
+
+    const content = await f.readJson();
+    expect(content).toEqual({ version: '2.0.0' });
+
+    // No backup should exist
+    const backupFile = new FileSpec(filePath + '~');
+    expect(await backupFile.exists()).toBe(false);
+  });
+
+  it('write() with backupStrategy only creates backup', async () => {
+    const filePath = path.join(tmpDir, 'write-backup-only.txt');
+    const f = new FileSpec(filePath);
+
+    await f.write('original content');
+    await f.write('new content', { backupStrategy: { type: 'renameWithTilde' } });
+
+    const content = await f.readAsString();
+    expect(content).toBe('new content');
+
+    const backupFile = new FileSpec(filePath + '~');
+    expect(await backupFile.exists()).toBe(true);
+    const backupContent = await backupFile.readAsString();
+    expect(backupContent).toBe('original content');
   });
 
   it('writeJson() with only DeepCopyOpts (no other params)', async () => {

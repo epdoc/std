@@ -51,20 +51,72 @@ export type FileConflictStrategy =
  */
 export type FileConflictStrategyType = (typeof fileConflictStrategyType)[keyof typeof fileConflictStrategyType];
 
+/**
+ * Options for safe file writing with atomic write semantics and optional backup.
+ *
+ * When `safe` is enabled, the write operation:
+ * 1. Backs up the existing file (if it exists) using the `backupStrategy`
+ * 2. Writes to a temporary file
+ * 3. Moves the temporary file to the target path
+ * 4. On failure, restores the backup to the original path
+ *
+ * This ensures the target file is never left in a partially-written state.
+ */
+/**
+ * Options for safe file writing with optional atomic writes and/or backup.
+ *
+ * These two concerns are independent and can be used separately or together:
+ * - `safe` alone: atomic write via temp file, no backup
+ * - `backupStrategy` alone: backup existing file, then direct write
+ * - Both: backup existing file, then atomic write via temp file
+ */
 export type SafeWriteOptions = {
+  /**
+   * Enable atomic write. Content is written to a temporary file and moved
+   * into place, preventing partial writes. On failure the backup (if any)
+   * is restored. Defaults to `false`.
+   */
   safe?: boolean;
+  /**
+   * Strategy for backing up the existing file before overwriting.
+   * Can be used independently of `safe`. When the target file does not
+   * exist, this option has no effect.
+   *
+   * @see {@link FileConflictStrategy} for all available strategies.
+   */
   backupStrategy?: FileConflictStrategy;
 };
 
+/**
+ * Options for {@link FileSpec.writeJson}, combining JSON formatting
+ * with safe write semantics.
+ */
+/**
+ * Options for {@link FileSpec.writeJson}, combining JSON formatting
+ * with safe write semantics from {@link SafeWriteOptions}.
+ */
 export type WriteJsonOptions = SafeWriteOptions & {
-  // JSON formatting
+  /**
+   * A replacer function or array of property names passed to `JSON.stringify()`.
+   * Controls which values are included in the JSON output.
+   */
   replacer?: JsonReplacer;
+  /**
+   * Indentation for pretty-printing. Passed as the `space` argument to
+   * `JSON.stringify()`. Use `2` for two-space indentation or `'\t'` for tabs.
+   */
   space?: string | Integer;
-
-  // Deep copy serialization (uses _.jsonSerialize vs JSON.stringify)
-  deepCopy?: DeepCopyOpts | boolean; // defaults to false
-
-  // Content to append after final '}' (e.g., '\n' for git-friendly formatting)
+  /**
+   * When truthy, uses `_.jsonSerialize` instead of `JSON.stringify` for
+   * deep copy serialization (e.g., handling `Date`, `RegExp`, and custom types).
+   * Pass an object for fine-grained control via {@link DeepCopyOpts}.
+   * Defaults to `false`.
+   */
+  deepCopy?: DeepCopyOpts | boolean;
+  /**
+   * Content to append after the final JSON closing brace/bracket.
+   * Commonly set to `'\n'` for git-friendly file formatting.
+   */
   trailing?: string;
 };
 

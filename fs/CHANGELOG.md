@@ -1,5 +1,16 @@
 # Changelog for @epdoc/fs
 
+## [1.2.20] - 2026-02-16
+
+- Decouple safe (atomic write) and backupStrategy in SafeWriteOptions
+Previously, backupStrategy only took effect when safe was true, and
+safe implicitly created a tilde backup even without a backupStrategy.
+Now the two concerns are independent: safe alone performs an atomic
+write via temp file without backup, backupStrategy alone backs up
+the existing file before a direct write, and both together back up
+then write atomically. This is a breaking change for callers relying
+on the implicit backup from safe: true without a backupStrategy.
+
 ## [1.2.19] - 2026-02-16
 
 - Added keep option to backups for backup file rotation

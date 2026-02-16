@@ -22,7 +22,12 @@ import { DigestAlgorithm } from '../consts.ts';
 import { FSBytes } from '../fsbytes.ts';
 import { asFilePath, isFilePath } from '../guards.ts';
 import type * as FS from '../types.ts';
-import type { ReadJsonOptions, SafeWriteOptions as WriteOptions, WriteJsonOptions } from '../util/types.ts';
+import type {
+  ReadJsonOptions,
+  SafeWriteOptions,
+  SafeWriteOptions as WriteOptions,
+  WriteJsonOptions,
+} from '../util/types.ts';
 import { FSSpecBase } from './basespec.ts';
 import { FileSpecWriter } from './filespecwriter.ts';
 import { FolderSpec } from './folderspec.ts';
@@ -766,10 +771,10 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
       return this.#writeJsonWithDeepCopy(data, opts);
     }
 
-    if (opts?.safe) {
-      return this.#writeSafe(
-        (file) => file.writeJson(data, { ...opts, safe: false }),
-        opts.backupStrategy,
+    if (opts?.safe || opts?.backupStrategy) {
+      return this.#writeWithOpts(
+        (file) => file.#writeJsonDirect(data, opts),
+        opts,
       );
     }
 
@@ -809,10 +814,10 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
     data: unknown,
     opts: WriteJsonOptions,
   ): Promise<this> {
-    if (opts?.safe) {
-      return this.#writeSafe(
-        (file) => file.#writeJsonWithDeepCopy(data, { ...opts, safe: false }),
-        opts.backupStrategy,
+    if (opts?.safe || opts?.backupStrategy) {
+      return this.#writeWithOpts(
+        (file) => file.#writeJsonWithDeepCopy(data, { ...opts, safe: false, backupStrategy: undefined }),
+        opts,
       );
     }
 
@@ -868,10 +873,10 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
       write?: WriteOptions;
     },
   ): Promise<this> {
-    if (opts?.write?.safe) {
-      return this.#writeSafe(
+    if (opts?.write?.safe || opts?.write?.backupStrategy) {
+      return this.#writeWithOpts(
         (file) => file.writeYaml(data, { yaml: opts.yaml }),
-        opts.write.backupStrategy,
+        opts.write,
       );
     }
     let fileHandle: nfs.FileHandle | undefined;
@@ -892,24 +897,47 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
     return this;
   }
 
-  async #writeSafe(
+  /**
+   * Perform an atomic write: write to a temp file, then move into place.
+   * @param writeFn - Function that writes content to the provided FileSpec
+   */
+  async #writeAtomic(
     writeFn: (file: FileSpec) => Promise<FileSpec>,
-    backupStrategy?: FileConflictStrategy,
+  ): Promise<this> {
+    const fsTmp = await FileSpec.makeTemp({
+      prefix: 'safe-write-',
+      suffix: path.extname(this.path),
+    });
+    await writeFn(fsTmp);
+    await fsTmp.moveTo(this, { overwrite: true });
+    return this;
+  }
+
+  /**
+   * Orchestrates backup and/or atomic write based on SafeWriteOptions.
+   *
+   * - `backupStrategy` set: backs up existing file before writing
+   * - `safe` set: writes atomically via temp file
+   * - Both: backs up, then writes atomically
+   * - On failure: restores backup if one was created
+   *
+   * @param writeFn - Function that performs the direct write to a FileSpec
+   * @param opts - Safe write options controlling backup and atomic behavior
+   */
+  async #writeWithOpts(
+    writeFn: (file: FileSpec) => Promise<FileSpec>,
+    opts?: SafeWriteOptions,
   ): Promise<this> {
     let fsBackup: FileSpec | undefined;
     try {
-      // Only backup if file exists
-      if (await this.exists()) {
-        fsBackup = await this.backup(backupStrategy);
-        // Note: backup() moves the original file, so no verification needed here
+      if (opts?.backupStrategy && await this.exists()) {
+        fsBackup = await this.backup(opts.backupStrategy);
       }
-
-      const fsTmp = await FileSpec.makeTemp({
-        prefix: 'safe-write-',
-        suffix: path.extname(this.path),
-      });
-      await writeFn(fsTmp);
-      await fsTmp.moveTo(this);
+      if (opts?.safe) {
+        await this.#writeAtomic(writeFn);
+      } else {
+        await writeFn(this);
+      }
     } catch (e) {
       if (fsBackup) {
         await fsBackup.moveTo(this);
@@ -962,10 +990,10 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * await file.write(bytes);
    */
   async write(data: string | string[] | Uint8Array, opts?: WriteOptions): Promise<this> {
-    if (opts?.safe) {
-      return this.#writeSafe(
-        (file) => file.write(data),
-        opts.backupStrategy,
+    if (opts?.safe || opts?.backupStrategy) {
+      return this.#writeWithOpts(
+        (file) => file.write(data, { ...opts, safe: false, backupStrategy: undefined }),
+        opts,
       );
     }
     let fileHandle: nfs.FileHandle | undefined;
