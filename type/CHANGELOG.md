@@ -1,5 +1,9 @@
 # Changelog for @epdoc/type
 
+## [1.2.6] - 2026-02-16
+
+- Added escapeRegExp() function. Added EmptyDict and EmptyObject types.
+
 ## [1.2.4] - 2025-12-31
 
 - Formatting update
