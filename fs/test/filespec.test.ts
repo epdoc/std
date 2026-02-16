@@ -107,6 +107,20 @@ describe('FileSpec', () => {
       expect(result).toBe(file);
     });
 
+    test('writeJson() with trailing option appends content after final }', async () => {
+      const file = new FileSpec(testDir, 'trailing.json');
+      await file.writeJson({ key: 'value' }, { trailing: '\n' });
+      const content = await file.readAsString();
+      expect(content).toBe('{"key":"value"}\n');
+    });
+
+    test('writeJson() with trailing option works with deepCopy', async () => {
+      const file = new FileSpec(testDir, 'trailing-deep.json');
+      await file.writeJson({ key: 'value' }, { deepCopy: true, trailing: '\n' });
+      const content = await file.readAsString();
+      expect(content).toBe('{"key":"value"}\n');
+    });
+
     test('moveTo() moves the file and returns the new FileSpec', async () => {
       const srcFile = new FileSpec(testDir, 'move-src.txt');
       await srcFile.write('move test');

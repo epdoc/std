@@ -1,5 +1,9 @@
 # Changelog for @epdoc/fs
 
+## [1.2.18] - 2026-02-15
+
+- Allow add newline after final } for git-friendly formatting
+
 ## [1.2.17] - 2026-02-13
 
 - Changed copyTo default to preserve timestamps.

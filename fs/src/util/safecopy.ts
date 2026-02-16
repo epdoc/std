@@ -27,10 +27,10 @@ export async function safeCopy(
   const fsDest = await resolveType(dest);
 
   if (!fsSrc) {
-    throw new Err.NotFound('Source file undiscoverable', { path: (_.isString(src) ? src : src.path) });
+    throw new Err.NotFound('Source file undiscoverable', { path: _.isString(src) ? src : src.path });
   }
   if (!fsDest) {
-    throw new Err.NotFound('Destination file undiscoverable', { path: (_.isString(dest) ? dest : dest.path) });
+    throw new Err.NotFound('Destination file undiscoverable', { path: _.isString(dest) ? dest : dest.path });
   }
 
   // Check if src is a symlink

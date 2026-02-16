@@ -784,10 +784,11 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   async #writeJsonDirect(data: unknown, opts?: WriteJsonOptions): Promise<this> {
     const replacerArg = opts?.replacer as unknown as Parameters<typeof JSON.stringify>[1];
     const text = JSON.stringify(data, replacerArg, opts?.space);
+    const finalText = opts?.trailing ? text + opts.trailing : text;
     let fileHandle: nfs.FileHandle | undefined;
     try {
       fileHandle = await nfs.open(this._f, 'w');
-      await fileHandle.write(new TextEncoder().encode(text));
+      await fileHandle.write(new TextEncoder().encode(finalText));
       await fileHandle.sync(); // Ensure data is flushed to disk
     } catch (err) {
       throw this.asError(err, 'writeJson');
@@ -817,10 +818,11 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
 
     const deepCopyOpts = typeof opts.deepCopy === 'object' ? opts.deepCopy : {};
     const text = _.jsonSerialize(data, deepCopyOpts, opts.space);
+    const finalText = opts?.trailing ? text + opts.trailing : text;
     let fileHandle: nfs.FileHandle | undefined;
     try {
       fileHandle = await nfs.open(this._f, 'w');
-      await fileHandle.write(new TextEncoder().encode(text));
+      await fileHandle.write(new TextEncoder().encode(finalText));
       await fileHandle.sync(); // Ensure data is flushed to disk
     } catch (err: unknown) {
       throw this.asError(err, 'writeJsonWithDeepCopy');

@@ -49,6 +49,9 @@ export type WriteJsonOptions = SafeWriteOptions & {
 
   // Deep copy serialization (uses _.jsonSerialize vs JSON.stringify)
   deepCopy?: DeepCopyOpts | boolean; // defaults to false
+
+  // Content to append after final '}' (e.g., '\n' for git-friendly formatting)
+  trailing?: string;
 };
 
 export type ReadJsonOptions = {

@@ -18,7 +18,17 @@
   ],
   "dependencies": {
     "internal": [],
-    "external": ["@std/fs", "@std/path", "@std/encoding", "@std/bytes", "@std/yaml", "@epdoc/datetime", "@epdoc/response", "@epdoc/string", "@epdoc/type"]
+    "external": [
+      "@std/fs",
+      "@std/path",
+      "@std/encoding",
+      "@std/bytes",
+      "@std/yaml",
+      "@epdoc/datetime",
+      "@epdoc/response",
+      "@epdoc/string",
+      "@epdoc/type"
+    ]
   },
   "keyPatterns": [
     {
