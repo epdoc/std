@@ -11,6 +11,19 @@ export type Integer = number;
 export type Dict<T = unknown> = Record<string, T>;
 
 /**
+ * An empty dictionary type with string keys. No properties are allowed.
+ * This is the empty counterpart of {@link Dict}.
+ */
+export type EmptyDict = Record<string, never>;
+
+/**
+ * An empty object type where no properties of any key type are allowed.
+ * Uses `PropertyKey` (string | number | symbol) for broader key coverage
+ * than {@link EmptyDict}.
+ */
+export type EmptyObject = Record<PropertyKey, never>;
+
+/**
  * Result of a comparison between two Dict objects.
  */
 export type CompareResult = -1 | 0 | 1;
