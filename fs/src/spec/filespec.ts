@@ -1,33 +1,17 @@
 import * as Error from '$error';
-import {
-  type FileConflictStrategy,
-  fileConflictStrategyType,
-  joinContinuationLines,
-  resolvePathArgs,
-  safeCopy,
-  type SafeCopyOpts,
-} from '$util';
+import * as Util from '$util';
 import { DateEx } from '@epdoc/datetime';
 import { _, type DeepCopyOpts, type Dict, type Integer, stripJsonComments } from '@epdoc/type';
 import { assert } from '@std/assert';
 import { decodeBase64, encodeBase64 } from '@std/encoding';
-import { fromFileUrl } from '@std/path';
 import crypto from 'node:crypto';
 import fs, { promises as nfs } from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
-import process from 'node:process';
 import { Readable, Writable } from 'node:stream';
 import { DigestAlgorithm } from '../consts.ts';
 import { FSBytes } from '../fsbytes.ts';
 import { asFilePath, isFilePath } from '../guards.ts';
 import type * as FS from '../types.ts';
-import type {
-  ReadJsonOptions,
-  SafeWriteOptions,
-  SafeWriteOptions as WriteOptions,
-  WriteJsonOptions,
-} from '../util/types.ts';
 import { FSSpecBase } from './basespec.ts';
 import { FileSpecWriter } from './filespecwriter.ts';
 import { FolderSpec } from './folderspec.ts';
@@ -60,7 +44,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    */
   public constructor(...args: FS.PathSegment[]) {
     super();
-    this._f = resolvePathArgs(...args) as FS.FilePath; // Cast to FilePath
+    this._f = Util.resolvePathArgs(...args) as FS.FilePath; // Cast to FilePath
   }
 
   override get path(): FS.FilePath {
@@ -88,7 +72,64 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * // configFile.path will be /path/to/your/project/data/config.json
    */
   public static fromMeta(metaUrl: string, ...paths: string[]): FileSpec {
-    return new FileSpec(path.resolve(fromFileUrl(metaUrl), ...paths));
+    const dir = path.dirname(Util.fileURLToPath(metaUrl));
+    const fullPath = path.join(dir, ...paths);
+    return new FileSpec(fullPath);
+  }
+
+  /**
+   * Creates a new FileSpec for the current working directory, optionally with
+   * additional path segments appended.
+   *
+   * @param args - Additional path segments to append to the current working directory.
+   * @returns {FileSpec} A new FileSpec instance.
+   *
+   * @example
+   * const file = FileSpec.cwd('config.json');  // e.g. /current/dir/config.json
+   */
+  public static cwd(...args: string[]): FileSpec {
+    const fullPath = Util.resolvePath(Util.getCwd(), ...args);
+    return new FileSpec(fullPath);
+  }
+
+  /**
+   * Creates a new FileSpec for the user's home directory, optionally with
+   * additional path segments appended.
+   *
+   * @param args - Additional path segments to append to the home directory.
+   * @returns {FileSpec} A new FileSpec instance.
+   *
+   * @example
+   * const bashrc = FileSpec.home('.bashrc');  // e.g. /home/user/.bashrc
+   */
+  public static home(...args: string[]): FileSpec {
+    const fullPath = Util.resolvePath(Util.getHomeDir(), ...args);
+    return new FileSpec(fullPath);
+  }
+
+  /**
+   * Creates a new FileSpec for a file in the user's config directory.
+   * Follows XDG Base Directory Specification:
+   * - Checks XDG_CONFIG_HOME environment variable first
+   * - Falls back to ~/.config on macOS and Linux
+   * - Falls back to %APPDATA% on Windows (via home directory resolution)
+   *
+   * @param args - Path segments to append to the config directory.
+   * @returns {FileSpec} A new FileSpec instance.
+   *
+   * @example
+   * const settings = FileSpec.config('myapp', 'settings.json');  // e.g. ~/.config/myapp/settings.json
+   */
+  public static config(...args: string[]): FileSpec {
+    // Check for XDG_CONFIG_HOME first (standard Linux/Debian)
+    const xdg = Util.getEnv('XDG_CONFIG_HOME');
+    if (xdg) {
+      const fullPath = Util.resolvePath(xdg, ...args);
+      return new FileSpec(fullPath);
+    }
+
+    // Fallback for macOS and standard Linux home
+    return FileSpec.home('.config', ...args);
   }
 
   /**
@@ -105,8 +146,8 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * no longer needed.
    *
    * ```ts
-   * const tmpFileName0 = await Deno.makeTempFile();  // e.g. /tmp/419e0bf2
-   * const tmpFileName1 = await Deno.makeTempFile({ prefix: 'my_temp' });  // e.g. /tmp/my_temp754d3098
+   * const tmpFileName0 = await FileSpec.makeTemp();  // e.g. /tmp/419e0bf2
+   * const tmpFileName1 = await FileSpec.makeTemp({ prefix: 'my_temp' });  // e.g. /tmp/my_temp754d3098
    * ```
    *
    * Requires `allow-write` permission
@@ -122,13 +163,13 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * @returns A new FileSpec object with the path
    */
   public static async makeTemp(opts: { prefix?: string; suffix?: string; dir?: string } = {}): Promise<FileSpec> {
-    const tmpRoot = opts.dir ? path.resolve(opts.dir) : os.tmpdir();
+    const tmpRoot = opts.dir ? Util.resolvePath(opts.dir) : Util.getTempDir();
     const prefix = _.isString(opts.prefix) ? opts.prefix : 'tmp-';
     const mkdtempPrefix = path.join(tmpRoot, prefix);
 
     try {
-      // Create a unique temp directory
-      const tmpDir = await nfs.mkdtemp(mkdtempPrefix);
+      // Create a unique temp directory to ensure uniqueness
+      const tmpDir = await Util.makeTempDir(prefix);
 
       // Generate a unique filename
       const name = _.isFunction(crypto.randomUUID) ? crypto.randomUUID() : crypto.randomBytes(8).toString('hex');
@@ -210,34 +251,6 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
       return new FileSpec(path.resolve(this._f, ...args[0]));
     }
     return new FileSpec(path.resolve(this._f, ...args));
-  }
-
-  /**
-   * Constructs a new FileSpec instance rooted at the user's home directory.
-   *
-   * @param args - Additional path segments to append after the home directory.
-   * @returns {FileSpec} A new FileSpec instance for the specified path.
-   *
-   * @example
-   * // Create an FileSpec instance rooted at the home directory and point to a specific file.
-   * const fs = new FileSpec('/any/initial/path/file.txt');
-   * const homeFs = fs.home('Documents', 'Projects', 'my_file.txt');
-   * console.log(homeFs.path); // e.g. '/Users/yourUsername/Documents/Projects/my_file.txt'
-   */
-  static home(...args: string[]): FileSpec {
-    const fullPath = path.resolve(os.userInfo().homedir, ...args);
-    return new FileSpec(fullPath);
-  }
-
-  /**
-   * Constructs a new FileSpec instance rooted at the current working directory.
-   *
-   * @param args - Additional path segments to append after the home directory.
-   * @returns {FileSpec} A new FileSpec instance for the specified path.
-   */
-  static cwd(...args: string[]): FileSpec {
-    const fullPath = path.resolve(process.cwd(), ...args);
-    return new FileSpec(fullPath);
   }
 
   /**
@@ -570,7 +583,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
       });
 
       if (continuation) {
-        return joinContinuationLines(lines, continuation);
+        return Util.joinContinuationLines(lines, continuation);
       } else {
         return lines;
       }
@@ -617,7 +630,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * @async
    * @category File Operations
    */
-  async readJson<T = unknown>(options?: ReadJsonOptions): Promise<T> {
+  async readJson<T = unknown>(options?: Util.ReadJsonOptions): Promise<T> {
     try {
       const opts = options || {};
       let text = await this.readAsString();
@@ -698,10 +711,10 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
     value: unknown,
     options: DeepCopyOpts | null = null,
     space?: string | number,
-    writeOpts?: WriteOptions,
+    writeOpts?: Util.SafeWriteOptions,
   ): Promise<this> {
     // Always use jsonSerialize for writeJsonEx to maintain backward compatibility
-    const opts: WriteJsonOptions = {
+    const opts: Util.WriteJsonOptions = {
       deepCopy: options || true, // Use true for default deep copy behavior
       space: space,
       safe: writeOpts?.safe,
@@ -745,14 +758,14 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * // Combined: formatting + safe write
    * await file.writeJson(data, null, 2, { safe: true });
    */
-  writeJson(data: unknown, writeOpts?: WriteJsonOptions): Promise<this>;
+  writeJson(data: unknown, writeOpts?: Util.WriteJsonOptions): Promise<this>;
   writeJson(data: unknown, replacer?: JsonReplacer, space?: string | number): Promise<this>;
   writeJson(
     data: unknown,
-    optsOrReplacer?: WriteJsonOptions | JsonReplacer,
+    optsOrReplacer?: Util.WriteJsonOptions | JsonReplacer,
     space?: string | number,
   ): Promise<this> {
-    let opts: WriteJsonOptions;
+    let opts: Util.WriteJsonOptions;
 
     // Determine if using modern options object or legacy parameters
     if (space !== undefined || !_.isDict(optsOrReplacer)) {
@@ -763,7 +776,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
       };
     } else {
       // Modern signature: writeJson(data, options)
-      opts = (optsOrReplacer as WriteJsonOptions) || {};
+      opts = (optsOrReplacer as Util.WriteJsonOptions) || {};
     }
 
     // Execute appropriate write strategy
@@ -786,7 +799,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * Direct JSON write implementation without safe write features.
    * @private
    */
-  async #writeJsonDirect(data: unknown, opts?: WriteJsonOptions): Promise<this> {
+  async #writeJsonDirect(data: unknown, opts?: Util.WriteJsonOptions): Promise<this> {
     const replacerArg = opts?.replacer as unknown as Parameters<typeof JSON.stringify>[1];
     const text = JSON.stringify(data, replacerArg, opts?.space);
     const finalText = opts?.trailing ? text + opts.trailing : text;
@@ -812,7 +825,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    */
   async #writeJsonWithDeepCopy(
     data: unknown,
-    opts: WriteJsonOptions,
+    opts: Util.WriteJsonOptions,
   ): Promise<this> {
     if (opts?.safe || opts?.backupStrategy) {
       return this.#writeWithOpts(
@@ -870,7 +883,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
     data: unknown,
     opts?: {
       yaml?: Parameters<typeof import('@std/yaml').stringify>[1];
-      write?: WriteOptions;
+      write?: Util.SafeWriteOptions;
     },
   ): Promise<this> {
     if (opts?.write?.safe || opts?.write?.backupStrategy) {
@@ -926,7 +939,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    */
   async #writeWithOpts(
     writeFn: (file: FileSpec) => Promise<FileSpec>,
-    opts?: SafeWriteOptions,
+    opts?: Util.SafeWriteOptions,
   ): Promise<this> {
     let fsBackup: FileSpec | undefined;
     try {
@@ -962,7 +975,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * await file.writeBase64(bytes);
    * // File contains: SGVsbG8=
    */
-  async writeBase64(data: string | Uint8Array | ArrayBuffer, opts?: WriteOptions): Promise<this> {
+  async writeBase64(data: string | Uint8Array | ArrayBuffer, opts?: Util.SafeWriteOptions): Promise<this> {
     const encoded = encodeBase64(data);
     await this.write(encoded, opts);
     return this;
@@ -989,7 +1002,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * const bytes = new Uint8Array([72, 101, 108, 108, 111]);
    * await file.write(bytes);
    */
-  async write(data: string | string[] | Uint8Array, opts?: WriteOptions): Promise<this> {
+  async write(data: string | string[] | Uint8Array, opts?: Util.SafeWriteOptions): Promise<this> {
     if (opts?.safe || opts?.backupStrategy) {
       return this.#writeWithOpts(
         (file) => file.write(data, { ...opts, safe: false, backupStrategy: undefined }),
@@ -1073,8 +1086,8 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * destination with a tilde.
    * @returns A promise that resolves when the copy operation is complete.
    */
-  safeCopy(destFile: FS.FilePath | FileSpec | FolderSpec | FSSpec, opts: SafeCopyOpts = {}): Promise<void> {
-    return safeCopy(this, destFile, opts);
+  safeCopy(destFile: FS.FilePath | FileSpec | FolderSpec | FSSpec, opts: Util.SafeCopyOpts = {}): Promise<void> {
+    return Util.safeCopy(this, destFile, opts);
   }
 
   /**
@@ -1100,7 +1113,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * path that already exists and `opts.errorIfExists` is true.
    */
   async backup(
-    opts: FileConflictStrategy = { type: 'renameWithTilde', errorIfExists: false },
+    opts: Util.FileConflictStrategy = { type: 'renameWithTilde', errorIfExists: false },
   ): Promise<FileSpec | undefined> {
     const newPath: FS.FilePath | undefined = await this.#getNewPath(opts);
     if (newPath && isFilePath(newPath)) {
@@ -1115,7 +1128,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
 
   async #rotateBackups(
     keep: { ms?: Integer; generations?: Integer },
-    strategy: FileConflictStrategy,
+    strategy: Util.FileConflictStrategy,
   ): Promise<void> {
     const parent = this.parentFolder();
     const allFiles = await parent.getFiles();
@@ -1157,7 +1170,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
     }
   }
 
-  async #getBackupTime(file: FileSpec, strategy: FileConflictStrategy): Promise<number | undefined> {
+  async #getBackupTime(file: FileSpec, strategy: Util.FileConflictStrategy): Promise<number | undefined> {
     const filename = file.filename;
     const base = this.basename;
     const ext = this.extname;
@@ -1275,18 +1288,18 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
     });
   }
 
-  async #getNewPath(opts: FileConflictStrategy): Promise<FS.FilePath | undefined> {
+  async #getNewPath(opts: Util.FileConflictStrategy): Promise<FS.FilePath | undefined> {
     const tilde = ('keep' in opts && opts.keep) ? '~' : '';
-    if (opts.type === fileConflictStrategyType.renameWithTilde) {
+    if (opts.type === Util.fileConflictStrategyType.renameWithTilde) {
       return asFilePath(this.path + '~'); // Changed to return string directly
-    } else if (opts.type === fileConflictStrategyType.renameWithNumber) {
+    } else if (opts.type === Util.fileConflictStrategyType.renameWithNumber) {
       const limit = _.isInteger(opts.limit) ? opts.limit : 32;
       const resp = await this.findAvailableIndexFilename(limit, opts.separator, opts.prefix, tilde);
       if (!resp && opts.errorIfExists) {
         throw new Error.AlreadyExists('File exists', { code: 'EEXIST', path: this._f });
       }
       return resp;
-    } else if (opts.type === fileConflictStrategyType.renameWithDatetime) {
+    } else if (opts.type === Util.fileConflictStrategyType.renameWithDatetime) {
       const sep = opts.separator || '-';
       const prefix = opts.prefix || '';
       const ds = new DateEx().format(opts.format || 'yyyyMMddHHmmssSSS');
@@ -1296,7 +1309,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
         throw new Error.AlreadyExists('File exists', { code: 'EEXIST', path: newFsDest.path });
       }
       return newFsDest.path;
-    } else if (opts.type === fileConflictStrategyType.renameWithEpochMs) {
+    } else if (opts.type === Util.fileConflictStrategyType.renameWithEpochMs) {
       const sep = opts.separator || '-';
       const prefix = opts.prefix || '';
       const ds = new Date().getTime().toString();

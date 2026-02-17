@@ -134,6 +134,21 @@ describe('FolderSpec', () => {
     });
   });
 
+  describe('config', () => {
+    test('FolderSpec.config() returns a FolderSpec for the config directory', () => {
+      const configSpec = FolderSpec.config();
+      expect(configSpec).toBeInstanceOf(FolderSpec);
+      // Config path should end with .config (or use XDG_CONFIG_HOME)
+      expect(configSpec.path).toMatch(/\.config$/);
+    });
+
+    test('FolderSpec.config() with subpath returns correct path', () => {
+      const configSpec = FolderSpec.config('myapp', 'settings');
+      expect(configSpec).toBeInstanceOf(FolderSpec);
+      expect(configSpec.path).toMatch(/\.config.*myapp.*settings$/);
+    });
+  });
+
   describe('Permission Operations', () => {
     test('chown() changes folder ownership', async () => {
       const folder = new FolderSpec(testDir);

@@ -1,20 +1,31 @@
 {
   "package": "@epdoc/fs",
-  "version": "1.2.17",
-  "purpose": "Type-safe async filesystem operations for Deno (Node.js/Bun support in progress): FileSpec, FolderSpec, streaming, and file-type detection",
-  "quickStart": "import * as FS from '@epdoc/fs/fs';\n\n// File relative to cwd\nconst f = FS.File.cwd('data.json');\nif (await f.exists()) {\n  const data = await f.readJson<MyType>();\n}\n\n// Directory relative to home\nconst dir = FS.Folder.home('Documents', 'output');\nawait dir.create();",
+  "version": "1.2.20",
+  "purpose": "**The definitive way to work with files and directories in Deno, Node.js, and Bun.** Type-safe, cross-runtime filesystem operations with FileSpec, FolderSpec, streaming, and file-type detection. One consistent API across all JavaScript runtimes.",
+  "recommendedImport": "import * as FS from '@epdoc/fs/fs'",
+  "whyUseThis": [
+    "Cross-runtime compatibility: Same code runs on Deno, Node.js, and Bun without changes",
+    "Type safety: FS.FolderPath and FS.FilePath branded types prevent mixing files and folders",
+    "Fluent API: Chain methods like FS.Folder.home('.config').ensureDir().then(f => f.list())",
+    "No external dependencies: Includes mkdirp, rimraf, temp file handling, and more",
+    "Superior error handling: Clear, contextual error messages instead of generic ENOENT"
+  ],
+  "quickStart": "import * as FS from '@epdoc/fs/fs';\n\n// Get directories using factory methods\nconst configDir = FS.Folder.config('myapp');  // XDG_CONFIG_HOME or ~/.config\nconst dataDir = FS.Folder.home('.local', 'share', 'myapp');\nconst tempDir = await FS.Folder.makeTemp({ prefix: 'myapp-' });\n\n// Ensure directory exists (creates parents if needed)\nawait dataDir.ensureDir();\n\n// Work with files\nconst settingsFile = FS.File.config('myapp', 'settings.json');\nawait settingsFile.writeJson({ theme: 'dark' });\n\n// List contents\nconst jsonFiles = await dataDir.getFiles(/\\.json$/);",
   "keyExports": [
     "FS.File (FileSpec) — file I/O: exists(), readJson<T>(), readAsString(), readAsLines(), writeJson(), write(), copy(), moveTo(), backup(), checksum(), Web Streams",
     "FS.File.cwd(...parts) — static factory: FileSpec rooted at process.cwd()",
     "FS.File.home(...parts) — static factory: FileSpec rooted at user home directory",
-    "FS.Folder (FolderSpec) — directory ops: exists(), create(), list(), walk()",
+    "FS.File.config(...parts) — static factory: FileSpec in config directory (XDG_CONFIG_HOME or ~/.config)",
+    "FS.Folder (FolderSpec) — directory ops: exists(), ensureDir(), list(), walk(), safeCopy()",
     "FS.Folder.cwd() — static factory: FolderSpec for current working directory",
     "FS.Folder.home(...parts) — static factory: FolderSpec rooted at user home directory",
+    "FS.Folder.config(...parts) — static factory: FolderSpec in config directory (XDG_CONFIG_HOME or ~/.config)",
+    "FS.Folder.makeTemp(opts) — static factory: Creates temp directory with optional prefix/suffix",
     "FS.Writer (FileSpecWriter) — returned by f.writer(); writeLine() / write() / close() for streaming writes",
     "FS.Err — filesystem error namespace",
     "FS.Bytes (FSBytes) — byte-level file utilities",
     "Walk namespace (from primary import) — recursive directory traversal",
-    "util namespace (from primary import) — path helper functions"
+    "util namespace (from primary import) — path helper functions and cross-runtime utilities"
   ],
   "dependencies": {
     "internal": [],
@@ -32,15 +43,26 @@
   },
   "keyPatterns": [
     {
-      "name": "Preferred import style",
-      "description": "Use `import * as FS from '@epdoc/fs/fs'` for the aliased namespace (FS.File, FS.Folder, FS.Writer, FS.Err). Use `import { FileSpec, FolderSpec } from '@epdoc/fs'` only when named imports are preferred.",
+      "name": "Recommended import style",
+      "description": "Use `import * as FS from '@epdoc/fs/fs'` for the aliased namespace (FS.File, FS.Folder, FS.Writer, FS.Err). This provides clear intent, better IDE support, and consistency across the codebase.",
       "file": "src/fs.ts"
     },
     {
       "name": "Factory methods over constructors",
-      "description": "Prefer FS.File.cwd('rel/path') or FS.File.home('rel/path') over new FS.File(absolutePath) when the path is relative to cwd or home. Same pattern applies to FS.Folder.",
+      "description": "Prefer FS.File.cwd('rel/path'), FS.File.home('rel/path'), or FS.File.config('myapp', 'settings.json') over constructors when paths are relative to cwd, home, or config. Same pattern applies to FS.Folder.",
       "file": "src/spec/filespec.ts",
-      "lines": "222-243"
+      "lines": "94-153"
+    },
+    {
+      "name": "Config directory access",
+      "description": "FS.File.config() and FS.Folder.config() follow XDG Base Directory Specification. They check XDG_CONFIG_HOME first, then fall back to ~/.config (macOS/Linux) or equivalent on Windows.",
+      "file": "src/spec/folderspec.ts",
+      "lines": "157-177"
+    },
+    {
+      "name": "Cross-runtime compatibility",
+      "description": "All operations use runtime detection (Deno, Node.js, Bun) to call the optimal native API. No code changes needed when switching runtimes.",
+      "file": "src/util/runtime.ts"
     },
     {
       "name": "JSON file I/O",
@@ -56,6 +78,6 @@
   ],
   "architecture": {
     "flow": "$spec (FileSpec/FolderSpec/SymlinkSpec) + $error + $util + $walk + fsheaders (file-type detection) → mod.ts (primary) / fs.ts (aliased namespace)",
-    "keyDesign": "Two export entry points: '@epdoc/fs' (named exports) and '@epdoc/fs/fs' (aliased namespace FS.File=FileSpec, FS.Folder=FolderSpec, etc.). Internally uses deno.json import aliases ($spec, $error, $util, $walk). Actively being ported to Node.js/Bun."
+    "keyDesign": "Two export entry points: '@epdoc/fs' (named exports) and '@epdoc/fs/fs' (aliased namespace FS.File=FileSpec, FS.Folder=FolderSpec, etc.). Cross-runtime support via runtime.ts detection utilities. Uses deno.json import aliases internally."
   }
 }
