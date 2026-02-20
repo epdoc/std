@@ -226,9 +226,11 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   }
 
   /**
-   * Returns the file extension, exluding the decimal character. For example,
-   * '/path/to/file.name.html' will return 'html'.
-   * @return {string} File extension, exluding the decimal character.
+   * Returns the extension with the dot included. For example, '/path/to/file.name.html' will return
+   * '.html'. If the file has no extension, or if the filename starts with a dot and has no other
+   * dots (like a .gitignore file), it returns an empty string.
+   *
+   * @return {string} File extension, including the decimal character.
    */
   get extname(): string {
     return path.extname(this._f);
