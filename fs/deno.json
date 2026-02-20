@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/fs",
-  "version": "1.2.21",
+  "version": "1.2.22",
   "description": "Type-safe file system operations with FileSpec, FolderSpec, and streaming support for Node.js and Deno",
   "tasks": {
     "docs": "deno doc --json src/mod.ts > library-docs.json",

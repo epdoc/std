@@ -1,5 +1,9 @@
 # Changelog for @epdoc/fs
 
+## [1.2.22] - 2026-02-20
+
+- Documentation change
+
 ## [1.2.21] - 2026-02-17
 
 - Add cross-runtime support with runtime utilities and enhanced FolderSpec/FileSpec factory methods
