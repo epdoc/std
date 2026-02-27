@@ -12,6 +12,55 @@
  */
 export type StyleFn = (text: string) => string;
 
+/**
+ * A color specification that can define foreground and/or background colors.
+ * Used when you need explicit control over both text and background colors.
+ *
+ * @example
+ * ```ts
+ * // Background only
+ * const bgRed: ColorSpec = { bg: 0xff0000 };
+ *
+ * // Foreground only
+ * const fgGreen: ColorSpec = { fg: 0x00ff00 };
+ *
+ * // Both foreground and background
+ * const whiteOnRed: ColorSpec = { fg: 0xffffff, bg: 0xff0000 };
+ * ```
+ */
+export type ColorSpec = {
+  /** Foreground (text) color as a hex number (e.g., 0x51d67c) */
+  fg?: number;
+  /** Background color as a hex number (e.g., 0x1a1a2e) */
+  bg?: number;
+};
+
+/**
+ * Flexible color/style specification accepted throughout the table API.
+ *
+ * - **`StyleFn`** — Full control with custom ANSI styling (bold, italic, etc.)
+ * - **`number`** — Shorthand for foreground color (most common case)
+ * - **`ColorSpec`** — Explicit foreground and/or background colors
+ *
+ * @example
+ * ```ts
+ * import { bold, rgb24 } from '@std/fmt/colors';
+ *
+ * // Foreground color shorthand (most common)
+ * const redText: ColorType = 0xff0000;
+ *
+ * // Background color
+ * const bgBlue: ColorType = { bg: 0x0000ff };
+ *
+ * // Both foreground and background
+ * const whiteOnBlack: ColorType = { fg: 0xffffff, bg: 0x000000 };
+ *
+ * // Full control with StyleFn
+ * const styledText: ColorType = (s) => bold(rgb24(s, 0x58d1eb));
+ * ```
+ */
+export type ColorType = StyleFn | number | ColorSpec;
+
 // ── Column definition ──────────────────────────────────────────────────────
 
 /**
@@ -40,7 +89,7 @@ export type Column<T> = {
    */
   formatter?: (value: unknown, row: T) => string;
   /**
-   * Returns a {@link StyleFn} to apply to the formatted cell text, or
+   * Returns a {@link ColorType} to apply to the formatted cell text, or
    * `undefined` to leave the cell unstyled. Evaluated per-cell so that
    * styling can vary by value or by other fields in the row.
    *
@@ -50,12 +99,22 @@ export type Column<T> = {
    * const green = 0x51d67c;
    * const red = 0xef5867;
    *
+   * // Simple foreground color (most common)
+   * color: (_v, row) => row.status === 'running' ? green : red
+   *
+   * // Background color
+   * color: (_v, row) => row.hot ? { bg: 0xff0000 } : undefined
+   *
+   * // Both foreground and background
+   * color: (_v, row) => ({ fg: 0xffffff, bg: row.severity > 5 ? red : 0x333333 })
+   *
+   * // Full control with StyleFn
    * color: (_v, row) => row.status === 'running'
    *   ? (s) => rgb24(s, green)
    *   : (s) => rgb24(s, red)
    * ```
    */
-  color?: (value: unknown, row: T) => StyleFn | undefined;
+  color?: (value: unknown, row: T) => ColorType | undefined;
 };
 
 // ── Column registry & builder ──────────────────────────────────────────────
@@ -98,35 +157,60 @@ export interface Options<T> {
   /** Spacing (in spaces) between columns (default: `2`). */
   padding?: number;
   /**
-   * Style function applied to the header line text.
+   * Color or style applied to the header line text.
    *
    * @example
    * ```ts
    * import { bold, rgb24 } from '@std/fmt/colors';
+   *
+   * // Simple color
+   * headerStyle: 0x58d1eb
+   *
+   * // With bold
    * headerStyle: (s) => bold(rgb24(s, 0x58d1eb))
    * ```
    */
-  headerStyle?: StyleFn;
+  headerStyle?: ColorType;
   /**
-   * Two {@link StyleFn} functions applied to alternating data rows
-   * for zebra-striping. The first function styles rows 0, 2, 4… (even indices).
-   * The second function styles rows 1, 3, 5… (odd indices).
+   * Two {@link ColorType} specifications applied to alternating data rows
+   * for zebra-striping. The first entry styles rows 0, 2, 4… (even indices).
+   * The second entry styles rows 1, 3, 5… (odd indices).
    * Use `null` or `undefined` for either entry to apply no formatting to
-   * that row type. Use `bgRgb24` from `@std/fmt/colors` for subtle
-   * background alternation.
+   * that row type.
    *
    * @example
    * ```ts
-   * import { bgRgb24 } from '@std/fmt/colors';
    * // Background on even rows only:
-   * rowStyles: [(s) => bgRgb24(s, 0x1a1a2e), null]
+   * rowStyles: [{ bg: 0x1a1a2e }, null]
+   *
    * // Alternating backgrounds:
-   * rowStyles: [(s) => bgRgb24(s, 0x1a1a2e), (s) => bgRgb24(s, 0x16213e)]
+   * rowStyles: [{ bg: 0x1a1a2e }, { bg: 0x16213e }]
+   *
    * // No styling:
    * rowStyles: [null, null]
    * ```
    */
-  rowStyles?: [StyleFn | null | undefined, StyleFn | null | undefined];
+  rowStyles?: [ColorType | null | undefined, ColorType | null | undefined];
+  /**
+   * When `true`, strips all ANSI color codes from output. Useful for writing
+   * to files, logs, or terminals without color support.
+   *
+   * Note: The consumer should explicitly set this based on their output target.
+   * For Deno programs, you can pass `Deno.noColor` to auto-detect based on
+   * environment and TTY status.
+   *
+   * @default false
+   *
+   * @example
+   * ```ts
+   * // Explicit
+   * const table = new TableRenderer({ columns, data, noColor: true });
+   *
+   * // Auto-detect in Deno
+   * const table = new TableRenderer({ columns, data, noColor: Deno.noColor });
+   * ```
+   */
+  noColor?: boolean;
 }
 
-export type RowStyles = [StyleFn | null | undefined, StyleFn | null | undefined];
+export type RowStyles = [ColorType | null | undefined, ColorType | null | undefined];

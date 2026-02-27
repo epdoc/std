@@ -210,6 +210,38 @@ const fmtBytes = formatters.bytes(1);
 console.log(fmtBytes(1073741824)); // "1.0 GiB"
 ```
 
+### `example09.test.ts` - ColorType API
+
+Demonstrates the flexible `ColorType` API that accepts numbers, `ColorSpec`, or `StyleFn`.
+
+- Simple number (hex) for foreground colors - the most common case
+- `ColorSpec` with `{ fg?, bg? }` for background or combined colors
+- `StyleFn` for full control (bold, italic, composed styles)
+- All three variants work in `color` callbacks, `headerStyle`, and `rowStyles`
+
+**Key concepts:**
+
+- Using hex numbers directly: `color: () => 0xff0000`
+- Using ColorSpec for backgrounds: `{ bg: 0x1a1a2e }`
+- Using ColorSpec for both: `{ fg: 0xffffff, bg: 0xff0000 }`
+- Using StyleFn for advanced styling: `(s) => bold(rgb24(s, color))`
+
+---
+
+## Common Patterns
+
+### Using Formatters
+
+```typescript
+// As factory in column definition
+formatter: formatters.percent(2);
+
+// Or create once and reuse
+const fmtBytes = formatters.bytes(1);
+// ... later in code
+console.log(fmtBytes(1073741824)); // "1.0 GiB"
+```
+
 ### Fluent API Pattern
 
 ```typescript
@@ -218,6 +250,22 @@ TableRenderer.create<T>()
   .column('key2', { header: 'Header 2', formatter: myFormatter })
   .data(rows)
   .headerStyle((s) => bold(cyan(s)))
-  .evenRow(bgColor, true)
+  .evenRow({ bg: 0x1a1a2e })
   .print();
+```
+
+### ColorType Usage
+
+```typescript
+// Simple number (foreground color) - most common
+color: (_v, row) => row.active ? 0x51d67c : 0xef5867
+
+// ColorSpec for background
+color: () => ({ bg: 0x1a1a2e })
+
+// ColorSpec for both foreground and background
+color: () => ({ fg: 0xffffff, bg: 0xff0000 })
+
+// StyleFn for full control
+color: () => (s: string) => bold(rgb24(s, 0x51d67c))
 ```

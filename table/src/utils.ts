@@ -71,14 +71,36 @@ export function calculateColumnWidths<T>(
   return widths;
 }
 
-export function getStyle(val: Table.StyleFn | number, bg = false): Table.StyleFn {
+/**
+ * Converts a {@link ColorType} specification into a {@link StyleFn}.
+ *
+ * @param val - The color/style specification to resolve
+ * @returns A StyleFn that applies the specified styling
+ *
+ * @example
+ * ```ts
+ * // Number → foreground color
+ * const fn1 = resolveColor(0xff0000);  // (s) => rgb24(s, 0xff0000)
+ *
+ * // ColorSpec → fg/bg colors
+ * const fn2 = resolveColor({ fg: 0xffffff, bg: 0x000000 });
+ *
+ * // StyleFn → pass through
+ * const fn3 = resolveColor((s) => bold(s));
+ * ```
+ */
+export function resolveColor(val: Table.ColorType): Table.StyleFn {
   if (typeof val === 'function') return val;
   if (typeof val === 'number' && !isNaN(val)) {
-    if (bg === true) return (s) => bgRgb24(s, val);
     return (s) => rgb24(s, val);
   }
-  return (s) => {
-    return s;
+  // ColorSpec object (val is neither function nor number, must be ColorSpec)
+  const spec = val as Table.ColorSpec;
+  return (s: string): string => {
+    let result = s;
+    if (spec.bg !== undefined) result = bgRgb24(result, spec.bg);
+    if (spec.fg !== undefined) result = rgb24(result, spec.fg);
+    return result;
   };
 }
 

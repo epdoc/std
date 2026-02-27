@@ -76,7 +76,7 @@ describe('Example 04: Fluent API', () => {
       })
       .data(metrics)
       .headerStyle((s: string) => bold(rgb24(s, cyan)))
-      .evenRow(bgEven, true)
+      .evenRow({ bg: bgEven })
       .padding(3);
 
     console.log('\n=== Example 04: Metrics Table (Fluent API) ===\n');

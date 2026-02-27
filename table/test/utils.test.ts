@@ -1,7 +1,7 @@
 import { assertEquals } from '@std/assert';
-import { describe, it } from '@std/testing/bdd';
 import { bgRgb24, rgb24 } from '@std/fmt/colors';
-import { buildColumns, calculateColumnWidths, getStyle, isRowStyle } from '../src/utils.ts';
+import { describe, it } from '@std/testing/bdd';
+import { buildColumns, calculateColumnWidths, resolveColor, isRowStyle } from '../src/utils.ts';
 import type { Column, ColumnRegistry, RowStyles, StyleFn } from '../src/types.ts';
 
 describe('buildColumns', () => {
@@ -207,45 +207,61 @@ describe('calculateColumnWidths', () => {
   });
 });
 
-describe('getStyle', () => {
+describe('resolveColor', () => {
   it('should return function as-is when passed StyleFn', () => {
     const testFn: StyleFn = (s) => s.toUpperCase();
-    const result = getStyle(testFn);
+    const result = resolveColor(testFn);
     assertEquals(result, testFn);
     assertEquals(result('hello'), 'HELLO');
   });
 
-  it('should convert integer to rgb24 StyleFn by default', () => {
-    const styleFn = getStyle(0xff0000);
+  it('should convert integer to rgb24 StyleFn (foreground)', () => {
+    const styleFn = resolveColor(0xff0000);
     const result = styleFn('test');
     const expected = rgb24('test', 0xff0000);
     assertEquals(result, expected);
   });
 
-  it('should convert integer to bgRgb24 StyleFn when bg=true', () => {
-    const styleFn = getStyle(0x00ff00, true);
+  it('should handle ColorSpec with fg only', () => {
+    const styleFn = resolveColor({ fg: 0xff0000 });
+    const result = styleFn('test');
+    const expected = rgb24('test', 0xff0000);
+    assertEquals(result, expected);
+  });
+
+  it('should handle ColorSpec with bg only', () => {
+    const styleFn = resolveColor({ bg: 0x00ff00 });
     const result = styleFn('test');
     const expected = bgRgb24('test', 0x00ff00);
     assertEquals(result, expected);
   });
 
-  it('should return identity function for NaN', () => {
-    const styleFn = getStyle(NaN);
-    assertEquals(styleFn('test'), 'test');
+  it('should handle ColorSpec with both fg and bg', () => {
+    const styleFn = resolveColor({ fg: 0xff0000, bg: 0x00ff00 });
+    const result = styleFn('test');
+    // Apply bg first, then fg
+    const expected = rgb24(bgRgb24('test', 0x00ff00), 0xff0000);
+    assertEquals(result, expected);
   });
 
   it('should handle zero as valid RGB value', () => {
-    const styleFn = getStyle(0x000000);
+    const styleFn = resolveColor(0x000000);
     const result = styleFn('test');
     const expected = rgb24('test', 0x000000);
     assertEquals(result, expected);
   });
 
   it('should handle max RGB value', () => {
-    const styleFn = getStyle(0xffffff);
+    const styleFn = resolveColor(0xffffff);
     const result = styleFn('test');
     const expected = rgb24('test', 0xffffff);
     assertEquals(result, expected);
+  });
+
+  it('should handle empty ColorSpec', () => {
+    const styleFn = resolveColor({});
+    const result = styleFn('test');
+    assertEquals(result, 'test'); // No styling applied
   });
 });
 

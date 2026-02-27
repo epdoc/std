@@ -53,6 +53,7 @@ export class TableRenderer<T> {
   #widths: Record<keyof T, number> | null = null;
   #headerStyle: Table.StyleFn | undefined;
   #rowStyles: [Table.StyleFn | null | undefined, Table.StyleFn | null | undefined] = [null, null];
+  #noColor: boolean;
   static #identity: Table.StyleFn = (s) => s;
 
   /**
@@ -73,9 +74,13 @@ export class TableRenderer<T> {
     this.#columns = options.columns;
     this.#data = options.data;
     this.#padding = options.padding ?? 2;
-    this.#headerStyle = options.headerStyle;
+    this.#noColor = options.noColor ?? false;
+    this.#headerStyle = options.headerStyle ? Util.resolveColor(options.headerStyle) : undefined;
     if (Util.isRowStyle(options.rowStyles)) {
-      this.#rowStyles = options.rowStyles;
+      this.#rowStyles = [
+        options.rowStyles[0] ? Util.resolveColor(options.rowStyles[0]) : null,
+        options.rowStyles[1] ? Util.resolveColor(options.rowStyles[1]) : null,
+      ];
     }
     // Defer width calculation for fluent API usage
     if (this.#columns.length > 0 && this.#data.length > 0) {
@@ -113,18 +118,23 @@ export class TableRenderer<T> {
     return this;
   }
 
-  headerStyle(val: Table.StyleFn | Integer, bg = false): this {
-    this.#headerStyle = Util.getStyle(val, bg);
+  headerStyle(val: Table.ColorType): this {
+    this.#headerStyle = Util.resolveColor(val);
     return this;
   }
 
-  oddRow(val: Table.StyleFn | Integer, bg = false): this {
-    this.#rowStyles[0] = Util.getStyle(val, bg);
+  oddRow(val: Table.ColorType): this {
+    this.#rowStyles[0] = Util.resolveColor(val);
     return this;
   }
 
-  evenRow(val: Table.StyleFn | Integer, bg = false): this {
-    this.#rowStyles[1] = Util.getStyle(val, bg);
+  evenRow(val: Table.ColorType): this {
+    this.#rowStyles[1] = Util.resolveColor(val);
+    return this;
+  }
+
+  noColor(val: boolean): this {
+    this.#noColor = val;
     return this;
   }
 
@@ -149,9 +159,14 @@ export class TableRenderer<T> {
       const align = col.align ?? 'left';
       return padVisual(col.header, width, align);
     });
-    const line = parts.join(gap);
-    if (this.#headerStyle) {
-      return this.#headerStyle(line);
+    let line = parts.join(gap);
+    if (!this.#noColor && this.#headerStyle) {
+      line = this.#headerStyle(line);
+    }
+    // Safety net: strip any ANSI codes when noColor is enabled
+    // (catches formatters or user code that embedded color)
+    if (this.#noColor) {
+      line = stripAnsi(line);
     }
     return line;
   }
@@ -183,10 +198,11 @@ export class TableRenderer<T> {
       // 1. Format
       let text = col.formatter ? col.formatter(value, item) : String(value ?? '');
 
-      // 2. Color — apply the StyleFn returned by the color callback
-      if (col.color) {
-        const styleFn = col.color(value, item);
-        if (styleFn) {
+      // 2. Color — apply the ColorType returned by the color callback
+      if (!this.#noColor && col.color) {
+        const colorResult = col.color(value, item);
+        if (colorResult !== undefined) {
+          const styleFn = Util.resolveColor(colorResult);
           text = styleFn(text);
         }
       }
@@ -207,14 +223,20 @@ export class TableRenderer<T> {
 
       // 6. Row style — apply per-cell so resets within one cell
       //    don't affect the row style of subsequent cells
-      if (rowStyleFn) {
+      if (!this.#noColor && rowStyleFn) {
         text = rowStyleFn(text);
       }
 
       return text;
     });
 
-    return parts.join('');
+    let row = parts.join('');
+    // Safety net: strip any ANSI codes when noColor is enabled
+    // (catches formatters or user code that embedded color)
+    if (this.#noColor) {
+      row = stripAnsi(row);
+    }
+    return row;
   }
 
   /**

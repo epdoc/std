@@ -1,9 +1,9 @@
-import { assertEquals, assertStringIncludes } from '@std/assert';
+import { assertEquals, assertNotEquals, assertStringIncludes } from '@std/assert';
 import { bgRgb24, bold, rgb24 } from '@std/fmt/colors';
 import { describe, it } from '@std/testing/bdd';
 import { formatters } from '../src/formatters.ts';
-import { TableRenderer } from '../src/render.ts';
 import { stripAnsi } from '../src/terminal.ts';
+import { TableRenderer } from '../src/render.ts';
 
 describe('TableRenderer - Constructor API', () => {
   type TestRow = {
@@ -194,7 +194,7 @@ describe('TableRenderer - Fluent API', () => {
     const table = TableRenderer.create<TestRow>()
       .column('id', { header: 'ID' })
       .data([{ id: 1, name: 'A' }, { id: 2, name: 'B' }])
-      .evenRow(0x101010, true);
+      .evenRow({ bg: 0x101010 });
 
     const rows = table.renderRows();
     // Row at index 1 (second row, "even" in 1-indexed terms) should have bg color
@@ -205,7 +205,7 @@ describe('TableRenderer - Fluent API', () => {
     const table = TableRenderer.create<TestRow>()
       .column('id', { header: 'ID' })
       .data([{ id: 1, name: 'A' }, { id: 2, name: 'B' }])
-      .oddRow(0x202020, true);
+      .oddRow({ bg: 0x202020 });
 
     const rows = table.renderRows();
     // Row at index 0 (first row, "odd" in 1-indexed terms) should have bg color
@@ -416,5 +416,128 @@ describe('TableRenderer - Edge Cases', () => {
 
     const header = table.renderHeader();
     assertStringIncludes(stripAnsi(header), 'This Is A Very Long Header Name');
+  });
+});
+
+describe('TableRenderer - noColor Option', () => {
+  type TestRow = { id: number; status: string };
+
+  it('should strip header style when noColor is true', () => {
+    const table = new TableRenderer({
+      columns: [{ key: 'id', header: 'ID' }],
+      data: [{ id: 1, status: 'active' }],
+      headerStyle: 0xff0000, // red
+      noColor: true,
+    });
+
+    const header = table.renderHeader();
+    // Should have no ANSI codes
+    assertEquals(header, stripAnsi(header));
+    assertStringIncludes(header, 'ID');
+  });
+
+  it('should strip column colors when noColor is true', () => {
+    const table = new TableRenderer({
+      columns: [
+        { key: 'id', header: 'ID' },
+        {
+          key: 'status',
+          header: 'Status',
+          color: (_v, row) => row.status === 'active' ? 0x00ff00 : 0xff0000,
+        },
+      ],
+      data: [{ id: 1, status: 'active' }],
+      noColor: true,
+    });
+
+    const row = table.renderRow({ id: 1, status: 'active' });
+    // Should have no ANSI codes
+    assertEquals(row, stripAnsi(row));
+    assertStringIncludes(row, 'active');
+  });
+
+  it('should strip row styles when noColor is true', () => {
+    const table = new TableRenderer({
+      columns: [{ key: 'id', header: 'ID' }],
+      data: [{ id: 1, status: 'active' }, { id: 2, status: 'inactive' }],
+      rowStyles: [{ bg: 0x1a1a2e }, null],
+      noColor: true,
+    });
+
+    const rows = table.renderRows();
+    // Both rows should have no ANSI codes
+    assertEquals(rows[0], stripAnsi(rows[0]));
+    assertEquals(rows[1], stripAnsi(rows[1]));
+  });
+
+  it('should strip all ANSI codes from complete render when noColor is true', () => {
+    const table = new TableRenderer({
+      columns: [
+        { key: 'id', header: 'ID' },
+        { key: 'status', header: 'Status', color: () => 0xff0000 },
+      ],
+      data: [{ id: 1, status: 'active' }],
+      headerStyle: 0x00ff00,
+      rowStyles: [{ bg: 0x1a1a2e }, null],
+      noColor: true,
+    });
+
+    const lines = table.render();
+    for (const line of lines) {
+      // Every line should equal its stripped version
+      assertEquals(line, stripAnsi(line));
+    }
+  });
+
+  it('should support fluent noColor() method', () => {
+    const table = TableRenderer.create<TestRow>()
+      .column('id', { header: 'ID' })
+      .column('status', { header: 'Status', color: () => 0xff0000 })
+      .data([{ id: 1, status: 'active' }])
+      .headerStyle(0x00ff00)
+      .evenRow({ bg: 0x1a1a2e })
+      .noColor(true);
+
+    const lines = table.render();
+    for (const line of lines) {
+      assertEquals(line, stripAnsi(line));
+    }
+  });
+
+  it('should strip formatter-embedded colors when noColor is true', () => {
+    // This tests the safety net - formatters can embed ANSI codes
+    const formatterWithColor = (v: unknown): string => {
+      return rgb24(String(v), 0xff0000); // Red color
+    };
+
+    const table = new TableRenderer({
+      columns: [{ key: 'id', header: 'ID', formatter: formatterWithColor }],
+      data: [{ id: 123, status: 'active' }],
+      noColor: true,
+    });
+
+    const row = table.renderRow({ id: 123, status: 'active' });
+    // Should strip the ANSI codes embedded by the formatter
+    assertEquals(row, stripAnsi(row));
+    assertStringIncludes(row, '123');
+  });
+
+  it('should preserve colors when noColor is false (default)', () => {
+    const table = new TableRenderer({
+      columns: [
+        { key: 'id', header: 'ID' },
+        { key: 'status', header: 'Status', color: () => 0xff0000 },
+      ],
+      data: [{ id: 1, status: 'active' }],
+      headerStyle: 0x00ff00,
+      noColor: false,
+    });
+
+    const header = table.renderHeader();
+    const row = table.renderRow({ id: 1, status: 'active' });
+
+    // Should contain ANSI codes
+    assertNotEquals(header, stripAnsi(header));
+    assertNotEquals(row, stripAnsi(row));
   });
 });
