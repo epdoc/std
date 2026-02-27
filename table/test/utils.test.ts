@@ -1,7 +1,7 @@
 import { assertEquals } from '@std/assert';
 import { bgRgb24, rgb24 } from '@std/fmt/colors';
 import { describe, it } from '@std/testing/bdd';
-import { buildColumns, calculateColumnWidths, resolveColor, isRowStyle } from '../src/utils.ts';
+import { buildColumns, calculateColumnWidths, isRowStyle, resolveColor } from '../src/utils.ts';
 import type { Column, ColumnRegistry, RowStyles, StyleFn } from '../src/types.ts';
 
 describe('buildColumns', () => {

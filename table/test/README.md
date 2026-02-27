@@ -258,14 +258,14 @@ TableRenderer.create<T>()
 
 ```typescript
 // Simple number (foreground color) - most common
-color: (_v, row) => row.active ? 0x51d67c : 0xef5867
+color: ((_v, row) => row.active ? 0x51d67c : 0xef5867);
 
 // ColorSpec for background
-color: () => ({ bg: 0x1a1a2e })
+color: (() => ({ bg: 0x1a1a2e }));
 
 // ColorSpec for both foreground and background
-color: () => ({ fg: 0xffffff, bg: 0xff0000 })
+color: (() => ({ fg: 0xffffff, bg: 0xff0000 }));
 
 // StyleFn for full control
-color: () => (s: string) => bold(rgb24(s, 0x51d67c))
+color: (() => (s: string) => bold(rgb24(s, 0x51d67c)));
 ```

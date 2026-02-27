@@ -53,7 +53,7 @@ describe('Example 09: ColorType API', () => {
 
     console.log('\n=== Example 09a: Simple Number Colors (Foreground) ===\n');
     console.log('Using hex numbers directly - the most common case:');
-    console.log('  color: (_v, row) => row.status === \'running\' ? 0x51d67c : 0xef5867');
+    console.log("  color: (_v, row) => row.status === 'running' ? 0x51d67c : 0xef5867");
     console.log('  headerStyle: 0x58d1eb\n');
     table.print();
     console.log('');
@@ -101,8 +101,8 @@ describe('Example 09: ColorType API', () => {
     console.log('\n=== Example 09b: ColorSpec for Background Colors ===\n');
     console.log('Using ColorSpec { fg?, bg? } for background or combined colors:');
     console.log('  color: (_v, row) => {');
-    console.log('    if (row.level === \'critical\') return { fg: 0xffffff, bg: 0xff0000 };');
-    console.log('    if (row.level === \'error\') return { bg: 0xef5867 };');
+    console.log("    if (row.level === 'critical') return { fg: 0xffffff, bg: 0xff0000 };");
+    console.log("    if (row.level === 'error') return { bg: 0xef5867 };");
     console.log('    ...');
     console.log('  }\n');
     table.print();

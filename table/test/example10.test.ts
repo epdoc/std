@@ -85,7 +85,7 @@ describe('Example 10: noColor Option', () => {
 
     console.log('\nNote: The plain output has no ANSI codes and is safe for:');
     console.log('  - Writing to text files');
-    console.log('  - Logging systems that don\'t support ANSI');
+    console.log("  - Logging systems that don't support ANSI");
     console.log('  - Terminals without color support');
     console.log('  - Copy/paste into documentation');
     console.log('');
