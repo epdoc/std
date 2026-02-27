@@ -4,10 +4,10 @@
  * Demonstrates the fluent API for building tables incrementally.
  */
 
+import { bold, rgb24 } from '@std/fmt/colors';
 import { describe, it } from '@std/testing/bdd';
-import { bgRgb24, bold, rgb24 } from '@std/fmt/colors';
-import { TableRenderer } from '../src/render.ts';
 import { formatters } from '../src/formatters.ts';
+import { TableRenderer } from '../src/render.ts';
 
 describe('Example 04: Fluent API', () => {
   it('should build a table using the fluent API', () => {

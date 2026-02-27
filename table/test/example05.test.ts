@@ -4,12 +4,11 @@
  * Demonstrates maxWidth truncation, custom formatters, and complex styling.
  */
 
-import { describe, it } from '@std/testing/bdd';
 import { bgRgb24, bold, dim, rgb24 } from '@std/fmt/colors';
+import { describe, it } from '@std/testing/bdd';
 import { TableRenderer } from '../src/render.ts';
-import { buildColumns } from '../src/utils.ts';
-import { formatters } from '../src/formatters.ts';
 import type { ColumnRegistry } from '../src/types.ts';
+import { buildColumns } from '../src/utils.ts';
 
 describe('Example 05: Advanced Features', () => {
   it('should render a table with advanced features', () => {

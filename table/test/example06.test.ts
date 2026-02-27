@@ -116,7 +116,7 @@ describe('Example 06: Dim Units', () => {
     console.log('    const num = v as number;');
     console.log('    const percent = num * 100;');
     console.log('    const value = percent.toFixed(1);');
-    console.log('    return `${value}${dim(\'%\')}`;');
+    console.log("    return `${value}${dim('%')}`;");
     console.log('  };');
     console.log('');
   });

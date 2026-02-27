@@ -25,12 +25,15 @@ deno test -SERW test/example01.test.ts
 ## Example Files
 
 ### `example01.test.ts` - Basic Table
+
 The simplest way to create and render a table.
+
 - Basic column definitions
 - Simple data rows
 - Default styling
 
 **Key concepts:**
+
 - Using `ColumnRegistry` for column definitions
 - Using `buildColumns()` to create column array
 - Basic `TableRenderer` constructor
@@ -38,7 +41,9 @@ The simplest way to create and render a table.
 ---
 
 ### `example02.test.ts` - Styled Table with Colors
+
 Demonstrates styling with colors, header styling, and zebra striping.
+
 - Per-column color functions
 - Conditional coloring based on row data
 - Header styling with bold and colors
@@ -46,6 +51,7 @@ Demonstrates styling with colors, header styling, and zebra striping.
 - Custom padding
 
 **Key concepts:**
+
 - Using `StyleFn` for colors
 - Conditional coloring with `color` callback
 - `headerStyle` and `rowStyles` options
@@ -54,12 +60,15 @@ Demonstrates styling with colors, header styling, and zebra striping.
 ---
 
 ### `example03.test.ts` - Table with Formatters
+
 Shows how to use the built-in formatters.
+
 - `formatters.percent()` - Formats decimals as percentages
 - `formatters.bytes()` - Formats bytes to human-readable units (GiB, MiB, etc.)
 - `formatters.uptime()` - Formats seconds to duration strings
 
 **Key concepts:**
+
 - Using factory formatters in column definitions
 - Formatter functions accept `unknown` and handle type conversion
 - Formatters work seamlessly with column `formatter` option
@@ -67,7 +76,9 @@ Shows how to use the built-in formatters.
 ---
 
 ### `example04.test.ts` - Fluent API
+
 Demonstrates building tables incrementally with the fluent API.
+
 - `TableRenderer.create<T>()` factory method
 - Chaining `.column()` calls
 - Setting data with `.data()`
@@ -75,6 +86,7 @@ Demonstrates building tables incrementally with the fluent API.
 - Rendering with `.print()`
 
 **Key concepts:**
+
 - Fluent API pattern for incremental table building
 - Method chaining
 - Custom formatter functions inline
@@ -83,7 +95,9 @@ Demonstrates building tables incrementally with the fluent API.
 ---
 
 ### `example05.test.ts` - Advanced Features
+
 Showcases advanced table features.
+
 - `maxWidth` with ellipsis truncation
 - Complex custom formatters (progress bars)
 - Multiple color functions
@@ -92,6 +106,7 @@ Showcases advanced table features.
 - Zebra striping
 
 **Key concepts:**
+
 - `maxWidth` for truncating long text
 - Custom formatters can return any string (including unicode bars)
 - Combining multiple styling functions
@@ -100,7 +115,9 @@ Showcases advanced table features.
 ---
 
 ### `example06.test.ts` - Dim Units Pattern
+
 Demonstrates using `dim()` to de-emphasize units while keeping values prominent.
+
 - Dimmed percent signs (%)
 - Dimmed time units (d, h, m)
 - Creates better visual hierarchy
@@ -109,6 +126,7 @@ Demonstrates using `dim()` to de-emphasize units while keeping values prominent.
 - Side-by-side comparison with/without dim
 
 **Key concepts:**
+
 - Using `dim()` selectively on units within formatted strings
 - Custom formatters that combine values with styled units
 - Visual hierarchy through subtle styling
@@ -119,13 +137,16 @@ Demonstrates using `dim()` to de-emphasize units while keeping values prominent.
 ---
 
 ### `example07.test.ts` - Unit Styling Alternatives
+
 Compares different approaches to styling units for better readability.
+
 - Side-by-side comparison of 6 different styling approaches
 - **Recommended: Muted gray color** (`rgb24(unit, 0x888888)`)
 - Alternative: Space-separated units
 - Shows dim(), italic(), colored units, and plain text
 
 **Key concepts:**
+
 - Muted gray (#888888) works in all terminal themes
 - More reliable than `dim()` for readability
 - Space separation is simplest alternative
@@ -133,6 +154,7 @@ Compares different approaches to styling units for better readability.
 - Pattern: `${value}${rgb24('%', 0x888888)}`
 
 **Why muted gray works best:**
+
 - ✓ Readable in both light and dark terminals
 - ✓ Creates clear visual hierarchy
 - ✓ Units are distinct but not distracting
@@ -156,6 +178,7 @@ Compares different approaches to styling units for better readability.
 ## Common Patterns
 
 ### Define Column Registry
+
 ```typescript
 const columns: ColumnRegistry<MyRow> = {
   id: { header: 'ID', align: 'right' },
@@ -166,6 +189,7 @@ const columns: ColumnRegistry<MyRow> = {
 ```
 
 ### Conditional Coloring
+
 ```typescript
 const statusColor = (_v: unknown, row: MyRow): StyleFn | undefined => {
   if (row.status === 'active') return (s: string) => rgb24(s, green);
@@ -175,9 +199,10 @@ const statusColor = (_v: unknown, row: MyRow): StyleFn | undefined => {
 ```
 
 ### Using Formatters
+
 ```typescript
 // As factory in column definition
-formatter: formatters.percent(2)
+formatter: formatters.percent(2);
 
 // Or create once and reuse
 const fmtBytes = formatters.bytes(1);
@@ -186,6 +211,7 @@ console.log(fmtBytes(1073741824)); // "1.0 GiB"
 ```
 
 ### Fluent API Pattern
+
 ```typescript
 TableRenderer.create<T>()
   .column('key1', { header: 'Header 1', align: 'left' })

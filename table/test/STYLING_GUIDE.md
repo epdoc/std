@@ -1,6 +1,7 @@
 # Unit Styling Guide for @epdoc/table
 
-When displaying values with units (%, MB, seconds, etc.), you want the numeric values to stand out while keeping units readable but subtle. This guide shows the best approaches.
+When displaying values with units (%, MB, seconds, etc.), you want the numeric values to stand out while keeping units
+readable but subtle. This guide shows the best approaches.
 
 ## Quick Recommendation
 
@@ -16,6 +17,7 @@ const formatPercent = (v: unknown): string => {
 ```
 
 **Why this works:**
+
 - ✓ Readable in both light and dark terminal themes
 - ✓ Creates clear visual hierarchy
 - ✓ More reliable than `dim()` styling
@@ -25,51 +27,63 @@ const formatPercent = (v: unknown): string => {
 ## Comparison of Approaches
 
 ### 1. Muted Gray Color (Recommended)
+
 ```typescript
 const gray = 0x888888;
 return `${value}${rgb24('%', gray)}`;
 ```
+
 - **Output:** `45.2%` (where % is gray)
 - **Pros:** Reliable, works in all themes, clear hierarchy
 - **Cons:** Requires color code
 
 ### 2. Space Separation (Simplest)
+
 ```typescript
 return `${value} %`;
 ```
+
 - **Output:** `45.2 %`
 - **Pros:** No special styling, always readable, simple code
 - **Cons:** Takes slightly more horizontal space
 
 ### 3. Muted Blue/Accent Color
+
 ```typescript
 const lightBlue = 0x5b9bd5;
 return `${value}${rgb24('%', lightBlue)}`;
 ```
+
 - **Output:** `45.2%` (where % is light blue)
 - **Pros:** Subtle accent, visually interesting
 - **Cons:** May clash with value colors
 
 ### 4. dim() Styling
+
 ```typescript
 return `${value}${dim('%')}`;
 ```
+
 - **Output:** `45.2%` (where % is dimmed)
 - **Pros:** Built-in ANSI code
 - **Cons:** Often too subtle, varies by terminal
 
 ### 5. Italic
+
 ```typescript
 return `${value}${italic('%')}`;
 ```
+
 - **Output:** `45.2%` (where % is italic)
 - **Pros:** Style-based differentiation
 - **Cons:** Not supported in all terminals
 
 ### 6. Plain Text
+
 ```typescript
 return `${value}%`;
 ```
+
 - **Output:** `45.2%`
 - **Pros:** Universal, simple
 - **Cons:** No visual hierarchy
@@ -77,6 +91,7 @@ return `${value}%`;
 ## Code Examples
 
 ### Percentage with Muted Units
+
 ```typescript
 import { rgb24 } from '@std/fmt/colors';
 
@@ -99,6 +114,7 @@ const columns: ColumnRegistry<Row> = {
 ```
 
 ### Duration with Muted Units
+
 ```typescript
 const gray = 0x888888;
 
@@ -120,6 +136,7 @@ const formatUptimeWithUnits = (v: unknown): string => {
 ```
 
 ### Space-Separated (Simple)
+
 ```typescript
 const formatPercentSimple = (v: unknown): string => {
   const percent = (v as number) * 100;
@@ -181,13 +198,13 @@ Recommended muted colors for units:
 
 ```typescript
 // Neutral grays (work with most themes)
-const gray = 0x888888;        // Medium gray - most reliable
-const lightGray = 0xaaaaaa;   // Lighter gray - good for dark themes
-const darkGray = 0x666666;    // Darker gray - good for light themes
+const gray = 0x888888; // Medium gray - most reliable
+const lightGray = 0xaaaaaa; // Lighter gray - good for dark themes
+const darkGray = 0x666666; // Darker gray - good for light themes
 
 // Muted accent colors (add subtle interest)
-const mutedBlue = 0x5b9bd5;   // Soft blue
-const mutedGreen = 0x87a96b;  // Sage green
+const mutedBlue = 0x5b9bd5; // Soft blue
+const mutedGreen = 0x87a96b; // Sage green
 const mutedPurple = 0x9b87d5; // Soft purple
 ```
 
@@ -200,6 +217,7 @@ deno test -SERW test/example07.test.ts
 ```
 
 This shows:
+
 1. Comparison table of all 6 approaches
 2. Full example with recommended muted gray
 3. Full example with space-separated alternative
@@ -207,15 +225,18 @@ This shows:
 ## Summary
 
 **For most use cases:** Use **muted gray** (`0x888888`) on units
+
 - Best balance of readability and visual hierarchy
 - Works in all terminal themes
 - Professional appearance
 
 **For simplicity:** Use **space separation**
+
 - No special styling code needed
 - Always readable
 - Slightly more space but very clean
 
 **Avoid:** `dim()` as primary approach
+
 - Too subtle in many terminals
 - Better as a fallback or special case

@@ -5,11 +5,11 @@
  * while maintaining visual hierarchy. Compares several alternatives to dim().
  */
 
-import { describe, it } from '@std/testing/bdd';
 import { bold, dim, italic, rgb24 } from '@std/fmt/colors';
+import { describe, it } from '@std/testing/bdd';
 import { TableRenderer } from '../src/render.ts';
-import { buildColumns } from '../src/utils.ts';
 import type { ColumnRegistry } from '../src/types.ts';
+import { buildColumns } from '../src/utils.ts';
 
 describe('Example 07: Unit Styling Alternatives', () => {
   it('should compare different unit styling approaches', () => {
@@ -24,7 +24,7 @@ describe('Example 07: Unit Styling Alternatives', () => {
     // Define colors for units (softer/muted colors)
     const gray = 0x888888;
     const lightBlue = 0x5b9bd5;
-    const sage = 0x87a96b;
+    const _sage = 0x87a96b;
 
     // Sample data showing different styling approaches
     const metrics: Metric[] = [
@@ -193,7 +193,7 @@ describe('Example 07: Unit Styling Alternatives', () => {
     console.log('');
     console.log('Implementation:');
     console.log('  const gray = 0x888888;');
-    console.log('  return `${value}${rgb24(\'%\', gray)}`;');
+    console.log("  return `${value}${rgb24('%', gray)}`;");
     console.log('');
   });
 

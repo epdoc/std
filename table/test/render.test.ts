@@ -1,10 +1,9 @@
 import { assertEquals, assertStringIncludes } from '@std/assert';
-import { describe, it } from '@std/testing/bdd';
 import { bgRgb24, bold, rgb24 } from '@std/fmt/colors';
+import { describe, it } from '@std/testing/bdd';
+import { formatters } from '../src/formatters.ts';
 import { TableRenderer } from '../src/render.ts';
 import { stripAnsi } from '../src/terminal.ts';
-import { formatters } from '../src/formatters.ts';
-import type { ColumnRegistry } from '../src/types.ts';
 
 describe('TableRenderer - Constructor API', () => {
   type TestRow = {
@@ -243,8 +242,7 @@ describe('TableRenderer - Column Features', () => {
         {
           key: 'status',
           header: 'Status',
-          color: (_v, row) =>
-            row.status === 'ok' ? (s) => rgb24(s, 0x00ff00) : (s) => rgb24(s, 0xff0000),
+          color: (_v, row) => row.status === 'ok' ? (s) => rgb24(s, 0x00ff00) : (s) => rgb24(s, 0xff0000),
         },
       ],
       data: [
