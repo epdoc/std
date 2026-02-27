@@ -234,7 +234,7 @@ describe('TableRenderer - Column Features', () => {
     });
 
     const row = table.renderRow({ value: 0.5, status: 'ok', longText: 'short' });
-    assertStringIncludes(stripAnsi(row), '50.00%');
+    assertStringIncludes(stripAnsi(row), '50.00 %');
   });
 
   it('should apply column color callback', () => {

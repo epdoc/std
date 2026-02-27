@@ -3,19 +3,19 @@ import { describe, it } from '@std/testing/bdd';
 import { formatters } from '../src/formatters.ts';
 
 describe('formatters.percent', () => {
-  it('should format basic percentage with default 2 decimals', () => {
+  it('should format basic percentage with default 2 decimals and space separator', () => {
     const fmt = formatters.percent();
-    assertEquals(fmt(0.5), '50.00%');
+    assertEquals(fmt(0.5), '50.00 %');
   });
 
   it('should format zero', () => {
     const fmt = formatters.percent();
-    assertEquals(fmt(0), '0.00%');
+    assertEquals(fmt(0), '0.00 %');
   });
 
   it('should format one (100%)', () => {
     const fmt = formatters.percent();
-    assertEquals(fmt(1), '100.00%');
+    assertEquals(fmt(1), '100.00 %');
   });
 
   it('should format small values below threshold', () => {
@@ -27,30 +27,40 @@ describe('formatters.percent', () => {
   it('should format exactly 0.01%', () => {
     const fmt = formatters.percent();
     // 0.0001 * 100 = 0.01, which is exactly the threshold
-    assertEquals(fmt(0.0001), '0.01%');
-    assertEquals(fmt(0.00011), '0.01%');
+    assertEquals(fmt(0.0001), '0.01 %');
+    assertEquals(fmt(0.00011), '0.01 %');
   });
 
   it('should format with custom decimals', () => {
     const fmt0 = formatters.percent(0);
-    assertEquals(fmt0(0.5), '50%');
+    assertEquals(fmt0(0.5), '50 %');
 
     const fmt1 = formatters.percent(1);
-    assertEquals(fmt1(0.5), '50.0%');
+    assertEquals(fmt1(0.5), '50.0 %');
 
     const fmt3 = formatters.percent(3);
-    assertEquals(fmt3(0.12345), '12.345%');
+    assertEquals(fmt3(0.12345), '12.345 %');
+  });
+
+  it('should support no separator option', () => {
+    const fmt = formatters.percent({ decimals: 2, separator: '' });
+    assertEquals(fmt(0.5), '50.00%');
+  });
+
+  it('should support custom separator', () => {
+    const fmt = formatters.percent({ decimals: 1, separator: '_' });
+    assertEquals(fmt(0.452), '45.2_%');
   });
 
   it('should handle negative values', () => {
     const fmt = formatters.percent();
-    assertEquals(fmt(-0.5), '-50.00%');
+    assertEquals(fmt(-0.5), '-50.00 %');
   });
 
   it('should handle values greater than 1', () => {
     const fmt = formatters.percent();
-    assertEquals(fmt(1.5), '150.00%');
-    assertEquals(fmt(10), '1000.00%');
+    assertEquals(fmt(1.5), '150.00 %');
+    assertEquals(fmt(10), '1000.00 %');
   });
 
   it('should handle NaN gracefully', () => {
@@ -61,7 +71,7 @@ describe('formatters.percent', () => {
   it('should handle undefined and null', () => {
     const fmt = formatters.percent();
     assertEquals(fmt(undefined), '');
-    assertEquals(fmt(null), '0.00%'); // null coerces to 0
+    assertEquals(fmt(null), '0.00 %'); // null coerces to 0
   });
 
   it('should handle non-numeric values', () => {
@@ -118,6 +128,16 @@ describe('formatters.bytes', () => {
 
     const fmt3 = formatters.bytes(3);
     assertEquals(fmt3(1536), '1.500 KiB');
+  });
+
+  it('should support no separator option', () => {
+    const fmt = formatters.bytes({ decimals: 1, separator: '' });
+    assertEquals(fmt(1536), '1.5KiB');
+  });
+
+  it('should support custom separator', () => {
+    const fmt = formatters.bytes({ decimals: 2, separator: '_' });
+    assertEquals(fmt(1536), '1.50_KiB');
   });
 
   it('should handle fractional bytes with rounding', () => {
@@ -210,5 +230,24 @@ describe('formatters.uptime', () => {
     const result = fmt(90.5);
     // Duration handles milliseconds, so 90.5s = 90500ms
     assertEquals(result, '1m30s');
+  });
+
+  it('should support space separator option', () => {
+    const fmt = formatters.uptime({ separator: ' ' });
+    const result = fmt(2700090); // 31d06h01m
+    assertEquals(result, '31 d 06 h 01 m');
+  });
+
+  it('should support custom units count', () => {
+    const fmt2 = formatters.uptime({ units: 2 });
+    assertEquals(fmt2(2700090), '31d06h'); // Only top 2 units
+
+    const fmt1 = formatters.uptime({ units: 1 });
+    assertEquals(fmt1(2700090), '31d'); // Only top 1 unit
+  });
+
+  it('should support combining separator and units', () => {
+    const fmt = formatters.uptime({ separator: ' ', units: 2 });
+    assertEquals(fmt(3661), '1 h 01 m'); // 1h 1m 1s, but only 2 units
   });
 });

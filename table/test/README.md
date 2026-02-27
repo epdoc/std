@@ -97,6 +97,48 @@ Showcases advanced table features.
 - Combining multiple styling functions
 - Using `dim()` for subdued appearance
 
+---
+
+### `example06.test.ts` - Dim Units Pattern
+Demonstrates using `dim()` to de-emphasize units while keeping values prominent.
+- Dimmed percent signs (%)
+- Dimmed time units (d, h, m)
+- Creates better visual hierarchy
+- Values stand out, units remain subtle
+- Color coding still applies to full cell
+- Side-by-side comparison with/without dim
+
+**Key concepts:**
+- Using `dim()` selectively on units within formatted strings
+- Custom formatters that combine values with styled units
+- Visual hierarchy through subtle styling
+- Pattern: `${value}${dim('unit')}`
+
+**Note:** `dim()` may be too subtle in some terminals. See example07 for alternatives.
+
+---
+
+### `example07.test.ts` - Unit Styling Alternatives
+Compares different approaches to styling units for better readability.
+- Side-by-side comparison of 6 different styling approaches
+- **Recommended: Muted gray color** (`rgb24(unit, 0x888888)`)
+- Alternative: Space-separated units
+- Shows dim(), italic(), colored units, and plain text
+
+**Key concepts:**
+- Muted gray (#888888) works in all terminal themes
+- More reliable than `dim()` for readability
+- Space separation is simplest alternative
+- Visual examples help choose the right approach
+- Pattern: `${value}${rgb24('%', 0x888888)}`
+
+**Why muted gray works best:**
+- ✓ Readable in both light and dark terminals
+- ✓ Creates clear visual hierarchy
+- ✓ Units are distinct but not distracting
+- ✓ Works with conditional coloring on values
+- ✓ More reliable than `dim()` styling
+
 ## Unit Test Files
 
 - `terminal.test.ts` - Tests for ANSI code handling (`stripAnsi`, `visibleTruncate`, `padVisual`)
