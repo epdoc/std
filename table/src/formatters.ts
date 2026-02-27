@@ -69,12 +69,12 @@ function percent(options?: PercentOptions | Integer): (value: unknown) => string
     const num = Number(value);
     if (isNaN(num)) return String(value ?? '');
 
+    const unit = opts.unitColor ? rgb24('%', opts.unitColor) : '%';
     const percent = num * 100;
     if (percent < 0.01 && percent > 0) {
-      return '<0.01%';
+      return `<0.01${separator}${unit}`;
     }
 
-    const unit = opts.unitColor ? rgb24('%', opts.unitColor) : '%';
     return `${percent.toFixed(decimals)}${separator}${unit}`;
   };
 }

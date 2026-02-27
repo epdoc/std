@@ -20,8 +20,8 @@ describe('formatters.percent', () => {
 
   it('should format small values below threshold', () => {
     const fmt = formatters.percent();
-    assertEquals(fmt(0.00009), '<0.01%');
-    assertEquals(fmt(0.00005), '<0.01%');
+    assertEquals(fmt(0.00009), '<0.01 %');
+    assertEquals(fmt(0.00005), '<0.01 %');
   });
 
   it('should format exactly 0.01%', () => {
