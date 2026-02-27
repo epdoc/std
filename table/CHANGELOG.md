@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.5] - 2026-02-27
+
+- Simplified color specification to take a hex value or ColorSpec, in addition to a StyleFn
+
 ## [0.0.4] - 2026-02-26
 
 - fixed test failures
