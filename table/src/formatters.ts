@@ -56,7 +56,7 @@ export interface UptimeOptions {
  * formatter: formatters.percent({ decimals: 2, unitColor: 0x888888 })  // "45.2 %"
  * ```
  */
-function percent(options?: PercentOptions | Integer): (value: unknown) => string {
+function percent(options?: PercentOptions | Integer): (ratio: unknown) => string {
   // Handle backward compatibility: number argument
   const opts: PercentOptions = typeof options === 'number'
     ? { decimals: options }
@@ -98,7 +98,7 @@ function percent(options?: PercentOptions | Integer): (value: unknown) => string
  * formatter: formatters.bytes({ decimals: 1, unitColor: 0x888888 })  // "45.2 MiB"
  * ```
  */
-function bytes(options?: BytesOptions | Integer): (value: unknown) => string {
+function bytes(options?: BytesOptions | Integer): (bytes: unknown) => string {
   // Handle backward compatibility: number argument
   const opts: BytesOptions = typeof options === 'number'
     ? { decimals: options }
@@ -146,7 +146,7 @@ function bytes(options?: BytesOptions | Integer): (value: unknown) => string {
  * formatter: formatters.uptime({ units: 2 })  // "31d06h" (only 2 units)
  * ```
  */
-function uptime(options?: UptimeOptions): (value: unknown) => string {
+function uptime(options?: UptimeOptions): (seconds: unknown) => string {
   const opts: UptimeOptions = { separator: '', units: 3, ...options };
   const separator = opts.separator ?? '';
   const units = opts.units ?? 3;
