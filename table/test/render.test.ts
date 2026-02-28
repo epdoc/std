@@ -2,8 +2,8 @@ import { assertEquals, assertNotEquals, assertStringIncludes } from '@std/assert
 import { bgRgb24, bold, rgb24 } from '@std/fmt/colors';
 import { describe, it } from '@std/testing/bdd';
 import { formatters } from '../src/formatters.ts';
-import { stripAnsi } from '../src/terminal.ts';
 import { TableRenderer } from '../src/render.ts';
+import { stripAnsi } from '../src/terminal.ts';
 
 describe('TableRenderer - Constructor API', () => {
   type TestRow = {
@@ -539,5 +539,256 @@ describe('TableRenderer - noColor Option', () => {
     // Should contain ANSI codes
     assertNotEquals(header, stripAnsi(header));
     assertNotEquals(row, stripAnsi(row));
+  });
+});
+
+describe('TableRenderer - Divider Customization', () => {
+  type TestRow = {
+    id: number;
+    name: string;
+  };
+
+  it('should use custom divider character via constructor', () => {
+    const table = new TableRenderer({
+      columns: [{ key: 'id', header: 'ID' }],
+      data: [{ id: 1, name: 'Alice' }],
+      dividerChar: '=',
+    });
+
+    const separator = table.renderSeparator();
+    assertStringIncludes(separator, '=');
+    assertEquals(separator.includes('-'), false);
+  });
+
+  it('should use custom divider character via fluent API', () => {
+    const table = TableRenderer.create<TestRow>()
+      .column('id', { header: 'ID' })
+      .data([{ id: 1, name: 'Alice' }])
+      .dividerChar('═');
+
+    const separator = table.renderSeparator();
+    assertStringIncludes(separator, '═');
+  });
+
+  it('should apply divider style via constructor', () => {
+    const table = new TableRenderer({
+      columns: [{ key: 'id', header: 'ID' }],
+      data: [{ id: 1, name: 'Alice' }],
+      dividerStyle: 0x888888,
+    });
+
+    const separator = table.renderSeparator();
+    assertStringIncludes(separator, '\x1b[38;2;');
+  });
+
+  it('should apply divider style via fluent API', () => {
+    const table = TableRenderer.create<TestRow>()
+      .column('id', { header: 'ID' })
+      .data([{ id: 1, name: 'Alice' }])
+      .dividerStyle((s) => bold(rgb24(s, 0xff0000)));
+
+    const separator = table.renderSeparator();
+    // Should contain ANSI codes for bold and color
+    assertStringIncludes(separator, '\x1b[');
+  });
+
+  it('should keep char param in renderSeparator as override', () => {
+    const table = TableRenderer.create<TestRow>()
+      .column('id', { header: 'ID' })
+      .data([{ id: 1, name: 'Alice' }])
+      .dividerChar('=');
+
+    // Call with override char
+    const separator = table.renderSeparator('─');
+    assertStringIncludes(separator, '─');
+    assertEquals(separator.includes('='), false);
+  });
+
+  it('should default to configured dividerChar when no param', () => {
+    const table = TableRenderer.create<TestRow>()
+      .column('id', { header: 'ID' })
+      .data([{ id: 1, name: 'Alice' }])
+      .dividerChar('═');
+
+    const separator = table.renderSeparator();
+    assertStringIncludes(separator, '═');
+  });
+});
+
+describe('TableRenderer - Top and Bottom Borders', () => {
+  type TestRow = {
+    id: number;
+    name: string;
+  };
+
+  it('should render top border via constructor', () => {
+    const table = new TableRenderer({
+      columns: [{ key: 'id', header: 'ID' }],
+      data: [{ id: 1, name: 'Alice' }],
+      topBorder: true,
+    });
+
+    const lines = table.render();
+    assertEquals(lines.length, 4); // top + header + separator + row
+    assertEquals(lines[0][0], '-'); // Top border is a divider
+    assertStringIncludes(stripAnsi(lines[1]), 'ID'); // Header
+    assertEquals(lines[2][0], '-'); // Separator
+  });
+
+  it('should render bottom border via constructor', () => {
+    const table = new TableRenderer({
+      columns: [{ key: 'id', header: 'ID' }],
+      data: [{ id: 1, name: 'Alice' }],
+      bottomBorder: true,
+    });
+
+    const lines = table.render();
+    assertEquals(lines.length, 4); // header + separator + row + bottom
+    assertEquals(lines[lines.length - 1][0], '-'); // Bottom border is last
+  });
+
+  it('should render both borders via constructor', () => {
+    const table = new TableRenderer({
+      columns: [{ key: 'id', header: 'ID' }],
+      data: [{ id: 1, name: 'Alice' }],
+      topBorder: true,
+      bottomBorder: true,
+    });
+
+    const lines = table.render();
+    assertEquals(lines.length, 5); // top + header + separator + row + bottom
+    assertEquals(lines[0][0], '-');
+    assertEquals(lines[lines.length - 1][0], '-');
+  });
+
+  it('should toggle top border via fluent API', () => {
+    const table = TableRenderer.create<TestRow>()
+      .column('id', { header: 'ID' })
+      .data([{ id: 1, name: 'Alice' }])
+      .topBorder(); // Toggle (defaults to false, now true)
+
+    const lines = table.render();
+    assertEquals(lines.length, 4);
+    assertEquals(lines[0][0], '-');
+  });
+
+  it('should toggle bottom border via fluent API', () => {
+    const table = TableRenderer.create<TestRow>()
+      .column('id', { header: 'ID' })
+      .data([{ id: 1, name: 'Alice' }])
+      .bottomBorder(); // Toggle (defaults to false, now true)
+
+    const lines = table.render();
+    assertEquals(lines.length, 4);
+    assertEquals(lines[lines.length - 1][0], '-');
+  });
+
+  it('should toggle top border on/off', () => {
+    const table = TableRenderer.create<TestRow>()
+      .column('id', { header: 'ID' })
+      .data([{ id: 1, name: 'Alice' }])
+      .topBorder(true) // Explicit true
+      .topBorder(); // Toggle to false
+
+    const lines = table.render();
+    assertEquals(lines.length, 3); // No top border
+    assertStringIncludes(stripAnsi(lines[0]), 'ID'); // First line is header
+  });
+
+  it('should set top/bottom border to false explicitly', () => {
+    const _table = new TableRenderer({
+      columns: [{ key: 'id', header: 'ID' }],
+      data: [{ id: 1, name: 'Alice' }],
+      topBorder: true,
+      bottomBorder: true,
+    });
+
+    // Explicitly set to false
+    const lines = TableRenderer.create<TestRow>()
+      .column('id', { header: 'ID' })
+      .data([{ id: 1, name: 'Alice' }])
+      .topBorder(false)
+      .bottomBorder(false)
+      .render();
+
+    assertEquals(lines.length, 3); // header + separator + row only
+  });
+});
+
+describe('TableRenderer - Divider with noColor', () => {
+  type TestRow = {
+    id: number;
+  };
+
+  it('should strip divider style when noColor is true', () => {
+    const table = new TableRenderer({
+      columns: [{ key: 'id', header: 'ID' }],
+      data: [{ id: 1 }],
+      dividerStyle: 0xff0000,
+      noColor: true,
+    });
+
+    const separator = table.renderSeparator();
+    assertEquals(separator, stripAnsi(separator));
+  });
+
+  it('should strip all divider colors in complete render when noColor is true', () => {
+    const table = new TableRenderer({
+      columns: [{ key: 'id', header: 'ID' }],
+      data: [{ id: 1 }],
+      dividerChar: '═',
+      dividerStyle: 0xff0000,
+      topBorder: true,
+      bottomBorder: true,
+      noColor: true,
+    });
+
+    const lines = table.render();
+    for (const line of lines) {
+      assertEquals(line, stripAnsi(line));
+    }
+  });
+
+  it('should support fluent noColor with divider styling', () => {
+    const table = TableRenderer.create<TestRow>()
+      .column('id', { header: 'ID' })
+      .data([{ id: 1 }])
+      .dividerChar('=')
+      .dividerStyle(0xff0000)
+      .topBorder()
+      .bottomBorder()
+      .noColor(true);
+
+    const lines = table.render();
+    for (const line of lines) {
+      assertEquals(line, stripAnsi(line));
+    }
+  });
+});
+
+describe('TableRenderer - Full Divider Configuration', () => {
+  type TestRow = {
+    id: number;
+    status: string;
+  };
+
+  it('should render table with all divider features combined', () => {
+    const table = TableRenderer.create<TestRow>()
+      .column('id', { header: 'ID', align: 'right' })
+      .column('status', { header: 'STATUS' })
+      .data([
+        { id: 1, status: 'active' },
+        { id: 2, status: 'inactive' },
+      ])
+      .dividerChar('─')
+      .dividerStyle(0x666666)
+      .topBorder()
+      .bottomBorder()
+      .headerStyle(0x58d1eb);
+
+    const lines = table.render();
+    assertEquals(lines.length, 6); // top + header + sep + 2 rows + bottom
+    assertEquals(stripAnsi(lines[0]), '─'.repeat(stripAnsi(lines[1]).length)); // Top border
+    assertEquals(stripAnsi(lines[5]), '─'.repeat(stripAnsi(lines[1]).length)); // Bottom border
   });
 });

@@ -2,10 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.7] - 2026-02-27
+
+- Added top and bottom borders
+
 ## [0.0.6] - 2026-02-27
 
 - Ran deno fmt
-
 
 ## [0.0.5] - 2026-02-27
 

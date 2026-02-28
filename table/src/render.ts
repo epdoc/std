@@ -54,6 +54,10 @@ export class TableRenderer<T> {
   #headerStyle: Table.StyleFn | undefined;
   #rowStyles: [Table.StyleFn | null | undefined, Table.StyleFn | null | undefined] = [null, null];
   #noColor: boolean;
+  #dividerChar: string = '-';
+  #dividerStyle: Table.StyleFn | undefined;
+  #topBorder: boolean = false;
+  #bottomBorder: boolean = false;
   static #identity: Table.StyleFn = (s) => s;
 
   /**
@@ -82,6 +86,10 @@ export class TableRenderer<T> {
         options.rowStyles[1] ? Util.resolveColor(options.rowStyles[1]) : null,
       ];
     }
+    this.#dividerChar = options.dividerChar ?? '-';
+    this.#dividerStyle = options.dividerStyle ? Util.resolveColor(options.dividerStyle) : undefined;
+    this.#topBorder = options.topBorder ?? false;
+    this.#bottomBorder = options.bottomBorder ?? false;
     // Defer width calculation for fluent API usage
     if (this.#columns.length > 0 && this.#data.length > 0) {
       this.#widths = Util.calculateColumnWidths<T>(this.#data, this.#columns);
@@ -139,6 +147,52 @@ export class TableRenderer<T> {
   }
 
   /**
+   * Sets the character used for divider lines (fluent API).
+   *
+   * @param char - The character to use (default: '-')
+   * @returns This instance for method chaining
+   */
+  dividerChar(char: string): this {
+    this.#dividerChar = char;
+    return this;
+  }
+
+  /**
+   * Sets the color or style applied to divider lines (fluent API).
+   *
+   * @param val - A {@link ColorType} specifying the color/style
+   * @returns This instance for method chaining
+   */
+  dividerStyle(val: Table.ColorType): this {
+    this.#dividerStyle = Util.resolveColor(val);
+    return this;
+  }
+
+  /**
+   * Toggles or sets whether to render a divider above the header row (fluent API).
+   * When called without an argument, toggles the current state.
+   *
+   * @param show - Whether to show the top border (optional, toggles if omitted)
+   * @returns This instance for method chaining
+   */
+  topBorder(show?: boolean): this {
+    this.#topBorder = show ?? !this.#topBorder;
+    return this;
+  }
+
+  /**
+   * Toggles or sets whether to render a divider below the last row (fluent API).
+   * When called without an argument, toggles the current state.
+   *
+   * @param show - Whether to show the bottom border (optional, toggles if omitted)
+   * @returns This instance for method chaining
+   */
+  bottomBorder(show?: boolean): this {
+    this.#bottomBorder = show ?? !this.#bottomBorder;
+    return this;
+  }
+
+  /**
    * Ensures column widths are calculated before rendering.
    */
   #ensureWidths(): void {
@@ -172,11 +226,18 @@ export class TableRenderer<T> {
   }
 
   /**
-   * Renders the separator line (dashes matching header visual width).
+   * Renders the separator line (repeated character matching header visual width).
+   *
+   * @param char - The character to use (defaults to `dividerChar`)
+   * @returns The styled separator string
    */
-  renderSeparator(char = '-'): string {
+  renderSeparator(char: string = this.#dividerChar): string {
     const headerVisualLen = stripAnsi(this.renderHeader()).length;
-    return char.repeat(headerVisualLen);
+    let line = char.repeat(headerVisualLen);
+    if (!this.#noColor && this.#dividerStyle) {
+      line = this.#dividerStyle(line);
+    }
+    return line;
   }
 
   /**
@@ -248,10 +309,18 @@ export class TableRenderer<T> {
 
   /**
    * Renders the complete table as an array of lines: header, separator,
-   * then all data rows.
+   * then all data rows. Optionally includes top and bottom borders.
    */
   render(): string[] {
-    return [this.renderHeader(), this.renderSeparator(), ...this.renderRows()];
+    const lines: string[] = [];
+    if (this.#topBorder) {
+      lines.push(this.renderSeparator());
+    }
+    lines.push(this.renderHeader(), this.renderSeparator(), ...this.renderRows());
+    if (this.#bottomBorder) {
+      lines.push(this.renderSeparator());
+    }
+    return lines;
   }
 
   /**

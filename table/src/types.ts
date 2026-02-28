@@ -211,6 +211,60 @@ export interface Options<T> {
    * ```
    */
   noColor?: boolean;
+  /**
+   * Character used for divider lines (default: `'-'`).
+   * Applied to the header separator and top/bottom borders.
+   *
+   * @example
+   * ```ts
+   * // Use box-drawing character
+   * dividerChar: '─'
+   *
+   * // Use double-line character
+   * dividerChar: '═'
+   * ```
+   */
+  dividerChar?: string;
+  /**
+   * Color or style applied to divider lines.
+   * Applied to the header separator and top/bottom borders.
+   *
+   * @example
+   * ```ts
+   * import { bold, rgb24 } from '@std/fmt/colors';
+   *
+   * // Simple color
+   * dividerStyle: 0x888888
+   *
+   * // With bold
+   * dividerStyle: (s) => bold(rgb24(s, 0x888888))
+   * ```
+   */
+  dividerStyle?: ColorType;
+  /**
+   * When `true`, renders a divider line above the header row.
+   * The divider uses `dividerChar` and `dividerStyle` for its appearance.
+   *
+   * @default false
+   *
+   * @example
+   * ```ts
+   * topBorder: true
+   * ```
+   */
+  topBorder?: boolean;
+  /**
+   * When `true`, renders a divider line below the last data row.
+   * The divider uses `dividerChar` and `dividerStyle` for its appearance.
+   *
+   * @default false
+   *
+   * @example
+   * ```ts
+   * bottomBorder: true
+   * ```
+   */
+  bottomBorder?: boolean;
 }
 
 export type RowStyles = [ColorType | null | undefined, ColorType | null | undefined];
