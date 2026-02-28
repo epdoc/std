@@ -122,6 +122,25 @@ describe('padVisual', () => {
     assertEquals(result, '*****hello');
   });
 
+  it('should pad evenly for center alignment with even padding', () => {
+    const result = padVisual('hi', 8, 'center');
+    assertEquals(result, '   hi   ');
+    assertEquals(stripAnsi(result).length, 8);
+  });
+
+  it('should pad unevenly for center alignment with odd padding (extra on right)', () => {
+    const result = padVisual('hi', 7, 'center');
+    assertEquals(result, '  hi   ');
+    assertEquals(stripAnsi(result).length, 7);
+  });
+
+  it('should handle center alignment with ANSI-containing strings', () => {
+    const colored = rgb24('hi', 0xff0000);
+    const result = padVisual(colored, 8, 'center');
+    assertEquals(stripAnsi(result).length, 8);
+    assertEquals(stripAnsi(result), '   hi   ');
+  });
+
   it('should handle empty string', () => {
     const result = padVisual('', 5);
     assertEquals(result, '     ');

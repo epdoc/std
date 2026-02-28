@@ -123,8 +123,11 @@ import type { ColorType, ColumnRegistry } from '@epdoc/table';
 import { rgb24 } from '@std/fmt/colors';
 
 const columns: ColumnRegistry<Server> = {
-  // Simple column with alignment
+  // Simple column with alignment (left, center, right)
   id: { header: 'ID', align: 'right' },
+
+  // Center-aligned column
+  code: { header: 'Code', align: 'center' },
 
   // Column with max width (truncates with ellipsis)
   name: { header: 'Name', maxWidth: 20 },

@@ -81,7 +81,7 @@ export type Column<T> = {
    */
   maxWidth?: number;
   /** Text alignment within the column (default: `'left'`). */
-  align?: 'left' | 'right';
+  align?: Alignment;
   /**
    * Custom formatter that converts a cell value to a display string.
    * Receives the cell value and the full row object for context-aware
@@ -266,5 +266,7 @@ export interface Options<T> {
    */
   bottomBorder?: boolean;
 }
+
+export type Alignment = 'left' | 'right' | 'center';
 
 export type RowStyles = [ColorType | null | undefined, ColorType | null | undefined];

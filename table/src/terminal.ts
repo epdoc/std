@@ -50,18 +50,25 @@ export function visibleTruncate(str: string, maxWidth: number): string {
  *
  * @param str - The string to pad (may contain ANSI escape codes)
  * @param width - Target visual width
- * @param align - Alignment: 'left' pads on right, 'right' pads on left
+ * @param align - Alignment: 'left' pads on right, 'center' splits padding on both sides,
+ *                'right' pads on left
  * @param char - Padding character (default: space)
  */
 export function padVisual(
   str: string,
   width: number,
-  align: 'left' | 'right' = 'left',
+  align: 'left' | 'center' | 'right' = 'left',
   char: string = ' ',
 ): string {
   const visualLen = stripAnsi(str).length;
   if (visualLen >= width) {
     return str;
+  }
+  if (align === 'center') {
+    const totalPad = width - visualLen;
+    const leftPad = Math.floor(totalPad / 2);
+    const rightPad = totalPad - leftPad;
+    return char.repeat(leftPad) + str + char.repeat(rightPad);
   }
   const padding = char.repeat(width - visualLen);
   if (align === 'right') {

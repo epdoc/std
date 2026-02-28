@@ -311,6 +311,25 @@ describe('TableRenderer - Column Features', () => {
     // Right aligned should have leading spaces
     assertStringIncludes(cleaned, '42');
   });
+
+  it('should align text center when specified', () => {
+    const table = new TableRenderer({
+      columns: [
+        {
+          key: 'value',
+          header: 'Value',
+          align: 'center',
+          width: 10,
+        },
+      ],
+      data: [{ value: 42, status: '', longText: '' }],
+    });
+
+    const row = table.renderRow({ value: 42, status: '', longText: '' });
+    const cleaned = stripAnsi(row);
+    // Center aligned '42' in width 10: 4 spaces left, 2 chars, 4 spaces right
+    assertEquals(cleaned, '    42    ');
+  });
 });
 
 describe('TableRenderer - Output Methods', () => {
