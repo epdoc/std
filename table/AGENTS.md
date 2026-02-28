@@ -23,6 +23,7 @@ usage requirement.
 ### Key Patterns
 
 See `test/example*.test.ts` files for usage patterns:
+
 - **example01** - Basic table with `buildColumns()`
 - **example02** - Styled tables with colors
 - **example03** - Using built-in formatters
