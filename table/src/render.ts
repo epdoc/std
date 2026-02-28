@@ -121,26 +121,57 @@ export class TableRenderer<T> {
     return this;
   }
 
+  /**
+   * Sets the spacing between columns (fluent API).
+   *
+   * @param val - Number of spaces between columns (default: 2)
+   * @returns This instance for method chaining
+   */
   padding(val: Integer): this {
     this.#padding = val;
     return this;
   }
 
+  /**
+   * Sets the color or style applied to header text (fluent API).
+   *
+   * @param val - A {@link ColorType} specifying the color/style
+   * @returns This instance for method chaining
+   */
   headerStyle(val: Table.ColorType): this {
     this.#headerStyle = Util.resolveColor(val);
     return this;
   }
 
+  /**
+   * Sets the style for odd-numbered rows (indices 0, 2, 4...) (fluent API).
+   *
+   * @param val - A {@link ColorType} specifying the color/style
+   * @returns This instance for method chaining
+   */
   oddRow(val: Table.ColorType): this {
     this.#rowStyles[0] = Util.resolveColor(val);
     return this;
   }
 
+  /**
+   * Sets the style for even-numbered rows (indices 1, 3, 5...) (fluent API).
+   *
+   * @param val - A {@link ColorType} specifying the color/style
+   * @returns This instance for method chaining
+   */
   evenRow(val: Table.ColorType): this {
     this.#rowStyles[1] = Util.resolveColor(val);
     return this;
   }
 
+  /**
+   * Sets whether to strip all ANSI color codes from output (fluent API).
+   * Useful for writing to files or terminals without color support.
+   *
+   * @param val - Whether to disable color output
+   * @returns This instance for method chaining
+   */
   noColor(val: boolean): this {
     this.#noColor = val;
     return this;

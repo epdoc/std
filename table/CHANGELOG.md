@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.8] - 2026-02-27
+
+- Documentation improvements
+
 ## [0.0.7] - 2026-02-27
 
 - Added top and bottom borders

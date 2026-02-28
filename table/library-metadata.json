@@ -1,0 +1,47 @@
+{
+  "package": "@epdoc/table",
+  "version": "0.0.7",
+  "purpose": "Terminal table formatter with ANSI-aware padding, column auto-sizing, zebra striping, and per-cell styling",
+  "quickStart": "import { TableRenderer, buildColumns } from '@epdoc/table';\n\nconst table = new TableRenderer({\n  columns: buildColumns(['id', 'name'], { id: { header: 'ID' }, name: { header: 'Name' } }),\n  data: [{ id: 1, name: 'Alice' }],\n});\ntable.print();",
+  "keyExports": [
+    "TableRenderer - Main table rendering class with constructor and fluent APIs",
+    "buildColumns - Build column definitions from a declarative registry",
+    "formatters - Built-in formatter factories for percent, bytes, and uptime",
+    "Column - Type for column definitions with styling and formatting options",
+    "ColumnRegistry - Type for declarative column property maps",
+    "Options - Type for table rendering configuration",
+    "ColorType - Union type for flexible color specifications",
+    "StyleFn - Type for ANSI styling functions",
+    "ColorSpec - Type for foreground/background color specs"
+  ],
+  "dependencies": {
+    "internal": ["@epdoc/type", "@epdoc/duration"],
+    "external": ["@std/fmt"]
+  },
+  "keyPatterns": [
+    {
+      "name": "Column Registry Pattern",
+      "description": "Define columns declaratively with ColumnRegistry, then build with buildColumns() for cleaner code",
+      "file": "test/example01.test.ts"
+    },
+    {
+      "name": "Fluent API Pattern",
+      "description": "Chain methods like .column(), .data(), .padding(), .headerStyle() for incremental table building",
+      "file": "test/example02.test.ts"
+    },
+    {
+      "name": "Per-Cell Styling",
+      "description": "Use Column.color callback to apply dynamic styling based on cell value and row data",
+      "file": "test/example03.test.ts"
+    },
+    {
+      "name": "Zebra Striping",
+      "description": "Use rowStyles array with two StyleFn entries for alternating row backgrounds",
+      "file": "test/example04.test.ts"
+    }
+  ],
+  "architecture": {
+    "flow": "Column definitions → TableRenderer → render() → string array → print()",
+    "keyDesign": "Separation of concerns: Column<T> defines structure, TableRenderer handles layout and styling, terminal utilities handle ANSI-aware operations"
+  }
+}

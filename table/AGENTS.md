@@ -20,6 +20,28 @@ This package depends on:
 Follow the universal Deno project conventions from the root monorepo's AGENTS.md, with the exception of the @epdoc/type
 usage requirement.
 
+### Key Patterns
+
+See `test/example*.test.ts` files for usage patterns:
+- **example01** - Basic table with `buildColumns()`
+- **example02** - Styled tables with colors
+- **example03** - Using built-in formatters
+- **example04** - Fluent API chaining
+- **example09** - ColorType API (number, ColorSpec, StyleFn)
+- **example10** - noColor option for plain output
+
+### Source Organization
+
+```
+src/
+  mod.ts       - Public exports
+  types.ts     - TypeScript types (Column, Options, ColorType, etc.)
+  render.ts    - TableRenderer class (constructor + fluent APIs)
+  formatters.ts - Built-in formatters (percent, bytes, uptime)
+  utils.ts     - buildColumns() and utilities
+  terminal.ts  - ANSI-aware string utilities
+```
+
 ### Testing
 
 Run tests with:

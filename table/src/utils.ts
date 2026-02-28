@@ -104,6 +104,12 @@ export function resolveColor(val: Table.ColorType): Table.StyleFn {
   };
 }
 
+/**
+ * Type guard to check if a value is a valid RowStyles tuple.
+ *
+ * @param val - The value to check
+ * @returns True if the value is a tuple of length 2
+ */
 export function isRowStyle(val: unknown): val is Table.RowStyles {
   return (Array.isArray(val) && val.length === 2) ? true : false;
 }
