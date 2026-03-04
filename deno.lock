@@ -5,7 +5,7 @@
     "jsr:@epdoc/duration@~0.2.3": "0.2.3",
     "jsr:@epdoc/duration@~0.3.7": "0.3.7",
     "jsr:@epdoc/response@~0.1.12": "0.1.12",
-    "jsr:@epdoc/string@~0.1.16": "0.1.16",
+    "jsr:@epdoc/string@~0.1.17": "0.1.17",
     "jsr:@epdoc/type@1.0.3": "1.0.3",
     "jsr:@epdoc/type@^1.2.6": "1.2.6",
     "jsr:@std/assert@^1.0.15": "1.0.19",
@@ -56,10 +56,10 @@
         "jsr:@std/assert@^1.0.16"
       ]
     },
-    "@epdoc/string@0.1.16": {
-      "integrity": "1a1eb9d6e0a9415fa404444fc521666189bf57043b32642b9593a4cb28bda020",
+    "@epdoc/string@0.1.17": {
+      "integrity": "b36ce6a40acb5b70e20034ba50bafbfb7ac86d225006d53cc2b1dc70a31a5b3a",
       "dependencies": [
-        "jsr:@std/assert@^1.0.16"
+        "jsr:@std/assert@^1.0.19"
       ]
     },
     "@epdoc/type@1.0.3": {
@@ -296,7 +296,7 @@
         "dependencies": [
           "jsr:@epdoc/datetime@^2.0.15",
           "jsr:@epdoc/response@~0.1.12",
-          "jsr:@epdoc/string@~0.1.16",
+          "jsr:@epdoc/string@~0.1.17",
           "jsr:@epdoc/type@^1.2.6",
           "jsr:@std/bytes@^1.0.6",
           "jsr:@std/encoding@^1.0.10",
