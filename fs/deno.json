@@ -49,8 +49,8 @@
     "@epdoc/type": "jsr:@epdoc/type@^1.2.6",
     "@std/bytes": "jsr:@std/bytes@^1.0.6",
     "@std/encoding": "jsr:@std/encoding@^1.0.10",
-    "@std/fs": "jsr:@std/fs@^1.0.22",
+    "@std/fs": "jsr:@std/fs@^1.0.23",
     "@std/path": "jsr:@std/path@^1.1.4",
-    "@std/yaml": "jsr:@std/yaml@^1.0.11"
+    "@std/yaml": "jsr:@std/yaml@^1.0.12"
   }
 }
