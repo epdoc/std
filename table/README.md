@@ -64,7 +64,7 @@ ID  Name            Status
 - **Fluent API**: Chain methods to build tables incrementally
 - **Built-in formatters**: Percentages, bytes, and uptime formatting
 - **Flexible headers**: Styled headers with custom separators
-- **Borders**: Optional top and bottom borders
+- **Borders**: Optional top and bottom borders, or full box-drawing borders with corners and junctions
 
 ## Core Components
 
@@ -240,7 +240,7 @@ formatter: formatters.uptime({ units: 2 });
 
 ## Advanced Examples
 
-### Table with Borders
+### Simple Top/Bottom Borders
 
 ```ts
 import { buildColumns, TableRenderer } from '@epdoc/table';
@@ -258,6 +258,75 @@ const table = new TableRenderer({
 
 table.print();
 ```
+
+### Full Box-Drawing Borders
+
+Enable complete table borders with corners, junctions, and vertical separators:
+
+```ts
+import { buildColumns, TableRenderer } from '@epdoc/table';
+import { bold, rgb24 } from '@std/fmt/colors';
+
+const table = new TableRenderer({
+  columns: buildColumns(['name', 'age', 'city'], columns),
+  data,
+  borders: {
+    enabled: true, // Enable full borders
+    style: 'light', // 'light', 'heavy', 'double', or 'custom'
+    color: 0x888888, // Optional: Color for border characters
+  },
+  headerStyle: (s) => bold(rgb24(s, 0x58d1eb)),
+});
+
+table.print();
+```
+
+**Border Styles:**
+
+- `'light'`: `┌─┬─┐` / `├─┼─┤` / `└─┴─┘` (default)
+- `'heavy'`: `┏━┳━┓` / `┣━╋━┫` / `┗━┻━┛`
+- `'double'`: `╔═╦═╗` / `╠═╬═╣` / `╚═╩═╝`
+- `'custom'`: Provide your own `BorderCharSet`
+
+**Fluent API:**
+
+```ts
+TableRenderer.create<T>()
+  .column('name', { header: 'Name' })
+  .column('age', { header: 'Age', align: 'right' })
+  .data(data)
+  .borders(true, 'heavy') // Enable heavy borders
+  .borderColor(0x58d1eb) // Cyan borders
+  .print();
+```
+
+**Custom Border Characters:**
+
+```ts
+const table = new TableRenderer({
+  columns,
+  data,
+  borders: {
+    enabled: true,
+    style: 'custom',
+    chars: {
+      topLeft: '+',
+      topRight: '+',
+      bottomLeft: '+',
+      bottomRight: '+',
+      horizontal: '-',
+      vertical: '|',
+      topJunction: '+',
+      bottomJunction: '+',
+      leftJunction: '+',
+      rightJunction: '+',
+      crossJunction: '+',
+    },
+  },
+});
+```
+
+**Note:** When borders are enabled, the `padding` option is ignored as borders provide visual column separation.
 
 ### Zebra-Striped Table
 

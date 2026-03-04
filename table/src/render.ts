@@ -1,6 +1,8 @@
 import type { Integer } from '@epdoc/type';
+import { bgRgb24, rgb24 } from '@std/fmt/colors';
 import { padVisual, stripAnsi, visibleTruncate } from './terminal.ts';
 import type * as Table from './types.ts';
+import { BORDER_STYLES } from './types.ts';
 import * as Util from './utils.ts';
 
 // ── TableFormatter class ───────────────────────────────────────────────────
@@ -58,6 +60,7 @@ export class TableRenderer<T> {
   #dividerStyle: Table.StyleFn | undefined;
   #topBorder: boolean = false;
   #bottomBorder: boolean = false;
+  #borders: Table.BorderConfig | undefined;
   static #identity: Table.StyleFn = (s) => s;
 
   /**
@@ -90,6 +93,7 @@ export class TableRenderer<T> {
     this.#dividerStyle = options.dividerStyle ? Util.resolveColor(options.dividerStyle) : undefined;
     this.#topBorder = options.topBorder ?? false;
     this.#bottomBorder = options.bottomBorder ?? false;
+    this.#borders = options.borders;
     // Defer width calculation for fluent API usage
     if (this.#columns.length > 0 && this.#data.length > 0) {
       this.#widths = Util.calculateColumnWidths<T>(this.#data, this.#columns);
@@ -224,6 +228,176 @@ export class TableRenderer<T> {
   }
 
   /**
+   * Enable full box-drawing borders with optional style and color (fluent API).
+   *
+   * @param enabled - Whether to enable borders (default: true)
+   * @param style - Border style preset (default: 'light')
+   * @param color - Optional color for border characters
+   * @returns This instance for method chaining
+   */
+  borders(enabled = true, style: Table.BorderStyle = 'light', color?: Table.ColorType): this {
+    this.#borders = {
+      enabled,
+      style,
+      color,
+    };
+    return this;
+  }
+
+  /**
+   * Set border style (fluent API).
+   * Only effective if borders are enabled.
+   *
+   * @param style - Border style preset
+   * @returns This instance for method chaining
+   */
+  borderStyle(style: Table.BorderStyle): this {
+    if (!this.#borders) {
+      this.#borders = { enabled: false };
+    }
+    this.#borders.style = style;
+    return this;
+  }
+
+  /**
+   * Set border color (fluent API).
+   * Only effective if borders are enabled.
+   *
+   * @param color - Color specification for border characters
+   * @returns This instance for method chaining
+   */
+  borderColor(color: Table.ColorType): this {
+    if (!this.#borders) {
+      this.#borders = { enabled: false };
+    }
+    this.#borders.color = color;
+    return this;
+  }
+
+  /**
+   * Set custom border characters (fluent API).
+   * Automatically sets style to 'custom'.
+   *
+   * @param chars - Custom border character set
+   * @returns This instance for method chaining
+   */
+  borderChars(chars: Table.BorderCharSet): this {
+    if (!this.#borders) {
+      this.#borders = { enabled: false };
+    }
+    this.#borders.style = 'custom';
+    this.#borders.chars = chars;
+    return this;
+  }
+
+  /**
+   * Get the border character set based on configuration.
+   * Returns undefined if borders are not enabled.
+   */
+  #getBorderChars(): Table.BorderCharSet | undefined {
+    if (!this.#borders?.enabled) {
+      return undefined;
+    }
+
+    const style = this.#borders.style ?? 'light';
+
+    if (style === 'custom') {
+      if (!this.#borders.chars) {
+        throw new Error('Border style "custom" requires providing chars configuration');
+      }
+      return this.#borders.chars;
+    }
+
+    return BORDER_STYLES[style];
+  }
+
+  /**
+   * Apply border color to a string if configured.
+   */
+  #applyBorderColor(str: string): string {
+    if (this.#noColor || !this.#borders?.color) {
+      return str;
+    }
+
+    const color = this.#borders.color;
+
+    if (typeof color === 'function') {
+      // StyleFn
+      return color(str);
+    } else if (typeof color === 'number') {
+      // Hex color number
+      return rgb24(str, color);
+    } else {
+      // ColorSpec object { fg?, bg? }
+      let result = str;
+      if (color.bg !== undefined) {
+        result = bgRgb24(result, color.bg);
+      }
+      if (color.fg !== undefined) {
+        result = rgb24(result, color.fg);
+      }
+      return result;
+    }
+  }
+
+  /**
+   * Render top border line.
+   * Example: ┌─────┬─────┬─────┐
+   */
+  #renderTopBorder(): string {
+    this.#ensureWidths();
+    const chars = this.#getBorderChars();
+    if (!chars) return '';
+
+    const segments = this.#columns.map((col) => {
+      const width = this.#widths![col.key as keyof T];
+      // Add 2 for padding spaces on each side of content
+      return chars.horizontal.repeat(width + 2);
+    });
+    const line = chars.topLeft + segments.join(chars.topJunction) + chars.topRight;
+
+    return this.#applyBorderColor(line);
+  }
+
+  /**
+   * Render header separator line.
+   * Example: ├─────┼─────┼─────┤
+   */
+  #renderHeaderSeparator(): string {
+    this.#ensureWidths();
+    const chars = this.#getBorderChars();
+    if (!chars) return '';
+
+    const segments = this.#columns.map((col) => {
+      const width = this.#widths![col.key as keyof T];
+      // Add 2 for padding spaces on each side of content
+      return chars.horizontal.repeat(width + 2);
+    });
+    const line = chars.leftJunction + segments.join(chars.crossJunction) + chars.rightJunction;
+
+    return this.#applyBorderColor(line);
+  }
+
+  /**
+   * Render bottom border line.
+   * Example: └─────┴─────┴─────┘
+   */
+  #renderBottomBorder(): string {
+    this.#ensureWidths();
+    const chars = this.#getBorderChars();
+    if (!chars) return '';
+
+    const segments = this.#columns.map((col) => {
+      const width = this.#widths![col.key as keyof T];
+      // Add 2 for padding spaces on each side of content
+      return chars.horizontal.repeat(width + 2);
+    });
+    const line = chars.bottomLeft + segments.join(chars.bottomJunction) + chars.bottomRight;
+
+    return this.#applyBorderColor(line);
+  }
+
+  /**
    * Ensures column widths are calculated before rendering.
    */
   #ensureWidths(): void {
@@ -238,16 +412,32 @@ export class TableRenderer<T> {
    */
   renderHeader(): string {
     this.#ensureWidths();
-    const gap = ' '.repeat(this.#padding);
+    const chars = this.#getBorderChars();
+    const verticalBorder = chars ? this.#applyBorderColor(chars.vertical) : '';
+    const gap = chars ? '' : ' '.repeat(this.#padding);
+
     const parts = this.#columns.map((col) => {
       const width = this.#widths![col.key as keyof T];
       const align = col.align ?? 'left';
-      return padVisual(col.header, width, align);
+      let text = padVisual(col.header, width, align);
+      if (!this.#noColor && this.#headerStyle) {
+        text = this.#headerStyle(text);
+      }
+      return text;
     });
-    let line = parts.join(gap);
-    if (!this.#noColor && this.#headerStyle) {
-      line = this.#headerStyle(line);
+
+    let line: string;
+    if (chars) {
+      // With borders: │ header1 │ header2 │ header3 │
+      line = verticalBorder + ' ' + parts.join(' ' + verticalBorder + ' ') + ' ' + verticalBorder;
+    } else {
+      // Without borders: header1   header2   header3
+      line = parts.join(gap);
+      if (!this.#noColor && this.#headerStyle) {
+        line = this.#headerStyle(line);
+      }
     }
+
     // Safety net: strip any ANSI codes when noColor is enabled
     // (catches formatters or user code that embedded color)
     if (this.#noColor) {
@@ -279,10 +469,12 @@ export class TableRenderer<T> {
    */
   renderRow(item: T, rowIndex = 0): string {
     this.#ensureWidths();
-    const gap = ' '.repeat(this.#padding);
+    const chars = this.#getBorderChars();
+    const verticalBorder = chars ? this.#applyBorderColor(chars.vertical) : '';
+    const gap = chars ? '' : ' '.repeat(this.#padding);
     const rowStyleFn = this.#rowStyles?.[rowIndex % 2];
 
-    const parts = this.#columns.map((col, colIndex) => {
+    const parts = this.#columns.map((col) => {
       const value = item[col.key];
       const width = this.#widths![col.key as keyof T];
       const align = col.align ?? 'left';
@@ -307,13 +499,7 @@ export class TableRenderer<T> {
       // 4. ANSI-aware pad
       text = padVisual(text, width, align);
 
-      // 5. Add gap after this column (except for last column)
-      const isLastColumn = colIndex === this.#columns.length - 1;
-      if (!isLastColumn) {
-        text += gap;
-      }
-
-      // 6. Row style — apply per-cell so resets within one cell
+      // 5. Row style — apply per-cell so resets within one cell
       //    don't affect the row style of subsequent cells
       if (!this.#noColor && rowStyleFn) {
         text = rowStyleFn(text);
@@ -322,7 +508,15 @@ export class TableRenderer<T> {
       return text;
     });
 
-    let row = parts.join('');
+    let row: string;
+    if (chars) {
+      // With borders: │ cell1 │ cell2 │ cell3 │
+      row = verticalBorder + ' ' + parts.join(' ' + verticalBorder + ' ') + ' ' + verticalBorder;
+    } else {
+      // Without borders: cell1   cell2   cell3
+      row = parts.join(gap);
+    }
+
     // Safety net: strip any ANSI codes when noColor is enabled
     // (catches formatters or user code that embedded color)
     if (this.#noColor) {
@@ -344,13 +538,37 @@ export class TableRenderer<T> {
    */
   render(): string[] {
     const lines: string[] = [];
-    if (this.#topBorder) {
+    const chars = this.#getBorderChars();
+
+    // Render top border
+    if (chars) {
+      lines.push(this.#renderTopBorder());
+    } else if (this.#topBorder) {
+      // Legacy top border (horizontal line only)
       lines.push(this.renderSeparator());
     }
-    lines.push(this.renderHeader(), this.renderSeparator(), ...this.renderRows());
-    if (this.#bottomBorder) {
+
+    // Render header
+    lines.push(this.renderHeader());
+
+    // Render header separator
+    if (chars) {
+      lines.push(this.#renderHeaderSeparator());
+    } else {
       lines.push(this.renderSeparator());
     }
+
+    // Render data rows
+    lines.push(...this.renderRows());
+
+    // Render bottom border
+    if (chars) {
+      lines.push(this.#renderBottomBorder());
+    } else if (this.#bottomBorder) {
+      // Legacy bottom border (horizontal line only)
+      lines.push(this.renderSeparator());
+    }
+
     return lines;
   }
 

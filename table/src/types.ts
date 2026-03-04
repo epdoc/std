@@ -265,8 +265,216 @@ export interface Options<T> {
    * ```
    */
   bottomBorder?: boolean;
+  /**
+   * Border configuration. When enabled, renders full box-drawing borders
+   * around the table with corners, junctions, and vertical pipes.
+   *
+   * When borders are enabled, the `padding` option is ignored as borders
+   * provide visual column separation.
+   *
+   * @default undefined (borders disabled)
+   *
+   * @example
+   * ```ts
+   * import { TableRenderer } from '@epdoc/table';
+   *
+   * // Enable light borders
+   * const table = new TableRenderer({
+   *   columns,
+   *   data,
+   *   borders: {
+   *     enabled: true,
+   *     style: 'light',
+   *   },
+   * });
+   *
+   * // Enable heavy borders with color
+   * const table2 = new TableRenderer({
+   *   columns,
+   *   data,
+   *   borders: {
+   *     enabled: true,
+   *     style: 'heavy',
+   *     color: 0x888888,
+   *   },
+   * });
+   * ```
+   */
+  borders?: BorderConfig;
 }
 
 export type Alignment = 'left' | 'right' | 'center';
 
 export type RowStyles = [ColorType | null | undefined, ColorType | null | undefined];
+
+// ── Border types ───────────────────────────────────────────────────────────
+
+/**
+ * Box-drawing character set for table borders.
+ *
+ * @example
+ * ```ts
+ * const lightBorders: BorderCharSet = {
+ *   topLeft: '┌',
+ *   topRight: '┐',
+ *   bottomLeft: '└',
+ *   bottomRight: '┘',
+ *   horizontal: '─',
+ *   vertical: '│',
+ *   topJunction: '┬',
+ *   bottomJunction: '┴',
+ *   leftJunction: '├',
+ *   rightJunction: '┤',
+ *   crossJunction: '┼',
+ * };
+ * ```
+ */
+export interface BorderCharSet {
+  /** Top-left corner character (e.g., `┌`) */
+  topLeft: string;
+  /** Top-right corner character (e.g., `┐`) */
+  topRight: string;
+  /** Bottom-left corner character (e.g., `└`) */
+  bottomLeft: string;
+  /** Bottom-right corner character (e.g., `┘`) */
+  bottomRight: string;
+  /** Horizontal line character (e.g., `─`) */
+  horizontal: string;
+  /** Vertical line character (e.g., `│`) */
+  vertical: string;
+  /** Top junction character (e.g., `┬`) */
+  topJunction: string;
+  /** Bottom junction character (e.g., `┴`) */
+  bottomJunction: string;
+  /** Left junction character (e.g., `├`) */
+  leftJunction: string;
+  /** Right junction character (e.g., `┤`) */
+  rightJunction: string;
+  /** Cross junction character (e.g., `┼`) */
+  crossJunction: string;
+}
+
+/**
+ * Border style presets for table borders.
+ *
+ * - `'light'` — Light box-drawing characters: `┌─┬─┐` / `├─┼─┤` / `└─┴─┘`
+ * - `'heavy'` — Heavy box-drawing characters: `┏━┳━┓` / `┣━╋━┫` / `┗━┻━┛`
+ * - `'double'` — Double-line box-drawing characters: `╔═╦═╗` / `╠═╬═╣` / `╚═╩═╝`
+ * - `'custom'` — Use custom character set provided via `chars` property
+ */
+export type BorderStyle = 'light' | 'heavy' | 'double' | 'custom';
+
+/**
+ * Border configuration for table rendering.
+ *
+ * @example
+ * ```ts
+ * // Enable light borders with gray color
+ * const borders: BorderConfig = {
+ *   enabled: true,
+ *   style: 'light',
+ *   color: 0x888888,
+ * };
+ *
+ * // Enable custom borders
+ * const customBorders: BorderConfig = {
+ *   enabled: true,
+ *   style: 'custom',
+ *   chars: {
+ *     topLeft: '+',
+ *     topRight: '+',
+ *     // ... other characters
+ *   },
+ * };
+ * ```
+ */
+export interface BorderConfig {
+  /**
+   * Enable full box-drawing borders (corners, junctions, vertical pipes).
+   *
+   * @default false
+   */
+  enabled: boolean;
+
+  /**
+   * Border style preset. Use `'custom'` to provide your own character set.
+   *
+   * @default 'light'
+   */
+  style?: BorderStyle;
+
+  /**
+   * Color for all border characters.
+   * Can be a hex number (e.g., `0x888888`), ColorSpec object, or StyleFn.
+   *
+   * @example
+   * ```ts
+   * // Hex color
+   * color: 0x888888
+   *
+   * // ColorSpec
+   * color: { fg: 0xffffff, bg: 0x000000 }
+   *
+   * // StyleFn
+   * import { rgb24 } from '@std/fmt/colors';
+   * color: (s) => rgb24(s, 0x888888)
+   * ```
+   */
+  color?: ColorType;
+
+  /**
+   * Custom border character set. Only used when `style` is `'custom'`.
+   */
+  chars?: BorderCharSet;
+}
+
+/**
+ * Predefined border character sets for common box-drawing styles.
+ *
+ * @example
+ * ```ts
+ * const lightChars = BORDER_STYLES.light;
+ * const heavyChars = BORDER_STYLES.heavy;
+ * ```
+ */
+export const BORDER_STYLES: Record<Exclude<BorderStyle, 'custom'>, BorderCharSet> = {
+  light: {
+    topLeft: '┌',
+    topRight: '┐',
+    bottomLeft: '└',
+    bottomRight: '┘',
+    horizontal: '─',
+    vertical: '│',
+    topJunction: '┬',
+    bottomJunction: '┴',
+    leftJunction: '├',
+    rightJunction: '┤',
+    crossJunction: '┼',
+  },
+  heavy: {
+    topLeft: '┏',
+    topRight: '┓',
+    bottomLeft: '┗',
+    bottomRight: '┛',
+    horizontal: '━',
+    vertical: '┃',
+    topJunction: '┳',
+    bottomJunction: '┻',
+    leftJunction: '┣',
+    rightJunction: '┫',
+    crossJunction: '╋',
+  },
+  double: {
+    topLeft: '╔',
+    topRight: '╗',
+    bottomLeft: '╚',
+    bottomRight: '╝',
+    horizontal: '═',
+    vertical: '║',
+    topJunction: '╦',
+    bottomJunction: '╩',
+    leftJunction: '╠',
+    rightJunction: '╣',
+    crossJunction: '╬',
+  },
+};
