@@ -1,0 +1,20 @@
+{
+  "name": "@epdoc/progress",
+  "version": "0.0.2",
+  "exports": {
+    ".": "./mod.ts"
+  },
+  "tasks": {
+    "fmt": "deno fmt src test *.json",
+    "lint": "deno lint *.json *.ts",
+    "check": "deno check *.json *.ts",
+    "test": "deno test -A test/*.test.ts",
+    "docs": "deno doc --json mod.ts > library-docs.json",
+    "prepublish": "deno fmt && deno task lint && deno task check && deno task test && deno task docs"
+  },
+  "imports": {
+    "@epdoc/type": "jsr:@epdoc/type@^1.2.6",
+    "@std/assert": "jsr:@std/assert@^1.0.19",
+    "@std/fmt": "jsr:@std/fmt@^1.0.9"
+  }
+}

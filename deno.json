@@ -28,5 +28,15 @@
   "lint": {
     "exclude": ["fs/tests/readonly", "fs/tests/data1", "fs/tests/data2"]
   },
-  "workspace": ["./type", "./datetime", "./duration", "./response", "./string", "./daterange", "./table", "./fs"]
+  "workspace": [
+    "./type",
+    "./datetime",
+    "./duration",
+    "./progress",
+    "./response",
+    "./string",
+    "./daterange",
+    "./table",
+    "./fs"
+  ]
 }
