@@ -1,16 +1,18 @@
 # @epdoc/progress
 
-A reusable terminal progress indicator for Deno that supports both spinner and progress bar modes with fine-grained
-fractional progress display.
+A reusable terminal progress indicator for Deno supporting four modes: spinner, bounce, horizontal progress bar, and vertical fill. Features configurable colors and fine-grained fractional progress display.
 
 ## Features
 
-- **Spinner mode**: Animated spinner for indeterminate progress when the total amount of work is unknown
-- **Progress bar mode**: Visual progress bar with configurable width for determinate progress
+- **Four visual modes**:
+  - **Spinner**: Looping animation for indeterminate progress
+  - **Bounce**: Back-and-forth animation (e.g., bouncing ball or sliding gradient)
+  - **Horizontal bar**: Determinate progress with configurable width
+  - **Vertical fill**: Single-character vertical level indicator
 - **Fine-grained progress**: 1/8 character resolution using partial block characters (▏▎▍▌▋▊▉)
+- **Configurable colors**: Named colors or hex values for all modes
 - **Non-intrusive**: Writes to stderr to avoid interfering with stdout output
-- **Colored output**: Red progress indicators for high visibility
-- **Lightweight**: Minimal dependencies, simple and intuitive API
+- **Lightweight**: Minimal dependencies, simple API
 
 ## Installation
 
@@ -22,13 +24,12 @@ deno add jsr:@epdoc/progress
 
 ### Spinner Mode
 
-Use spinner mode when you don't know the total amount of work or the duration is indeterminate:
+Animated spinner for indeterminate progress:
 
 ```typescript
 import { ProgressLine } from '@epdoc/progress';
 
-const progress = new ProgressLine();
-
+const progress = new ProgressLine({ type: 'spinner', index: 0, color: 'cyan' });
 progress.start('Initializing...');
 // ... do work ...
 progress.update('Loading configuration...');
@@ -36,18 +37,51 @@ progress.update('Loading configuration...');
 progress.stop('Complete!');
 ```
 
-### Progress Bar Mode
+**Spinner indices:**
+- `0`: Braille dots (⠋⠙⠹⠸...)
+- `1`: Braille wave (⠋⠙⠚⠞...)
+- `2`: Block quadrants (▖▘▝▗...)
 
-Use progress bar mode when you know the total amount of work:
+### Bounce Mode
+
+Back-and-forth animation, useful for "thinking" indicators:
 
 ```typescript
 import { ProgressLine } from '@epdoc/progress';
 
-const progress = new ProgressLine();
-const totalFiles = 20;
+// Bouncing ball
+const progress = new ProgressLine({ type: 'bounce', index: 0, color: 'magenta' });
+progress.start('Deploying...');
+await deploy();
+progress.stop('Deployed!');
 
-// Start with default 10-character width
-progress.start(`Downloading ${totalFiles} files...`, totalFiles);
+// Sliding gradient blocks (OpenCode-style thinking indicator)
+const thinking = new ProgressLine({ type: 'bounce', index: 1, color: 'purple' });
+thinking.start('Analyzing...');
+await analyze();
+thinking.stop('Analysis complete!');
+```
+
+**Bounce indices:**
+- `0`: Parenthesized ball (● bounces left-right in `()`)
+- `1`: Gradient trail (░▒▓█ sliding with density gradient)
+
+### Horizontal Progress Bar Mode
+
+Determinate progress bar with fine-grained fractional display:
+
+```typescript
+import { ProgressLine } from '@epdoc/progress';
+
+const totalFiles = 20;
+const progress = new ProgressLine({
+  type: 'horizontal',
+  total: totalFiles,
+  width: 15,
+  color: 'green'
+});
+
+progress.start('Downloading files...');
 
 for (let i = 0; i <= totalFiles; i++) {
   progress.update(`Downloading file ${i}/${totalFiles}...`, i);
@@ -57,147 +91,152 @@ for (let i = 0; i <= totalFiles; i++) {
 progress.stop('All files downloaded!');
 ```
 
-### Custom Progress Bar Width
+### Vertical Fill Mode
 
-Specify a custom width for the progress bar:
+Single-character vertical level indicator:
 
 ```typescript
-// 20-character wide progress bar
-progress.start('Processing...', 100, 20);
+import { ProgressLine } from '@epdoc/progress';
 
-for (let i = 0; i <= 100; i++) {
-  progress.update(`Processing ${i}%...`, i);
+const progress = new ProgressLine({ type: 'vertical', total: 100, color: 'blue' });
+progress.start('Battery level');
+
+for (let i = 0; i <= 100; i += 10) {
+  progress.update(`Battery: ${i}%`, i);
+  await delay(200);
 }
 
-progress.stop('Done!');
+progress.stop('Fully charged!');
 ```
 
 ### Fine-Grained Progress
 
-The progress bar automatically shows fractional progress using partial block characters when the number of chunks
-exceeds the bar width:
+The horizontal bar automatically shows fractional progress using partial block characters when progress increments are smaller than full characters:
 
 ```typescript
-// With 40 chunks and 5-character width, each character represents 8 chunks
-// You'll see partial blocks: ▏▎▍▌▋▊▉ as progress increases
-progress.start('Fine-grained progress...', 40, 5);
+// With 40 total and 5-character width, each unit is 1/8 of a character
+const progress = new ProgressLine({ type: 'horizontal', total: 40, width: 5 });
+progress.start('Fine-grained progress...');
 
 for (let i = 0; i <= 40; i++) {
   progress.update(`Progress: ${i}/40`, i);
+  // Shows: ▏ ▎ ▍ ▌ ▋ ▊ ▉ █ as progress increases
 }
 ```
 
 ### Mixed Modes
 
-Switch between spinner and progress bar modes for different phases of an operation:
+Use separate instances for different phases:
 
 ```typescript
-const progress = new ProgressLine();
-
-// Spinner for connection phase
-progress.start('Connecting to server...');
+// Spinner for connection
+const spinner = new ProgressLine({ type: 'spinner', index: 0 });
+spinner.start('Connecting...');
 await connect();
-progress.stop('Connected!');
+spinner.stop('Connected!');
 
-// Progress bar for download phase
-progress.start('Downloading...', 100, 15);
+// Bounce for thinking phase
+const bounce = new ProgressLine({ type: 'bounce', index: 1, color: 'purple' });
+bounce.start('Analyzing...');
+await analyze();
+bounce.stop('Analysis complete!');
+
+// Horizontal bar for download
+const bar = new ProgressLine({ type: 'horizontal', total: 100, width: 20 });
+bar.start('Downloading...');
 for (let i = 0; i <= 100; i++) {
-  progress.update(`Downloading ${i}%...`, i);
-  await delay(50);
+  bar.update(`Downloading ${i}%...`, i);
 }
-progress.stop('Download complete!');
-
-// Back to spinner for installation phase
-progress.start('Installing package...');
-await install();
-progress.stop('Installation complete!');
+bar.stop('Download complete!');
 ```
 
 ## API Reference
 
-### Class: `ProgressLine`
+### Types
 
-A reusable terminal progress indicator supporting both spinner and progress bar modes.
+#### `Color`
+
+A color value as either a hex number or named string.
+
+```typescript
+type Color = number | string;
+```
+
+**Named colors:** `red`, `green`, `blue`, `yellow`, `cyan`, `magenta`, `white`, `black`, `orange`, `gray`, `grey`, `purple`
+
+**Hex example:** `0x20D020` (green)
+
+#### `ProgressLineOptions`
+
+Configuration options passed to the constructor.
+
+```typescript
+type ProgressLineOptions =
+  | { type: 'spinner'; index: 0 | 1 | 2; color?: Color }
+  | { type: 'bounce'; index: 0 | 1; color?: Color }
+  | { type: 'horizontal'; total: number; width: number; color?: Color }
+  | { type: 'vertical'; total: number; color?: Color };
+```
+
+### Class: `ProgressLine`
 
 #### Constructor
 
 ```typescript
-constructor();
+constructor(options?: ProgressLineOptions)
 ```
 
-Creates a new ProgressLine instance. No configuration is required at construction time.
+Creates a new ProgressLine instance. Defaults to spinner mode with index 0.
+
+**Parameters:**
+
+| Name      | Type                  | Description                                                    |
+|-----------|----------------------|----------------------------------------------------------------|
+| `options` | `ProgressLineOptions`| Configuration for the indicator mode, style, and color        |
 
 #### Methods
 
-##### `start(message, chunks?, width?)`
+##### `start(message: string): void`
 
 Start showing the progress indicator.
 
 **Parameters:**
 
-| Name      | Type     | Description                                                                                                  |
-| --------- | -------- | ------------------------------------------------------------------------------------------------------------ |
-| `message` | `string` | The status message to display                                                                                |
-| `chunks?` | `number` | Total number of items to process. When provided, enables progress bar mode. When omitted, uses spinner mode. |
-| `width?`  | `number` | Width of the progress bar in characters. **Default:** `10`. Only applies when `chunks` is provided.          |
+| Name      | Type     | Description                         |
+|-----------|----------|-------------------------------------|
+| `message` | `string` | The status message to display       |
 
-**Example:**
-
-```typescript
-const progress = new ProgressLine();
-
-// Spinner mode
-progress.start('Loading...');
-
-// Progress bar mode with default width
-progress.start('Downloading...', 20);
-
-// Progress bar mode with custom width
-progress.start('Processing...', 100, 20);
-```
-
-##### `update(message, progress?)`
+##### `update(message: string, progress?: number): void`
 
 Update the status message and/or progress value.
 
 **Parameters:**
 
-| Name        | Type     | Description                                                                                                                                                                        |
-| ----------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `message`   | `string` | The new status message to display                                                                                                                                                  |
-| `progress?` | `number` | Current progress value in chunks. The progress value is divided by total chunks and multiplied by bar width to determine the visual fill level. Only applies to progress bar mode. |
+| Name        | Type     | Description                                                                    |
+|-------------|----------|--------------------------------------------------------------------------------|
+| `message`   | `string` | The new status message to display                                              |
+| `progress?` | `number` | Current progress value (0 to total). Only used by horizontal and vertical modes. |
 
-**Example:**
-
-```typescript
-// Update message only (common in spinner mode)
-progress.update('Still working...');
-
-// Update both message and progress (progress bar mode)
-progress.update('Processing 50%...', 50);
-```
-
-##### `stop(finalMessage?)`
+##### `stop(finalMessage?: string): void`
 
 Stop the progress indicator and optionally display a final message.
 
-Clears the current line (removing the spinner or progress bar) before displaying the final message. Any active animation
-interval is stopped.
-
 **Parameters:**
 
-| Name            | Type     | Description                                                                                        |
-| --------------- | -------- | -------------------------------------------------------------------------------------------------- |
-| `finalMessage?` | `string` | Optional final message to display. The progress indicator is cleared before this message is shown. |
+| Name            | Type     | Description                                       |
+|-----------------|----------|---------------------------------------------------|
+| `finalMessage?` | `string` | Optional final message to display after clearing  |
 
-**Example:**
+### Type Guards
+
+For runtime type checking:
 
 ```typescript
-// Stop without a message
-progress.stop();
+import { isSpinner, isBounce, isHorizontal, isVertical } from '@epdoc/progress';
 
-// Stop with a completion message
-progress.stop('All tasks completed successfully!');
+if (isSpinner(options)) {
+  // options is SpinnerOptions
+}
 ```
 
 ## Visual Output Examples
@@ -209,34 +248,57 @@ progress.stop('All tasks completed successfully!');
 ⠙ Loading configuration...
 ```
 
-### Progress Bar Mode
+### Bounce Mode
+
+**Index 0 (ball):**
+```
+(●     ) Connecting...
+( ●    ) Connecting...
+(  ●   ) Connecting...
+```
+
+**Index 1 (gradient trail):**
+```
+▒▓██···· Thinking...
+░▒▓██··· Thinking...
+·░▒▓██·· Thinking...
+```
+
+### Horizontal Progress Bar
 
 ```
-█████░░░░░ Downloading file 10/20...
-████████░░ Processing 80%...
+█████░░░░░░░░░░ Downloading file 10/20...
+████████████░░░ Processing 80%...
 ```
 
 ### Fine-Grained Progress
 
-When chunks exceed bar width, partial block characters show fractional progress:
+Partial blocks show when chunks exceed bar width:
 
 ```
-▏░░░░ Progress: 1/40    (1/8 filled)
-▌░░░░ Progress: 4/40    (4/8 = 1/2 filled)
-█▋░░░ Progress: 13/40   (1 + 5/8 filled)
-████▉ Progress: 39/40   (4 + 7/8 filled)
+▏     Progress: 1/40   (1/8 filled)
+▌     Progress: 4/40   (4/8 filled)
+█▋    Progress: 13/40  (1 + 5/8 filled)
+███▉  Progress: 39/40  (3 + 7/8 filled)
+```
+
+### Vertical Fill
+
+```
+▂ Battery: 25%
+▄ Battery: 50%
+▆ Battery: 75%
+█ Battery: 100%
 ```
 
 ## How Fine-Grained Progress Works
 
-The progress bar uses Unicode partial block characters to display progress at 1/8 character resolution:
+The horizontal bar uses Unicode partial block characters for 1/8 character resolution:
 
 - **Full blocks** (`█`): Complete character-width progress
 - **Partial blocks** (`▏▎▍▌▋▊▉`): 1/8 to 7/8 of a character width
-- **Empty blocks** (`░`): Remaining unfilled space
 
-This allows smooth progress indication even when you have many more chunks than bar characters. For example, with a
-5-character bar and 40 chunks, each chunk represents 1/8 of a character, enabling very fine-grained visual feedback.
+This allows smooth progress indication even with many more chunks than bar characters.
 
 ## License
 
