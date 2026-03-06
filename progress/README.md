@@ -1,6 +1,7 @@
 # @epdoc/progress
 
-A reusable terminal progress indicator for Deno supporting four modes: spinner, bounce, horizontal progress bar, and vertical fill. Features configurable colors and fine-grained fractional progress display.
+A reusable terminal progress indicator for Deno supporting four modes: spinner, bounce, horizontal progress bar, and
+vertical fill. Features configurable colors and fine-grained fractional progress display.
 
 ## Features
 
@@ -38,6 +39,7 @@ progress.stop('Complete!');
 ```
 
 **Spinner indices:**
+
 - `0`: Braille dots (⠋⠙⠹⠸...)
 - `1`: Braille wave (⠋⠙⠚⠞...)
 - `2`: Block quadrants (▖▘▝▗...)
@@ -63,6 +65,7 @@ thinking.stop('Analysis complete!');
 ```
 
 **Bounce indices:**
+
 - `0`: Parenthesized ball (● bounces left-right in `()`)
 - `1`: Gradient trail (░▒▓█ sliding with density gradient)
 
@@ -78,7 +81,7 @@ const progress = new ProgressLine({
   type: 'horizontal',
   total: totalFiles,
   width: 15,
-  color: 'green'
+  color: 'green',
 });
 
 progress.start('Downloading files...');
@@ -111,7 +114,8 @@ progress.stop('Fully charged!');
 
 ### Fine-Grained Progress
 
-The horizontal bar automatically shows fractional progress using partial block characters when progress increments are smaller than full characters:
+The horizontal bar automatically shows fractional progress using partial block characters when progress increments are
+smaller than full characters:
 
 ```typescript
 // With 40 total and 5-character width, each unit is 1/8 of a character
@@ -162,7 +166,8 @@ A color value as either a hex number or named string.
 type Color = number | string;
 ```
 
-**Named colors:** `red`, `green`, `blue`, `yellow`, `cyan`, `magenta`, `white`, `black`, `orange`, `gray`, `grey`, `purple`
+**Named colors:** `red`, `green`, `blue`, `yellow`, `cyan`, `magenta`, `white`, `black`, `orange`, `gray`, `grey`,
+`purple`
 
 **Hex example:** `0x20D020` (green)
 
@@ -190,9 +195,9 @@ Creates a new ProgressLine instance. Defaults to spinner mode with index 0.
 
 **Parameters:**
 
-| Name      | Type                  | Description                                                    |
-|-----------|----------------------|----------------------------------------------------------------|
-| `options` | `ProgressLineOptions`| Configuration for the indicator mode, style, and color        |
+| Name      | Type                  | Description                                            |
+| --------- | --------------------- | ------------------------------------------------------ |
+| `options` | `ProgressLineOptions` | Configuration for the indicator mode, style, and color |
 
 #### Methods
 
@@ -202,9 +207,9 @@ Start showing the progress indicator.
 
 **Parameters:**
 
-| Name      | Type     | Description                         |
-|-----------|----------|-------------------------------------|
-| `message` | `string` | The status message to display       |
+| Name      | Type     | Description                   |
+| --------- | -------- | ----------------------------- |
+| `message` | `string` | The status message to display |
 
 ##### `update(message: string, progress?: number): void`
 
@@ -212,9 +217,9 @@ Update the status message and/or progress value.
 
 **Parameters:**
 
-| Name        | Type     | Description                                                                    |
-|-------------|----------|--------------------------------------------------------------------------------|
-| `message`   | `string` | The new status message to display                                              |
+| Name        | Type     | Description                                                                      |
+| ----------- | -------- | -------------------------------------------------------------------------------- |
+| `message`   | `string` | The new status message to display                                                |
 | `progress?` | `number` | Current progress value (0 to total). Only used by horizontal and vertical modes. |
 
 ##### `stop(finalMessage?: string): void`
@@ -223,16 +228,16 @@ Stop the progress indicator and optionally display a final message.
 
 **Parameters:**
 
-| Name            | Type     | Description                                       |
-|-----------------|----------|---------------------------------------------------|
-| `finalMessage?` | `string` | Optional final message to display after clearing  |
+| Name            | Type     | Description                                      |
+| --------------- | -------- | ------------------------------------------------ |
+| `finalMessage?` | `string` | Optional final message to display after clearing |
 
 ### Type Guards
 
 For runtime type checking:
 
 ```typescript
-import { isSpinner, isBounce, isHorizontal, isVertical } from '@epdoc/progress';
+import { isBounce, isHorizontal, isSpinner, isVertical } from '@epdoc/progress';
 
 if (isSpinner(options)) {
   // options is SpinnerOptions
@@ -251,6 +256,7 @@ if (isSpinner(options)) {
 ### Bounce Mode
 
 **Index 0 (ball):**
+
 ```
 (●     ) Connecting...
 ( ●    ) Connecting...
@@ -258,6 +264,7 @@ if (isSpinner(options)) {
 ```
 
 **Index 1 (gradient trail):**
+
 ```
 ▒▓██···· Thinking...
 ░▒▓██··· Thinking...

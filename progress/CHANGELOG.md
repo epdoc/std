@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.5] - 2026-03-06
+
+- Added fluent API for setting options
+
 ## [0.0.4] - 2026-03-05
 
 - Updated README

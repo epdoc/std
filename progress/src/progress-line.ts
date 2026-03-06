@@ -1,4 +1,4 @@
-import { _ } from '@epdoc/type';
+import { _, type Integer } from '@epdoc/type';
 import { rgb24 } from '@std/fmt/colors';
 
 const encoder = new TextEncoder();
@@ -114,7 +114,7 @@ type BaseOptions = {
 
 export type SpinnerOptions = BaseOptions & { type: 'spinner'; index: 0 | 1 | 2 };
 export type BounceOptions = BaseOptions & { type: 'bounce'; index: 0 | 1 };
-export type HorizontalOptions = BaseOptions & { type: 'horizontal'; total: number; width: number };
+export type HorizontalOptions = BaseOptions & { type: 'horizontal'; total: number; width: Integer };
 export type VerticalOptions = BaseOptions & { type: 'vertical'; total: number };
 
 export type ProgressLineOptions = SpinnerOptions | BounceOptions | HorizontalOptions | VerticalOptions;
@@ -205,6 +205,36 @@ export class ProgressLine {
     } else if (options.type === 'vertical') {
       if (!options.total) options.total = 1;
     }
+  }
+
+  color(color: Color): this {
+    this.#color = resolveColor(color);
+    return this;
+  }
+
+  bar(total: number = 1, width: Integer = 10): this {
+    this.#options = { type: 'horizontal', width: width, total: total };
+    return this;
+  }
+
+  battery(total: number = 1): this {
+    this.#options = { type: 'vertical', total: total };
+    return this;
+  }
+
+  spinner(type: 0 | 1 | 2 = 0): this {
+    this.#options = { type: 'spinner', index: type };
+    return this;
+  }
+
+  comet(): this {
+    this.#options = { type: 'bounce', index: 1 };
+    return this;
+  }
+
+  bouncyBall(): this {
+    this.#options = { type: 'bounce', index: 0 };
+    return this;
   }
 
   /**
