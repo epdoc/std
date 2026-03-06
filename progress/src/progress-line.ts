@@ -7,21 +7,123 @@ const blocks = {
     ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'],
     ['⠋', '⠙', '⠚', '⠞', '⠖', '⠦', '⠴', '⠲', '⠳', '⠓'],
     ['▖', '▘', '▝', '▗', '▚', '▞', '█'],
-    ['(●     )', '( ●    )', '(  ●   )', '(   ●  )', '(    ● )', '(     ●)'],
+  ],
+  bounce: [
+    [
+      '(●     )',
+      '( ●    )',
+      '(  ●   )',
+      '(   ●  )',
+      '(    ● )',
+      '(     ●)',
+      '(    ● )',
+      '(   ●  )',
+      '(  ●   )',
+      '( ●    )',
+    ],
+    [
+      '········',
+      '█·······',
+      '██······',
+      '▓██·····',
+      '▒▓██····',
+      '░▒▓██···',
+      '·░▒▓██··',
+      '··░▒▓██·',
+      '···░▒▓██',
+      '····░▒▓█',
+      '·····░▒▓',
+      '······░▒',
+      '·······░',
+      '········',
+      '·······█',
+      '······█▓',
+      '·····█▓▒',
+      '····█▓▒░',
+      '···█▓▒░·',
+      '··█▓▒░··',
+      '·█▓▒░···',
+      '█▓▒░····',
+      '▓▒░·····',
+      '▒░······',
+      '░·······',
+      '········',
+    ],
   ],
   horizontal: ['', '▏', '▎', '▍', '▌', '▋', '▊', '▉'],
-  vertical: [' ', ' ', '▂', '▃', '▄', '▅', '▆', '▇', '█'],
+  vertical: [' ', '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'],
 } as const;
 export type Mode = keyof typeof blocks;
 
-export type SpinnerOptions = { type: 'spinner'; index: 0 | 1 | 2 | 3 };
-export type HorizontalOptions = { type: 'horizontal'; total: number; width: number };
-export type VerticalOptions = { type: 'vertical'; total: number };
+const DEFAULT_COLOR = 0xD02020;
 
-export type ProgressLineOptions = SpinnerOptions | HorizontalOptions | VerticalOptions;
+/**
+ * A map of named colors to their hexadecimal RGB values.
+ *
+ * Use these names as the `color` option in {@link ProgressLineOptions} for
+ * convenient color selection without specifying hex values directly.
+ */
+const colorMap: Record<string, number> = {
+  red: 0xD02020,
+  green: 0x20D020,
+  blue: 0x2020D0,
+  yellow: 0xD0D020,
+  cyan: 0x20D0D0,
+  magenta: 0xD020D0,
+  white: 0xF0F0F0,
+  black: 0x202020,
+  orange: 0xD07020,
+  gray: 0x808080,
+  grey: 0x808080,
+  purple: 0x8020D0,
+};
+
+/**
+ * A color value specified as either a hex number (e.g. `0xD02020`) or a named
+ * color string (e.g. `'red'`, `'green'`, `'cyan'`).
+ *
+ * Supported named colors: `red`, `green`, `blue`, `yellow`, `cyan`, `magenta`,
+ * `white`, `black`, `orange`, `gray`/`grey`, `purple`.
+ */
+export type Color = number | string;
+
+/**
+ * Resolve a {@link Color} value to a numeric hex value for use with `rgb24()`.
+ * Returns {@link DEFAULT_COLOR} if the value is undefined or unrecognized.
+ */
+function resolveColor(color: Color | undefined): number {
+  if (_.isUndefined(color)) {
+    return DEFAULT_COLOR;
+  }
+  if (_.isNumber(color)) {
+    return color;
+  }
+  if (_.isString(color)) {
+    return colorMap[color.toLowerCase()] ?? DEFAULT_COLOR;
+  }
+  return DEFAULT_COLOR;
+}
+
+/**
+ * Base options shared by all progress line modes.
+ */
+type BaseOptions = {
+  /** The display color for the progress indicator. Defaults to red (`0xD02020`). */
+  color?: Color;
+};
+
+export type SpinnerOptions = BaseOptions & { type: 'spinner'; index: 0 | 1 | 2 };
+export type BounceOptions = BaseOptions & { type: 'bounce'; index: 0 | 1 };
+export type HorizontalOptions = BaseOptions & { type: 'horizontal'; total: number; width: number };
+export type VerticalOptions = BaseOptions & { type: 'vertical'; total: number };
+
+export type ProgressLineOptions = SpinnerOptions | BounceOptions | HorizontalOptions | VerticalOptions;
 
 export function isSpinner(val: unknown): val is SpinnerOptions {
   return _.isDict(val) && val.type === 'spinner' && _.isIntegerInRange(val.index, 0, blocks.spinner.length - 1);
+}
+export function isBounce(val: unknown): val is BounceOptions {
+  return _.isDict(val) && val.type === 'bounce' && _.isIntegerInRange(val.index, 0, blocks.bounce.length - 1);
 }
 export function isHorizontal(val: unknown): val is HorizontalOptions {
   return _.isDict(val) && val.type === 'horizontal' && _.isNumber(val.total) && _.isPosInteger(val.width);
@@ -31,29 +133,43 @@ export function isVertical(val: unknown): val is VerticalOptions {
 }
 
 /**
- * A reusable terminal progress indicator that supports both spinner and progress bar modes.
+ * A reusable terminal progress indicator that supports spinner, bounce,
+ * horizontal progress bar, and vertical fill modes.
  *
- * This class provides visual feedback for long-running operations in terminal applications.
- * It supports two modes:
- * - **Spinner mode**: For indeterminate progress (when total work is unknown)
- * - **Progress bar mode**: For determinate progress with fine-grained fractional display
+ * This class provides visual feedback for long-running operations in terminal
+ * applications. It supports four modes:
+ * - **Spinner mode**: Looping character animation for indeterminate progress
+ * - **Bounce mode**: Back-and-forth animation for indeterminate progress
+ *   (e.g. bouncing ball or sliding block indicator)
+ * - **Horizontal bar mode**: For determinate progress with fine-grained
+ *   fractional display using partial block characters
+ * - **Vertical fill mode**: For single-character vertical fill display
  *
- * All output is written to stderr to avoid interfering with stdout data. The progress
- * indicator uses red-colored output for visibility and automatically clears itself when stopped.
+ * All output is written to stderr to avoid interfering with stdout data. The
+ * display color is configurable via the `color` option and defaults to red.
+ * The indicator automatically clears itself when stopped.
  *
  * @example Spinner mode for unknown duration tasks
  * ```ts
- * const progress = new ProgressLine();
+ * const progress = new ProgressLine({ type: 'spinner', index: 0, color: 'cyan' });
  * progress.start('Connecting to server...');
  * await connectToServer();
  * progress.stop('Connected!');
  * ```
  *
- * @example Progress bar mode for known amount of work
+ * @example Bounce mode for thinking/waiting indicators
  * ```ts
- * const progress = new ProgressLine();
+ * const progress = new ProgressLine({ type: 'bounce', index: 1, color: 'purple' });
+ * progress.start('Thinking...');
+ * await processRequest();
+ * progress.stop('Done!');
+ * ```
+ *
+ * @example Horizontal progress bar for known amount of work
+ * ```ts
  * const totalFiles = 20;
- * progress.start('Downloading files...', totalFiles);
+ * const progress = new ProgressLine({ type: 'horizontal', total: totalFiles, width: 15, color: 0x20D020 });
+ * progress.start('Downloading files...');
  * for (let i = 0; i <= totalFiles; i++) {
  *   progress.update(`Downloading file ${i}/${totalFiles}...`, i);
  *   await downloadFile(i);
@@ -61,13 +177,12 @@ export function isVertical(val: unknown): val is VerticalOptions {
  * progress.stop('Download complete!');
  * ```
  *
- * @example Fine-grained progress with custom width
+ * @example Vertical fill indicator
  * ```ts
- * const progress = new ProgressLine();
- * // 20-character wide bar with 100 chunks shows 1/8 character resolution
- * progress.start('Processing...', 100, 20);
+ * const progress = new ProgressLine({ type: 'vertical', total: 100, color: 'green' });
+ * progress.start('Volume level');
  * for (let i = 0; i <= 100; i++) {
- *   progress.update(`Processing ${i}%...`, i);
+ *   progress.update(`Volume: ${i}%`, i);
  * }
  * progress.stop('Done!');
  * ```
@@ -77,14 +192,13 @@ export class ProgressLine {
   #frameIndex = 0;
   #currentMessage = '';
   #isActive = false;
-  // #chunks: number = 1;
-  // #barWidth = 10;
   #currentProgress = 0;
-  // #useSpinner = true;
   #options: ProgressLineOptions = { type: 'spinner', index: 0 };
+  #color: number;
 
   constructor(options: ProgressLineOptions = { type: 'spinner', index: 0 }) {
     this.#options = options;
+    this.#color = resolveColor(options.color);
     if (options.type === 'horizontal') {
       if (!options.total) options.total = 1;
       if (!options.width) options.width = 10;
@@ -96,64 +210,33 @@ export class ProgressLine {
   /**
    * Start showing the progress indicator.
    *
-   * If the progress line is already active, it will be stopped and restarted
-   * with the new parameters. In spinner mode, an animation interval is started
-   * that cycles through spinner frames every 80ms.
+   * If the progress line is already active, it will be stopped and restarted.
+   * In spinner and bounce modes, an animation interval is started that cycles
+   * through frames every 80ms.
    *
-   * @param message - The status message to display next to the spinner or progress bar
-   * @param [chunks] - Total number of items to process. When provided, enables
-   *   progress bar mode with fractional display. When omitted, uses spinner mode.
-   * @param [width=10] - Width of the progress bar in characters. Only applies
-   *   when chunks is provided. Defaults to 10 characters.
+   * Visual options (total, width, color) are configured exclusively through the
+   * constructor. Use separate {@link ProgressLine} instances for different modes.
+   *
+   * @param message - The status message to display next to the indicator
    *
    * @example
    * ```ts
-   * const progress = new ProgressLine();
+   * const spinner = new ProgressLine({ type: 'spinner', index: 0 });
+   * spinner.start('Loading...');
    *
-   * // Spinner mode (no chunks)
-   * progress.start('Loading...');
+   * const bouncer = new ProgressLine({ type: 'bounce', index: 1, color: 'purple' });
+   * bouncer.start('Thinking...');
    *
-   * // Progress bar mode (20 chunks, default 10-char width)
-   * progress.start('Downloading...', 20);
-   *
-   * // Progress bar with custom width (100 chunks, 20-char width)
-   * progress.start('Processing...', 100, 20);
+   * const bar = new ProgressLine({ type: 'horizontal', total: 100, width: 20 });
+   * bar.start('Processing...');
    * ```
    */
-  start(message: string, chunks?: number, width?: number): void {
+  start(message: string): void {
     if (this.#isActive) {
       this.stop();
     }
 
-    if (isSpinner(this.#options)) {
-      this.#currentProgress = 0;
-    } else if (isHorizontal(this.#options)) {
-      if (_.isPosNumber(chunks)) {
-        this.#options.total = chunks;
-      }
-      if (_.isPosInteger(width)) {
-        this.#options.width = width;
-      }
-    } else if (isVertical(this.#options)) {
-      if (_.isPosNumber(chunks)) {
-        this.#options.total = chunks;
-      }
-    }
-
-    // if (chunks !== undefined && chunks > 0) {
-    //   this.#chunks = chunks;
-    //   this.#useSpinner = false;
-    //   this.#currentProgress = 0;
-    // } else {
-    //   this.#useSpinner = true;
-    // }
-
-    // if (width !== undefined) {
-    //   this.#barWidth = width;
-    // } else {
-    //   this.#barWidth = 10;
-    // }
-
+    this.#currentProgress = 0;
     this.#isActive = true;
     this.#currentMessage = message;
     this.#frameIndex = 0;
@@ -161,9 +244,15 @@ export class ProgressLine {
     // Show initial frame
     this.render();
 
-    // Start animation only for spinner mode
+    // Start animation for spinner and bounce modes
     if (isSpinner(this.#options)) {
       const len = blocks.spinner[this.#options.index].length;
+      this.#intervalId = setInterval(() => {
+        this.#frameIndex = (this.#frameIndex + 1) % len;
+        this.render();
+      }, 80);
+    } else if (isBounce(this.#options)) {
+      const len = blocks.bounce[this.#options.index].length;
       this.#intervalId = setInterval(() => {
         this.#frameIndex = (this.#frameIndex + 1) % len;
         this.render();
@@ -174,22 +263,25 @@ export class ProgressLine {
   /**
    * Update the status message and/or progress value.
    *
-   * In progress bar mode, the progress value is used to calculate the visual
-   * fill level. When the number of chunks exceeds the bar width, partial block
-   * characters (▏▎▍▌▋▊▉) are used to show fractional progress at 1/8 character
-   * resolution.
+   * In horizontal bar mode, the progress value is used to calculate the visual
+   * fill level. When the number of total units exceeds the bar width, partial
+   * block characters (▏▎▍▌▋▊▉) are used to show fractional progress at 1/8
+   * character resolution.
+   *
+   * In vertical fill mode, the progress value maps to one of nine vertical
+   * block characters (▁▂▃▄▅▆▇█) representing fill level.
    *
    * @param message - The new status message to display
-   * @param [progress] - Current progress value in chunks. This value is divided
-   *   by the total chunks and multiplied by the bar width to determine the
-   *   visual fill level. Only applies to progress bar mode.
+   * @param [progress] - Current progress value. This value is divided by the
+   *   total and used to determine the visual fill level. Only applies to
+   *   horizontal and vertical modes.
    *
    * @example
    * ```ts
-   * const progress = new ProgressLine();
-   * progress.start('Downloading...', 100);
+   * const progress = new ProgressLine({ type: 'horizontal', total: 100, width: 20 });
+   * progress.start('Downloading...');
    *
-   * // Update message only (in spinner mode this is common)
+   * // Update message only
    * progress.update('Still downloading...');
    *
    * // Update both message and progress
@@ -221,7 +313,7 @@ export class ProgressLine {
    *
    * @example
    * ```ts
-   * const progress = new ProgressLine();
+   * const progress = new ProgressLine({ type: 'spinner', index: 0 });
    * progress.start('Working...');
    * // ... do work ...
    *
@@ -257,10 +349,12 @@ export class ProgressLine {
   /**
    * Render the current frame to stderr.
    *
-   * In spinner mode, displays the current spinner frame with the message.
-   * In progress bar mode, calculates and displays the filled portion of the
-   * bar using full blocks (█), partial blocks (▏▎▍▌▋▊▉) for fractional progress,
-   * and empty blocks (░) for the remaining space.
+   * In spinner and bounce modes, displays the current frame character with the
+   * message. In horizontal bar mode, calculates and displays the filled portion
+   * of the bar using full blocks (█), partial blocks (▏▎▍▌▋▊▉) for fractional
+   * progress, and uncolored empty blocks (░) for the remaining space. In
+   * vertical fill mode, displays a single block character at the appropriate
+   * fill level.
    *
    * @private
    */
@@ -270,14 +364,18 @@ export class ProgressLine {
     }
 
     let output: string = '';
+    const color = this.#color;
 
     const opts = this.#options;
     if (isSpinner(opts)) {
-      const spinner = blocks.spinner[opts.index][this.#frameIndex];
-      output = `\r\x1b[K${rgb24(spinner, 0xD02020)} ${this.#currentMessage}`;
+      const frame = blocks.spinner[opts.index][this.#frameIndex];
+      output = `\r\x1b[K${rgb24(frame, color)} ${this.#currentMessage}`;
+    } else if (isBounce(opts)) {
+      const frame = blocks.bounce[opts.index][this.#frameIndex];
+      output = `\r\x1b[K${rgb24(frame, color)} ${this.#currentMessage}`;
     } else if (isHorizontal(opts)) {
-      // Calculate fractional progress for fine-grained display
-      const exactProgress = (this.#currentProgress / opts.total) * opts.width;
+      // Calculate fractional progress, clamped to [0, width]
+      const exactProgress = Math.min(opts.width, Math.max(0, (this.#currentProgress / opts.total) * opts.width));
       const fullBlocks = Math.floor(exactProgress);
       const remainder = exactProgress - fullBlocks;
 
@@ -289,15 +387,16 @@ export class ProgressLine {
       const usedChars = fullBlocks + (partialBlock ? 1 : 0);
       const emptyCount = Math.max(0, opts.width - usedChars);
 
-      // Build the bar: full blocks + partial block + empty
-      const bar = '█'.repeat(fullBlocks) + partialBlock + '░'.repeat(emptyCount);
-      output = `\r\x1b[K${rgb24(bar, 0xD02020)} ${this.#currentMessage}`;
+      // Build the bar: colored filled portion + empty spaces
+      const filled = '█'.repeat(fullBlocks) + partialBlock;
+      const empty = ' '.repeat(emptyCount);
+      output = `\r\x1b[K${rgb24(filled, color)}${empty} ${this.#currentMessage}`;
     } else if (isVertical(opts)) {
-      // Calculate vertical fill level (0-8 for the 9 block characters)
-      const exactProgress = (this.#currentProgress / opts.total) * 8;
-      const blockIndex = Math.min(8, Math.max(0, Math.floor(exactProgress)));
+      // Calculate vertical fill level (0-8 for the 9 block characters), clamped
+      const exactProgress = Math.min(8, Math.max(0, (this.#currentProgress / opts.total) * 8));
+      const blockIndex = Math.floor(exactProgress);
       const bar = blocks.vertical[blockIndex];
-      output = `\r\x1b[K${rgb24(bar, 0xD02020)} ${this.#currentMessage}`;
+      output = `\r\x1b[K${rgb24(bar, color)} ${this.#currentMessage}`;
     }
 
     Deno.stderr.writeSync(encoder.encode(output));

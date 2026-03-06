@@ -3,175 +3,290 @@
  * Run with: deno run -A progress/demo.ts
  */
 
-import { HorizontalOptions, ProgressLine } from './mod.ts';
+import { ProgressLine } from './mod.ts';
 
 // Helper function for delays
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-async function demoSpinnerMode() {
-  console.log('=== Spinner Mode Demo ===\n');
+// ---------------------------------------------------------------------------
+// Spinner demos — one per spinner index, each with a different color
+// ---------------------------------------------------------------------------
 
-  const progress = new ProgressLine();
-
-  // Simulate a task with spinner (no chunks specified)
+async function demoSpinnerBraille() {
+  console.log('=== Spinner: Braille dots (index 0, color: cyan) ===\n');
+  const progress = new ProgressLine({ type: 'spinner', index: 0, color: 'cyan' });
   progress.start('Initializing...');
-  await delay(800);
-
+  await delay(600);
   progress.update('Loading configuration...');
-  await delay(800);
-
+  await delay(600);
   progress.update('Connecting to database...');
-  await delay(800);
-
-  progress.update('Fetching data...');
-  await delay(800);
-
-  progress.stop('All tasks completed successfully!');
+  await delay(600);
+  progress.stop('All tasks completed!');
   console.log('');
 }
 
-async function demoProgressBarMode() {
-  console.log('=== Progress Bar Mode Demo ===\n');
+async function demoSpinnerBraille2() {
+  console.log('=== Spinner: Braille wave (index 1, color: 0xF0A040) ===\n');
+  const progress = new ProgressLine({ type: 'spinner', index: 1, color: 0xF0A040 });
+  progress.start('Scanning files...');
+  await delay(800);
+  progress.update('Analyzing data...');
+  await delay(800);
+  progress.stop('Scan complete!');
+  console.log('');
+}
 
-  const progress = new ProgressLine({ type: 'spinner', index: 1 });
+async function demoSpinnerBlocks() {
+  console.log('=== Spinner: Block quadrants (index 2, color: green) ===\n');
+  const progress = new ProgressLine({ type: 'spinner', index: 2, color: 'green' });
+  progress.start('Compiling assets...');
+  await delay(1000);
+  progress.stop('Build succeeded!');
+  console.log('');
+}
+
+// ---------------------------------------------------------------------------
+// Bounce demos — both bounce indices with different colors
+// ---------------------------------------------------------------------------
+
+async function demoBounceParenBall() {
+  console.log('=== Bounce: Parenthesized ball (index 0, color: magenta) ===\n');
+  const progress = new ProgressLine({ type: 'bounce', index: 0, color: 'magenta' });
+  progress.start('Deploying to production...');
+  await delay(600);
+  progress.update('Waiting for health check...');
+  await delay(600);
+  progress.update('Verifying deployment...');
+  await delay(600);
+  progress.stop('Deployment successful!');
+  console.log('');
+}
+
+async function demoBounceSlider() {
+  console.log('=== Bounce: Sliding blocks (index 1, color: purple) ===\n');
+  const progress = new ProgressLine({ type: 'bounce', index: 1, color: 'purple' });
+  progress.start('Thinking...');
+  await delay(1200);
+  progress.update('Still thinking...');
+  await delay(1200);
+  progress.stop('Thought complete!');
+  console.log('');
+}
+
+async function demoBounceHexColor() {
+  console.log('=== Bounce: Sliding blocks (index 1, color: 0xA060E0) ===\n');
+  const progress = new ProgressLine({ type: 'bounce', index: 1, color: 0xA060E0 });
+  progress.start('Processing request...');
+  await delay(1000);
+  progress.stop('Request processed!');
+  console.log('');
+}
+
+// ---------------------------------------------------------------------------
+// Horizontal bar demos — varying widths, totals, and colors
+// ---------------------------------------------------------------------------
+
+async function demoHorizontalDefault() {
+  console.log('=== Horizontal: default width 10, total 20 (color: red) ===\n');
   const totalFiles = 20;
-
-  // Start with progress bar mode (20 chunks, default 10-char width)
-  progress.start(`Downloading ${totalFiles} files...`, totalFiles);
-
+  const progress = new ProgressLine({ type: 'horizontal', total: totalFiles, width: 10, color: 'red' });
+  progress.start('Downloading files...');
   for (let i = 0; i <= totalFiles; i++) {
     progress.update(`Downloading file ${i}/${totalFiles}...`, i);
-    await delay(100);
+    await delay(80);
   }
-
   progress.stop('All files downloaded!');
   console.log('');
 }
 
-async function demoProgressBarWithCustomWidth() {
-  console.log('=== Progress Bar with Custom Width Demo ===\n');
-
-  const progress = new ProgressLine({ type: 'spinner', index: 2 });
-  const totalItems = 50;
-
-  // Start with custom width of 20 characters
-  progress.start(`Processing ${totalItems} items...`, totalItems, 20);
-
-  for (let i = 0; i <= totalItems; i += 5) {
-    progress.update(`Processing item ${i}/${totalItems}...`, i);
-    await delay(150);
+async function demoHorizontalWide() {
+  console.log('=== Horizontal: wide bar 30 chars, total 100 (color: blue) ===\n');
+  const total = 100;
+  const progress = new ProgressLine({ type: 'horizontal', total, width: 30, color: 'blue' });
+  progress.start('Processing...');
+  for (let i = 0; i <= total; i += 2) {
+    progress.update(`Processing ${i}%...`, i);
+    await delay(30);
   }
-
   progress.stop('Processing complete!');
   console.log('');
 }
 
-async function demoFileProcessing() {
-  console.log('=== File Processing with Progress Bar ===\n');
-
-  const files = ['document.pdf', 'image.png', 'data.csv', 'archive.zip', 'readme.md'];
-  const progress = new ProgressLine();
-
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
-    progress.start(`Processing ${file} (${i + 1}/${files.length})...`, files.length, 10);
-    progress.update(`Processing ${file}...`, i + 1);
-    await delay(600);
-    progress.stop(`✓ ${file} processed`);
-  }
-
-  console.log('');
-}
-
-async function demoMixedModes() {
-  console.log('=== Mixed Modes Demo ===\n');
-
-  const progress = new ProgressLine();
-
-  // Start with spinner for unknown duration task
-  progress.start('Connecting to server...');
-  await delay(800);
-  progress.stop('Connected!');
-
-  // Switch to progress bar for download
-  const fileSize = 100;
-  const fileProgress = new ProgressLine({ type: 'horizontal', total: fileSize, width: 10 });
-  fileProgress.start(`Downloading package (${fileSize} MB)...`, fileSize, 15);
-
-  for (let i = 0; i <= fileSize; i += 10) {
-    fileProgress.update(`Downloading... ${i}%`, i);
-    await delay(100);
-  }
-
-  fileProgress.stop('Download complete!');
-
-  // Back to spinner for installation
-  progress.start('Installing package...');
-  await delay(600);
-  progress.update('Configuring package...');
-  await delay(600);
-  progress.stop('Installation complete!');
-
-  console.log('');
-}
-
-async function demoProgressComparison() {
-  console.log('=== Progress Bar Width Comparison ===\n');
-
-  const opts: HorizontalOptions = { type: 'horizontal', total: 10, width: 10 };
-
-  // 10-character width (default)
-  const progress1 = new ProgressLine(opts);
-  progress1.start('10-char width progress bar...');
-  for (let i = 0; i <= opts.total; i++) {
-    progress1.update(`Progress: ${i}/${opts.total}`, i);
-    await delay(80);
-  }
-  progress1.stop('Done with 10-char bar!');
-  await delay(300);
-
-  // 5-character width
-  opts.width = 5;
-  const progress2 = new ProgressLine(opts);
-  progress2.start('5-char width progress bar...');
-  for (let i = 0; i <= opts.total; i += 0.125) {
-    progress2.update(`Progress: ${i}/${opts.total}`, i);
-    await delay(40);
-  }
-  progress2.stop('Done with 5-char bar!');
-  await delay(300);
-
-  // 30-character width
-  opts.width = 30;
-  const progress3 = new ProgressLine(opts);
-  progress3.start('30-char width progress bar...');
-  for (let i = 0; i <= opts.total; i += 0.4) {
-    progress3.update(`Progress: ${i}/${opts.total}`, i);
+async function demoHorizontalNarrow() {
+  console.log('=== Horizontal: narrow bar 5 chars, total 40 (color: 0x50C878) ===\n');
+  const total = 40;
+  const progress = new ProgressLine({ type: 'horizontal', total, width: 5, color: 0x50C878 });
+  progress.start('Fine-grained progress...');
+  for (let i = 0; i <= total; i++) {
+    progress.update(`Progress: ${i}/${total}`, i);
     await delay(50);
   }
-  progress3.stop('Done with 30-char bar!');
+  progress.stop('Complete!');
+  console.log('');
+}
+
+async function demoHorizontalFileProcessing() {
+  console.log('=== Horizontal: file processing simulation (color: orange) ===\n');
+  const files = ['document.pdf', 'image.png', 'data.csv', 'archive.zip', 'readme.md'];
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const progress = new ProgressLine({ type: 'horizontal', total: files.length, width: 10, color: 'orange' });
+    progress.start(`Processing ${file} (${i + 1}/${files.length})...`);
+    progress.update(`Processing ${file}...`, i + 1);
+    await delay(400);
+    progress.stop(`✓ ${file} processed`);
+  }
+  console.log('');
+}
+
+// ---------------------------------------------------------------------------
+// Vertical fill demos — varying totals and colors
+// ---------------------------------------------------------------------------
+
+async function demoVerticalBasic() {
+  console.log('=== Vertical: basic fill, total 8 (color: yellow) ===\n');
+  const progress = new ProgressLine({ type: 'vertical', total: 8, color: 'yellow' });
+  progress.start('Volume level...');
+  for (let i = 0; i <= 8; i++) {
+    progress.update(`Level: ${i}/8`, i);
+    await delay(300);
+  }
+  progress.stop('Maximum reached!');
+  console.log('');
+}
+
+async function demoVerticalPercentage() {
+  console.log('=== Vertical: percentage fill, total 100 (color: purple) ===\n');
+  const progress = new ProgressLine({ type: 'vertical', total: 100, color: 'purple' });
+  progress.start('Battery level...');
+  for (let i = 0; i <= 100; i += 10) {
+    progress.update(`Battery: ${i}%`, i);
+    await delay(200);
+  }
+  progress.stop('Fully charged!');
+  console.log('');
+}
+
+async function demoVerticalHexColor() {
+  console.log('=== Vertical: hex color 0x20D0D0, total 50 ===\n');
+  const progress = new ProgressLine({ type: 'vertical', total: 50, color: 0x20D0D0 });
+  progress.start('Signal strength...');
+  for (let i = 0; i <= 50; i += 5) {
+    progress.update(`Signal: ${Math.round((i / 50) * 100)}%`, i);
+    await delay(150);
+  }
+  progress.stop('Full signal!');
+  console.log('');
+}
+
+// ---------------------------------------------------------------------------
+// Mixed mode demo — sequential use of separate instances
+// ---------------------------------------------------------------------------
+
+async function demoMixedModes() {
+  console.log('=== Mixed Modes: spinner → bounce → horizontal → vertical ===\n');
+
+  // Spinner for connection phase
+  const spinner = new ProgressLine({ type: 'spinner', index: 1, color: 'cyan' });
+  spinner.start('Connecting to server...');
+  await delay(800);
+  spinner.stop('Connected!');
+
+  // Bounce for thinking phase
+  const bouncer = new ProgressLine({ type: 'bounce', index: 1, color: 'purple' });
+  bouncer.start('Analyzing request...');
+  await delay(1000);
+  bouncer.stop('Analysis complete!');
+
+  // Horizontal bar for download phase
+  const fileSize = 100;
+  const bar = new ProgressLine({ type: 'horizontal', total: fileSize, width: 15, color: 'green' });
+  bar.start(`Downloading package (${fileSize} MB)...`);
+  for (let i = 0; i <= fileSize; i += 10) {
+    bar.update(`Downloading... ${i}%`, i);
+    await delay(80);
+  }
+  bar.stop('Download complete!');
+
+  // Vertical fill for installation phase
+  const stages = 5;
+  const fill = new ProgressLine({ type: 'vertical', total: stages, color: 'magenta' });
+  fill.start('Installing...');
+  const labels = ['Extracting...', 'Compiling...', 'Linking...', 'Configuring...', 'Finalizing...'];
+  for (let i = 0; i <= stages; i++) {
+    fill.update(labels[Math.min(i, labels.length - 1)], i);
+    await delay(400);
+  }
+  fill.stop('Installation complete!');
 
   console.log('');
 }
 
+// ---------------------------------------------------------------------------
+// Width comparison demo — same data, different bar widths
+// ---------------------------------------------------------------------------
+
+async function demoWidthComparison() {
+  console.log('=== Horizontal: width comparison (5, 10, 30 chars) ===\n');
+  const total = 10;
+
+  for (const width of [5, 10, 30]) {
+    const progress = new ProgressLine({ type: 'horizontal', total, width, color: 'red' });
+    progress.start(`${width}-char width bar...`);
+    for (let i = 0; i <= total; i += 0.25) {
+      progress.update(`Progress: ${i.toFixed(1)}/${total}`, i);
+      await delay(20);
+    }
+    progress.stop(`Done with ${width}-char bar!`);
+    await delay(200);
+  }
+
+  console.log('');
+}
+
+// ---------------------------------------------------------------------------
 // Run all demos
+// ---------------------------------------------------------------------------
+
 async function main() {
-  // await demoSpinnerMode();
-  // await delay(500);
+  // Spinner demos (3 spinner indices)
+  await demoSpinnerBraille();
+  await delay(300);
+  await demoSpinnerBraille2();
+  await delay(300);
+  await demoSpinnerBlocks();
+  await delay(300);
 
-  // await demoProgressBarMode();
-  // await delay(500);
+  // Bounce demos (2 bounce indices)
+  await demoBounceParenBall();
+  await delay(300);
+  await demoBounceSlider();
+  await delay(300);
+  await demoBounceHexColor();
+  await delay(300);
 
-  // await demoProgressBarWithCustomWidth();
-  // await delay(500);
+  // Horizontal bar demos
+  await demoHorizontalDefault();
+  await delay(300);
+  await demoHorizontalWide();
+  await delay(300);
+  await demoHorizontalNarrow();
+  await delay(300);
+  await demoHorizontalFileProcessing();
+  await delay(300);
 
-  // await demoFileProcessing();
-  // await delay(500);
+  // Vertical fill demos
+  await demoVerticalBasic();
+  await delay(300);
+  await demoVerticalPercentage();
+  await delay(300);
+  await demoVerticalHexColor();
+  await delay(300);
 
-  // await demoMixedModes();
-  // await delay(500);
-
-  await demoProgressComparison();
+  // Mixed and comparison demos
+  await demoMixedModes();
+  await delay(300);
+  await demoWidthComparison();
 }
 
 if (import.meta.main) {
