@@ -1,8 +1,8 @@
 {
   "name": "@epdoc/progress",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "exports": {
-    ".": "./mod.ts"
+    ".": "./src/mod.ts"
   },
   "tasks": {
     "fmt": "deno fmt src test *.json",

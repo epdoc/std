@@ -1,9 +1,9 @@
 /**
- * Demonstration of the ProgressLine class.
+ * Demonstration of the Progress.Line class.
  * Run with: deno run -A progress/demo.ts
  */
 
-import { ProgressLine } from './mod.ts';
+import * as Progress from './src/mod.ts';
 
 // Helper function for delays
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -14,7 +14,7 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function demoSpinnerBraille() {
   console.log('=== Spinner: Braille dots (index 0, color: cyan) ===\n');
-  const progress = new ProgressLine({ type: 'spinner', index: 0, color: 'cyan' });
+  const progress = new Progress.Line({ type: 'spinner', index: 0, color: 'cyan' });
   progress.start('Initializing...');
   await delay(600);
   progress.update('Loading configuration...');
@@ -27,7 +27,7 @@ async function demoSpinnerBraille() {
 
 async function demoSpinnerBraille2() {
   console.log('=== Spinner: Braille wave (index 1, color: 0xF0A040) ===\n');
-  const progress = new ProgressLine({ type: 'spinner', index: 1, color: 0xF0A040 });
+  const progress = new Progress.Line({ type: 'spinner', index: 1, color: 0xF0A040 });
   progress.start('Scanning files...');
   await delay(800);
   progress.update('Analyzing data...');
@@ -38,7 +38,7 @@ async function demoSpinnerBraille2() {
 
 async function demoSpinnerBlocks() {
   console.log('=== Spinner: Block quadrants (index 2, color: green) ===\n');
-  const progress = new ProgressLine({ type: 'spinner', index: 2, color: 'green' });
+  const progress = new Progress.Line({ type: 'spinner', index: 2, color: 'green' });
   progress.start('Compiling assets...');
   await delay(1000);
   progress.stop('Build succeeded!');
@@ -51,7 +51,7 @@ async function demoSpinnerBlocks() {
 
 async function demoBounceParenBall() {
   console.log('=== Bounce: Parenthesized ball (index 0, color: magenta) ===\n');
-  const progress = new ProgressLine({ type: 'bounce', index: 0, color: 'magenta' });
+  const progress = new Progress.Line({ type: 'bounce', index: 0, color: 'magenta' });
   progress.start('Deploying to production...');
   await delay(600);
   progress.update('Waiting for health check...');
@@ -64,7 +64,7 @@ async function demoBounceParenBall() {
 
 async function demoBounceSlider() {
   console.log('=== Bounce: Sliding blocks (index 1, color: purple) ===\n');
-  const progress = new ProgressLine({ type: 'bounce', index: 1, color: 'purple' });
+  const progress = new Progress.Line({ type: 'bounce', index: 1, color: 'purple' });
   progress.start('Thinking...');
   await delay(1200);
   progress.update('Still thinking...');
@@ -75,7 +75,7 @@ async function demoBounceSlider() {
 
 async function demoBounceHexColor() {
   console.log('=== Bounce: Sliding blocks (index 1, color: 0xA060E0) ===\n');
-  const progress = new ProgressLine({ type: 'bounce', index: 1, color: 0xA060E0 });
+  const progress = new Progress.Line({ type: 'bounce', index: 1, color: 0xA060E0 });
   progress.start('Processing request...');
   await delay(1000);
   progress.stop('Request processed!');
@@ -89,7 +89,7 @@ async function demoBounceHexColor() {
 async function demoHorizontalDefault() {
   console.log('=== Horizontal: default width 10, total 20 (color: red) ===\n');
   const totalFiles = 20;
-  const progress = new ProgressLine({ type: 'horizontal', total: totalFiles, width: 10, color: 'red' });
+  const progress = new Progress.Line({ type: 'horizontal', total: totalFiles, width: 10, color: 'red' });
   progress.start('Downloading files...');
   for (let i = 0; i <= totalFiles; i++) {
     progress.update(`Downloading file ${i}/${totalFiles}...`, i);
@@ -102,7 +102,7 @@ async function demoHorizontalDefault() {
 async function demoHorizontalWide() {
   console.log('=== Horizontal: wide bar 30 chars, total 100 (color: blue) ===\n');
   const total = 100;
-  const progress = new ProgressLine({ type: 'horizontal', total, width: 30, color: 'blue' });
+  const progress = new Progress.Line({ type: 'horizontal', total, width: 30, color: 'blue' });
   progress.start('Processing...');
   for (let i = 0; i <= total; i += 2) {
     progress.update(`Processing ${i}%...`, i);
@@ -115,7 +115,7 @@ async function demoHorizontalWide() {
 async function demoHorizontalNarrow() {
   console.log('=== Horizontal: narrow bar 5 chars, total 40 (color: 0x50C878) ===\n');
   const total = 40;
-  const progress = new ProgressLine({ type: 'horizontal', total, width: 5, color: 0x50C878 });
+  const progress = new Progress.Line({ type: 'horizontal', total, width: 5, color: 0x50C878 });
   progress.start('Fine-grained progress...');
   for (let i = 0; i <= total; i++) {
     progress.update(`Progress: ${i}/${total}`, i);
@@ -130,7 +130,7 @@ async function demoHorizontalFileProcessing() {
   const files = ['document.pdf', 'image.png', 'data.csv', 'archive.zip', 'readme.md'];
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
-    const progress = new ProgressLine({ type: 'horizontal', total: files.length, width: 10, color: 'orange' });
+    const progress = new Progress.Line({ type: 'horizontal', total: files.length, width: 10, color: 'orange' });
     progress.start(`Processing ${file} (${i + 1}/${files.length})...`);
     progress.update(`Processing ${file}...`, i + 1);
     await delay(400);
@@ -145,7 +145,7 @@ async function demoHorizontalFileProcessing() {
 
 async function demoVerticalBasic() {
   console.log('=== Vertical: basic fill, total 8 (color: yellow) ===\n');
-  const progress = new ProgressLine({ type: 'vertical', total: 8, color: 'yellow' });
+  const progress = new Progress.Line({ type: 'vertical', total: 8, color: 'yellow' });
   progress.start('Volume level...');
   for (let i = 0; i <= 8; i++) {
     progress.update(`Level: ${i}/8`, i);
@@ -157,7 +157,7 @@ async function demoVerticalBasic() {
 
 async function demoVerticalPercentage() {
   console.log('=== Vertical: percentage fill, total 100 (color: purple) ===\n');
-  const progress = new ProgressLine({ type: 'vertical', total: 100, color: 'purple' });
+  const progress = new Progress.Line({ type: 'vertical', total: 100, color: 'purple' });
   progress.start('Battery level...');
   for (let i = 0; i <= 100; i += 10) {
     progress.update(`Battery: ${i}%`, i);
@@ -169,7 +169,7 @@ async function demoVerticalPercentage() {
 
 async function demoVerticalHexColor() {
   console.log('=== Vertical: hex color 0x20D0D0, total 50 ===\n');
-  const progress = new ProgressLine({ type: 'vertical', total: 50, color: 0x20D0D0 });
+  const progress = new Progress.Line({ type: 'vertical', total: 50, color: 0x20D0D0 });
   progress.start('Signal strength...');
   for (let i = 0; i <= 50; i += 5) {
     progress.update(`Signal: ${Math.round((i / 50) * 100)}%`, i);
@@ -187,20 +187,20 @@ async function demoMixedModes() {
   console.log('=== Mixed Modes: spinner → bounce → horizontal → vertical ===\n');
 
   // Spinner for connection phase
-  const spinner = new ProgressLine({ type: 'spinner', index: 1, color: 'cyan' });
+  const spinner = new Progress.Line({ type: 'spinner', index: 1, color: 'cyan' });
   spinner.start('Connecting to server...');
   await delay(800);
   spinner.stop('Connected!');
 
   // Bounce for thinking phase
-  const bouncer = new ProgressLine({ type: 'bounce', index: 1, color: 'purple' });
+  const bouncer = new Progress.Line({ type: 'bounce', index: 1, color: 'purple' });
   bouncer.start('Analyzing request...');
   await delay(1000);
   bouncer.stop('Analysis complete!');
 
   // Horizontal bar for download phase
   const fileSize = 100;
-  const bar = new ProgressLine({ type: 'horizontal', total: fileSize, width: 15, color: 'green' });
+  const bar = new Progress.Line({ type: 'horizontal', total: fileSize, width: 15, color: 'green' });
   bar.start(`Downloading package (${fileSize} MB)...`);
   for (let i = 0; i <= fileSize; i += 10) {
     bar.update(`Downloading... ${i}%`, i);
@@ -210,7 +210,7 @@ async function demoMixedModes() {
 
   // Vertical fill for installation phase
   const stages = 5;
-  const fill = new ProgressLine({ type: 'vertical', total: stages, color: 'magenta' });
+  const fill = new Progress.Line({ type: 'vertical', total: stages, color: 'magenta' });
   fill.start('Installing...');
   const labels = ['Extracting...', 'Compiling...', 'Linking...', 'Configuring...', 'Finalizing...'];
   for (let i = 0; i <= stages; i++) {
@@ -231,7 +231,7 @@ async function demoWidthComparison() {
   const total = 10;
 
   for (const width of [5, 10, 30]) {
-    const progress = new ProgressLine({ type: 'horizontal', total, width, color: 'red' });
+    const progress = new Progress.Line({ type: 'horizontal', total, width, color: 'red' });
     progress.start(`${width}-char width bar...`);
     for (let i = 0; i <= total; i += 0.25) {
       progress.update(`Progress: ${i.toFixed(1)}/${total}`, i);

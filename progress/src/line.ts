@@ -1,135 +1,26 @@
 import { _, type Integer } from '@epdoc/type';
 import { rgb24 } from '@std/fmt/colors';
+import * as Const from './consts.ts';
+import * as Guard from './guards.ts';
+import type * as Progress from './types.ts';
 
 const encoder = new TextEncoder();
-const blocks = {
-  spinner: [
-    ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'],
-    ['⠋', '⠙', '⠚', '⠞', '⠖', '⠦', '⠴', '⠲', '⠳', '⠓'],
-    ['▖', '▘', '▝', '▗', '▚', '▞', '█'],
-  ],
-  bounce: [
-    [
-      '(●     )',
-      '( ●    )',
-      '(  ●   )',
-      '(   ●  )',
-      '(    ● )',
-      '(     ●)',
-      '(    ● )',
-      '(   ●  )',
-      '(  ●   )',
-      '( ●    )',
-    ],
-    [
-      '········',
-      '█·······',
-      '██······',
-      '▓██·····',
-      '▒▓██····',
-      '░▒▓██···',
-      '·░▒▓██··',
-      '··░▒▓██·',
-      '···░▒▓██',
-      '····░▒▓█',
-      '·····░▒▓',
-      '······░▒',
-      '·······░',
-      '········',
-      '·······█',
-      '······█▓',
-      '·····█▓▒',
-      '····█▓▒░',
-      '···█▓▒░·',
-      '··█▓▒░··',
-      '·█▓▒░···',
-      '█▓▒░····',
-      '▓▒░·····',
-      '▒░······',
-      '░·······',
-      '········',
-    ],
-  ],
-  horizontal: ['', '▏', '▎', '▍', '▌', '▋', '▊', '▉'],
-  vertical: [' ', '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'],
-} as const;
-export type Mode = keyof typeof blocks;
-
-const DEFAULT_COLOR = 0xD02020;
-
-/**
- * A map of named colors to their hexadecimal RGB values.
- *
- * Use these names as the `color` option in {@link ProgressLineOptions} for
- * convenient color selection without specifying hex values directly.
- */
-const colorMap: Record<string, number> = {
-  red: 0xD02020,
-  green: 0x20D020,
-  blue: 0x2020D0,
-  yellow: 0xD0D020,
-  cyan: 0x20D0D0,
-  magenta: 0xD020D0,
-  white: 0xF0F0F0,
-  black: 0x202020,
-  orange: 0xD07020,
-  gray: 0x808080,
-  grey: 0x808080,
-  purple: 0x8020D0,
-};
-
-/**
- * A color value specified as either a hex number (e.g. `0xD02020`) or a named
- * color string (e.g. `'red'`, `'green'`, `'cyan'`).
- *
- * Supported named colors: `red`, `green`, `blue`, `yellow`, `cyan`, `magenta`,
- * `white`, `black`, `orange`, `gray`/`grey`, `purple`.
- */
-export type Color = number | string;
 
 /**
  * Resolve a {@link Color} value to a numeric hex value for use with `rgb24()`.
  * Returns {@link DEFAULT_COLOR} if the value is undefined or unrecognized.
  */
-function resolveColor(color: Color | undefined): number {
+function resolveColor(color: Progress.Color | undefined): number {
   if (_.isUndefined(color)) {
-    return DEFAULT_COLOR;
+    return Const.defaultColor;
   }
   if (_.isNumber(color)) {
     return color;
   }
   if (_.isString(color)) {
-    return colorMap[color.toLowerCase()] ?? DEFAULT_COLOR;
+    return Const.colorMap[color.toLowerCase()] ?? Const.defaultColor;
   }
-  return DEFAULT_COLOR;
-}
-
-/**
- * Base options shared by all progress line modes.
- */
-type BaseOptions = {
-  /** The display color for the progress indicator. Defaults to red (`0xD02020`). */
-  color?: Color;
-};
-
-export type SpinnerOptions = BaseOptions & { type: 'spinner'; index: 0 | 1 | 2 };
-export type BounceOptions = BaseOptions & { type: 'bounce'; index: 0 | 1 };
-export type HorizontalOptions = BaseOptions & { type: 'horizontal'; total: number; width: Integer };
-export type VerticalOptions = BaseOptions & { type: 'vertical'; total: number };
-
-export type ProgressLineOptions = SpinnerOptions | BounceOptions | HorizontalOptions | VerticalOptions;
-
-export function isSpinner(val: unknown): val is SpinnerOptions {
-  return _.isDict(val) && val.type === 'spinner' && _.isIntegerInRange(val.index, 0, blocks.spinner.length - 1);
-}
-export function isBounce(val: unknown): val is BounceOptions {
-  return _.isDict(val) && val.type === 'bounce' && _.isIntegerInRange(val.index, 0, blocks.bounce.length - 1);
-}
-export function isHorizontal(val: unknown): val is HorizontalOptions {
-  return _.isDict(val) && val.type === 'horizontal' && _.isNumber(val.total) && _.isPosInteger(val.width);
-}
-export function isVertical(val: unknown): val is VerticalOptions {
-  return _.isDict(val) && val.type === 'vertical' && _.isNumber(val.total);
+  return Const.defaultColor;
 }
 
 /**
@@ -193,10 +84,10 @@ export class ProgressLine {
   #currentMessage = '';
   #isActive = false;
   #currentProgress = 0;
-  #options: ProgressLineOptions = { type: 'spinner', index: 0 };
+  #options: Progress.LineOptions = { type: 'spinner', index: 0 };
   #color: number;
 
-  constructor(options: ProgressLineOptions = { type: 'spinner', index: 0 }) {
+  constructor(options: Progress.LineOptions = { type: 'spinner', index: 0 }) {
     this.#options = options;
     this.#color = resolveColor(options.color);
     if (options.type === 'horizontal') {
@@ -207,7 +98,7 @@ export class ProgressLine {
     }
   }
 
-  color(color: Color): this {
+  color(color: Progress.Color): this {
     this.#color = resolveColor(color);
     return this;
   }
@@ -275,14 +166,14 @@ export class ProgressLine {
     this.render();
 
     // Start animation for spinner and bounce modes
-    if (isSpinner(this.#options)) {
-      const len = blocks.spinner[this.#options.index].length;
+    if (Guard.isSpinner(this.#options)) {
+      const len = Const.blocks.spinner[this.#options.index].length;
       this.#intervalId = setInterval(() => {
         this.#frameIndex = (this.#frameIndex + 1) % len;
         this.render();
       }, 80);
-    } else if (isBounce(this.#options)) {
-      const len = blocks.bounce[this.#options.index].length;
+    } else if (Guard.isBounce(this.#options)) {
+      const len = Const.blocks.bounce[this.#options.index].length;
       this.#intervalId = setInterval(() => {
         this.#frameIndex = (this.#frameIndex + 1) % len;
         this.render();
@@ -397,13 +288,13 @@ export class ProgressLine {
     const color = this.#color;
 
     const opts = this.#options;
-    if (isSpinner(opts)) {
-      const frame = blocks.spinner[opts.index][this.#frameIndex];
+    if (Guard.isSpinner(opts)) {
+      const frame = Const.blocks.spinner[opts.index][this.#frameIndex];
       output = `\r\x1b[K${rgb24(frame, color)} ${this.#currentMessage}`;
-    } else if (isBounce(opts)) {
-      const frame = blocks.bounce[opts.index][this.#frameIndex];
+    } else if (Guard.isBounce(opts)) {
+      const frame = Const.blocks.bounce[opts.index][this.#frameIndex];
       output = `\r\x1b[K${rgb24(frame, color)} ${this.#currentMessage}`;
-    } else if (isHorizontal(opts)) {
+    } else if (Guard.isHorizontal(opts)) {
       // Calculate fractional progress, clamped to [0, width]
       const exactProgress = Math.min(opts.width, Math.max(0, (this.#currentProgress / opts.total) * opts.width));
       const fullBlocks = Math.floor(exactProgress);
@@ -411,7 +302,7 @@ export class ProgressLine {
 
       // Calculate partial block (0-7 representing 0/8 to 7/8)
       const partialIndex = Math.floor(remainder * 8);
-      const partialBlock = blocks.horizontal[partialIndex];
+      const partialBlock = Const.blocks.horizontal[partialIndex];
 
       // Calculate remaining empty space
       const usedChars = fullBlocks + (partialBlock ? 1 : 0);
@@ -421,11 +312,11 @@ export class ProgressLine {
       const filled = '█'.repeat(fullBlocks) + partialBlock;
       const empty = ' '.repeat(emptyCount);
       output = `\r\x1b[K${rgb24(filled, color)}${empty} ${this.#currentMessage}`;
-    } else if (isVertical(opts)) {
+    } else if (Guard.isVertical(opts)) {
       // Calculate vertical fill level (0-8 for the 9 block characters), clamped
       const exactProgress = Math.min(8, Math.max(0, (this.#currentProgress / opts.total) * 8));
       const blockIndex = Math.floor(exactProgress);
-      const bar = blocks.vertical[blockIndex];
+      const bar = Const.blocks.vertical[blockIndex];
       output = `\r\x1b[K${rgb24(bar, color)} ${this.#currentMessage}`;
     }
 
