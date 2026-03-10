@@ -443,4 +443,13 @@ export class ProgressLine {
   private clearLine(): void {
     Deno.stderr.writeSync(encoder.encode('\r\x1b[K'));
   }
+
+  /**
+   * Check if this progress line is currently active.
+   *
+   * Returns true after `start()` has been called and before `stop()` is called.
+   */
+  get isActive(): boolean {
+    return this.#isActive;
+  }
 }
