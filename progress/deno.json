@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/progress",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "exports": {
     ".": "./mod.ts"
   },
@@ -15,6 +15,6 @@
   "imports": {
     "@epdoc/type": "jsr:@epdoc/type@^1.2.6",
     "@std/assert": "jsr:@std/assert@^1.0.19",
-    "@std/fmt": "jsr:@std/fmt@^1.0.9"
+    "@std/fmt/colors": "jsr:@std/fmt@^1.0.9/colors"
   }
 }
