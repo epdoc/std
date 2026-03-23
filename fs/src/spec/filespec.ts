@@ -740,7 +740,14 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * JSON string, and explicitly calls sync() to ensure data is flushed to disk.
    *
    * @param data - The data to write as JSON
-   * @param args - Variable arguments that can include replacer, space, deepCopyOpts, and safeWriteOpts
+   * @param writeOpts - Options for writing JSON with formatting and safe write support.
+   * @param writeOpts.replacer - A replacer function or array of property names passed to `JSON.stringify()`.
+   * @param writeOpts.space - Indentation for pretty-printing. Use `2` for two-space indentation or `'\t'` for tabs.
+   * @param writeOpts.deepCopy - When truthy, uses `_.jsonSerialize` for deep copy serialization (handles `Date`, `RegExp`, custom types).
+   * @param writeOpts.trailing - Content to append after the final JSON closing brace/bracket (commonly `'\n'` for git-friendly files).
+   * @param writeOpts.safe - If `true`, writes atomically to a temp file and moves it into place.
+   * @param writeOpts.backupStrategy - Strategy for backing up the existing file before overwriting.
+   * @see {@link FileConflictStrategy} for backup strategy options.
    * @returns A promise that resolves to this instance
    * @throws {Error} If the file cannot be written or data cannot be synced to disk
    *
@@ -855,10 +862,76 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   }
 
   /**
+   * Reads the file as TOML and parses it.
+   * The `@std/toml` dependency is loaded dynamically only when this method is called.
+   * @template T - The expected type of the parsed TOML data.
+   * @returns {Promise<T>} A promise that resolves with the parsed TOML content.
+   * @throws {Error} If the file cannot be read or the TOML cannot be parsed.
+   */
+  async readToml<T = unknown>(): Promise<T> {
+    try {
+      const { parse } = await import('@std/toml');
+      const s = await this.readAsString();
+      return parse(s) as T;
+    } catch (err) {
+      throw this.asError(err, 'readToml');
+    }
+  }
+
+  /**
+   * Writes data to the file in TOML format.
+   * This method uses a high-durability write strategy: it opens a file handle,
+   * writes the encoded TOML string, and explicitly calls `sync()` to ensure
+   * the data is flushed to the physical storage device before closing.
+   * The `@std/toml` dependency is loaded dynamically only when this method is called.
+   * @param data - The data to write as TOML.
+   * @param opts - Options for writing the TOML file.
+   * @param opts.toml - Options for the TOML stringifier.
+   * @param opts.toml.keyAlignment - If `true`, aligns all keys in the TOML output.
+   * @param opts.write - Safe write options for atomic writes and backup strategies.
+   * @param opts.write.safe - If `true`, writes atomically to a temp file and moves it into place.
+   * @param opts.write.backupStrategy - Strategy for backing up the existing file before overwriting.
+   * @see {@link FileConflictStrategy} for backup strategy options.
+   * @returns {Promise<this>} A promise that resolves to this instance.
+   * @throws {Error} If the file cannot be written or data cannot be synced to disk.
+   */
+  async writeToml(
+    data: Dict<unknown>,
+    opts?: {
+      toml?: Parameters<typeof import('@std/toml').stringify>[1];
+      write?: Util.SafeWriteOptions;
+    },
+  ): Promise<this> {
+    if (opts?.write?.safe || opts?.write?.backupStrategy) {
+      return this.#writeWithOpts(
+        (file) => file.writeToml(data, { toml: opts.toml }),
+        opts.write,
+      );
+    }
+    let fileHandle: nfs.FileHandle | undefined;
+    try {
+      const { stringify } = await import('@std/toml');
+      const text = stringify(data, opts?.toml);
+
+      fileHandle = await nfs.open(this._f, 'w');
+      await fileHandle.write(new TextEncoder().encode(text));
+      await fileHandle.sync(); // Ensure data is flushed to disk
+    } catch (err) {
+      throw this.asError(err, 'writeYaml');
+    } finally {
+      if (fileHandle) {
+        await fileHandle.close();
+      }
+    }
+    return this;
+  }
+
+  /**
    * Reads the file as YAML and parses it.
-   * The @std/yaml dependency is loaded dynamically only when this method is called.
+   * The `@std/yaml` dependency is loaded dynamically only when this method is called.
    * @template T - The expected type of the parsed YAML data.
    * @returns {Promise<T>} A promise that resolves with the parsed YAML content.
+   * @throws {Error} If the file cannot be read or the YAML cannot be parsed.
    */
   async readYaml<T = unknown>(): Promise<T> {
     try {
@@ -877,7 +950,12 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * the data is flushed to the physical storage device before closing.
    * The `@std/yaml` dependency is loaded dynamically only when this method is called.
    * @param data - The data to write as YAML.
-   * @param yamlOpts - Options for the YAML stringifier (e.g., indent, skipInvalid).
+   * @param opts - Options for writing the YAML file.
+   * @param opts.yaml - Options for the YAML stringifier (e.g., indent, skipInvalid).
+   * @param opts.write - Safe write options for atomic writes and backup strategies.
+   * @param opts.write.safe - If `true`, writes atomically to a temp file and moves it into place.
+   * @param opts.write.backupStrategy - Strategy for backing up the existing file before overwriting.
+   * @see {@link FileConflictStrategy} for backup strategy options.
    * @returns {Promise<this>} A promise that resolves to this instance.
    * @throws {Error} If the file cannot be written or data cannot be synced to disk.
    */

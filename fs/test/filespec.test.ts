@@ -471,6 +471,74 @@ describe('FileSpec read/write helpers', () => {
     await f.write('invalid: [ : : ]');
     await expect(f.readYaml()).rejects.toThrow();
   });
+
+  it('writeToml() then readToml() work correctly with generics', async () => {
+    const filePath = path.join(tmpDir, 'data.toml');
+    const f = new FileSpec(filePath);
+    const obj = {
+      name: 'Test Project',
+      tags: ['typescript', 'deno'],
+      active: true,
+      nested: { value: 42 },
+    };
+
+    // Test writeToml returns self
+    const result = await f.writeToml(obj);
+    expect(result).toBe(f);
+
+    // Test readToml with generic type
+    interface MyData {
+      name: string;
+      tags: string[];
+      active: boolean;
+      nested: {
+        value: number;
+      };
+    }
+    const parsed = await f.readToml<MyData>();
+    expect(parsed).toEqual(obj);
+    expect(parsed.name).toBe('Test Project');
+    expect(parsed.nested.value).toBe(42);
+  });
+
+  it('writeToml() with keyAlignment option aligns keys', async () => {
+    const filePath = path.join(tmpDir, 'aligned.toml');
+    const f = new FileSpec(filePath);
+    const data = {
+      short: 1,
+      longer: 2,
+      veryLongKey: 3,
+    };
+
+    await f.writeToml(data, { toml: { keyAlignment: true } });
+    const content = await f.readAsString();
+    // When keyAlignment is true, keys should be padded to same width
+    expect(content).toContain('short       = 1');
+    expect(content).toContain('longer      = 2');
+    expect(content).toContain('veryLongKey = 3');
+  });
+
+  it('writeToml() with safe and backupStrategy creates backup', async () => {
+    const filePath = path.join(tmpDir, 'config.toml');
+    const f = new FileSpec(filePath);
+
+    await f.writeToml({ version: '1.0.0' });
+    await f.writeToml({ version: '2.0.0' }, { write: { safe: true, backupStrategy: { type: 'renameWithTilde' } } });
+
+    const content = await f.readToml<{ version: string }>();
+    expect(content.version).toBe('2.0.0');
+
+    const backupFile = new FileSpec(filePath + '~');
+    const backupContent = await backupFile.readToml<{ version: string }>();
+    expect(backupContent.version).toBe('1.0.0');
+  });
+
+  it('readToml() throws error for invalid toml', async () => {
+    const filePath = path.join(tmpDir, 'invalid.toml');
+    const f = new FileSpec(filePath);
+    await f.write('name = "test\ninvalid = [');
+    await expect(f.readToml()).rejects.toThrow();
+  });
 });
 
 describe('FileSystem Simulation for deno.json write', () => {
