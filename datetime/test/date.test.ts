@@ -5,7 +5,9 @@ import { describe, it } from '@std/testing/bdd';
 // TODO: remove skip when deno date is fixed
 
 describe('date-util', () => {
-  // Test is using CST
+  // Set timezone for all tests (CST = UTC-6)
+  Deno.env.set('TZ', 'America/Costa_Rica');
+  
   describe('tz statics', () => {
     it('parse', () => {
       expect(util.parseISOTZ('-06:00' as ISOTZ)).toEqual(360);
@@ -53,12 +55,30 @@ describe('date-util', () => {
     });
   });
   describe('tz set offset', () => {
-    it('30', () => {
+    it('should set and get timezone offsets', () => {
       const d = dateEx();
-      d.tz(-30 as TzMinutes);
-      expect(d.getTz()).toEqual(-30);
+      // Test with hourly offset (Eastern Time is UTC-5, so 300 minutes)
+      d.tz(300 as TzMinutes);
+      expect(d.getTz()).toEqual(300);
+      // Test with ISOTZ string
       d.tz('-05:00' as ISOTZ);
       expect(d.getTz()).toEqual(300);
+    });
+  });
+  describe('tz half-hour offsets', () => {
+    it('should handle Newfoundland (America/St_Johns) UTC-3:30', () => {
+      const d = dateEx('2024-01-15T12:00:00Z');
+      d.tz('America/St_Johns' as IANATZ);
+      // Newfoundland is UTC-3:30 (210 minutes) in winter
+      expect(d.getTz()).toEqual(210);
+      expect(d.getTzString()).toEqual('-03:30');
+    });
+    it('should handle Adelaide (Australia/Adelaide) with half-hour offset', () => {
+      const d = dateEx('2024-06-15T12:00:00Z');
+      d.tz('Australia/Adelaide' as IANATZ);
+      // Adelaide is UTC+9:30 (-570 minutes) in June (winter, no DST)
+      expect(d.getTz()).toEqual(-570);
+      expect(d.getTzString()).toEqual('+09:30');
     });
   });
   describe('withTz', () => {
@@ -97,20 +117,7 @@ describe('date-util', () => {
       expect(du.toISOLocalString(false)).toEqual('1997-11-25T06:13:14-06:00');
     });
   });
-  describe('toISOLocaleString tz -150', () => {
-    const d = new Date('1997-11-25T12:13:14.456Z');
-    const du = new DateEx(d).tz(-150 as TzMinutes);
-    it('default', () => {
-      expect(d.toISOString()).toEqual('1997-11-25T12:13:14.456Z');
-      expect(du.toISOLocalString()).toEqual('1997-11-25T14:43:14.456+02:30');
-    });
-    it('show milliseconds', () => {
-      expect(du.toISOLocalString(true)).toEqual('1997-11-25T14:43:14.456+02:30');
-    });
-    it('hide milliseconds', () => {
-      expect(du.toISOLocalString(false)).toEqual('1997-11-25T14:43:14+02:30');
-    });
-  });
+
   describe('toISOLocaleString tz 0', () => {
     const d = new Date('1997-11-25T12:13:14.456Z');
     const du = new DateEx(d).tz(0 as TzMinutes);

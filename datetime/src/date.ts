@@ -343,22 +343,26 @@ export class DateEx {
     } else if (util.isISOTZ(val)) {
       // Convert ISOTZ to a timezone identifier
       // For offset strings like "-06:00", we use Etc/GMT+6
+      // Etc/GMT+X = UTC-X (behind UTC), Etc/GMT-X = UTC+X (ahead of UTC)
       const offset = util.parseISOTZ(val as ISOTZ);
       if (offset === undefined) {
         throw new Error(`Invalid ISOTZ value: ${val}`);
       }
       const hours = Math.floor(Math.abs(offset) / 60);
-      const sign = offset <= 0 ? '+' : '-';
+      // Invert sign: positive offset (behind UTC) -> Etc/GMT+, negative offset (ahead UTC) -> Etc/GMT-
+      const sign = offset >= 0 ? '+' : '-';
       timeZoneId = `Etc/GMT${sign}${hours}`;
     } else if (isMinutes(val)) {
       // Convert minutes to Etc/GMT format
       const hours = Math.floor(Math.abs(val) / 60);
-      const sign = val <= 0 ? '+' : '-';
+      // Invert sign: positive offset (behind UTC) -> Etc/GMT+, negative offset (ahead UTC) -> Etc/GMT-
+      const sign = val >= 0 ? '+' : '-';
       timeZoneId = `Etc/GMT${sign}${hours}`;
     } else if (_.isNumber(val)) {
       // Handle the case where val is a number (TzMinutes without undefined)
       const hours = Math.floor(Math.abs(val) / 60);
-      const sign = val <= 0 ? '+' : '-';
+      // Invert sign: positive offset (behind UTC) -> Etc/GMT+, negative offset (ahead UTC) -> Etc/GMT-
+      const sign = val >= 0 ? '+' : '-';
       timeZoneId = `Etc/GMT${sign}${hours}`;
     } else {
       throw new Error(`Invalid timezone value: ${val}`);
@@ -379,14 +383,33 @@ export class DateEx {
   /**
    * Returns the timezone offset in minutes.
    * Only available if the internal value is a ZonedDateTime.
+   * Uses JavaScript convention where positive values indicate timezones behind UTC
+   * (e.g., Americas) and negative values indicate timezones ahead of UTC (e.g., Asia).
    * @returns The timezone offset in minutes, or undefined if no timezone is set.
    */
   getTz(): TzMinutes | undefined {
     if (this._value instanceof Temporal.ZonedDateTime) {
-      // offset is in nanoseconds as a bigint, convert to minutes
-      const offsetNs = this._value.offset;
-      const offsetMinutes = Number(offsetNs) / 60000000000; // nanoseconds to minutes
-      return Math.round(offsetMinutes) as TzMinutes;
+      // Parse the offset string (e.g., "-05:00" or "+05:30")
+      const offsetStr = this._value.offset;
+      const match = offsetStr.match(/^([+-])(\d{2}):(\d{2})$/);
+      if (match) {
+        const sign = match[1] === '-' ? 1 : -1; // Invert sign for JS convention
+        const hours = parseInt(match[2], 10);
+        const minutes = parseInt(match[3], 10);
+        return (sign * (hours * 60 + minutes)) as TzMinutes;
+      }
+    }
+    return undefined;
+  }
+
+  /**
+   * Returns the timezone offset as an ISO 8601 string (e.g., "-05:00", "+09:30").
+   * Only available if the internal value is a ZonedDateTime.
+   * @returns The timezone offset string, or undefined if no timezone is set.
+   */
+  getTzString(): ISOTZ | undefined {
+    if (this._value instanceof Temporal.ZonedDateTime) {
+      return this._value.offset as ISOTZ;
     }
     return undefined;
   }
@@ -434,12 +457,23 @@ export class DateEx {
   public toISOLocalString(showMs: boolean = true): ISOTzDate {
     this.validate();
 
-    if (!(this._value instanceof Temporal.ZonedDateTime)) {
-      throw new Error('Cannot format: timezone not set. Call .withTz() or .tz() first.');
+    let zdt: Temporal.ZonedDateTime;
+
+    if (this._value instanceof Temporal.ZonedDateTime) {
+      zdt = this._value;
+    } else if (this._value instanceof Temporal.Instant) {
+      // Default to local timezone for Instant
+      const localTz = Temporal.Now.timeZoneId();
+      zdt = this._value.toZonedDateTimeISO(localTz);
+    } else if (this._value instanceof Temporal.PlainDateTime) {
+      // Default to local timezone for PlainDateTime
+      const localTz = Temporal.Now.timeZoneId();
+      zdt = this._value.toZonedDateTime(localTz);
+    } else {
+      throw new Error('Cannot format: unknown temporal type');
     }
 
     // Use Temporal's built-in formatting
-    const zdt = this._value;
     const pad = (n: number, len: number = 2) => String(n).padStart(len, '0');
 
     let s = `${zdt.year}-${pad(zdt.month)}-${pad(zdt.day)}T${pad(zdt.hour)}:${pad(zdt.minute)}:${pad(zdt.second)}`;
@@ -448,10 +482,10 @@ export class DateEx {
       s += `.${pad(zdt.millisecond, 3)}`;
     }
 
-    // Add timezone offset
-    const offsetNs = zdt.offset;
-    const offsetMinutes = Number(offsetNs) / 60000000000;
-    s += util.formatTzAsISOTZ(Math.round(offsetMinutes) as TzMinutes);
+    // Add timezone offset using the offset string directly
+    // Replace +00:00 with Z for UTC
+    const offset = zdt.offset;
+    s += offset === '+00:00' ? 'Z' : offset;
 
     return s as ISOTzDate;
   }
@@ -616,9 +650,7 @@ export class DateEx {
   }
 
   static formatZDT(zdt: Temporal.ZonedDateTime, format: string): string {
-    // 1. Shift to UTC to match your original formatUTC behavior
-    const d = zdt.withTimeZone('UTC');
-
+    // Use the ZonedDateTime directly - it already has the correct local time
     let f = String(format);
     const placeholders: Record<string, string> = {};
 
@@ -635,7 +667,7 @@ export class DateEx {
     Object.entries(formatters).forEach(([token, formatter], index) => {
       if (f.includes(token)) {
         const placeholder = `___${index}___`;
-        placeholders[placeholder] = formatter.format(d);
+        placeholders[placeholder] = formatter.format(new Date(zdt.epochMilliseconds));
         f = f.replace(token, placeholder);
       }
     });
@@ -645,16 +677,16 @@ export class DateEx {
     const pad = (n: number, l: number = 2) => String(n).padStart(l, '0');
 
     f = f
-      .replace('yyyy', String(d.year))
-      .replace('MM', pad(d.month))
-      .replace('dd', pad(d.day))
-      .replace('HH', pad(d.hour))
-      .replace('mm', pad(d.minute))
-      .replace('ss', pad(d.second))
-      .replace('SSS', pad(d.millisecond, 3))
-      .replace('M', String(d.month))
-      .replace('d', String(d.day))
-      .replace('H', String(d.hour));
+      .replace('yyyy', String(zdt.year))
+      .replace('MM', pad(zdt.month))
+      .replace('dd', pad(zdt.day))
+      .replace('HH', pad(zdt.hour))
+      .replace('mm', pad(zdt.minute))
+      .replace('ss', pad(zdt.second))
+      .replace('SSS', pad(zdt.millisecond, 3))
+      .replace('M', String(zdt.month))
+      .replace('d', String(zdt.day))
+      .replace('H', String(zdt.hour));
 
     // Step 4: Restore placeholders
     for (const [placeholder, value] of Object.entries(placeholders)) {
