@@ -1,19 +1,20 @@
 {
-  "name": "@epdoc/table",
-  "version": "0.1.0",
+  "name": "@epdoc/terminal",
+  "version": "0.0.1",
   "exports": {
-    ".": "./src/mod.ts"
+    ".": "./src/mod.ts",
+    "./pager": "./src/pager.ts",
+    "./screen": "./src/screen.ts",
+    "./keys": "./src/keys.ts"
   },
   "tasks": {
     "test": "deno test -SERW",
     "lint": "deno lint",
-    "check": "deno check *.json src test",
+    "check": "deno check *.json src",
     "docs": "deno doc --json src/mod.ts > library-docs.json",
     "prepublish": "deno fmt && deno task lint && deno task check && deno task test && deno task docs"
   },
   "imports": {
-    "@epdoc/duration": "jsr:@epdoc/duration@^0.3.7",
-    "@epdoc/type": "jsr:@epdoc/type@^1.2.6",
-    "@std/fmt": "jsr:@std/fmt@^1.0.9"
+    "@std/fmt/colors": "jsr:@std/fmt@^1.0.0/colors"
   }
 }

@@ -1,47 +1,70 @@
 {
-  "package": "@epdoc/table",
-  "version": "0.0.7",
-  "purpose": "Terminal table formatter with ANSI-aware padding, column auto-sizing, zebra striping, and per-cell styling",
-  "quickStart": "import { TableRenderer, buildColumns } from '@epdoc/table';\n\nconst table = new TableRenderer({\n  columns: buildColumns(['id', 'name'], { id: { header: 'ID' }, name: { header: 'Name' } }),\n  data: [{ id: 1, name: 'Alice' }],\n});\ntable.print();",
-  "keyExports": [
-    "TableRenderer - Main table rendering class with constructor and fluent APIs",
-    "buildColumns - Build column definitions from a declarative registry",
-    "formatters - Built-in formatter factories for percent, bytes, and uptime",
-    "Column - Type for column definitions with styling and formatting options",
-    "ColumnRegistry - Type for declarative column property maps",
-    "Options - Type for table rendering configuration",
-    "ColorType - Union type for flexible color specifications",
-    "StyleFn - Type for ANSI styling functions",
-    "ColorSpec - Type for foreground/background color specs"
-  ],
-  "dependencies": {
-    "internal": ["@epdoc/type", "@epdoc/duration"],
-    "external": ["@std/fmt"]
+  "identity": {
+    "name": "@epdoc/table",
+    "purpose": "Terminal table formatter with ANSI-aware padding, column auto-sizing, zebra striping, and per-cell styling for CLI applications",
+    "type": "utility",
+    "complexity": "moderate"
   },
-  "keyPatterns": [
+  "quickStart": {
+    "pattern": "Create columns with buildColumns() or fluent API, then render with TableRenderer",
+    "code": "import { TableRenderer, buildColumns } from '@epdoc/table';\n\nconst table = new TableRenderer({\n  columns: buildColumns(['id', 'name'], { id: { header: 'ID' }, name: { header: 'Name' } }),\n  data: [{ id: 1, name: 'Alice' }]\n});\ntable.print();"
+  },
+  "exports": [
     {
-      "name": "Column Registry Pattern",
-      "description": "Define columns declaratively with ColumnRegistry, then build with buildColumns() for cleaner code",
-      "file": "test/example01.test.ts"
+      "name": "TableRenderer",
+      "role": "main_entry",
+      "description": "Main table rendering class with constructor and fluent APIs",
+      "whenToUse": "For all table rendering needs"
     },
     {
-      "name": "Fluent API Pattern",
-      "description": "Chain methods like .column(), .data(), .padding(), .headerStyle() for incremental table building",
-      "file": "test/example02.test.ts"
+      "name": "buildColumns",
+      "role": "helper",
+      "description": "Build column definitions from a declarative registry",
+      "whenToUse": "When defining columns separately from the renderer"
     },
     {
-      "name": "Per-Cell Styling",
-      "description": "Use Column.color callback to apply dynamic styling based on cell value and row data",
-      "file": "test/example03.test.ts"
+      "name": "formatters",
+      "role": "helper",
+      "description": "Built-in formatter factories (percent, bytes, uptime)",
+      "whenToUse": "When formatting numeric values in tables"
+    },
+    {
+      "name": "Column / ColumnRegistry",
+      "role": "type",
+      "description": "Type definitions for column configuration",
+      "whenToUse": "When typing your column definitions"
+    },
+    {
+      "name": "ColorType / StyleFn / ColorSpec",
+      "role": "type",
+      "description": "Flexible color specification types",
+      "whenToUse": "When applying custom styling to cells or headers"
+    }
+  ],
+  "patterns": [
+    {
+      "name": "Declarative Columns",
+      "when": "Defining reusable column configurations",
+      "code": "const columns: ColumnRegistry<User> = {\n  id: { header: 'ID', align: 'right' },\n  name: { header: 'Name', maxWidth: 20 }\n};\nconst table = new TableRenderer({\n  columns: buildColumns(['id', 'name'], columns),\n  data: users\n});"
+    },
+    {
+      "name": "Fluent API",
+      "when": "Building tables incrementally with method chaining",
+      "code": "TableRenderer.create<User>()\n  .column('id', { header: 'ID', align: 'right' })\n  .column('status', {\n    header: 'Status',\n    color: (_v, row) => row.active ? 0x00ff00 : 0xff0000\n  })\n  .data(users)\n  .padding(4)\n  .headerStyle((s) => bold(rgb24(s, 0x58d1eb)))\n  .print();"
     },
     {
       "name": "Zebra Striping",
-      "description": "Use rowStyles array with two StyleFn entries for alternating row backgrounds",
-      "file": "test/example04.test.ts"
+      "when": "Creating alternating row backgrounds for readability",
+      "code": "const table = new TableRenderer({\n  columns,\n  data,\n  rowStyles: [\n    (s) => bgRgb24(s, 0x1a1a2e),\n    (s) => bgRgb24(s, 0x16213e)\n  ]\n});"
+    },
+    {
+      "name": "Full Borders",
+      "when": "Drawing complete table borders with corners and junctions",
+      "code": "const table = new TableRenderer({\n  columns,\n  data,\n  borders: { enabled: true, style: 'light', color: 0x888888 }\n});"
     }
   ],
-  "architecture": {
-    "flow": "Column definitions → TableRenderer → render() → string array → print()",
-    "keyDesign": "Separation of concerns: Column<T> defines structure, TableRenderer handles layout and styling, terminal utilities handle ANSI-aware operations"
+  "relationships": {
+    "dependsOn": ["@epdoc/type", "@epdoc/duration", "@std/fmt"],
+    "usedBy": []
   }
 }

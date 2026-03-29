@@ -30,6 +30,7 @@
   },
   "workspace": [
     "./type",
+    "./terminal",
     "./datetime",
     "./duration",
     "./progress",

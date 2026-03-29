@@ -1,32 +1,65 @@
 {
-  "package": "@epdoc/type",
-  "version": "1.2.4",
-  "purpose": "Foundational type guards, deep-copy utilities, JSON serialization, and dictionary helpers for TypeScript/Deno",
-  "quickStart": "import { isString, isNumber, isDate, _ } from '@epdoc/type';\n\nif (isString(val)) { /* val is string */ }\nconst copy = _.deepCopy(obj, { replace: { key: 'value' } });",
-  "keyExports": [
-    "isString, isNumber, isBoolean, isDate, isArray, isObject, etc. — runtime type guard functions",
-    "_ namespace (combiner.ts) — deepCopy with optional string substitution",
-    "stripJsonComments — remove comments from JSON before parsing",
-    "dictutil functions — dictionary/object manipulation helpers"
-  ],
-  "dependencies": {
-    "internal": [],
-    "external": ["@std/encoding"]
+  "identity": {
+    "name": "@epdoc/type",
+    "purpose": "Foundational type guards, deep-copy utilities, JSON serialization with special type preservation, and dictionary helpers for TypeScript/Deno",
+    "type": "utility",
+    "complexity": "simple"
   },
-  "keyPatterns": [
+  "quickStart": {
+    "pattern": "Import type guards for runtime checks or use _.deepCopy() for deep cloning with string replacement",
+    "code": "import { isString, isNumber, isDate, _ } from '@epdoc/type';\n\nif (isString(val)) { /* val is narrowed to string */ }\nconst copy = _.deepCopy(obj, { replace: { key: 'value' } });"
+  },
+  "exports": [
     {
-      "name": "Type guards",
-      "description": "Use isString(val), isNumber(val), isDate(val), etc. instead of typeof or instanceof checks for consistent runtime type safety",
-      "file": "src/types.ts"
+      "name": "isString, isNumber, isBoolean, isDate, isArray, isDict",
+      "role": "helper",
+      "description": "Runtime type guard functions for type-safe checking",
+      "whenToUse": "Use instead of typeof/instanceof for consistent type narrowing"
     },
     {
-      "name": "Deep copy with substitution",
-      "description": "_.deepCopy(obj, { replace: { key: 'value' } }) performs a deep clone and substitutes ${key} placeholders in string values",
-      "file": "src/combiner.ts"
+      "name": "_.deepCopy",
+      "role": "helper",
+      "description": "Deep clone with optional string substitution",
+      "whenToUse": "When you need to clone objects and substitute ${key} placeholders"
+    },
+    {
+      "name": "jsonSerialize / jsonDeserialize",
+      "role": "helper",
+      "description": "JSON serialization preserving Set, Map, RegExp, Uint8Array",
+      "whenToUse": "When you need to serialize/deserialize special types to JSON"
+    },
+    {
+      "name": "stripJsonComments",
+      "role": "helper",
+      "description": "Remove comments from JSONC files before parsing",
+      "whenToUse": "When parsing JSON files that may contain comments"
+    },
+    {
+      "name": "Dict / EmptyDict / EmptyObject",
+      "role": "type",
+      "description": "Dictionary type aliases for cleaner type definitions",
+      "whenToUse": "Use Dict<T> instead of Record<string, T>"
     }
   ],
-  "architecture": {
-    "flow": "types.ts (guards) + combiner.ts (deep copy) + dictutil.ts (dict ops) + strip-comments.ts → mod.ts",
-    "keyDesign": "Zero internal @epdoc dependencies; this is the foundational package all others depend on"
+  "patterns": [
+    {
+      "name": "Type Guards",
+      "when": "Need runtime type checking with TypeScript narrowing",
+      "code": "if (isString(val)) {\n  // val is narrowed to string\n  console.log(val.toUpperCase());\n}"
+    },
+    {
+      "name": "Deep Copy with Substitution",
+      "when": "Cloning config objects with variable substitution",
+      "code": "const config = _.deepCopy(template, {\n  replace: { apiUrl: 'https://api.example.com', version: '1.0.0' }\n});"
+    },
+    {
+      "name": "Advanced Substitution with Dates",
+      "when": "Need date formatting in string substitutions",
+      "code": "import { replace } from '@epdoc/string';\nconst result = _.deepCopy(template, {\n  replace: { now: new Date() },\n  msubFn: (s, r) => replace(s, r)\n});"
+    }
+  ],
+  "relationships": {
+    "dependsOn": ["@std/encoding"],
+    "usedBy": ["@epdoc/datetime", "@epdoc/duration", "@epdoc/daterange", "@epdoc/string", "@epdoc/response", "@epdoc/table"]
   }
 }

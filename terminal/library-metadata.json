@@ -1,0 +1,59 @@
+{
+  "identity": {
+    "name": "@epdoc/terminal",
+    "purpose": "Terminal control utilities for CLI applications including screen manipulation, cursor control, key input handling, and interactive pagination",
+    "type": "utility",
+    "complexity": "moderate"
+  },
+  "quickStart": {
+    "pattern": "Import namespaces (screen, keys, pager) and use their functions",
+    "code": "import { screen, keys, pager } from '@epdoc/terminal';\n\nconst { columns, rows } = screen.getTerminalSize();\nconst key = await keys.readKey();\nawait pager.display(lines, { pageSize: 20 });"
+  },
+  "exports": [
+    {
+      "name": "screen",
+      "role": "main_entry",
+      "description": "Terminal screen/cursor control namespace",
+      "whenToUse": "When you need to clear screen, move cursor, get terminal size"
+    },
+    {
+      "name": "keys",
+      "role": "main_entry",
+      "description": "Key input handling with constants and reading functions",
+      "whenToUse": "When you need to read keyboard input in terminal applications"
+    },
+    {
+      "name": "pager",
+      "role": "main_entry",
+      "description": "Interactive pagination with less-like navigation",
+      "whenToUse": "When displaying large amounts of text that needs pagination"
+    },
+    {
+      "name": "Keys",
+      "role": "helper",
+      "description": "Key code constants (SPACE, ENTER, UP, DOWN, etc.)",
+      "whenToUse": "When comparing against key input"
+    }
+  ],
+  "patterns": [
+    {
+      "name": "Screen Control",
+      "when": "Need to manipulate terminal display",
+      "code": "screen.clearScreen();\nscreen.moveTo(1, 1);\nscreen.hideCursor();\n// ... do work ...\nscreen.showCursor();"
+    },
+    {
+      "name": "Key Input",
+      "when": "Building interactive CLI with keyboard navigation",
+      "code": "const key = await keys.readKey();\nif (keys.isQuit(key)) return;\nif (keys.isNextPage(key)) nextPage();"
+    },
+    {
+      "name": "Content Pagination",
+      "when": "Displaying large output that doesn't fit on screen",
+      "code": "const result = await pager.display(lines, {\n  pageSize: 20,\n  showStatus: true,\n  prompt: 'Press space for more, q to quit'\n});"
+    }
+  ],
+  "relationships": {
+    "dependsOn": ["@std/fmt"],
+    "usedBy": []
+  }
+}
