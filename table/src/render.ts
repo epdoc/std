@@ -487,7 +487,7 @@ export class TableRenderer<T> {
         const colorResult = col.color(value, item);
         if (colorResult !== undefined) {
           const styleFn = Util.resolveColor(colorResult);
-          text = styleFn(text);
+          text = styleFn(text) || '';
         }
       }
 

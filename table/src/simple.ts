@@ -1,3 +1,4 @@
+import { dateEx } from '@epdoc/datetime';
 import {
   black,
   blue,
@@ -139,7 +140,7 @@ function createColorFn<T>(
   color: SimpleColor | ((value: unknown, row: T) => SimpleColor | undefined),
   palette: Record<string, number>,
 ): (value: unknown, row: T) => ColorType | undefined {
-  if (typeof color === 'function' && color.length === 2) {
+  if (typeof color === 'function' && color.length >= 1) {
     // It's a value/row callback
     return (value: unknown, row: T): ColorType | undefined => {
       const result = (color as (value: unknown, row: T) => SimpleColor | undefined)(value, row);
@@ -224,17 +225,13 @@ function createFormatter(
           return String(value);
         }
 
-        // Get datetime options
         const pattern = datetime?.pattern ?? 'yyyy-MM-dd HH:mm:ss';
-        const timezone = datetime?.timezone ?? 'local';
+        const dx = dateEx(date);
 
-        // Format using @epdoc/datetime pattern format
-        // For now, implement basic formatting here
-        // TODO: Integrate with @epdoc/datetime when available
-        const d = timezone === 'utc' ? new Date(date.toISOString()) : date;
-        const utc = timezone === 'utc';
-
-        return formatDateTime(d, pattern, utc);
+        if (datetime?.timezone === 'utc') {
+          return dx.formatUTC(pattern);
+        }
+        return dx.format(pattern);
       };
     }
 
@@ -252,83 +249,6 @@ function createFormatter(
       return (value: unknown): string => String(value ?? '');
     }
   }
-}
-
-/**
- * Formats a date according to a pattern string.
- * Supports common datetime format tokens.
- */
-function formatDateTime(date: Date, pattern: string, utc: boolean): string {
-  const pad2 = (n: number): string => n.toString().padStart(2, '0');
-
-  // Get date components
-  const year = utc ? date.getUTCFullYear() : date.getFullYear();
-  const month = utc ? date.getUTCMonth() : date.getMonth();
-  const day = utc ? date.getUTCDate() : date.getDate();
-  const hours = utc ? date.getUTCHours() : date.getHours();
-  const minutes = utc ? date.getUTCMinutes() : date.getMinutes();
-  const seconds = utc ? date.getUTCSeconds() : date.getSeconds();
-  const milliseconds = utc ? date.getUTCMilliseconds() : date.getMilliseconds();
-
-  // Day of week for EEE/EEEE
-  const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const weekdayShort = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const weekdayNarrow = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-
-  // Months for MMM/MMMM
-  const months = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
-  const monthsShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-  // 12-hour format helpers
-  const hours12 = hours % 12 || 12;
-  const ampm = hours < 12 ? 'AM' : 'PM';
-
-  // Replace tokens
-  return pattern
-    .replace(/yyyy/g, year.toString())
-    .replace(/yy/g, (year % 100).toString().padStart(2, '0'))
-    .replace(/MMMM/g, months[month])
-    .replace(/MMM/g, monthsShort[month])
-    .replace(/MM/g, pad2(month + 1))
-    .replace(/M(?!a)/g, (month + 1).toString())
-    .replace(/EEEE/g, weekdays[utc ? date.getUTCDay() : date.getDay()])
-    .replace(/EEE/g, weekdayShort[utc ? date.getUTCDay() : date.getDay()])
-    .replace(/EE/g, weekdayNarrow[utc ? date.getUTCDay() : date.getDay()])
-    .replace(/dd/g, pad2(day))
-    .replace(/d(?!e)/g, day.toString())
-    .replace(/HH/g, pad2(hours))
-    .replace(/H/g, hours.toString())
-    .replace(/hh/g, pad2(hours12))
-    .replace(/h/g, hours12.toString())
-    .replace(/mm/g, pad2(minutes))
-    .replace(/ss/g, pad2(seconds))
-    .replace(/SSS/g, pad2(milliseconds).padStart(3, '0'))
-    .replace(/a/g, ampm)
-    .replace(/Z/g, utc ? 'Z' : formatTimezoneOffset(date));
-}
-
-/**
- * Formats the timezone offset for local time.
- */
-function formatTimezoneOffset(date: Date): string {
-  const offset = -date.getTimezoneOffset();
-  const hours = Math.floor(Math.abs(offset) / 60);
-  const minutes = Math.abs(offset) % 60;
-  const sign = offset >= 0 ? '+' : '-';
-  return `${sign}${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 }
 
 /**

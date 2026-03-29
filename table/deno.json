@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/table",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "exports": {
     ".": "./src/mod.ts"
   },
@@ -12,6 +12,7 @@
     "prepublish": "deno fmt && deno task lint && deno task check && deno task test && deno task docs"
   },
   "imports": {
+    "@epdoc/datetime": "jsr:@epdoc/datetime@^2.0.15",
     "@epdoc/duration": "jsr:@epdoc/duration@^0.3.7",
     "@epdoc/type": "jsr:@epdoc/type@^1.2.6",
     "@std/fmt": "jsr:@std/fmt@^1.0.9"

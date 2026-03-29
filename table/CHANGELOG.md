@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.1] - 2026-03-29
+
+- Fixed when row item color is specified as a string (eg. "red") that it works. Removed custom datetime formatter and now use @epdoc/datetime."
+
+
 ## [0.0.12] - 2026-03-04
 
 - update dependencies
