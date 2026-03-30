@@ -16,18 +16,18 @@ where appropriate.
 
 ## Quick Reference: What to Use When
 
-| Task                      | Use Temporal/Intl                  | Keep @epdoc/datetime           |
-| ------------------------- | ---------------------------------- | ------------------------------ |
-| Parse ISO dates           | ✅ `Temporal.Instant.from()`       | ❌                             |
-| Parse with timezones      | ✅ `Temporal.ZonedDateTime.from()` | ❌                             |
-| IANA timezone handling    | ✅ Built into Temporal             | ❌                             |
-| Format dates (localized)  | ✅ `Intl.DateTimeFormat`           | ❌                             |
-| Convert between timezones | ✅ `zonedDateTime.withTimeZone()`  | ❌                             |
-| Add/subtract time         | ✅ `Temporal.Duration`             | ❌                             |
-| Julian Day calculations   | ❌                                 | ✅ `DateEx.julianDate()`       |
-| Google Sheets dates       | ❌                                 | ✅ `DateEx.googleSheetsDate()` |
-| PDF date parsing          | ❌                                 | ✅ `DateEx.fromPdfDate()`      |
-| Custom format tokens      | ❌                                 | ✅ `DateEx.format()`           |
+| Task                      | Use Temporal/Intl                  | Keep @epdoc/datetime               |
+| ------------------------- | ---------------------------------- | ---------------------------------- |
+| Parse ISO dates           | ✅ `Temporal.Instant.from()`       | ❌                                 |
+| Parse with timezones      | ✅ `Temporal.ZonedDateTime.from()` | ❌                                 |
+| IANA timezone handling    | ✅ Built into Temporal             | ❌                                 |
+| Format dates (localized)  | ✅ `Intl.DateTimeFormat`           | ❌                                 |
+| Convert between timezones | ✅ `zonedDateTime.withTimeZone()`  | ❌                                 |
+| Add/subtract time         | ✅ `Temporal.Duration`             | ❌                                 |
+| Julian Day calculations   | ❌                                 | ✅ `DateTime.julianDate()`         |
+| Google Sheets dates       | ❌                                 | ✅ `DateTime.toGoogleSheetsDate()` |
+| PDF date parsing          | ❌                                 | ✅ `DateTime.fromPdfDate()`        |
+| Custom format tokens      | ❌                                 | ✅ `DateTime.format()`             |
 
 ---
 

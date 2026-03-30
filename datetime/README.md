@@ -1,7 +1,10 @@
 # @epdoc/datetime
 
-A TypeScript library for date and time manipulations in Deno. This module provides a `DateEx` class that wraps the
-native `Date` object, offering enhanced functionality for timezones, formatting, and compatibility with other systems.
+A TypeScript library for date and time manipulations in Deno. This module provides a `DateTime` class that wraps the
+native `Temporal` API, offering enhanced functionality for timezones, formatting, and compatibility with other systems.
+
+> **Note:** The `DateEx` class name is deprecated. Please use `DateTime` instead. `DateEx` is now an alias for
+> `DateTime`.
 
 ## Features
 
@@ -10,7 +13,7 @@ native `Date` object, offering enhanced functionality for timezones, formatting,
 - **Custom Formatting**: Flexible, token-based date and time formatting.
 - **Julian Day Conversion**: Calculate the Julian Day for any date.
 - **Google Sheets Compatibility**: Convert dates to and from Google Sheets serial numbers.
-- **PDF Date Parsing**: Create `DateEx` objects from PDF date strings.
+- **PDF Date Parsing**: Create `DateTime` objects from PDF date strings.
 
 ## Installation
 
@@ -22,20 +25,23 @@ deno add jsr:@epdoc/datetime
 
 ## Usage
 
-The primary entry point is the `dateEx` function, which creates a `DateEx` instance.
+The primary entry point is the `DateTime` class with its `from()` factory method.
 
 ```typescript
-import { dateEx } from '@epdoc/datetime';
+import { DateTime } from '@epdoc/datetime';
 
-// Create a DateEx object for the current time
-const now = dateEx();
+// Create a DateTime object for the current time
+const now = DateTime.from();
 
 // Create from a Date object
 const d0 = new Date();
-const d1 = dateEx(d0);
+const d1 = DateTime.from(d0);
 
 // Create from an ISO string
-const d2 = dateEx('2024-01-01T12:00:00Z');
+const d2 = DateTime.from('2024-01-01T12:00:00Z');
+
+// Use tryFrom() for safe construction that returns undefined on invalid input
+const d3 = DateTime.tryFrom('invalid'); // undefined
 ```
 
 ### ISO Local String
@@ -44,9 +50,9 @@ The `toISOLocalString()` method generates an ISO 8601 string using the local tim
 `.toISOString()` which always uses UTC.
 
 ```typescript
-import { dateEx } from '@epdoc/datetime';
+import { DateTime } from '@epdoc/datetime';
 
-const d = dateEx('1997-11-25T12:13:14.456Z');
+const d = DateTime.from('1997-11-25T12:13:14.456Z');
 
 // Assuming the local timezone is CST (-06:00)
 console.log(d.toISOLocalString());
@@ -69,9 +75,9 @@ Use the `format()` and `formatUTC()` methods with a format string to get a custo
 - `SSS`: Milliseconds (000-999)
 
 ```typescript
-import { dateEx } from '@epdoc/datetime';
+import { DateTime } from '@epdoc/datetime';
 
-const d = dateEx('1997-11-25T12:13:14.456Z');
+const d = DateTime.from('1997-11-25T12:13:14.456Z');
 
 console.log(d.format('yyyy-MM-dd'));
 // Output: 1997-11-25
@@ -88,9 +94,9 @@ console.log(d.formatUTC('yyyyMMdd_HHmmss'));
 Calculate the Julian Day, a continuous count of days since the beginning of the Julian Period.
 
 ```typescript
-import { dateEx } from '@epdoc/datetime';
+import { DateTime } from '@epdoc/datetime';
 
-const d = dateEx('1997-11-25T12:13:14.456Z');
+const d = DateTime.from('1997-11-25T12:13:14.456Z');
 console.log(d.julianDate());
 // Output: 2450778
 ```
@@ -100,16 +106,16 @@ console.log(d.julianDate());
 Convert a date to a Google Sheets serial number.
 
 ```typescript
-import { dateEx } from '@epdoc/datetime';
+import { DateTime } from '@epdoc/datetime';
 
-const d = dateEx('2024-01-01T12:00:00Z');
-console.log(d.googleSheetsDate());
+const d = DateTime.from('2024-01-01T12:00:00Z');
+console.log(d.toGoogleSheetsDate());
 // Output: 45292.25
 ```
 
 ## Utilities and Types
 
-In addition to `DateEx`, the module provides these utility functions and type definitions.
+In addition to `DateTime`, the module provides these utility functions and type definitions.
 
 ### `stringToDate(s: string, opts?: DateParseOptions): Date | undefined`
 

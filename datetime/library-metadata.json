@@ -1,11 +1,14 @@
 {
   "package": "@epdoc/datetime",
   "version": "2.0.14",
-  "purpose": "Enhanced Date wrapper with timezone management, ISO 8601 formatting, and interop with Google Sheets and PDF date formats",
-  "quickStart": "import { dateEx } from '@epdoc/datetime';\n\nconst d = dateEx(new Date());\nconsole.log(d.toISOLocalString()); // ISO 8601 with local offset\nconsole.log(d.toGoogleSheetsSerial()); // Google Sheets serial number",
+  "purpose": "Enhanced Date wrapper using Temporal API with timezone management, ISO 8601 formatting, and interop with Google Sheets and PDF date formats",
+  "quickStart": "import { DateTime } from '@epdoc/datetime';\n\nconst d = DateTime.from(new Date());\nconsole.log(d.toISOLocalString()); // ISO 8601 with local offset\nconsole.log(d.toGoogleSheetsDate()); // Google Sheets serial number",
   "keyExports": [
-    "DateEx — class wrapping Date with extended formatting and conversion methods",
-    "dateEx() — factory function to create a DateEx instance",
+    "DateTime — class wrapping Temporal API with extended formatting and conversion methods",
+    "DateTime.from() — factory method to create a DateTime instance",
+    "DateTime.tryFrom() — safe factory method returning undefined on invalid input",
+    "DateEx — deprecated alias for DateTime",
+    "dateEx() — deprecated factory function",
     "util namespace — date utility functions"
   ],
   "dependencies": {
@@ -14,18 +17,23 @@
   },
   "keyPatterns": [
     {
-      "name": "DateEx factory",
-      "description": "Use dateEx(date?) to create instances rather than new DateEx(); accepts Date, string, number, or nothing for now",
+      "name": "DateTime factory",
+      "description": "Use DateTime.from(input) to create instances; accepts Date, string, number, Temporal objects, or nothing for now. Use DateTime.tryFrom() for safe construction.",
       "file": "src/date.ts"
     },
     {
       "name": "ISO with timezone offset",
       "description": "toISOLocalString() produces ISO 8601 format with the local timezone offset instead of UTC Z suffix",
       "file": "src/date.ts"
+    },
+    {
+      "name": "Comparison methods",
+      "description": "equals(), compare(), isBefore(), isAfter(), isSameOrBefore(), isSameOrAfter() for comparing DateTime instances",
+      "file": "src/date.ts"
     }
   ],
   "architecture": {
-    "flow": "date.ts (DateEx class) + types.ts + utils.ts → mod.ts",
-    "keyDesign": "Wraps native Date; provides fluent API for timezone, formatting, Julian Day, Google Sheets, and PDF date interop"
+    "flow": "date.ts (DateTime class) + types.ts + utils.ts → mod.ts",
+    "keyDesign": "Wraps Temporal API; provides fluent API for timezone, formatting, Julian Day, Google Sheets, and PDF date interop. DateEx is a deprecated alias for DateTime."
   }
 }
