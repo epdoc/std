@@ -1,5 +1,9 @@
 # Changelog for @epdoc/fs
 
+## [1.2.28] - 2026-03-30
+
+- Updated dependency to latest @epdoc/datetime
+
 ## [1.2.27] - 2026-03-23
 
 - Added read and write TOML methods
