@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/terminal",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "exports": {
     ".": "./src/mod.ts",
     "./pager": "./src/pager.ts",
