@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/terminal",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "exports": {
     ".": "./src/mod.ts",
     "./pager": "./src/pager.ts",
@@ -15,6 +15,6 @@
     "prepublish": "deno fmt && deno task lint && deno task check && deno task test && deno task docs"
   },
   "imports": {
-    "@std/fmt/colors": "jsr:@std/fmt@^1.0.0/colors"
+    "@std/fmt/colors": "jsr:@std/fmt@^1.0.9/colors"
   }
 }

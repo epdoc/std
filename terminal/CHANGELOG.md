@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.4] - 2026-03-30
+
+- Updated dependency to latest @epdoc/datetime
+
 ## [0.0.3] - 2026-03-30
 
 - Fixed display bug when clearScreen is false
