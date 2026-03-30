@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.26] - 2026-03-30
+
+- Updated dependency to latest @epdoc/datetime
+
 ## [0.2.25] - 2026-03-04
 
 - Updated dependencies
