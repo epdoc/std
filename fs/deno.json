@@ -43,7 +43,7 @@
     "$util": "./src/util/mod.ts",
     "$spec": "./src/spec/mod.ts",
     "$walk": "./src/walk/mod.ts",
-    "@epdoc/datetime": "jsr:@epdoc/datetime@^3.0.0",
+    "@epdoc/datetime": "jsr:@epdoc/datetime@^3.0.1",
     "@epdoc/response": "jsr:@epdoc/response@^0.1.14",
     "@epdoc/string": "jsr:@epdoc/string@^0.1.17",
     "@epdoc/type": "jsr:@epdoc/type@^1.2.6",
