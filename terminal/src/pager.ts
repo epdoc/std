@@ -29,7 +29,7 @@
 
 import { rgb24 } from '@std/fmt/colors';
 import { isNextPage, isPreviousPage, isQuit, readKey } from './keys.ts';
-import { clearScreen, getTerminalSize, hideCursor, newline, showCursor, writeSync } from './screen.ts';
+import { clearEntireLine, clearScreen, getTerminalSize, hideCursor, moveUp, newline, showCursor, writeSync } from './screen.ts';
 
 /**
  * Options for configuring the pager behavior.
@@ -162,6 +162,17 @@ export async function display(
         currentPage--;
       }
       // Any other key continues to next page
+
+      // Erase status lines before next page (when not clearing screen)
+      if (!shouldClear && showStatus) {
+        // Cursor is on a new line after user's keypress
+        // Status line structure: blank line + status text (no trailing newline)
+        // Move up to status line, clear it, then clear the blank line above
+        moveUp(1);
+        clearEntireLine();
+        moveUp(1);
+        clearEntireLine();
+      }
     }
   } finally {
     showCursor();
