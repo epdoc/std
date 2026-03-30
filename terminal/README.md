@@ -1,6 +1,7 @@
 # @epdoc/terminal
 
-Terminal control utilities for CLI applications. Provides screen manipulation, cursor control, key input handling, and interactive pagination.
+Terminal control utilities for CLI applications. Provides screen manipulation, cursor control, key input handling, and
+interactive pagination.
 
 ## Installation
 
@@ -39,7 +40,7 @@ const truncated = screen.visualTruncate(longText, columns);
 ### Key Input
 
 ```typescript
-import { keys, Keys } from '@epdoc/terminal';
+import { Keys, keys } from '@epdoc/terminal';
 
 // Read a keypress (requires TTY)
 const key = await keys.readKey();
@@ -53,7 +54,8 @@ if (key === Keys.SPACE) {
 }
 ```
 
-Available key constants: `SPACE`, `ENTER`, `ESC`, `UP`, `DOWN`, `LEFT`, `RIGHT`, `PAGE_UP`, `PAGE_DOWN`, `CTRL_C`, `CTRL_D`, `BACKSPACE`, `DELETE`, `TAB`, `HOME`, `END`
+Available key constants: `SPACE`, `ENTER`, `ESC`, `UP`, `DOWN`, `LEFT`, `RIGHT`, `PAGE_UP`, `PAGE_DOWN`, `CTRL_C`,
+`CTRL_D`, `BACKSPACE`, `DELETE`, `TAB`, `HOME`, `END`
 
 ### Interactive Pager
 
@@ -64,13 +66,13 @@ import { pager } from '@epdoc/terminal';
 const lines = generateLotsOfOutput();
 
 const result = await pager.display(lines, {
-  pageSize: 20,                    // Lines per page
-  showLineNumbers: false,          // Show line numbers
-  showStatus: true,                // Show page indicator
+  pageSize: 20, // Lines per page
+  showLineNumbers: false, // Show line numbers
+  showStatus: true, // Show page indicator
   prompt: 'Press space for more, q to quit',
   startPage: 0,
-  clearScreen: true,               // Clear before display
-  statusColor: 0x666666,          // Hex color for status bar
+  clearScreen: true, // Clear before display
+  statusColor: 0x666666, // Hex color for status bar
 });
 
 // Returns: { quit: boolean, lastPage: number, totalPages: number }
@@ -83,7 +85,7 @@ Navigation: `Space` or `Page Down` for next page, `Page Up` for previous, `q` or
 ```typescript
 await pager.autoDisplay(lines, {
   pageSize: 20,
-  delayMs: 3000,    // Wait 3 seconds between pages
+  delayMs: 3000, // Wait 3 seconds between pages
   showStatus: true,
 });
 ```
@@ -123,7 +125,8 @@ await pager.autoDisplay(lines, {
 
 ### Keys constants
 
-Key codes as string literals: `SPACE`, `ENTER`, `NEWLINE`, `ESC`, `CTRL_C`, `CTRL_D`, `CTRL_R`, `BACKSPACE`, `DELETE`, `TAB`, `UP`, `DOWN`, `LEFT`, `RIGHT`, `PAGE_UP`, `PAGE_DOWN`, `HOME`, `END`, `Q`, `Q_UPPER`
+Key codes as string literals: `SPACE`, `ENTER`, `NEWLINE`, `ESC`, `CTRL_C`, `CTRL_D`, `CTRL_R`, `BACKSPACE`, `DELETE`,
+`TAB`, `UP`, `DOWN`, `LEFT`, `RIGHT`, `PAGE_UP`, `PAGE_DOWN`, `HOME`, `END`, `Q`, `Q_UPPER`
 
 ### pager namespace
 

@@ -7,12 +7,7 @@
 
 import { describe, it } from '@std/testing/bdd';
 import { expect } from '@std/expect';
-import {
-  padVisual,
-  stripAnsi,
-  visualLength,
-  visualTruncate,
-} from '../src/screen.ts';
+import { padVisual, stripAnsi, visualLength, visualTruncate } from '../src/screen.ts';
 import { isNextPage, isPreviousPage, isQuit, Keys } from '../src/keys.ts';
 
 describe('screen utilities', () => {

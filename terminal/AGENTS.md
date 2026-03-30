@@ -4,7 +4,8 @@ This file provides project-specific context for AI agents working on the `@epdoc
 
 ## Package Purpose
 
-`@epdoc/terminal` provides terminal control utilities for CLI applications, including screen manipulation, cursor control, key input handling, and interactive pagination.
+`@epdoc/terminal` provides terminal control utilities for CLI applications, including screen manipulation, cursor
+control, key input handling, and interactive pagination.
 
 ## Package Dependencies
 
@@ -96,7 +97,7 @@ import { pager } from '@epdoc/terminal';
 
 // Interactive pagination (space=next, q=quit, Page Up/Down)
 const result = await pager.display(lines, {
-  pageSize: 20,           // Lines per page (default: terminal height - 2)
+  pageSize: 20, // Lines per page (default: terminal height - 2)
   showLineNumbers: false,
   showStatus: true,
   prompt: 'Press space for more, q to quit',

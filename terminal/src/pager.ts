@@ -45,7 +45,7 @@ export interface PagerOptions {
   prompt?: string;
   /** Starting page index, 0-based (default: 0) */
   startPage?: number;
-  /** Clear screen before displaying each page (default: true) */
+  /** Clear screen before displaying each page (default: true). When false, content scrolls naturally and status line is not shown on the last page. */
   clearScreen?: boolean;
   /** RGB color for the status line (default: 0x666666 - gray) */
   statusColor?: number;
@@ -92,7 +92,7 @@ export async function display(
     showStatus = true,
     prompt = 'Press space for more, q to quit',
     startPage = 0,
-    clearScreen: shouldClear = true,
+    clearScreen: shouldClear = false,
     statusColor = 0x666666,
   } = options;
 
@@ -111,6 +111,7 @@ export async function display(
 
   try {
     while (currentPage < totalPages) {
+      // Clear screen if requested (default behavior)
       if (shouldClear) {
         clearScreen();
       }
@@ -129,8 +130,9 @@ export async function display(
         }
       }
 
-      // Show status line
-      if (showStatus) {
+      // Show status line (skip on last page when not clearing screen)
+      const isLastPage = currentPage >= totalPages - 1;
+      if (showStatus && (shouldClear || !isLastPage)) {
         const statusText = `-- Page ${currentPage + 1}/${totalPages} (${lines.length} lines) -- ${prompt}`;
         const coloredStatus = rgb24(statusText, statusColor);
         newline();
@@ -138,7 +140,7 @@ export async function display(
       }
 
       // If this is the last page, we're done
-      if (currentPage >= totalPages - 1) {
+      if (isLastPage) {
         if (shouldClear) {
           newline();
         }
