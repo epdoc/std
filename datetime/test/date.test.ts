@@ -7,7 +7,7 @@ import { describe, it } from '@std/testing/bdd';
 describe('date-util', () => {
   // Set timezone for all tests (CST = UTC-6)
   Deno.env.set('TZ', 'America/Costa_Rica');
-  
+
   describe('tz statics', () => {
     it('parse', () => {
       expect(util.parseISOTZ('-06:00' as ISOTZ)).toEqual(360);
