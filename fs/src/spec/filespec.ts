@@ -917,7 +917,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
       await fileHandle.write(new TextEncoder().encode(text));
       await fileHandle.sync(); // Ensure data is flushed to disk
     } catch (err) {
-      throw this.asError(err, 'writeYaml');
+      throw this.asError(err, 'writeToml');
     } finally {
       if (fileHandle) {
         await fileHandle.close();
