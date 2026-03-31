@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/daterange",
-  "version": "0.2.27",
+  "version": "0.2.28",
   "exports": {
     ".": "./src/mod.ts"
   },
@@ -12,7 +12,7 @@
     "lint": "deno lint"
   },
   "imports": {
-    "@epdoc/datetime": "jsr:@epdoc/datetime@^3.0.1",
+    "@epdoc/datetime": "jsr:@epdoc/datetime@^3.1.0",
     "@epdoc/type": "jsr:@epdoc/type@^1.2.6",
     "@std/cli": "jsr:@std/cli@^1.0.28"
   }
