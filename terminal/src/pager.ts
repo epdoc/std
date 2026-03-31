@@ -187,6 +187,11 @@ export async function display(
     showCursor();
   }
 
+  // Ensure newline after quitting so subsequent output doesn't overlap with status line
+  if (quit) {
+    newline();
+  }
+
   return {
     quit,
     lastPage: currentPage,
