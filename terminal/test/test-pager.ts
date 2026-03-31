@@ -1,14 +1,14 @@
 #!/usr/bin/env -S deno run -SERW
 /**
  * Manual test script for the pager fix.
- * 
+ *
  * This script generates test content and runs the pager with clearScreen: false
  * to verify that scrolling up after pressing SPACE shows clean output without
  * the corruption bug.
- * 
+ *
  * Usage:
  *   deno run -SERW ./terminal/test/test-pager.ts
- * 
+ *
  * Test steps:
  * 1. The pager will display page 1 of 3
  * 2. Press SPACE to go to page 2
@@ -28,17 +28,23 @@ const lines: string[] = [];
 
 // Page 1 content - 15 lines
 for (let i = 1; i <= 15; i++) {
-  lines.push(`Line ${i.toString().padStart(3, '0')} - Page 1 - This is test content for verifying the pager functionality`);
+  lines.push(
+    `Line ${i.toString().padStart(3, '0')} - Page 1 - This is test content for verifying the pager functionality`,
+  );
 }
 
 // Page 2 content - 15 lines
 for (let i = 16; i <= 30; i++) {
-  lines.push(`Line ${i.toString().padStart(3, '0')} - Page 2 - This is test content for verifying the pager functionality`);
+  lines.push(
+    `Line ${i.toString().padStart(3, '0')} - Page 2 - This is test content for verifying the pager functionality`,
+  );
 }
 
 // Page 3 content - 10 lines
 for (let i = 31; i <= 40; i++) {
-  lines.push(`Line ${i.toString().padStart(3, '0')} - Page 3 - This is test content for verifying the pager functionality`);
+  lines.push(
+    `Line ${i.toString().padStart(3, '0')} - Page 3 - This is test content for verifying the pager functionality`,
+  );
 }
 
 console.log('Starting pager test with clearScreen: false');

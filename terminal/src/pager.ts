@@ -29,15 +29,7 @@
 
 import { rgb24 } from '@std/fmt/colors';
 import { isNextPage, isPreviousPage, isQuit, readKey } from './keys.ts';
-import {
-  clearScreen,
-  getTerminalSize,
-  hideCursor,
-  moveToLineStart,
-  newline,
-  showCursor,
-  writeSync,
-} from './screen.ts';
+import { clearScreen, getTerminalSize, hideCursor, moveToLineStart, newline, showCursor, writeSync } from './screen.ts';
 
 /**
  * Options for configuring the pager behavior.
