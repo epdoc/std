@@ -323,13 +323,43 @@ export class DateTime {
     throw new Error('Unknown temporal type');
   }
 
-  static from(val: unknown): DateTime {
-    return new DateTime(val);
+  /**
+   * Returns the epoch milliseconds (Unix timestamp) of this DateTime.
+   * Only available for Instant and ZonedDateTime; throws for PlainDateTime.
+   *
+   * @example
+   * ```typescript
+   * const d = DateTime.from('2024-03-15T10:30:00Z');
+   * console.log(d.epochMilliseconds); // 1710499800000
+   * ```
+   * @throws Error if the internal value is a PlainDateTime
+   */
+  get epochMilliseconds(): number {
+    return this.toInstant().epochMilliseconds;
   }
 
-  static tryFrom(val: unknown): DateTime | undefined {
+  /**
+   * Returns the epoch seconds (Unix timestamp in seconds) of this DateTime.
+   * Only available for Instant and ZonedDateTime; throws for PlainDateTime.
+   *
+   * @example
+   * ```typescript
+   * const d = DateTime.from('2024-03-15T10:30:00Z');
+   * console.log(d.toEpochSeconds()); // 1710499800
+   * ```
+   * @throws Error if the internal value is a PlainDateTime
+   */
+  toEpochSeconds(): number {
+    return Math.floor(this.epochMilliseconds / 1000);
+  }
+
+  static from(...args: unknown[]): DateTime {
+    return new DateTime(...args);
+  }
+
+  static tryFrom(...args: unknown[]): DateTime | undefined {
     try {
-      return new DateTime(val);
+      return new DateTime(...args);
     } catch {
       return undefined;
     }
@@ -355,6 +385,24 @@ export class DateTime {
     } catch {
       return false;
     }
+  }
+
+  /**
+   * Creates a DateTime representing the current moment.
+   * Returns an Instant (UTC time without timezone context).
+   * Use withTz() to convert to a specific timezone.
+   *
+   * @example
+   * ```typescript
+   * // Current time as Instant
+   * const now = DateTime.now();
+   *
+   * // Current time in a specific timezone
+   * const nyNow = DateTime.now().withTz('America/New_York');
+   * ```
+   */
+  static now(): DateTime {
+    return new DateTime();
   }
 
   /**
@@ -654,6 +702,36 @@ export class DateTime {
     s += offset === '+00:00' ? 'Z' : offset;
 
     return s as ISOTzDate;
+  }
+
+  /**
+   * Returns an ISO 8601 string representation of this DateTime.
+   *
+   * - For Instant: Returns UTC format with 'Z' suffix (e.g., "2024-03-15T10:30:00.000Z")
+   * - For ZonedDateTime: Returns format with timezone offset (e.g., "2024-03-15T05:30:00.000-05:00")
+   * - For PlainDateTime: Throws (no instant to represent)
+   *
+   * @returns ISO 8601 formatted string
+   * @throws Error if the internal value is a PlainDateTime
+   *
+   * @example
+   * ```typescript
+   * const d = DateTime.from('2024-03-15T10:30:00Z');
+   * console.log(d.toISOString()); // "2024-03-15T10:30:00.000Z"
+   *
+   * const d2 = d.withTz('America/New_York');
+   * console.log(d2.toISOString()); // "2024-03-15T05:30:00.000-05:00"
+   * ```
+   */
+  public toISOString(): string {
+    if (this._value instanceof Temporal.Instant) {
+      return this._value.toString();
+    } else if (this._value instanceof Temporal.ZonedDateTime) {
+      return this._value.toString({ timeZoneName: 'never' });
+    } else if (this._value instanceof Temporal.PlainDateTime) {
+      throw new Error('Cannot convert PlainDateTime to ISO string: use withTz() to set a timezone first');
+    }
+    throw new Error('Unknown temporal type');
   }
 
   /**

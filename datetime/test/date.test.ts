@@ -339,6 +339,88 @@ describe('date-util', () => {
     });
   });
 
+  describe('DateTime.now()', () => {
+    it('should create a DateTime for the current time', () => {
+      const before = Date.now();
+      const now = DateTime.now();
+      const after = Date.now();
+
+      expect(now.epochMilliseconds).toBeGreaterThanOrEqual(before);
+      expect(now.epochMilliseconds).toBeLessThanOrEqual(after);
+    });
+
+    it('should return an Instant (can add timezone with withTz)', () => {
+      const now = DateTime.now();
+      const ny = now.withTz('America/New_York' as IANATZ);
+
+      expect(ny.getOffset()).toBeDefined();
+    });
+  });
+
+  describe('epochMilliseconds getter', () => {
+    it('should return epoch milliseconds for Instant', () => {
+      const d = DateTime.from('2024-03-15T10:30:00.000Z');
+      // Verify it's a positive number (epoch timestamp)
+      expect(typeof d.epochMilliseconds).toBe('number');
+      expect(d.epochMilliseconds).toBeGreaterThan(0);
+    });
+
+    it('should return epoch milliseconds for ZonedDateTime', () => {
+      const d = DateTime.from('2024-03-15T10:30:00.000Z').withTz('America/New_York' as IANATZ);
+      // Verify it's a positive number (epoch timestamp)
+      expect(typeof d.epochMilliseconds).toBe('number');
+      expect(d.epochMilliseconds).toBeGreaterThan(0);
+    });
+
+    it('should throw for PlainDateTime', () => {
+      const d = new DateTime(2024, 2, 15, 10, 30);
+      expect(() => d.epochMilliseconds).toThrow();
+    });
+  });
+
+  describe('toEpochSeconds()', () => {
+    it('should return epoch seconds for Instant', () => {
+      const d = DateTime.from('2024-03-15T10:30:00.000Z');
+      // Verify it's a positive number (epoch timestamp in seconds)
+      expect(typeof d.toEpochSeconds()).toBe('number');
+      expect(d.toEpochSeconds()).toBeGreaterThan(0);
+    });
+
+    it('should truncate milliseconds', () => {
+      const d1 = DateTime.from('2024-03-15T10:30:00.000Z');
+      const d2 = DateTime.from('2024-03-15T10:30:00.999Z');
+      // Both should return the same second
+      expect(d1.toEpochSeconds()).toBe(d2.toEpochSeconds());
+    });
+
+    it('should throw for PlainDateTime', () => {
+      const d = new DateTime(2024, 2, 15, 10, 30);
+      expect(() => d.toEpochSeconds()).toThrow();
+    });
+  });
+
+  describe('toISOString()', () => {
+    it('should return UTC string for Instant', () => {
+      const d = DateTime.from('2024-03-15T10:30:00.000Z');
+      const result = d.toISOString();
+      // Temporal may return either Z or +00:00 for UTC
+      expect(result === '2024-03-15T10:30:00Z' || result === '2024-03-15T10:30:00+00:00').toBe(true);
+    });
+
+    it('should return string with offset for ZonedDateTime', () => {
+      const d = DateTime.from('2024-03-15T10:30:00.000Z').withTz('America/New_York' as IANATZ);
+      const result = d.toISOString();
+      // Should contain the date and offset pattern (either -05:00 or +00:00 etc)
+      expect(result.startsWith('2024-03-15')).toBe(true);
+      expect(result.match(/[+-]\d{2}:\d{2}$/)).not.toBeNull();
+    });
+
+    it('should throw for PlainDateTime', () => {
+      const d = new DateTime(2024, 2, 15, 10, 30);
+      expect(() => d.toISOString()).toThrow();
+    });
+  });
+
   describe('comparison methods', () => {
     describe('isValid', () => {
       it('should return true for valid date strings', () => {

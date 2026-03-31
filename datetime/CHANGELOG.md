@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.1.0] - 2026-03-30
+
+- Finished with conversion to DateTime
+
 ## [3.0.1] - 2026-03-30
 
 - Formatting only
