@@ -1,4 +1,4 @@
-import { dateEx } from '@epdoc/datetime';
+import { DateTime } from '@epdoc/datetime';
 import {
   black,
   blue,
@@ -209,29 +209,15 @@ function createFormatter(
         if (value === null || value === undefined) return '';
 
         // Parse the input value to a Date
-        let date: Date;
-        if (value instanceof Date) {
-          date = value;
-        } else if (typeof value === 'number') {
-          // Assume epoch milliseconds if large, seconds if small
-          date = new Date(value > 10000000000 ? value : value * 1000);
-        } else if (typeof value === 'string') {
-          date = new Date(value);
-        } else {
+        const date = DateTime.tryFrom(value);
+        if (!date) {
           return String(value);
         }
-
-        if (isNaN(date.getTime())) {
-          return String(value);
-        }
-
         const pattern = datetime?.pattern ?? 'yyyy-MM-dd HH:mm:ss';
-        const dx = dateEx(date);
-
         if (datetime?.timezone === 'utc') {
-          return dx.formatUTC(pattern);
+          return date.formatUTC(pattern);
         }
-        return dx.format(pattern);
+        return date.format(pattern);
       };
     }
 
