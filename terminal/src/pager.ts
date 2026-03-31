@@ -30,11 +30,10 @@
 import { rgb24 } from '@std/fmt/colors';
 import { isNextPage, isPreviousPage, isQuit, readKey } from './keys.ts';
 import {
-  clearEntireLine,
   clearScreen,
   getTerminalSize,
   hideCursor,
-  moveUp,
+  moveToLineStart,
   newline,
   showCursor,
   writeSync,
@@ -144,7 +143,9 @@ export async function display(
       if (showStatus && (shouldClear || !isLastPage)) {
         const statusText = `-- Page ${currentPage + 1}/${totalPages} (${lines.length} lines) -- ${prompt}`;
         const coloredStatus = rgb24(statusText, statusColor);
-        newline();
+        if (shouldClear) {
+          newline();
+        }
         writeSync(coloredStatus);
       }
 
@@ -172,15 +173,11 @@ export async function display(
       }
       // Any other key continues to next page
 
-      // Erase status lines before next page (when not clearing screen)
+      // Position cursor to overwrite status line on next iteration (when not clearing screen)
       if (!shouldClear && showStatus) {
-        // Cursor is on a new line after user's keypress
-        // Status line structure: blank line + status text (no trailing newline)
-        // Move up to status line, clear it, then clear the blank line above
-        moveUp(1);
-        clearEntireLine();
-        moveUp(1);
-        clearEntireLine();
+        // Cursor is at end of status line (no trailing newline, raw mode doesn't echo key)
+        // Move to start of status line so next page overwrites it
+        moveToLineStart();
       }
     }
   } finally {
