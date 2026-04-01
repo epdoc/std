@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.1] - 2026-04-01
+
+- Changed DateRangeOptionDef.short to be LetterChar
+
 ## [2.0.0] - 2026-04-01
 
 - Refactored @epdoc/daterange with new options and Temporal support.

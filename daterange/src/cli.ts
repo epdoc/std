@@ -21,6 +21,7 @@
  * }
  * ```
  */
+import type { LetterChar } from '@epdoc/type';
 import { DateRange, DateRanges, parseRelativeTime } from './mod.ts';
 import { dateStringToInstant } from './util.ts';
 
@@ -29,7 +30,7 @@ import { dateStringToInstant } from './util.ts';
  */
 export interface DateRangeOptionDef {
   /** Short flag (e.g., "r") */
-  short?: string;
+  short?: LetterChar;
   /** Option name (e.g., "range") */
   name: string;
   /** Parameter syntax (e.g., "<range>") */
@@ -90,7 +91,7 @@ export const dateRangeOptions = {
     const [, short, name, params] = match;
 
     return {
-      short,
+      short: short as LetterChar,
       name,
       params: params || '[dates]',
       description: 'Date range (e.g., 1d-now, 20240101-20240131, today)',
@@ -130,7 +131,7 @@ export const dateRangeOptions = {
     const [, short, name, params] = match;
 
     return {
-      short,
+      short: short as LetterChar,
       name,
       params: params || '<date-range>',
       description: 'Comma-separated date ranges (e.g., 2024,202501-202503,1d-now)',
@@ -163,7 +164,7 @@ export const dateRangeOptions = {
     const [, short, name, params] = match;
 
     return {
-      short,
+      short: short as LetterChar,
       name,
       params: params || '<since>',
       description: 'Start time (e.g., 1d, 2h30m, 20240101, 2024-01-01T00:00:00Z)',
@@ -213,7 +214,7 @@ export const dateRangeOptions = {
     const [, short, name, params] = match;
 
     return {
-      short,
+      short: short as LetterChar,
       name,
       params: params || '<until>',
       description: 'End time (e.g., now, -1h, 20240131). Default: now',
@@ -264,7 +265,7 @@ export const dateRangeOptions = {
     const [, short, name, params] = match;
 
     return {
-      short,
+      short: short as LetterChar,
       name,
       params: params || '<window>',
       description: 'Time window from now (e.g., 24h, 7d, 30m)',
