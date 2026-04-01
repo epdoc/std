@@ -25,6 +25,8 @@ import type { LetterChar } from '@epdoc/type';
 import { DateRange, DateRanges, parseRelativeTime } from './mod.ts';
 import { dateStringToInstant } from './util.ts';
 
+export type Params = `[${string}]` | `<${string}>`;
+
 /**
  * Option definition compatible with @epdoc/cliapp and similar frameworks.
  */
@@ -34,7 +36,7 @@ export interface DateRangeOptionDef {
   /** Option name (e.g., "range") */
   name: string;
   /** Parameter syntax (e.g., "<range>") */
-  params?: string;
+  params?: Params;
   /** Description text */
   description: string;
   /** Argument parser function */
@@ -93,7 +95,7 @@ export const dateRangeOptions = {
     return {
       short: short as LetterChar,
       name,
-      params: params || '[dates]',
+      params: (params as Params) || '[dates]',
       description: 'Date range (e.g., 1d-now, 20240101-20240131, today)',
       argParser: (val: string) => {
         const ranges = DateRanges.parse(val);
@@ -133,7 +135,7 @@ export const dateRangeOptions = {
     return {
       short: short as LetterChar,
       name,
-      params: params || '<date-range>',
+      params: (params as Params) || '<date-range>',
       description: 'Comma-separated date ranges (e.g., 2024,202501-202503,1d-now)',
       argParser: (val: string) => {
         return DateRanges.parse(val);
@@ -166,7 +168,7 @@ export const dateRangeOptions = {
     return {
       short: short as LetterChar,
       name,
-      params: params || '<since>',
+      params: (params as Params) || '<since>',
       description: 'Start time (e.g., 1d, 2h30m, 20240101, 2024-01-01T00:00:00Z)',
       argParser: (val: string) => {
         // Try relative time first
@@ -216,7 +218,7 @@ export const dateRangeOptions = {
     return {
       short: short as LetterChar,
       name,
-      params: params || '<until>',
+      params: (params as Params) || '<until>',
       description: 'End time (e.g., now, -1h, 20240131). Default: now',
       defVal: 'now',
       argParser: (val: string) => {
@@ -267,7 +269,7 @@ export const dateRangeOptions = {
     return {
       short: short as LetterChar,
       name,
-      params: params || '<window>',
+      params: (params as Params) || '<window>',
       description: 'Time window from now (e.g., 24h, 7d, 30m)',
       argParser: (val: string) => {
         const since = parseRelativeTime(val);
