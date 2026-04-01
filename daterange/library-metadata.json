@@ -1,26 +1,60 @@
 {
   "package": "@epdoc/daterange",
-  "version": "0.2.24",
-  "purpose": "Date range creation and management built on @epdoc/datetime, with utilities for representing and manipulating date intervals",
-  "quickStart": "import { DateRange } from '@epdoc/daterange';\n\nconst range = new DateRange(startDate, endDate);\nconsole.log(range.contains(someDate));",
+  "version": "1.0.0",
+  "purpose": "Date range parsing and management using Temporal.Instant. Supports relative time strings (1d, 2h30m), flexible date formats, and CLI integration for command-line applications.",
+  "quickStart": "import { DateRanges, parseRelativeTime, dateRangeOptions } from '@epdoc/daterange';\n\n// Parse relative time\nconst oneDayAgo = parseRelativeTime('1d');\n\n// Create range from string\nconst ranges = DateRanges.parse('1d-now');\n\n// CLI integration\nthis.option(dateRangeOptions.range()).emit(); // -d, --date [dates]",
   "keyExports": [
-    "DateRange — primary class for representing a date interval",
-    "date-ranges.ts exports — additional range helpers and factories",
-    "util functions — date range utility helpers"
+    "parseRelativeTime — Parse relative time strings (1d, 2h30m, now, today)",
+    "DateRange — Single date interval with after/before boundaries",
+    "DateRanges — Collection of date ranges with merge/contains operations",
+    "dateList — Parse date range strings into array of definitions",
+    "dateRanges — Parse date range strings into DateRanges object",
+    "dateStringToInstant — Convert compact date strings (YYYYMMDD) to Temporal.Instant",
+    "dateRangeOptions — CLI option definitions for @epdoc/cliapp integration",
+    "INSTANT_MIN/INSTANT_MAX — Constants for open-ended ranges"
   ],
   "dependencies": {
-    "internal": ["@epdoc/datetime", "@epdoc/type"],
+    "internal": ["@epdoc/type"],
     "external": ["@std/cli"]
   },
   "keyPatterns": [
     {
-      "name": "DateRange construction",
-      "description": "Create ranges from start/end DateEx instances or raw Date values; use utility functions in util.ts for common range presets",
+      "name": "Relative Time Parsing",
+      "description": "Parse human-friendly strings like '1d12h30m', 'now', 'today' into Temporal.Instant",
+      "file": "src/relative-time.ts"
+    },
+    {
+      "name": "Single Date Range Operations",
+      "description": "DateRange class for containment checks, overlap detection, intersection, union",
+      "file": "src/date-range.ts"
+    },
+    {
+      "name": "Multiple Range Management",
+      "description": "DateRanges class for managing collections, merging overlaps, serialization",
       "file": "src/date-ranges.ts"
+    },
+    {
+      "name": "Flexible Date Parsing",
+      "description": "Parse compact formats (YYYY, YYYYMM, YYYYMMDD), ISO dates, relative times",
+      "file": "src/util.ts"
+    },
+    {
+      "name": "CLI Integration",
+      "description": "Pre-built option definitions: range(), ranges(), since(), until(), window()",
+      "file": "src/cli.ts"
     }
   ],
   "architecture": {
-    "flow": "date-ranges.ts (DateRange class) + types.ts + util.ts → mod.ts",
-    "keyDesign": "Thin layer over @epdoc/datetime providing interval semantics; depends on DateEx for date representation"
+    "flow": "types.ts → relative-time.ts, util.ts → date-range.ts → date-ranges.ts → cli.ts → mod.ts",
+    "keyDesign": "Built on Temporal.Instant for modern date/time handling. Supports both programmatic use and CLI integration. Boundaries are inclusive."
+  },
+  "breakingChanges": {
+    "v1.0.0": [
+      "Returns Temporal.Instant instead of Date",
+      "Range boundaries are now inclusive (was exclusive)",
+      "dateList() signature changed to accept options object",
+      "New DateRange class for single intervals",
+      "Added parseRelativeTime for relative time parsing"
+    ]
   }
 }

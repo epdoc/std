@@ -1,7 +1,5 @@
 #!/usr/bin/env -S deno run --allow-env
 
-import { dateEx } from '@epdoc/datetime';
-import { _ } from '@epdoc/type';
 import { parseArgs } from '@std/cli/parse-args';
 import { dateList, type DateRangeDef } from '../src/mod.ts';
 
@@ -27,7 +25,7 @@ function main() {
     string: ['hour'],
   });
 
-  const h = _.asInt(flags.hour, 0);
+  const h = parseInt(flags.hour, 10);
   const dateSpecs = flags._;
 
   if (dateSpecs.length === 0) {
@@ -36,11 +34,11 @@ function main() {
     Deno.exit(1);
   }
 
-  const dateRanges: DateRangeDef[] = dateList(dateSpecs.join(','), h);
+  const dateRanges: DateRangeDef[] = dateList(dateSpecs.join(','), { defaultHour: h });
 
   const output = dateRanges.map((range) => ({
-    after: range.after ? dateEx(range.after).toISOLocalString() : undefined,
-    before: range.before ? dateEx(range.before).toISOLocalString() : undefined,
+    after: range.after?.toString(),
+    before: range.before?.toString(),
   }));
 
   console.log(JSON.stringify(output, null, 2));
