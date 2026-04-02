@@ -8,8 +8,9 @@ native `Temporal` API, offering enhanced functionality for timezones, formatting
 
 ## Features
 
-- **Timezone Management**: Set and convert between timezones.
-- **ISO 8601 Formatting**: Generate ISO 8601 strings with local timezone offsets.
+- **Timezone Management**: Set and convert between timezones using IANA names or offset strings.
+- **Timezone-Aware Output**: Output dates in the original, local, or UTC timezone.
+- **ISO 8601 Formatting**: Generate ISO 8601 strings with timezone offsets.
 - **Custom Formatting**: Flexible, token-based date and time formatting.
 - **Julian Day Conversion**: Calculate the Julian Day for any date.
 - **Google Sheets Compatibility**: Convert dates to and from Google Sheets serial numbers.
@@ -44,27 +45,56 @@ const d2 = DateTime.from('2024-01-01T12:00:00Z');
 const d3 = DateTime.tryFrom('invalid'); // undefined
 ```
 
-### ISO Local String
+### Timezone-Aware Output
 
-The `toISOLocalString()` method generates an ISO 8601 string using the local timezone, unlike the native
-`.toISOString()` which always uses UTC.
+Use `withTz()` to output dates in different timezones. The `toISOString()` method respects the timezone set on the
+DateTime object.
 
 ```typescript
 import { DateTime } from '@epdoc/datetime';
 
-const d = DateTime.from('1997-11-25T12:13:14.456Z');
+const d = DateTime.from('2024-03-15T10:30:00Z').withTz('America/New_York');
 
-// Assuming the local timezone is CST (-06:00)
-console.log(d.toISOLocalString());
-// Output: 1997-11-25T06:13:14.456-06:00
+// Output in the original timezone (America/New_York)
+console.log(d.toISOString());
+// Output: 2024-03-15T06:30:00.000-04:00
 
-console.log(d.toISOLocalString(false));
-// Output: 1997-11-25T06:13:14-06:00
+// Output in local timezone
+console.log(d.withTz('local').toISOString());
+// Output: e.g., 2024-03-15T03:30:00.000-07:00 (depending on your timezone)
+
+// Output in UTC
+console.log(d.withTz('utc').toISOString());
+// Output: 2024-03-15T10:30:00.000Z
+```
+
+### Direct Temporal Output
+
+Use `toString()` for direct access to the underlying Temporal object's string formatting with full options support.
+This method provides access to all Temporal formatting capabilities including fractional second control and timezone name display.
+
+```typescript
+import { DateTime } from '@epdoc/datetime';
+
+const d = DateTime.from('2024-03-15T10:30:00.123Z');
+
+// Control fractional seconds (0-9 digits, or 'auto')
+console.log(d.toString()); // "2024-03-15T10:30:00.123Z"
+console.log(d.toString({ fractionalSecondDigits: 0 })); // "2024-03-15T10:30:00Z"
+console.log(d.toString({ fractionalSecondDigits: 3 })); // "2024-03-15T10:30:00.123Z"
+
+// Include timezone name (ZonedDateTime only)
+const d2 = d.withTz('America/New_York');
+console.log(d2.toString({ timeZoneName: 'auto' }));
+// Output: "2024-03-15T06:30:00.123-04:00[America/New_York]"
 ```
 
 ### Custom Formatting
 
-Use the `format()` and `formatUTC()` methods with a format string to get a custom date representation.
+Use the `format()` method with a format string to get a custom date representation. The formatting respects the timezone
+set on the DateTime object, or you can chain `withTz()` to format in a specific timezone.
+
+Available format tokens:
 
 - `yyyy`: Full year (e.g., 2024)
 - `MM`: Month (01-12)
@@ -73,20 +103,29 @@ Use the `format()` and `formatUTC()` methods with a format string to get a custo
 - `mm`: Minutes (00-59)
 - `ss`: Seconds (00-59)
 - `SSS`: Milliseconds (000-999)
+- `MMMM`: Full month name (e.g., January)
+- `MMM`: Abbreviated month name (e.g., Jan)
+- `EEEE`: Full weekday name (e.g., Monday)
 
 ```typescript
 import { DateTime } from '@epdoc/datetime';
 
-const d = DateTime.from('1997-11-25T12:13:14.456Z');
+const d = DateTime.from('1997-11-25T12:13:14.456Z').withTz('America/Chicago');
 
+// Format in the original timezone
 console.log(d.format('yyyy-MM-dd'));
 // Output: 1997-11-25
 
 console.log(d.format('yyyyMMdd_HHmmss'));
 // Output: 19971125_061314
 
-console.log(d.formatUTC('yyyyMMdd_HHmmss'));
+// Format in UTC
+console.log(d.withTz('utc').format('yyyyMMdd_HHmmss'));
 // Output: 19971125_121314
+
+// Format in local timezone
+console.log(d.withTz('local').format('MMMM d, yyyy'));
+// Output: e.g., November 25, 1997
 ```
 
 ### Julian Day

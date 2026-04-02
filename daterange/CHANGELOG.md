@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0] - 2026-04-02
+
+- Cleaned up API and marked some methods as deprected.
+
 ## [2.0.2] - 2026-04-01
 
 - Changed DateRangeOptionDef.params to Params
