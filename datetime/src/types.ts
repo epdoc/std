@@ -97,3 +97,11 @@ export interface DateParseOptions {
    */
   tz?: number | undefined;
 }
+
+/**
+ * Defines the timezone for a date.
+ * - 'local': The local timezone of the machine.
+ * - 'utc': Coordinated Universal Time.
+ * - 'original': The original timezone of the Temporal.ZonedDateTime.
+ */
+export type DateTz = 'local' | 'utc' | 'original';

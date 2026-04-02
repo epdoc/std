@@ -1,5 +1,5 @@
-import { _ } from '@epdoc/type';
 import type { CompareResult } from '@epdoc/type';
+import { _ } from '@epdoc/type';
 import type { GMTTZ, GoogleSheetsDate, IANATZ, ISOTZ, ISOTzDate, JulianDay, TzMinutes } from './types.ts';
 import * as util from './utils.ts';
 
@@ -72,47 +72,6 @@ const MS_PER_MIN = 60000;
 const MIN_PER_DAY = 1440;
 const MS_PER_DAY = 86400000;
 const tNullMs = new Date(Date.UTC(1899, 11, 30, 0, 0, 0, 0)).getTime(); // the starting value for Google
-
-/**
- * Factory function for creating DateTime instances.
- *
- * This is the recommended way to create DateTime objects. It provides a more
- * concise syntax and better type inference in some cases.
- *
- * @param args - Arguments passed to the DateTime constructor
- * @returns A new DateTime instance
- *
- * @example
- * ```typescript
- * // Current time
- * const now = dateEx();
- *
- * // From ISO string
- * const d1 = dateEx('2024-03-15T10:30:00Z');
- *
- * // From timestamp
- * const d2 = dateEx(1709913600000);
- *
- * // From Date object
- * const d3 = dateEx(new Date());
- *
- * // From Temporal objects
- * const d4 = dateEx(Temporal.Now.instant());
- * const d5 = dateEx(Temporal.PlainDateTime.from({ year: 2024, month: 3, day: 15 }));
- *
- * // From year/month/day components
- * const d6 = dateEx(2024, 2, 15, 10, 30, 0); // March 15, 2024 10:30:00
- *
- * // Clone another DateTime
- * const d7 = dateEx(d1);
- * ```
- *
- * @see {@link DateTime} For detailed constructor documentation
- * @deprecated Use {@link DateTime.from} instead
- */
-export function dateEx(...args: unknown[]): DateTime {
-  return new DateTime(...args);
-}
 
 function isMinutes(val: unknown): val is TzMinutes {
   return _.isInteger(val);
@@ -306,24 +265,6 @@ export class DateTime {
   }
 
   /**
-   * Returns the underlying date as a native JavaScript Date object.
-   * @deprecated Use .temporal instead to access the Temporal object.
-   */
-  get date(): Date {
-    if (this._value instanceof Temporal.Instant) {
-      return new Date(this._value.epochMilliseconds);
-    } else if (this._value instanceof Temporal.ZonedDateTime) {
-      return new Date(this._value.epochMilliseconds);
-    } else if (this._value instanceof Temporal.PlainDateTime) {
-      // PlainDateTime has no epoch - assume local timezone for backward compatibility
-      const localTz = Temporal.Now.timeZoneId();
-      const zdt = this._value.toZonedDateTime(localTz);
-      return new Date(zdt.epochMilliseconds);
-    }
-    throw new Error('Unknown temporal type');
-  }
-
-  /**
    * Returns the epoch milliseconds (Unix timestamp) of this DateTime.
    * Only available for Instant and ZonedDateTime; throws for PlainDateTime.
    *
@@ -408,9 +349,8 @@ export class DateTime {
   /**
    * Converts the internal value to a Temporal.Instant for comparison.
    * Throws if the internal value is a PlainDateTime (which has no instant).
-   * @private
    */
-  private toInstant(): Temporal.Instant {
+  toInstant(): Temporal.Instant {
     if (this._value instanceof Temporal.Instant) {
       return this._value;
     } else if (this._value instanceof Temporal.ZonedDateTime) {
@@ -537,7 +477,7 @@ export class DateTime {
 
   /**
    * Set the timezone to use when outputting as a string, eg. with
-   * toISOLocaleString(). A positive value of 360 is equivalent to '-06:00'.
+   * toISOString(). A positive value of 360 is equivalent to '-06:00'.
    *
    * Converts the internal value to a ZonedDateTime if it's an Instant or PlainDateTime.
    * If using an IANA timezone string (e.g., "America/New_York"), this method
@@ -546,13 +486,25 @@ export class DateTime {
    * Time. ISOTZ strings already contain the offset and do not need to be
    * recalculated.
    *
-   * @param val Minutes, an ISOTZ string, or an IANATZ string.
+   * Special values:
+   * - 'local': Use the local system timezone
+   * - 'utc': Use UTC timezone
+   * - undefined: Leave timezone as-is if already set, otherwise use local timezone
+   *
+   * @param val Minutes, an ISOTZ string, an IANATZ string, or a special value ('local' | 'utc').
    * @throws Error if the timezone cannot be determined or set.
    */
-  setTz(val: TzMinutes | ISOTZ | IANATZ): this {
-    let timeZoneId: string;
+  setTz(val?: 'local' | 'utc' | TzMinutes | ISOTZ | IANATZ): this {
+    let timeZoneId: string | undefined;
 
-    if (util.isIANATZ(val)) {
+    if (val === undefined && this._value instanceof Temporal.ZonedDateTime) {
+      // Leave timezone as-is
+      return this;
+    } else if (val === 'local' || val === undefined) {
+      timeZoneId = Temporal.Now.timeZoneId();
+    } else if (val === 'utc') {
+      timeZoneId = 'UTC';
+    } else if (util.isIANATZ(val)) {
       timeZoneId = val as string;
     } else if (util.isISOTZ(val)) {
       // Convert ISOTZ to a timezone identifier
@@ -599,6 +551,11 @@ export class DateTime {
    * timezone. This is useful when a `Date` object is created in a local
    * timezone but needs to be treated as if it were in a different timezone.
    *
+   * Special values:
+   * - 'local': Use the local system timezone
+   * - 'utc': Use UTC timezone
+   * - undefined: Leave timezone as-is if already set, otherwise use local timezone
+   *
    * @example
    * ```ts
    * import { DateTime } from '@epdoc/datetime';
@@ -609,19 +566,31 @@ export class DateTime {
    * const d2 = DateTime.from(d).withTz(360).date;
    * assertStrictEquals(d2.toISOString(), '2024-01-01T17:59:59.000Z');
    * ```
+   *
+   * @example
+   * ```ts
+   * // Format output in different timezones
+   * const d = DateTime.from('2024-03-15T10:30:00Z').withTz('America/New_York');
+   *
+   * // Output in the original timezone (America/New_York)
+   * console.log(d.toISOString()); // "2024-03-15T06:30:00.000-04:00"
+   *
+   * // Output in local timezone
+   * console.log(d.withTz('local').toISOString()); // e.g. "2024-03-15T03:30:00.000-07:00"
+   *
+   * // Output in UTC
+   * console.log(d.withTz('utc').toISOString()); // "2024-03-15T10:30:00.000Z"
+   * ```
+   *
    * Note that val '-06:00' `ISOTZ` equals 360 `Minutes`, and '+06:00' equals -360.
-   * @param val The timezone offset in minutes or an ISOTZ string. If not
-   * specified, the local timezone is used.
+   * @param val The timezone offset in minutes, an ISOTZ string, an IANATZ string,
+   * or a special value ('local' | 'utc'). If not specified and no timezone is set,
+   * the local timezone is used.
    * @returns A new `DateTime` object with the adjusted date.
    */
-  withTz(val?: TzMinutes | ISOTZ | IANATZ): DateTime {
+  withTz(val?: 'local' | 'utc' | TzMinutes | ISOTZ | IANATZ): DateTime {
     const result = this.clone();
-    if (val === undefined) {
-      // Default to local timezone
-      result.setTz(Temporal.Now.timeZoneId() as IANATZ);
-    } else {
-      result.setTz(val);
-    }
+    result.setTz(val);
     return result;
   }
 
@@ -660,48 +629,12 @@ export class DateTime {
   }
 
   /**
-   * Output the date in the form '2016-05-01T11:49:21-07:00'. This differs from
-   * `Date.toISOString` which always uses UTC in the output. The timezone used
-   * is set by the tz() method or defaults to the local timezone of the machine.
-   *
-   * @param showMs Set to false to hide (truncate) milliseconds
-   * @returns The formatted date string with timezone offset
-   * @throws Error if the internal value is not a ZonedDateTime (call .tz() or .withTz() first)
+   * Validate whether the internal Temporal object is valid.
+   * Temporal objects are always valid when properly constructed.
    */
-  public toISOLocalString(showMs: boolean = true): ISOTzDate {
-    this.validate();
-
-    let zdt: Temporal.ZonedDateTime;
-
-    if (this._value instanceof Temporal.ZonedDateTime) {
-      zdt = this._value;
-    } else if (this._value instanceof Temporal.Instant) {
-      // Default to local timezone for Instant
-      const localTz = Temporal.Now.timeZoneId();
-      zdt = this._value.toZonedDateTimeISO(localTz);
-    } else if (this._value instanceof Temporal.PlainDateTime) {
-      // Default to local timezone for PlainDateTime
-      const localTz = Temporal.Now.timeZoneId();
-      zdt = this._value.toZonedDateTime(localTz);
-    } else {
-      throw new Error('Cannot format: unknown temporal type');
-    }
-
-    // Use Temporal's built-in formatting
-    const pad = (n: number, len: number = 2) => String(n).padStart(len, '0');
-
-    let s = `${zdt.year}-${pad(zdt.month)}-${pad(zdt.day)}T${pad(zdt.hour)}:${pad(zdt.minute)}:${pad(zdt.second)}`;
-
-    if (showMs) {
-      s += `.${pad(zdt.millisecond, 3)}`;
-    }
-
-    // Add timezone offset using the offset string directly
-    // Replace +00:00 with Z for UTC
-    const offset = zdt.offset;
-    s += offset === '+00:00' ? 'Z' : offset;
-
-    return s as ISOTzDate;
+  #validate() {
+    // Temporal objects are always valid after construction
+    // This method is kept for API compatibility
   }
 
   /**
@@ -711,23 +644,30 @@ export class DateTime {
    * - For ZonedDateTime: Returns format with timezone offset (e.g., "2024-03-15T05:30:00.000-05:00")
    * - For PlainDateTime: Throws (no instant to represent)
    *
+   * @param options - Optional configuration for the output format
+   * @param options.fractionalSecondDigits - Number of fractional second digits (0-9) to show.
+   *   Use 0 to hide fractional seconds, 3 to show milliseconds, or 'auto' (default) to show
+   *   nonzero fractional seconds only. Matches Temporal's toString() behavior.
    * @returns ISO 8601 formatted string
    * @throws Error if the internal value is a PlainDateTime
    *
    * @example
    * ```typescript
    * const d = DateTime.from('2024-03-15T10:30:00Z');
-   * console.log(d.toISOString()); // "2024-03-15T10:30:00.000Z"
+   * console.log(d.toISOString()); // "2024-03-15T10:30:00Z"
+   * console.log(d.toISOString({ fractionalSecondDigits: 3 })); // "2024-03-15T10:30:00.000Z"
+   * console.log(d.toISOString({ fractionalSecondDigits: 0 })); // "2024-03-15T10:30:00Z"
    *
    * const d2 = d.withTz('America/New_York');
-   * console.log(d2.toISOString()); // "2024-03-15T05:30:00.000-05:00"
+   * console.log(d2.toISOString()); // "2024-03-15T05:30:00-05:00"
+   * console.log(d2.toISOString({ fractionalSecondDigits: 3 })); // "2024-03-15T05:30:00.000-05:00"
    * ```
    */
-  public toISOString(): string {
+  public toISOString(options?: { fractionalSecondDigits?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 'auto' }): string {
     if (this._value instanceof Temporal.Instant) {
-      return this._value.toString();
+      return this._value.toString(options);
     } else if (this._value instanceof Temporal.ZonedDateTime) {
-      return this._value.toString({ timeZoneName: 'never' });
+      return this._value.toString({ timeZoneName: 'never', ...options });
     } else if (this._value instanceof Temporal.PlainDateTime) {
       throw new Error('Cannot convert PlainDateTime to ISO string: use withTz() to set a timezone first');
     }
@@ -735,12 +675,60 @@ export class DateTime {
   }
 
   /**
-   * Validate whether the internal Temporal object is valid.
-   * Temporal objects are always valid when properly constructed.
+   * Returns a string representation of this DateTime using the underlying
+   * Temporal object's toString method with full options support.
+   *
+   * This provides direct access to Temporal's native formatting capabilities.
+   * The available options depend on the internal Temporal type:
+   *
+   * ## For Instant and ZonedDateTime:
+   * - `fractionalSecondDigits`: Number of fractional second digits (0-9 or 'auto').
+   *   Use 0 to hide fractional seconds, 3 to show milliseconds. Default is 'auto'
+   *   which omits trailing zeros.
+   * - `smallestUnit`: Round to a specific unit ('minute', 'second', 'millisecond', etc.)
+   * - `roundingMode`: Rounding method ('ceil', 'floor', 'trunc', 'halfExpand')
+   *
+   * ## For ZonedDateTime only:
+   * - `timeZoneName`: Include timezone name ('auto', 'never', 'critical').
+   *   'auto' shows the IANA name, 'critical' includes offset for disambiguation.
+   * - `offset`: Include timezone offset ('auto', 'never'). 'auto' shows the offset.
+   *
+   * ## For PlainDateTime:
+   * - `fractionalSecondDigits`: Number of fractional second digits (0-9 or 'auto')
+   * - `smallestUnit`: Round to a specific unit
+   * - `roundingMode`: Rounding method
+   *
+   * @param options - Formatting options passed to the underlying Temporal object
+   * @returns Formatted string representation
+   *
+   * @example
+   * ```typescript
+   * // Instant with milliseconds
+   * const d = DateTime.from('2024-03-15T10:30:00.123Z');
+   * console.log(d.toString()); // "2024-03-15T10:30:00.123Z"
+   * console.log(d.toString({ fractionalSecondDigits: 0 })); // "2024-03-15T10:30:00Z"
+   *
+   * // ZonedDateTime with timezone name
+   * const d2 = d.withTz('America/New_York');
+   * console.log(d2.toString({ timeZoneName: 'auto' }));
+   * // "2024-03-15T06:30:00.123-04:00[America/New_York]"
+   *
+   * // PlainDateTime (no timezone in output)
+   * const d3 = new DateTime(2024, 2, 15, 10, 30, 0, 123);
+   * console.log(d3.toString()); // "2024-03-15T10:30:00.123"
+   * ```
+   *
+   * @see {@link https://tc39.es/proposal-temporal/docs/instant.html#toString|Temporal.Instant.toString}
+   * @see {@link https://tc39.es/proposal-temporal/docs/zoneddatetime.html#toString|Temporal.ZonedDateTime.toString}
+   * @see {@link https://tc39.es/proposal-temporal/docs/plaindatetime.html#toString|Temporal.PlainDateTime.toString}
    */
-  private validate() {
-    // Temporal objects are always valid after construction
-    // This method is kept for API compatibility
+  public toString(
+    options?:
+      | Temporal.InstantToStringOptions
+      | Temporal.ZonedDateTimeToStringOptions
+      | Temporal.PlainDateTimeToStringOptions,
+  ): string {
+    return this._value.toString(options as Temporal.InstantToStringOptions);
   }
 
   /**
@@ -788,49 +776,7 @@ export class DateTime {
     return DateTime.formatZDT(zdt, format);
   }
 
-  /**
-   * Formats the date as a string in UTC using a custom format.
-   *
-   * Available format tokens:
-   * - `yyyy`: Full year (e.g., 2024)
-   * - `MMMM`: Full month name (e.g., January)
-   * - `MMM`: Abbreviated month name (e.g., Jan)
-   * - `MM`: Month number with zero padding (01-12)
-   * - `M`: Month number without zero padding (1-12)
-   * - `dd`: Day of the month with zero padding (01-31)
-   * - `d`: Day of the month without zero padding (1-31)
-   * - `HH`: Hours with zero padding (00-23)
-   * - `H`: Hours without zero padding (0-23)
-   * - `mm`: Minutes (00-59)
-   * - `ss`: Seconds (00-59)
-   * - `SSS`: Milliseconds (000-999)
-   * - `EEEE`: Full weekday name (e.g., Monday)
-   * - `EEE`: Abbreviated weekday name (e.g., Mon)
-   * - `EE`: Short weekday name (e.g., Mo)
-   *
-   * @param format The format string.
-   * @returns The formatted date string in UTC.
-   */
-  formatUTC(format: string): string {
-    // Convert to UTC ZonedDateTime for formatting
-    let instant: Temporal.Instant;
-
-    if (this._value instanceof Temporal.Instant) {
-      instant = this._value;
-    } else if (this._value instanceof Temporal.ZonedDateTime) {
-      instant = this._value.toInstant();
-    } else if (this._value instanceof Temporal.PlainDateTime) {
-      // PlainDateTime has no timezone - interpret as UTC
-      instant = this._value.toZonedDateTime('UTC').toInstant();
-    } else {
-      throw new Error('Unknown temporal type');
-    }
-
-    const zdtUtc = instant.toZonedDateTimeISO('UTC');
-    return DateTime.formatZDT(zdtUtc, format);
-  }
-
-  private static formatInternal(d: Date, format: string): string {
+  static #formatInternal(d: Date, format: string): string {
     let f = String(format);
 
     // Use placeholder strategy to avoid conflicts between tokens
@@ -946,7 +892,7 @@ export class DateTime {
    * @see [Julian day](https://en.wikipedia.org/wiki/Julian_day)
    */
   public julianDate(): JulianDay {
-    this.validate();
+    this.#validate();
     // Get epoch milliseconds from the internal value
     let epochMs: number;
     if (this._value instanceof Temporal.Instant) {
@@ -1061,7 +1007,7 @@ export class DateTime {
    * ```
    */
   public toGoogleSheetsDate(): GoogleSheetsDate {
-    this.validate();
+    this.#validate();
     // Get epoch milliseconds from the internal value
     let epochMs: number;
     if (this._value instanceof Temporal.Instant) {
@@ -1128,6 +1074,24 @@ export class DateTime {
   }
 
   /**
+   * Returns the underlying date as a native JavaScript Date object.
+   * @deprecated Use .temporal instead to access the Temporal object.
+   */
+  get date(): Date {
+    if (this._value instanceof Temporal.Instant) {
+      return new Date(this._value.epochMilliseconds);
+    } else if (this._value instanceof Temporal.ZonedDateTime) {
+      return new Date(this._value.epochMilliseconds);
+    } else if (this._value instanceof Temporal.PlainDateTime) {
+      // PlainDateTime has no epoch - assume local timezone for backward compatibility
+      const localTz = Temporal.Now.timeZoneId();
+      const zdt = this._value.toZonedDateTime(localTz);
+      return new Date(zdt.epochMilliseconds);
+    }
+    throw new Error('Unknown temporal type');
+  }
+
+  /**
    * @returns
    * @deprecated Use getOffset()
    */
@@ -1142,9 +1106,130 @@ export class DateTime {
     return this.getOffsetForIANA(iana);
   }
 
+  /**
+   * @deprecated Use toGoogleSheetsDate()
+   */
   public googleSheetsDate(): GoogleSheetsDate {
     return this.toGoogleSheetsDate();
   }
+
+  /**
+   * Formats the date as a string in UTC using a custom format.
+   *
+   * @deprecated Use `withTz('utc').format()` instead. For example:
+   * ```typescript
+   * const d = DateTime.from('2024-03-15T10:30:00Z');
+   * // Old way
+   * d.formatUTC('yyyy-MM-dd HH:mm:ss');
+   * // New way
+   * d.withTz('utc').format('yyyy-MM-dd HH:mm:ss'); // "2024-03-15 10:30:00"
+   * ```
+   *
+   * Available format tokens:
+   * - `yyyy`: Full year (e.g., 2024)
+   * - `MMMM`: Full month name (e.g., January)
+   * - `MMM`: Abbreviated month name (e.g., Jan)
+   * - `MM`: Month number with zero padding (01-12)
+   * - `M`: Month number without zero padding (1-12)
+   * - `dd`: Day of the month with zero padding (01-31)
+   * - `d`: Day of the month without zero padding (1-31)
+   * - `HH`: Hours with zero padding (00-23)
+   * - `H`: Hours without zero padding (0-23)
+   * - `mm`: Minutes (00-59)
+   * - `ss`: Seconds (00-59)
+   * - `SSS`: Milliseconds (000-999)
+   * - `EEEE`: Full weekday name (e.g., Monday)
+   * - `EEE`: Abbreviated weekday name (e.g., Mon)
+   * - `EE`: Short weekday name (e.g., Mo)
+   *
+   * @param format The format string.
+   * @returns The formatted date string in UTC.
+   */
+  formatUTC(format: string): string {
+    // Delegate to withTz('utc').format()
+    return this.withTz('utc').format(format);
+  }
+
+  /**
+   * Output the date in the form '2016-05-01T11:49:21-07:00'. This differs from
+   * `Date.toISOString` which always uses UTC in the output. The timezone used
+   * is set by the tz() method or defaults to the local timezone of the machine.
+   *
+   * @deprecated Use `withTz('local').toISOString()` instead. For example:
+   * ```typescript
+   * const d = DateTime.from('2024-03-15T10:30:00Z').withTz('America/New_York');
+   * // Use original timezone
+   * d.toISOString(); // "2024-03-15T06:30:00.000-04:00"
+   * // Use local timezone
+   * d.withTz('local').toISOString(); // e.g. "2024-03-15T03:30:00.000-07:00"
+   * ```
+   *
+   * @param showMs Set to false to hide (truncate) milliseconds
+   * @returns The formatted date string with timezone offset
+   * @throws Error if the internal value is not a ZonedDateTime (call .tz() or .withTz() first)
+   */
+  public toISOLocalString(showMs: boolean = true): ISOTzDate {
+    // Delegate to toISOString for ZonedDateTime, handling the showMs parameter
+    if (this._value instanceof Temporal.ZonedDateTime) {
+      const zdt = this._value;
+      const pad = (n: number, len: number = 2) => String(n).padStart(len, '0');
+
+      let s = `${zdt.year}-${pad(zdt.month)}-${pad(zdt.day)}T${pad(zdt.hour)}:${pad(zdt.minute)}:${pad(zdt.second)}`;
+
+      if (showMs) {
+        s += `.${pad(zdt.millisecond, 3)}`;
+      }
+
+      const offset = zdt.offset;
+      s += offset === '+00:00' ? 'Z' : offset;
+
+      return s as ISOTzDate;
+    }
+
+    // For other types, set local timezone first then call toISOString
+    return this.withTz('local').toISOLocalString(showMs);
+  }
+}
+
+/**
+ * Factory function for creating DateTime instances.
+ *
+ * This is the recommended way to create DateTime objects. It provides a more
+ * concise syntax and better type inference in some cases.
+ *
+ * @param args - Arguments passed to the DateTime constructor
+ * @returns A new DateTime instance
+ *
+ * @example
+ * ```typescript
+ * // Current time
+ * const now = dateEx();
+ *
+ * // From ISO string
+ * const d1 = dateEx('2024-03-15T10:30:00Z');
+ *
+ * // From timestamp
+ * const d2 = dateEx(1709913600000);
+ *
+ * // From Date object
+ * const d3 = dateEx(new Date());
+ *
+ * // From Temporal objects
+ * const d4 = dateEx(Temporal.Now.instant());
+ * const d5 = dateEx(Temporal.PlainDateTime.from({ year: 2024, month: 3, day: 15 }));
+ *
+ * // From year/month/day components
+ * const d6 = dateEx(2024, 2, 15, 10, 30, 0); // March 15, 2024 10:30:00
+ *
+ * // Clone another DateTime
+ * const d7 = dateEx(d1);
+ * ```
+ *
+ * @see {@link DateTime} For detailed constructor documentation
+ * @deprecated Use {@link DateTime.from} instead
+ */
+export function dateEx(...args: unknown[]): DateTime {
+  return new DateTime(...args);
 }
 
 /**

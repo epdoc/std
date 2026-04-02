@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.2.0] - 2026-04-02
+
+- Cleaned up API and marked some methods as deprected.
+
 ## [3.1.0] - 2026-03-30
 
 - Finished with conversion to DateTime
