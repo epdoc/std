@@ -17,14 +17,10 @@
  * //-> "20240101-,-20240101"
  * ```
  */
+import type { DateTime } from '@epdoc/datetime';
 import { isNonEmptyArray } from '@epdoc/type';
-import { DateTime } from '@epdoc/datetime';
 import { DateRange } from './date-range.ts';
-import {
-  type DateRangeDef,
-  type DateRangeJSON,
-  type DateRangeParseOptions,
-} from './types.ts';
+import type { DateRangeDef, DateRangeJSON, DateRangeParseOptions } from './types.ts';
 import { dateList } from './util.ts';
 
 /**

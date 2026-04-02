@@ -29,16 +29,8 @@ export { DateRanges } from './date-ranges.ts';
 export { DateRange } from './date-range.ts';
 export { parseRelativeTime } from './relative-time.ts';
 export { dateList, dateRanges, dateStringToDate, dateStringToInstant } from './util.ts';
-export {
-  INSTANT_MAX,
-  INSTANT_MIN,
-} from '@epdoc/datetime';
-export {
-  type DateRangeDef,
-  type DateRangeJSON,
-  type DateRangeParseOptions,
-  isDateRangeDef,
-} from './types.ts';
+export { INSTANT_MAX, INSTANT_MIN } from '@epdoc/datetime';
+export { type DateRangeDef, type DateRangeJSON, type DateRangeParseOptions, isDateRangeDef } from './types.ts';
 
 // CLI option helpers (framework-agnostic)
 export { type DateRangeOptionDef, dateRangeOptions, isDateRangeOptionDef } from './cli.ts';

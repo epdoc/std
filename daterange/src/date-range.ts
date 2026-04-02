@@ -18,10 +18,10 @@
  * }
  * ```
  */
+import { DateTime } from '@epdoc/datetime';
 import { isString } from '@epdoc/type';
-import type { DateRangeDef, DateRangeJSON } from './types.ts';
 import { parseRelativeTime } from './relative-time.ts';
-import { DateTime, INSTANT_MIN, INSTANT_MAX } from '@epdoc/datetime';
+import type { DateRangeDef, DateRangeJSON } from './types.ts';
 
 /**
  * Represents a single date range with after (start) and before (end) instants.
