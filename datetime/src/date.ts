@@ -329,6 +329,37 @@ export class DateTime {
   }
 
   /**
+   * Checks if a value is a date-like object that can be passed to the DateTime
+   * constructor. Returns true for Date, DateTime, Temporal.Instant,
+   * Temporal.ZonedDateTime, and Temporal.PlainDateTime instances.
+   *
+   * This is useful for type narrowing before passing values to DateTime methods
+   * without the overhead of constructing a DateTime object.
+   *
+   * @param val - The value to check
+   * @returns true if the value is a date-like object
+   *
+   * @example
+   * ```typescript
+   * DateTime.isDateLike(new Date())                    // true
+   * DateTime.isDateLike(DateTime.from('2024-03-15'))    // true
+   * DateTime.isDateLike(Temporal.Now.instant())         // true
+   * DateTime.isDateLike('2024-03-15')                   // false
+   * DateTime.isDateLike(1709913600000)                  // false
+   * DateTime.isDateLike(null)                           // false
+   * ```
+   */
+  static isDateLike(
+    val: unknown,
+  ): val is Date | DateTime | Temporal.Instant | Temporal.ZonedDateTime | Temporal.PlainDateTime {
+    return val instanceof Date ||
+      val instanceof DateTime ||
+      val instanceof Temporal.Instant ||
+      val instanceof Temporal.ZonedDateTime ||
+      val instanceof Temporal.PlainDateTime;
+  }
+
+  /**
    * Creates a DateTime representing the current moment.
    * Returns an Instant (UTC time without timezone context).
    * Use withTz() to convert to a specific timezone.

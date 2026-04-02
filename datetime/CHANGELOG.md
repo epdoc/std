@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.2.1] - 2026-04-02
+
+- Added isDateLike method to DateTime class
+
 ## [3.2.0] - 2026-04-02
 
 - Cleaned up API and marked some methods as deprected.

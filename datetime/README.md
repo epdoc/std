@@ -70,8 +70,9 @@ console.log(d.withTz('utc').toISOString());
 
 ### Direct Temporal Output
 
-Use `toString()` for direct access to the underlying Temporal object's string formatting with full options support.
-This method provides access to all Temporal formatting capabilities including fractional second control and timezone name display.
+Use `toString()` for direct access to the underlying Temporal object's string formatting with full options support. This
+method provides access to all Temporal formatting capabilities including fractional second control and timezone name
+display.
 
 ```typescript
 import { DateTime } from '@epdoc/datetime';

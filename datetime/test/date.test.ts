@@ -449,6 +449,48 @@ describe('date-util', () => {
       });
     });
 
+    describe('isDateLike', () => {
+      it('should return true for Date objects', () => {
+        expect(DateTime.isDateLike(new Date())).toBe(true);
+      });
+
+      it('should return true for DateTime objects', () => {
+        expect(DateTime.isDateLike(DateTime.from('2024-03-15'))).toBe(true);
+      });
+
+      it('should return true for Temporal.Instant', () => {
+        expect(DateTime.isDateLike(Temporal.Now.instant())).toBe(true);
+      });
+
+      it('should return true for Temporal.ZonedDateTime', () => {
+        expect(DateTime.isDateLike(Temporal.Now.zonedDateTimeISO('UTC'))).toBe(true);
+      });
+
+      it('should return true for Temporal.PlainDateTime', () => {
+        expect(DateTime.isDateLike(Temporal.Now.plainDateTimeISO())).toBe(true);
+      });
+
+      it('should return false for strings', () => {
+        expect(DateTime.isDateLike('2024-03-15')).toBe(false);
+        expect(DateTime.isDateLike('invalid')).toBe(false);
+      });
+
+      it('should return false for numbers', () => {
+        expect(DateTime.isDateLike(1709913600000)).toBe(false);
+        expect(DateTime.isDateLike(123)).toBe(false);
+      });
+
+      it('should return false for null and undefined', () => {
+        expect(DateTime.isDateLike(null)).toBe(false);
+        expect(DateTime.isDateLike(undefined)).toBe(false);
+      });
+
+      it('should return false for plain objects', () => {
+        expect(DateTime.isDateLike({})).toBe(false);
+        expect(DateTime.isDateLike({ year: 2024, month: 3, day: 15 })).toBe(false);
+      });
+    });
+
     describe('equals', () => {
       it('should return true for same instant', () => {
         const d1 = DateTime.from('2024-03-15T10:30:00Z');
