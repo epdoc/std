@@ -18,13 +18,12 @@
  * ```
  */
 import { isNonEmptyArray } from '@epdoc/type';
+import { DateTime } from '@epdoc/datetime';
 import { DateRange } from './date-range.ts';
 import {
   type DateRangeDef,
   type DateRangeJSON,
   type DateRangeParseOptions,
-  INSTANT_MAX,
-  INSTANT_MIN,
 } from './types.ts';
 import { dateList } from './util.ts';
 
@@ -172,7 +171,7 @@ export class DateRanges {
   hasOneAfterDate(): Temporal.Instant | undefined {
     if (this._ranges.length === 1) {
       const range = this._ranges[0];
-      if (Temporal.Instant.compare(range.after, INSTANT_MIN) > 0) {
+      if (!range.afterDateTime.isNearMin()) {
         return range.after;
       }
     }
@@ -278,15 +277,15 @@ export class DateRanges {
     const localTz = Temporal.Now.timeZoneId();
 
     return this._ranges.map((range) => {
-      const format = (instant: Temporal.Instant): string => {
-        if (instant === INSTANT_MIN) return 'beginning';
-        if (instant === INSTANT_MAX) return 'now';
+      const format = (instant: Temporal.Instant, dt: DateTime): string => {
+        if (dt.isNearMin()) return 'beginning';
+        if (dt.isNearMax()) return 'now';
         const zdt = instant.toZonedDateTimeISO(localTz);
         const pad = (n: number) => String(n).padStart(2, '0');
         return `${zdt.year}/${pad(zdt.month)}/${pad(zdt.day)} ${pad(zdt.hour)}:${pad(zdt.minute)}:${pad(zdt.second)}`;
       };
 
-      return `from ${format(range.after)} to ${format(range.before)}`;
+      return `from ${format(range.after, range.afterDateTime)} to ${format(range.before, range.beforeDateTime)}`;
     }).join(', ');
   }
 }

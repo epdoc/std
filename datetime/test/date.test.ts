@@ -739,6 +739,70 @@ describe('date-util', () => {
         expect(original.isMax()).toBe(false); // original unchanged
       });
     });
+
+    describe('isNearMin()', () => {
+      it('should return true for exact INSTANT_MIN', () => {
+        const min = DateTime.min();
+        expect(min.isNearMin()).toBe(true);
+      });
+
+      it('should return true for instant within 3 days of min', () => {
+        const nearMin = DateTime.from(Temporal.Instant.fromEpochMilliseconds(-8640000000000000 + 86400000)); // +1 day
+        expect(nearMin.isNearMin()).toBe(true);
+      });
+
+      it('should return false for instant outside default tolerance', () => {
+        const notNearMin = DateTime.from(Temporal.Instant.fromEpochMilliseconds(-8640000000000000 + 604800000)); // +7 days
+        expect(notNearMin.isNearMin()).toBe(false);
+      });
+
+      it('should return true when custom tolerance is provided', () => {
+        const nearMin = DateTime.from(Temporal.Instant.fromEpochMilliseconds(-8640000000000000 + 604800000)); // +7 days
+        expect(nearMin.isNearMin(604800)).toBe(true); // 7 day tolerance
+      });
+
+      it('should return false for normal dates', () => {
+        const d = DateTime.from('2024-03-15T10:30:00Z');
+        expect(d.isNearMin()).toBe(false);
+      });
+
+      it('should throw for PlainDateTime', () => {
+        const d = new DateTime(2024, 2, 15, 10, 30);
+        expect(() => d.isNearMin()).toThrow();
+      });
+    });
+
+    describe('isNearMax()', () => {
+      it('should return true for exact INSTANT_MAX', () => {
+        const max = DateTime.max();
+        expect(max.isNearMax()).toBe(true);
+      });
+
+      it('should return true for instant within 3 days of max', () => {
+        const nearMax = DateTime.from(Temporal.Instant.fromEpochMilliseconds(8640000000000000 - 86400000)); // -1 day
+        expect(nearMax.isNearMax()).toBe(true);
+      });
+
+      it('should return false for instant outside default tolerance', () => {
+        const notNearMax = DateTime.from(Temporal.Instant.fromEpochMilliseconds(8640000000000000 - 604800000)); // -7 days
+        expect(notNearMax.isNearMax()).toBe(false);
+      });
+
+      it('should return true when custom tolerance is provided', () => {
+        const nearMax = DateTime.from(Temporal.Instant.fromEpochMilliseconds(8640000000000000 - 604800000)); // -7 days
+        expect(nearMax.isNearMax(604800)).toBe(true); // 7 day tolerance
+      });
+
+      it('should return false for normal dates', () => {
+        const d = DateTime.from('2024-03-15T10:30:00Z');
+        expect(d.isNearMax()).toBe(false);
+      });
+
+      it('should throw for PlainDateTime', () => {
+        const d = new DateTime(2024, 2, 15, 10, 30);
+        expect(() => d.isNearMax()).toThrow();
+      });
+    });
   });
 
   describe('isNow()', () => {

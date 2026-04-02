@@ -370,6 +370,31 @@ describe('daterange', () => {
 
       expect(range.duration()).toBe(86400000);
     });
+
+    test('afterDateTime should return DateTime wrapper', () => {
+      const after = Temporal.Instant.from('2025-01-01T00:00:00Z');
+      const before = Temporal.Instant.from('2025-01-31T23:59:59Z');
+      const range = new DateRange(after, before);
+
+      const dt = range.afterDateTime;
+      expect(dt.toISOString()).toBe('2025-01-01T00:00:00Z');
+    });
+
+    test('beforeDateTime should return DateTime wrapper', () => {
+      const after = Temporal.Instant.from('2025-01-01T00:00:00Z');
+      const before = Temporal.Instant.from('2025-01-31T23:59:59Z');
+      const range = new DateRange(after, before);
+
+      const dt = range.beforeDateTime;
+      expect(dt.toISOString()).toBe('2025-01-31T23:59:59Z');
+    });
+
+    test('afterDateTime/beforeDateTime should work with default min/max', () => {
+      const range = new DateRange(undefined, undefined);
+
+      expect(range.afterDateTime.isMin()).toBe(true);
+      expect(range.beforeDateTime.isMax()).toBe(true);
+    });
   });
 
   describe('toJSON', () => {

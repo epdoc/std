@@ -95,13 +95,3 @@ export function isDateRangeDef(val: unknown): val is DateRangeDef {
 
   return true;
 }
-
-/**
- * Minimum representable instant (approximately -271821-04-20T00:00:00Z).
- */
-export const INSTANT_MIN: Temporal.Instant = Temporal.Instant.fromEpochMilliseconds(-8640000000000000);
-
-/**
- * Maximum representable instant (approximately +275760-09-13T00:00:00Z).
- */
-export const INSTANT_MAX: Temporal.Instant = Temporal.Instant.fromEpochMilliseconds(8640000000000000);

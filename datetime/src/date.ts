@@ -582,6 +582,56 @@ export class DateTime {
   }
 
   /**
+   * Checks if this DateTime is near the minimum possible instant within a tolerance.
+   * Useful for checking if a value is "effectively" the minimum (e.g., for open-ended ranges).
+   * Throws if the internal value is a PlainDateTime.
+   *
+   * @param toleranceSeconds - The tolerance in seconds. Defaults to 3 days (259200 seconds).
+   * @returns true if this DateTime is within tolerance of INSTANT_MIN
+   * @throws Error if the internal value is a PlainDateTime
+   *
+   * @example
+   * ```typescript
+   * const nearMin = new DateTime(Temporal.Instant.fromEpochMilliseconds(-8640000000000000 + 100000));
+   * console.log(nearMin.isNearMin()); // true (within 3 days)
+   * console.log(nearMin.isNearMin(100)); // false (within 100 seconds)
+   *
+   * const now = DateTime.now();
+   * console.log(now.isNearMin()); // false
+   * ```
+   */
+  isNearMin(toleranceSeconds: number = 259200): boolean {
+    const toleranceMs = toleranceSeconds * 1000;
+    const epochMs = this.toInstant().epochMilliseconds;
+    return epochMs <= INSTANT_MIN.epochMilliseconds + toleranceMs;
+  }
+
+  /**
+   * Checks if this DateTime is near the maximum possible instant within a tolerance.
+   * Useful for checking if a value is "effectively" the maximum (e.g., for open-ended ranges).
+   * Throws if the internal value is a PlainDateTime.
+   *
+   * @param toleranceSeconds - The tolerance in seconds. Defaults to 3 days (259200 seconds).
+   * @returns true if this DateTime is within tolerance of INSTANT_MAX
+   * @throws Error if the internal value is a PlainDateTime
+   *
+   * @example
+   * ```typescript
+   * const nearMax = new DateTime(Temporal.Instant.fromEpochMilliseconds(8640000000000000 - 100000));
+   * console.log(nearMax.isNearMax()); // true (within 3 days)
+   * console.log(nearMax.isNearMax(100)); // false (within 100 seconds)
+   *
+   * const now = DateTime.now();
+   * console.log(now.isNearMax()); // false
+   * ```
+   */
+  isNearMax(toleranceSeconds: number = 259200): boolean {
+    const toleranceMs = toleranceSeconds * 1000;
+    const epochMs = this.toInstant().epochMilliseconds;
+    return epochMs >= INSTANT_MAX.epochMilliseconds - toleranceMs;
+  }
+
+  /**
    * Checks if this DateTime represents "now" within an asymmetric tolerance window.
    * Throws if the internal value is a PlainDateTime.
    *

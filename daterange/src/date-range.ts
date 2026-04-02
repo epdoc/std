@@ -19,8 +19,9 @@
  * ```
  */
 import { isString } from '@epdoc/type';
-import { type DateRangeDef, type DateRangeJSON, INSTANT_MAX, INSTANT_MIN } from './types.ts';
+import type { DateRangeDef, DateRangeJSON } from './types.ts';
 import { parseRelativeTime } from './relative-time.ts';
+import { DateTime, INSTANT_MIN, INSTANT_MAX } from '@epdoc/datetime';
 
 /**
  * Represents a single date range with after (start) and before (end) instants.
@@ -32,6 +33,22 @@ export class DateRange {
   after: Temporal.Instant;
   /** The end of the range (inclusive). If undefined, represents the end of time. */
   before: Temporal.Instant;
+
+  /**
+   * Returns the `after` boundary as a DateTime wrapper.
+   * Useful for formatting or additional DateTime operations.
+   */
+  get afterDateTime(): DateTime {
+    return new DateTime(this.after);
+  }
+
+  /**
+   * Returns the `before` boundary as a DateTime wrapper.
+   * Useful for formatting or additional DateTime operations.
+   */
+  get beforeDateTime(): DateTime {
+    return new DateTime(this.before);
+  }
 
   /**
    * Creates a new DateRange.
@@ -58,8 +75,8 @@ export class DateRange {
     after?: Temporal.Instant | Date | string,
     before?: Temporal.Instant | Date | string,
   ) {
-    this.after = this._toInstant(after) ?? INSTANT_MIN;
-    this.before = this._toInstant(before) ?? INSTANT_MAX;
+    this.after = this._toInstant(after) ?? DateTime.min().toInstant();
+    this.before = this._toInstant(before) ?? DateTime.max().toInstant();
   }
 
   /**
@@ -243,10 +260,10 @@ export class DateRange {
    */
   toJSON(): DateRangeJSON {
     const result: DateRangeJSON = {};
-    if (Temporal.Instant.compare(this.after, INSTANT_MIN) > 0) {
+    if (!this.afterDateTime.isNearMin()) {
       result.after = this.after.toString();
     }
-    if (Temporal.Instant.compare(this.before, INSTANT_MAX) < 0) {
+    if (!this.beforeDateTime.isNearMax()) {
       result.before = this.before.toString();
     }
     return result;
@@ -263,7 +280,7 @@ export class DateRange {
     const localTz = Temporal.Now.timeZoneId();
 
     const formatAfter = (instant: Temporal.Instant): string => {
-      if (instant === INSTANT_MIN) {
+      if (new DateTime(instant).isNearMin()) {
         return '';
       }
 
@@ -280,7 +297,7 @@ export class DateRange {
     };
 
     const formatBefore = (instant: Temporal.Instant): string => {
-      if (instant === INSTANT_MAX) {
+      if (new DateTime(instant).isNearMax()) {
         return '';
       }
 
@@ -306,8 +323,8 @@ export class DateRange {
    * Converts to ISO 8601 interval format.
    */
   toISOInterval(): string {
-    const afterStr = Temporal.Instant.compare(this.after, INSTANT_MIN) > 0 ? this.after.toString() : '..';
-    const beforeStr = Temporal.Instant.compare(this.before, INSTANT_MAX) < 0 ? this.before.toString() : '..';
+    const afterStr = this.afterDateTime.isNearMin() ? '..' : this.after.toString();
+    const beforeStr = this.beforeDateTime.isNearMax() ? '..' : this.before.toString();
     return `${afterStr}/${beforeStr}`;
   }
 }

@@ -30,11 +30,13 @@ export { DateRange } from './date-range.ts';
 export { parseRelativeTime } from './relative-time.ts';
 export { dateList, dateRanges, dateStringToDate, dateStringToInstant } from './util.ts';
 export {
+  INSTANT_MAX,
+  INSTANT_MIN,
+} from '@epdoc/datetime';
+export {
   type DateRangeDef,
   type DateRangeJSON,
   type DateRangeParseOptions,
-  INSTANT_MAX,
-  INSTANT_MIN,
   isDateRangeDef,
 } from './types.ts';
 
