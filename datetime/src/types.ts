@@ -105,3 +105,17 @@ export interface DateParseOptions {
  * - 'original': The original timezone of the Temporal.ZonedDateTime.
  */
 export type DateTz = 'local' | 'utc' | 'original';
+
+/**
+ * Minimum representable instant (approximately -271821-04-20T00:00:00Z).
+ * This represents the earliest possible instant that can be represented
+ * using Temporal.Instant epoch milliseconds.
+ */
+export const INSTANT_MIN: Temporal.Instant = Temporal.Instant.fromEpochMilliseconds(-8640000000000000);
+
+/**
+ * Maximum representable instant (approximately +275760-09-13T00:00:00Z).
+ * This represents the latest possible instant that can be represented
+ * using Temporal.Instant epoch milliseconds.
+ */
+export const INSTANT_MAX: Temporal.Instant = Temporal.Instant.fromEpochMilliseconds(8640000000000000);

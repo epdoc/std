@@ -1,6 +1,7 @@
 import type { CompareResult } from '@epdoc/type';
 import { _ } from '@epdoc/type';
 import type { GMTTZ, GoogleSheetsDate, IANATZ, ISOTZ, ISOTzDate, JulianDay, TzMinutes } from './types.ts';
+import { INSTANT_MAX, INSTANT_MIN } from './types.ts';
 import * as util from './utils.ts';
 
 /**
@@ -307,6 +308,40 @@ export class DateTime {
   }
 
   /**
+   * Creates a DateTime set to the minimum representable instant.
+   * This represents the earliest possible instant (approximately -271821-04-20T00:00:00Z).
+   *
+   * @returns A new DateTime instance set to INSTANT_MIN
+   *
+   * @example
+   * ```typescript
+   * const min = DateTime.min();
+   * console.log(min.isMin()); // true
+   * console.log(min.epochMilliseconds); // -8640000000000000
+   * ```
+   */
+  static min(): DateTime {
+    return new DateTime(INSTANT_MIN);
+  }
+
+  /**
+   * Creates a DateTime set to the maximum representable instant.
+   * This represents the latest possible instant (approximately +275760-09-13T00:00:00Z).
+   *
+   * @returns A new DateTime instance set to INSTANT_MAX
+   *
+   * @example
+   * ```typescript
+   * const max = DateTime.max();
+   * console.log(max.isMax()); // true
+   * console.log(max.epochMilliseconds); // 8640000000000000
+   * ```
+   */
+  static max(): DateTime {
+    return new DateTime(INSTANT_MAX);
+  }
+
+  /**
    * Checks if a value can be used to construct a valid DateTime.
    * Returns true for all supported input types without throwing.
    *
@@ -504,6 +539,171 @@ export class DateTime {
    */
   isSameOrAfter(other: DateTime): boolean {
     return this.compareTo(other) >= 0;
+  }
+
+  /**
+   * Checks if this DateTime represents the minimum possible instant.
+   * Throws if the internal value is a PlainDateTime.
+   *
+   * @returns true if this DateTime equals INSTANT_MIN
+   * @throws Error if the internal value is a PlainDateTime
+   *
+   * @example
+   * ```typescript
+   * const min = DateTime.min();
+   * console.log(min.isMin()); // true
+   *
+   * const now = DateTime.now();
+   * console.log(now.isMin()); // false
+   * ```
+   */
+  isMin(): boolean {
+    return this.toInstant().epochMilliseconds === INSTANT_MIN.epochMilliseconds;
+  }
+
+  /**
+   * Checks if this DateTime represents the maximum possible instant.
+   * Throws if the internal value is a PlainDateTime.
+   *
+   * @returns true if this DateTime equals INSTANT_MAX
+   * @throws Error if the internal value is a PlainDateTime
+   *
+   * @example
+   * ```typescript
+   * const max = DateTime.max();
+   * console.log(max.isMax()); // true
+   *
+   * const now = DateTime.now();
+   * console.log(now.isMax()); // false
+   * ```
+   */
+  isMax(): boolean {
+    return this.toInstant().epochMilliseconds === INSTANT_MAX.epochMilliseconds;
+  }
+
+  /**
+   * Checks if this DateTime represents "now" within an asymmetric tolerance window.
+   * Throws if the internal value is a PlainDateTime.
+   *
+   * ## Tolerance Behavior (Asymmetric)
+   *
+   * - **Positive tolerance**: Returns true if this DateTime is within `toleranceSeconds`
+   *   BEFORE the current time (i.e., is it "recent"?).
+   * - **Negative tolerance**: Returns true if this DateTime is within `abs(toleranceSeconds)`
+   *   AFTER the current time (i.e., is it "soon"?).
+   * - **Zero tolerance** (default): Returns true only if exactly equal to now.
+   *
+   * @param toleranceSeconds - Asymmetric tolerance in seconds. Positive means within
+   *   that many seconds BEFORE now; negative means within that many seconds AFTER now.
+   *   Default is 0 (exact match).
+   * @returns true if this DateTime falls within the tolerance window
+   * @throws Error if the internal value is a PlainDateTime
+   *
+   * @example
+   * ```typescript
+   * const now = DateTime.now();
+   * const recent = DateTime.from(Date.now() - 30000); // 30 seconds ago
+   * const future = DateTime.from(Date.now() + 30000); // 30 seconds from now
+   *
+   * // Check if within the last 60 seconds (is it recent?)
+   * console.log(recent.isNow(60)); // true
+   *
+   * // Check if within the next 60 seconds (is it soon?)
+   * console.log(future.isNow(-60)); // true
+   *
+   * // Exact match only
+   * console.log(now.isNow()); // true (or very close)
+   * ```
+   */
+  isNow(toleranceSeconds: number = 0): boolean {
+    const thisMs = this.toInstant().epochMilliseconds;
+    const nowMs = Temporal.Now.instant().epochMilliseconds;
+
+    if (toleranceSeconds === 0) {
+      return thisMs === nowMs;
+    }
+
+    const toleranceMs = toleranceSeconds * 1000;
+
+    if (toleranceSeconds > 0) {
+      // Positive: within tolerance BEFORE now (recent)
+      return thisMs >= nowMs - toleranceMs && thisMs <= nowMs;
+    } else {
+      // Negative: within tolerance AFTER now (soon)
+      return thisMs >= nowMs && thisMs <= nowMs - toleranceMs;
+    }
+  }
+
+  /**
+   * Sets this DateTime to the minimum representable instant (INSTANT_MIN).
+   * Replaces the internal value with INSTANT_MIN.
+   *
+   * @returns this DateTime instance for chaining
+   *
+   * @example
+   * ```typescript
+   * const d = DateTime.now();
+   * d.setMin();
+   * console.log(d.isMin()); // true
+   * ```
+   */
+  setMin(): this {
+    this._value = INSTANT_MIN;
+    return this;
+  }
+
+  /**
+   * Sets this DateTime to the maximum representable instant (INSTANT_MAX).
+   * Replaces the internal value with INSTANT_MAX.
+   *
+   * @returns this DateTime instance for chaining
+   *
+   * @example
+   * ```typescript
+   * const d = DateTime.now();
+   * d.setMax();
+   * console.log(d.isMax()); // true
+   * ```
+   */
+  setMax(): this {
+    this._value = INSTANT_MAX;
+    return this;
+  }
+
+  /**
+   * Returns a new DateTime set to the minimum representable instant (INSTANT_MIN).
+   * The original DateTime is not modified.
+   *
+   * @returns A new DateTime instance set to INSTANT_MIN
+   *
+   * @example
+   * ```typescript
+   * const now = DateTime.now();
+   * const min = now.withMin();
+   * console.log(min.isMin()); // true
+   * console.log(now.isMin()); // false (original unchanged)
+   * ```
+   */
+  withMin(): DateTime {
+    return DateTime.min();
+  }
+
+  /**
+   * Returns a new DateTime set to the maximum representable instant (INSTANT_MAX).
+   * The original DateTime is not modified.
+   *
+   * @returns A new DateTime instance set to INSTANT_MAX
+   *
+   * @example
+   * ```typescript
+   * const now = DateTime.now();
+   * const max = now.withMax();
+   * console.log(max.isMax()); // true
+   * console.log(now.isMax()); // false (original unchanged)
+   * ```
+   */
+  withMax(): DateTime {
+    return DateTime.max();
   }
 
   /**

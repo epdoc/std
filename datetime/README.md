@@ -141,6 +141,62 @@ console.log(d.julianDate());
 // Output: 2450778
 ```
 
+### Min/Max Instants
+
+The `DateTime` class provides methods for working with the minimum and maximum representable instants. These are useful
+for representing unbounded date ranges or sentinel values.
+
+```typescript
+import { DateTime, INSTANT_MAX, INSTANT_MIN } from '@epdoc/datetime';
+
+// Create min/max DateTime instances
+const min = DateTime.min();
+const max = DateTime.max();
+
+// Check if a DateTime is at the min or max
+console.log(min.isMin()); // true
+console.log(max.isMax()); // true
+
+// Set an existing DateTime to min or max
+const d = DateTime.now();
+d.setMin();
+console.log(d.isMin()); // true
+
+// Create new instances without modifying the original
+const now = DateTime.now();
+const minCopy = now.withMin();
+console.log(minCopy.isMin()); // true
+console.log(now.isMin()); // false (original unchanged)
+```
+
+### Is Now with Tolerance
+
+Check if a DateTime represents "now" with an asymmetric tolerance window. This is useful for checking if something
+happened recently or is about to happen soon.
+
+```typescript
+import { DateTime } from '@epdoc/datetime';
+
+const recent = DateTime.from(Date.now() - 30000); // 30 seconds ago
+const future = DateTime.from(Date.now() + 30000); // 30 seconds from now
+
+// Check if within the last 60 seconds (is it recent?)
+console.log(recent.isNow(60)); // true
+
+// Check if within the next 60 seconds (is it soon?)
+console.log(future.isNow(-60)); // true
+
+// Exact match only (within 0 seconds)
+const now = DateTime.now();
+console.log(now.isNow()); // true (or very close)
+```
+
+**Tolerance behavior:**
+
+- **Positive tolerance**: Returns `true` if the DateTime is within `toleranceSeconds` BEFORE now (is it recent?)
+- **Negative tolerance**: Returns `true` if the DateTime is within `abs(toleranceSeconds)` AFTER now (is it soon?)
+- **Zero tolerance** (default): Returns `true` only if exactly equal to now
+
 ### Google Sheets Date
 
 Convert a date to a Google Sheets serial number.
@@ -195,6 +251,15 @@ The module exports several types for clarity and type safety:
 - `JulianDay`: An integer representing the Julian Day.
 - `GoogleSheetsDate`: A number representing a Google Sheets serial date.
 - `DateParseOptions`: An interface for options used in `stringToDate`.
+
+### Constants
+
+The module exports these constants for working with extreme date values:
+
+- `INSTANT_MIN`: A `Temporal.Instant` representing the minimum representable instant (approximately
+  -271821-04-20T00:00:00Z).
+- `INSTANT_MAX`: A `Temporal.Instant` representing the maximum representable instant (approximately
+  +275760-09-13T00:00:00Z).
 
 ## API
 

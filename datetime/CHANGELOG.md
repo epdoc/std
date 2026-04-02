@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.2.2] - 2026-04-02
+
+- Added min/max support
+
 ## [3.2.1] - 2026-04-02
 
 - Added isDateLike method to DateTime class

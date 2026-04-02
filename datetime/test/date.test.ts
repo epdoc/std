@@ -628,4 +628,168 @@ describe('date-util', () => {
       });
     });
   });
+
+  describe('min/max instant methods', () => {
+    describe('DateTime.min()', () => {
+      it('should create a DateTime at INSTANT_MIN', () => {
+        const min = DateTime.min();
+        expect(min.epochMilliseconds).toBe(-8640000000000000);
+        expect(min.isMin()).toBe(true);
+        expect(min.isMax()).toBe(false);
+      });
+    });
+
+    describe('DateTime.max()', () => {
+      it('should create a DateTime at INSTANT_MAX', () => {
+        const max = DateTime.max();
+        expect(max.epochMilliseconds).toBe(8640000000000000);
+        expect(max.isMax()).toBe(true);
+        expect(max.isMin()).toBe(false);
+      });
+    });
+
+    describe('isMin()', () => {
+      it('should return true for min instant', () => {
+        const min = DateTime.min();
+        expect(min.isMin()).toBe(true);
+      });
+
+      it('should return false for normal dates', () => {
+        const d = DateTime.from('2024-03-15T10:30:00Z');
+        expect(d.isMin()).toBe(false);
+      });
+
+      it('should return false for max instant', () => {
+        const max = DateTime.max();
+        expect(max.isMin()).toBe(false);
+      });
+
+      it('should throw for PlainDateTime', () => {
+        const d = new DateTime(2024, 2, 15, 10, 30);
+        expect(() => d.isMin()).toThrow();
+      });
+    });
+
+    describe('isMax()', () => {
+      it('should return true for max instant', () => {
+        const max = DateTime.max();
+        expect(max.isMax()).toBe(true);
+      });
+
+      it('should return false for normal dates', () => {
+        const d = DateTime.from('2024-03-15T10:30:00Z');
+        expect(d.isMax()).toBe(false);
+      });
+
+      it('should return false for min instant', () => {
+        const min = DateTime.min();
+        expect(min.isMax()).toBe(false);
+      });
+
+      it('should throw for PlainDateTime', () => {
+        const d = new DateTime(2024, 2, 15, 10, 30);
+        expect(() => d.isMax()).toThrow();
+      });
+    });
+
+    describe('setMin()', () => {
+      it('should set the DateTime to INSTANT_MIN', () => {
+        const d = DateTime.from('2024-03-15T10:30:00Z');
+        d.setMin();
+        expect(d.isMin()).toBe(true);
+        expect(d.epochMilliseconds).toBe(-8640000000000000);
+      });
+
+      it('should return this for chaining', () => {
+        const d = DateTime.from('2024-03-15T10:30:00Z');
+        const result = d.setMin();
+        expect(result).toBe(d);
+      });
+    });
+
+    describe('setMax()', () => {
+      it('should set the DateTime to INSTANT_MAX', () => {
+        const d = DateTime.from('2024-03-15T10:30:00Z');
+        d.setMax();
+        expect(d.isMax()).toBe(true);
+        expect(d.epochMilliseconds).toBe(8640000000000000);
+      });
+
+      it('should return this for chaining', () => {
+        const d = DateTime.from('2024-03-15T10:30:00Z');
+        const result = d.setMax();
+        expect(result).toBe(d);
+      });
+    });
+
+    describe('withMin()', () => {
+      it('should return a new DateTime at INSTANT_MIN', () => {
+        const original = DateTime.from('2024-03-15T10:30:00Z');
+        const min = original.withMin();
+        expect(min.isMin()).toBe(true);
+        expect(original.isMin()).toBe(false); // original unchanged
+      });
+    });
+
+    describe('withMax()', () => {
+      it('should return a new DateTime at INSTANT_MAX', () => {
+        const original = DateTime.from('2024-03-15T10:30:00Z');
+        const max = original.withMax();
+        expect(max.isMax()).toBe(true);
+        expect(original.isMax()).toBe(false); // original unchanged
+      });
+    });
+  });
+
+  describe('isNow()', () => {
+    it('should return true for exact match when tolerance is 0', () => {
+      const now = DateTime.now();
+      expect(now.isNow(0)).toBe(true);
+    });
+
+    it('should return true for exact match by default', () => {
+      const now = DateTime.now();
+      expect(now.isNow()).toBe(true);
+    });
+
+    it('should return true for recent time with positive tolerance', () => {
+      const recent = DateTime.from(Date.now() - 30000); // 30 seconds ago
+      expect(recent.isNow(60)).toBe(true); // within last 60 seconds
+    });
+
+    it('should return false for old time even with positive tolerance', () => {
+      const old = DateTime.from(Date.now() - 120000); // 2 minutes ago
+      expect(old.isNow(60)).toBe(false); // not within last 60 seconds
+    });
+
+    it('should return true for future time with negative tolerance', () => {
+      const future = DateTime.from(Date.now() + 30000); // 30 seconds from now
+      expect(future.isNow(-60)).toBe(true); // within next 60 seconds
+    });
+
+    it('should return false for distant future with negative tolerance', () => {
+      const future = DateTime.from(Date.now() + 120000); // 2 minutes from now
+      expect(future.isNow(-60)).toBe(false); // not within next 60 seconds
+    });
+
+    it('should return false for future time with positive tolerance', () => {
+      const future = DateTime.from(Date.now() + 30000);
+      expect(future.isNow(60)).toBe(false); // positive tolerance only checks past
+    });
+
+    it('should return false for past time with negative tolerance', () => {
+      const past = DateTime.from(Date.now() - 30000);
+      expect(past.isNow(-60)).toBe(false); // negative tolerance only checks future
+    });
+
+    it('should throw for PlainDateTime', () => {
+      const d = new DateTime(2024, 2, 15, 10, 30);
+      expect(() => d.isNow()).toThrow();
+    });
+
+    it('should work with larger tolerances (days)', () => {
+      const yesterday = DateTime.from(Date.now() - 24 * 60 * 60 * 1000); // 1 day ago
+      expect(yesterday.isNow(2 * 24 * 60 * 60)).toBe(true); // within last 2 days
+    });
+  });
 });
