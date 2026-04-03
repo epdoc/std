@@ -24,8 +24,8 @@
 
 // Re-export from submodules
 export * from './keys.ts';
-export * from './screen.ts';
 export * from './pager.ts';
+export * from './screen.ts';
 
 // Namespace imports for convenience
 import * as keysModule from './keys.ts';
@@ -40,3 +40,5 @@ export const pager = pagerModule;
 
 /** Screen namespace for terminal control */
 export const screen = screenModule;
+
+export * from './utils.ts';
