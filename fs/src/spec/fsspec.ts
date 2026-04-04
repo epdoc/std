@@ -1,7 +1,6 @@
-import { resolvePathArgs, safeCopy, type SafeCopyOpts } from '$util';
+import { getHomeDir, resolvePath, resolvePathArgs, safeCopy, type SafeCopyOpts } from '$util';
 import { fromFileUrl } from '@std/path';
 import { promises as nfs } from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 import type * as FS from '../types.ts';
 import { FSSpecBase } from './basespec.ts';
@@ -50,7 +49,9 @@ export class FSSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec {
    * @returns {FSSpec} A new FSSpec object with the same configuration.
    */
   copy(): FSSpec {
-    return new FSSpec(this);
+    const result = new FSSpec(this);
+    this.copyParamsTo(result);
+    return result;
   }
 
   /**
@@ -130,7 +131,7 @@ export class FSSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec {
    */
 
   static home(...args: string[]): FSSpec {
-    const fullPath = path.resolve(os.userInfo().homedir, ...args);
+    const fullPath = resolvePath(getHomeDir(), ...args);
     return new FSSpec(fullPath);
   }
 

@@ -36,7 +36,9 @@ export class SymlinkSpec extends FSSpecBase implements ICopyableSpec {
    * Return a copy of this object. Does not copy the file.
    */
   copy(): SymlinkSpec {
-    return new SymlinkSpec(this);
+    const result = new SymlinkSpec(this);
+    this.copyParamsTo(result);
+    return result;
   }
 
   safeCopy(_destFile: FilePath | FileSpec | FolderSpec | FSSpec, _opts: util.SafeCopyOpts = {}): Promise<boolean> {

@@ -181,8 +181,10 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
   }
 
   /**
-   * Creates a FolderSpec pointing to the current working directory.
+   * Creates a FolderSpec pointing to the current working directory, optionally with
+   * additional path segments appended.
    *
+   * @param args - Additional path segments to append to the current working directory.
    * @returns {FolderSpec} A new FolderSpec instance for `process.cwd()` (Node/Bun)
    *   or `Deno.cwd()` (Deno).
    *
@@ -192,8 +194,16 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
    *
    * @category Factory Methods
    */
-  public static cwd(): FolderSpec {
-    return new FolderSpec(Util.getCwd());
+  public static cwd(...args: string[]): FolderSpec {
+    const fullPath = Util.resolvePath(Util.getCwd(), ...args);
+    return new FolderSpec(fullPath);
+  }
+
+  /**
+   * Return the FolderSpec for the folder that contains this file.
+   */
+  parentFolder(): FolderSpec {
+    return new FolderSpec(this.dirname);
   }
 
   /**
@@ -366,13 +376,25 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
     });
   }
 
+  /**
+   * Appends additional path segments to the current folder path.
+   *
+   * @param args - One or more string path segments.
+   * @returns {FolderSpec} A new FolderSpec instance with the updated path.
+   * @experimental
+   *
+   * @example
+   * const original = new FolderSpec('/Users/jpravetz/projects');
+   * const updated = original.add('src', 'components');
+   * console.log(updated.path); // e.g. '/Users/jpravetz/projects/src/components'
+   */
   add(...args: string[]): FolderSpec {
     const fullPath = path.resolve(this._f, ...args);
     return new FolderSpec(fullPath);
   }
 
   static home(...args: string[]): FolderSpec {
-    const fullPath = path.resolve(Util.getHomeDir(), ...args);
+    const fullPath = Util.resolvePath(Util.getHomeDir(), ...args);
     return new FolderSpec(fullPath);
   }
 
