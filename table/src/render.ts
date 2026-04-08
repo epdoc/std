@@ -414,14 +414,16 @@ export class TableRenderer<T> {
     this.#ensureWidths();
     const chars = this.#getBorderChars();
     const verticalBorder = chars ? this.#applyBorderColor(chars.vertical) : '';
-    const gap = chars ? '' : ' '.repeat(this.#padding);
+    const headerStyleFn = !this.#noColor ? this.#headerStyle : undefined;
+    const applyHeaderStyle = (s: string) => (headerStyleFn && s.length > 0) ? headerStyleFn(s) : s;
+    const gap = chars ? '' : applyHeaderStyle(' '.repeat(this.#padding));
 
     const parts = this.#columns.map((col) => {
       const width = this.#widths![col.key as keyof T];
       const align = col.align ?? 'left';
       let text = padVisual(col.header, width, align);
-      if (!this.#noColor && this.#headerStyle) {
-        text = this.#headerStyle(text);
+      if (headerStyleFn) {
+        text = headerStyleFn(text);
       }
       return text;
     });
@@ -429,13 +431,13 @@ export class TableRenderer<T> {
     let line: string;
     if (chars) {
       // With borders: │ header1 │ header2 │ header3 │
-      line = verticalBorder + ' ' + parts.join(' ' + verticalBorder + ' ') + ' ' + verticalBorder;
+      const v = applyHeaderStyle(verticalBorder);
+      const s = applyHeaderStyle(' ');
+      const sep = s + v + s;
+      line = v + s + parts.join(sep) + s + v;
     } else {
       // Without borders: header1   header2   header3
       line = parts.join(gap);
-      if (!this.#noColor && this.#headerStyle) {
-        line = this.#headerStyle(line);
-      }
     }
 
     // Safety net: strip any ANSI codes when noColor is enabled
@@ -471,8 +473,9 @@ export class TableRenderer<T> {
     this.#ensureWidths();
     const chars = this.#getBorderChars();
     const verticalBorder = chars ? this.#applyBorderColor(chars.vertical) : '';
-    const gap = chars ? '' : ' '.repeat(this.#padding);
-    const rowStyleFn = this.#rowStyles?.[rowIndex % 2];
+    const rowStyleFn = !this.#noColor ? this.#rowStyles?.[rowIndex % 2] : undefined;
+    const applyRowStyle = (s: string) => (rowStyleFn && s.length > 0) ? rowStyleFn(s) : s;
+    const gap = chars ? '' : applyRowStyle(' '.repeat(this.#padding));
 
     const parts = this.#columns.map((col) => {
       const value = item[col.key];
@@ -501,7 +504,7 @@ export class TableRenderer<T> {
 
       // 5. Row style — apply per-cell so resets within one cell
       //    don't affect the row style of subsequent cells
-      if (!this.#noColor && rowStyleFn) {
+      if (rowStyleFn) {
         text = rowStyleFn(text);
       }
 
@@ -511,7 +514,10 @@ export class TableRenderer<T> {
     let row: string;
     if (chars) {
       // With borders: │ cell1 │ cell2 │ cell3 │
-      row = verticalBorder + ' ' + parts.join(' ' + verticalBorder + ' ') + ' ' + verticalBorder;
+      const v = applyRowStyle(verticalBorder);
+      const s = applyRowStyle(' ');
+      const sep = s + v + s;
+      row = v + s + parts.join(sep) + s + v;
     } else {
       // Without borders: cell1   cell2   cell3
       row = parts.join(gap);
