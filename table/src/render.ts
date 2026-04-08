@@ -54,7 +54,9 @@ export class TableRenderer<T> {
   #padding: Integer;
   #widths: Record<keyof T, number> | null = null;
   #headerStyle: Table.StyleFn | undefined;
+  #headerBgStyle: Table.StyleFn | undefined;
   #rowStyles: [Table.StyleFn | null | undefined, Table.StyleFn | null | undefined] = [null, null];
+  #rowBgStyles: [Table.StyleFn | null | undefined, Table.StyleFn | null | undefined] = [null, null];
   #noColor: boolean;
   #dividerChar: string = '-';
   #dividerStyle: Table.StyleFn | undefined;
@@ -82,11 +84,18 @@ export class TableRenderer<T> {
     this.#data = options.data;
     this.#padding = options.padding ?? 2;
     this.#noColor = options.noColor ?? false;
-    this.#headerStyle = options.headerStyle ? Util.resolveColor(options.headerStyle) : undefined;
+    if (options.headerStyle) {
+      this.#headerStyle = Util.resolveColor(options.headerStyle);
+      this.#headerBgStyle = Util.resolveBgColor(options.headerStyle);
+    }
     if (Util.isRowStyle(options.rowStyles)) {
       this.#rowStyles = [
         options.rowStyles[0] ? Util.resolveColor(options.rowStyles[0]) : null,
         options.rowStyles[1] ? Util.resolveColor(options.rowStyles[1]) : null,
+      ];
+      this.#rowBgStyles = [
+        options.rowStyles[0] ? Util.resolveBgColor(options.rowStyles[0]) : null,
+        options.rowStyles[1] ? Util.resolveBgColor(options.rowStyles[1]) : null,
       ];
     }
     this.#dividerChar = options.dividerChar ?? '-';
@@ -144,7 +153,18 @@ export class TableRenderer<T> {
    */
   headerStyle(val: Table.ColorType): this {
     this.#headerStyle = Util.resolveColor(val);
+    this.#headerBgStyle = Util.resolveBgColor(val);
     return this;
+  }
+
+  /**
+   * Alias for {@link headerStyle} (fluent API).
+   *
+   * @param val - A {@link ColorType} specifying the color/style
+   * @returns This instance for method chaining
+   */
+  header(val: Table.ColorType): this {
+    return this.headerStyle(val);
   }
 
   /**
@@ -155,6 +175,7 @@ export class TableRenderer<T> {
    */
   oddRow(val: Table.ColorType): this {
     this.#rowStyles[0] = Util.resolveColor(val);
+    this.#rowBgStyles[0] = Util.resolveBgColor(val);
     return this;
   }
 
@@ -166,6 +187,7 @@ export class TableRenderer<T> {
    */
   evenRow(val: Table.ColorType): this {
     this.#rowStyles[1] = Util.resolveColor(val);
+    this.#rowBgStyles[1] = Util.resolveBgColor(val);
     return this;
   }
 
@@ -415,8 +437,9 @@ export class TableRenderer<T> {
     const chars = this.#getBorderChars();
     const verticalBorder = chars ? this.#applyBorderColor(chars.vertical) : '';
     const headerStyleFn = !this.#noColor ? this.#headerStyle : undefined;
-    const applyHeaderStyle = (s: string) => (headerStyleFn && s.length > 0) ? headerStyleFn(s) : s;
-    const gap = chars ? '' : applyHeaderStyle(' '.repeat(this.#padding));
+    const headerBgStyleFn = !this.#noColor ? this.#headerBgStyle : undefined;
+    const applyHeaderBgStyle = (s: string) => (headerBgStyleFn && s.length > 0) ? headerBgStyleFn(s) : s;
+    const gap = chars ? '' : applyHeaderBgStyle(' '.repeat(this.#padding));
 
     const parts = this.#columns.map((col) => {
       const width = this.#widths![col.key as keyof T];
@@ -431,8 +454,8 @@ export class TableRenderer<T> {
     let line: string;
     if (chars) {
       // With borders: │ header1 │ header2 │ header3 │
-      const v = applyHeaderStyle(verticalBorder);
-      const s = applyHeaderStyle(' ');
+      const v = applyHeaderBgStyle(verticalBorder);
+      const s = applyHeaderBgStyle(' ');
       const sep = s + v + s;
       line = v + s + parts.join(sep) + s + v;
     } else {
@@ -474,8 +497,9 @@ export class TableRenderer<T> {
     const chars = this.#getBorderChars();
     const verticalBorder = chars ? this.#applyBorderColor(chars.vertical) : '';
     const rowStyleFn = !this.#noColor ? this.#rowStyles?.[rowIndex % 2] : undefined;
-    const applyRowStyle = (s: string) => (rowStyleFn && s.length > 0) ? rowStyleFn(s) : s;
-    const gap = chars ? '' : applyRowStyle(' '.repeat(this.#padding));
+    const rowBgStyleFn = !this.#noColor ? this.#rowBgStyles?.[rowIndex % 2] : undefined;
+    const applyRowBgStyle = (s: string) => (rowBgStyleFn && s.length > 0) ? rowBgStyleFn(s) : s;
+    const gap = chars ? '' : applyRowBgStyle(' '.repeat(this.#padding));
 
     const parts = this.#columns.map((col) => {
       const value = item[col.key];
@@ -514,12 +538,12 @@ export class TableRenderer<T> {
     let row: string;
     if (chars) {
       // With borders: │ cell1 │ cell2 │ cell3 │
-      const v = applyRowStyle(verticalBorder);
-      const s = applyRowStyle(' ');
+      const v = applyRowBgStyle(verticalBorder);
+      const s = applyRowBgStyle(' ');
       const sep = s + v + s;
       row = v + s + parts.join(sep) + s + v;
     } else {
-      // Without borders: cell1   cell2   cell3
+      // Without borders: cell1   gap   cell2   gap   cell3
       row = parts.join(gap);
     }
 

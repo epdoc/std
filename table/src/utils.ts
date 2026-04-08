@@ -105,6 +105,24 @@ export function resolveColor(val: Table.ColorType): Table.StyleFn {
 }
 
 /**
+ * Resolves only the background component of a {@link ColorType}.
+ * If the input is a function, returns the function as-is (we cannot
+ * easily separate BG from a custom style function).
+ *
+ * @param val - The color/style specification
+ * @returns A StyleFn that applies only background, or undefined
+ */
+export function resolveBgColor(val: Table.ColorType): Table.StyleFn | undefined {
+  if (typeof val === 'function') return val;
+  if (typeof val === 'number') return undefined; // shorthand for foreground
+  const spec = val as Table.ColorSpec;
+  if (spec.bg !== undefined) {
+    return (s) => bgRgb24(s, spec.bg!);
+  }
+  return undefined;
+}
+
+/**
  * Type guard to check if a value is a valid RowStyles tuple.
  *
  * @param val - The value to check
