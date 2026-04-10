@@ -256,6 +256,48 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   }
 
   /**
+   * Returns the relative path from this file to a target folder or file.
+   *
+   * This is useful for creating clean, readable paths for display or for
+   * constructing relative imports. The returned path uses forward slashes
+   * regardless of platform.
+   *
+   * @param target - The target to compute the relative path to. Can be a FolderSpec
+   *   (returns relative path from file to folder) or FileSpec (returns relative
+   *   path from file to file).
+   * @returns A relative path string using forward slashes.
+   * @throws {Error} If the paths are on different drives (Windows) and cannot be
+   *   relativized.
+   *
+   * @example
+   * const file = FS.File.from('/project/src/deps.ts');
+   * const root = FS.Folder.from('/project');
+   * const relative = file.relativeTo(root);
+   * // Returns: "src/deps.ts"
+   *
+   * @example
+   * const file = FS.File.from('/project/src/deps.ts');
+   * const otherFile = FS.File.from('/project/main.ts');
+   * const relative = file.relativeTo(otherFile);
+   * // Returns: "src/deps.ts"
+   */
+  relativeTo(target: FolderSpec | FileSpec): string {
+    // When target is a FileSpec, use its directory; when FolderSpec, use the folder path
+    const targetPath = target instanceof FileSpec ? target.dirname : target.path;
+    // Compute the relative path FROM the target TO this file
+    const relativePath = path.relative(targetPath, this._f);
+    // Check if path.relative failed (returns original path when on different drives)
+    if (relativePath === this._f) {
+      throw this.asError(
+        'Cannot compute relative path: paths are on different drives',
+        'relativeTo',
+      );
+    }
+    // Normalize to forward slashes for cross-platform consistency
+    return relativePath.replace(/\\/g, '/');
+  }
+
+  /**
    * Looks at the extension of the filename to determine if it is one of the
    * listed types.
    * @param type List of types (eg. 'jpg', 'png')
