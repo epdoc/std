@@ -106,14 +106,17 @@ export function resolveColor(val: Table.ColorType): Table.StyleFn {
 
 /**
  * Resolves only the background component of a {@link ColorType}.
- * If the input is a function, returns the function as-is (we cannot
- * easily separate BG from a custom style function).
+ * Returns undefined for functions and numbers since they represent
+ * complete styling (typically foreground) and cannot be easily
+ * separated into background-only styling.
  *
  * @param val - The color/style specification
  * @returns A StyleFn that applies only background, or undefined
  */
 export function resolveBgColor(val: Table.ColorType): Table.StyleFn | undefined {
-  if (typeof val === 'function') return val;
+  // Functions and numbers typically represent foreground styling;
+  // we can't extract just the background component from them
+  if (typeof val === 'function') return undefined;
   if (typeof val === 'number') return undefined; // shorthand for foreground
   const spec = val as Table.ColorSpec;
   if (spec.bg !== undefined) {
