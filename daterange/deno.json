@@ -5,11 +5,12 @@
     ".": "./src/mod.ts"
   },
   "tasks": {
-    "docs": "deno doc --json src/mod.ts > library-docs.json",
-    "prepublish": "deno fmt && deno lint && deno task check && deno task test && deno task docs",
-    "test": "deno test ./test/date-range.test.ts",
+    "fmt": "deno fmt src test *.json",
+    "lint": "deno lint",
     "check": "deno check *.json src test examples",
-    "lint": "deno lint"
+    "test": "deno test ./test/date-range.test.ts",
+    "docs": "deno doc --json src/mod.ts > library-docs.json",
+    "ok": "deno fmt && deno lint && deno task check && deno task test && deno task docs"
   },
   "imports": {
     "@epdoc/datetime": "jsr:@epdoc/datetime@^3.2.3",

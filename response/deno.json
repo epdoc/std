@@ -5,11 +5,12 @@
     ".": "./mod.ts"
   },
   "tasks": {
-    "docs": "deno doc --json mod.ts > library-docs.json",
-    "prepublish": "deno fmt && deno task lint && deno task check && deno task test && deno task docs",
-    "test": "deno test -A *.test.ts",
+    "fmt": "deno fmt src test *.json",
     "lint": "deno lint *.json *.ts",
-    "check": "deno check *.json *.ts"
+    "check": "deno check *.json *.ts",
+    "test": "deno test -A *.test.ts",
+    "docs": "deno doc --json mod.ts > library-docs.json",
+    "ok": "deno fmt && deno task lint && deno task check && deno task test && deno task docs"
   },
   "imports": {
     "@epdoc/type": "jsr:@epdoc/type@^1.2.6",
