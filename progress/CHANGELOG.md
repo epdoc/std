@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.0] - 2026-04-14
+
+- Changed progress spinner and bounce types to be a string rather than Integer.
+- Use of an Integer results in default spinner being used, thus this is not a breaking change.
+- Will create a lint error for older consumers.
+
 ## [0.0.9] - 2026-03-10
 
 - Reorg project with better namespacing

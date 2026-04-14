@@ -5,10 +5,14 @@
   },
   "license": "MIT",
   "tasks": {
+    "fmt": "dtask run fmt",
     "lint": "deno lint",
+    "check": "deno check type datetime duration daterange fs string response",
     "test": "deno test -A",
     "docs": "deno task --cwd datetime docs && deno task --cwd type docs && deno task --cwd duration docs && deno task --cwd daterange docs && deno task --cwd fs docs && deno task --cwd string docs && deno task --cwd response docs",
-    "check": "deno check type datetime duration daterange fs string response"
+    "ok": "deno fmt && deno task lint && deno task check && deno task test",
+    "publish": "dtask publish",
+    "update": "dtask run update"
   },
   "imports": {
     "@epdoc/duration": "jsr:@epdoc/duration@^0.2.3",
@@ -23,10 +27,18 @@
   "fmt": {
     "singleQuote": true,
     "lineWidth": 120,
-    "exclude": ["fs/tests/readonly", "fs/tests/data1", "fs/tests/data2"]
+    "exclude": [
+      "fs/tests/readonly",
+      "fs/tests/data1",
+      "fs/tests/data2"
+    ]
   },
   "lint": {
-    "exclude": ["fs/tests/readonly", "fs/tests/data1", "fs/tests/data2"]
+    "exclude": [
+      "fs/tests/readonly",
+      "fs/tests/data1",
+      "fs/tests/data2"
+    ]
   },
   "workspace": [
     "./type",

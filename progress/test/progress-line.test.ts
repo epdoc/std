@@ -10,12 +10,12 @@ describe('Progress.Line', () => {
     });
 
     test('should create instance with spinner options', () => {
-      const progress = new Progress.Line({ type: 'spinner', index: 2, color: 'cyan' });
+      const progress = new Progress.Line({ type: 'spinner', index: 'braille', color: 'cyan' });
       expect(progress).toBeDefined();
     });
 
     test('should create instance with bounce options', () => {
-      const progress = new Progress.Line({ type: 'bounce', index: 0, color: 'magenta' });
+      const progress = new Progress.Line({ type: 'bounce', index: 'ball', color: 'magenta' });
       expect(progress).toBeDefined();
     });
 
@@ -32,30 +32,30 @@ describe('Progress.Line', () => {
 
   describe('type guards', () => {
     test('isSpinner validates correct spinner options', () => {
-      expect(Progress.isSpinner({ type: 'spinner', index: 0 })).toBe(true);
-      expect(Progress.isSpinner({ type: 'spinner', index: 2 })).toBe(true);
-      expect(Progress.isSpinner({ type: 'spinner', index: 0, color: 'red' })).toBe(true);
+      expect(Progress.isSpinner({ type: 'spinner', index: 'braille' })).toBe(true);
+      expect(Progress.isSpinner({ type: 'spinner', index: 'brailleCircle' })).toBe(true);
+      expect(Progress.isSpinner({ type: 'spinner', index: 'braille', color: 'red' })).toBe(true);
     });
 
     test('isSpinner rejects invalid options', () => {
-      expect(Progress.isSpinner({ type: 'spinner', index: 3 })).toBe(false);
+      expect(Progress.isSpinner({ type: 'spinner', index: 'brailleCircleCircle' })).toBe(false);
       expect(Progress.isSpinner({ type: 'spinner', index: -1 })).toBe(false);
       expect(Progress.isSpinner({ type: 'horizontal', total: 10, width: 5 })).toBe(false);
-      expect(Progress.isSpinner({ type: 'bounce', index: 0 })).toBe(false);
+      expect(Progress.isSpinner({ type: 'bounce', index: 'ball' })).toBe(false);
       expect(Progress.isSpinner(null)).toBe(false);
       expect(Progress.isSpinner('spinner')).toBe(false);
     });
 
     test('Progress.isBounce validates correct bounce options', () => {
-      expect(Progress.isBounce({ type: 'bounce', index: 0 })).toBe(true);
-      expect(Progress.isBounce({ type: 'bounce', index: 1 })).toBe(true);
-      expect(Progress.isBounce({ type: 'bounce', index: 0, color: 'purple' })).toBe(true);
+      expect(Progress.isBounce({ type: 'bounce', index: 'ball' })).toBe(true);
+      expect(Progress.isBounce({ type: 'bounce', index: 'comet' })).toBe(true);
+      expect(Progress.isBounce({ type: 'bounce', index: 'ball', color: 'purple' })).toBe(true);
     });
 
     test('Progress.isBounce rejects invalid options', () => {
-      expect(Progress.isBounce({ type: 'bounce', index: 2 })).toBe(false);
+      expect(Progress.isBounce({ type: 'bounce', index: 'cometcomet' })).toBe(false);
       expect(Progress.isBounce({ type: 'bounce', index: -1 })).toBe(false);
-      expect(Progress.isBounce({ type: 'spinner', index: 0 })).toBe(false);
+      expect(Progress.isBounce({ type: 'spinner', index: 'braille' })).toBe(false);
       expect(Progress.isBounce(null)).toBe(false);
       expect(Progress.isBounce('bounce')).toBe(false);
     });
@@ -85,28 +85,28 @@ describe('Progress.Line', () => {
 
   describe('spinner mode', () => {
     test('should start and stop', async () => {
-      const progress = new Progress.Line({ type: 'spinner', index: 0 });
+      const progress = new Progress.Line({ type: 'spinner', index: 'braille' });
       progress.start('Testing...');
       await new Promise((resolve) => setTimeout(resolve, 200));
       progress.stop();
     });
 
     test('should start and stop with color', async () => {
-      const progress = new Progress.Line({ type: 'spinner', index: 1, color: 'cyan' });
+      const progress = new Progress.Line({ type: 'spinner', index: 'brailleCircle', color: 'cyan' });
       progress.start('Loading...');
       await new Promise((resolve) => setTimeout(resolve, 200));
       progress.stop('Done!');
     });
 
     test('should start and stop with hex color', async () => {
-      const progress = new Progress.Line({ type: 'spinner', index: 2, color: 0x50C878 });
+      const progress = new Progress.Line({ type: 'spinner', index: 'brailleDots', color: 0x50C878 });
       progress.start('Processing...');
       await new Promise((resolve) => setTimeout(resolve, 200));
       progress.stop();
     });
 
     test('should update message while running', async () => {
-      const progress = new Progress.Line({ type: 'spinner', index: 0, color: 'yellow' });
+      const progress = new Progress.Line({ type: 'spinner', index: 'braille', color: 'yellow' });
       progress.start('Step 1...');
       await new Promise((resolve) => setTimeout(resolve, 100));
       progress.update('Step 2...');
@@ -117,28 +117,28 @@ describe('Progress.Line', () => {
 
   describe('bounce mode', () => {
     test('should start and stop with bouncing ball', async () => {
-      const progress = new Progress.Line({ type: 'bounce', index: 0, color: 'cyan' });
+      const progress = new Progress.Line({ type: 'bounce', index: 'ball', color: 'cyan' });
       progress.start('Bouncing...');
       await new Promise((resolve) => setTimeout(resolve, 400));
       progress.stop('Done!');
     });
 
     test('should start and stop with sliding blocks', async () => {
-      const progress = new Progress.Line({ type: 'bounce', index: 1, color: 'purple' });
+      const progress = new Progress.Line({ type: 'bounce', index: 'comet', color: 'purple' });
       progress.start('Thinking...');
       await new Promise((resolve) => setTimeout(resolve, 400));
       progress.stop('Complete!');
     });
 
     test('should start and stop with hex color', async () => {
-      const progress = new Progress.Line({ type: 'bounce', index: 0, color: 0xA040D0 });
+      const progress = new Progress.Line({ type: 'bounce', index: 'ball', color: 0xA040D0 });
       progress.start('Working...');
       await new Promise((resolve) => setTimeout(resolve, 200));
       progress.stop();
     });
 
     test('should update message while bouncing', async () => {
-      const progress = new Progress.Line({ type: 'bounce', index: 1, color: 'magenta' });
+      const progress = new Progress.Line({ type: 'bounce', index: 'comet', color: 'magenta' });
       progress.start('Phase 1...');
       await new Promise((resolve) => setTimeout(resolve, 200));
       progress.update('Phase 2...');
@@ -246,7 +246,7 @@ describe('Progress.Line', () => {
     });
 
     test('should restart when start is called while active', async () => {
-      const progress = new Progress.Line({ type: 'spinner', index: 0 });
+      const progress = new Progress.Line({ type: 'spinner', index: 'braille' });
       progress.start('First message...');
       await new Promise((resolve) => setTimeout(resolve, 100));
       progress.start('Second message...');
@@ -265,13 +265,13 @@ describe('Progress.Line', () => {
 
     test('should support sequential use of separate instances for different modes', async () => {
       // Spinner mode
-      const spinner = new Progress.Line({ type: 'spinner', index: 0, color: 'cyan' });
+      const spinner = new Progress.Line({ type: 'spinner', index: 'braille', color: 'cyan' });
       spinner.start('First task...');
       await new Promise((resolve) => setTimeout(resolve, 100));
       spinner.stop('First done!');
 
       // Bounce mode
-      const bouncer = new Progress.Line({ type: 'bounce', index: 1, color: 'purple' });
+      const bouncer = new Progress.Line({ type: 'bounce', index: 'comet', color: 'purple' });
       bouncer.start('Second task...');
       await new Promise((resolve) => setTimeout(resolve, 100));
       bouncer.stop('Second done!');
@@ -296,29 +296,29 @@ describe('Progress.Line', () => {
 
   describe('color', () => {
     test('should accept named color strings', () => {
-      const progress = new Progress.Line({ type: 'spinner', index: 0, color: 'red' });
+      const progress = new Progress.Line({ type: 'spinner', index: 'braille', color: 'red' });
       expect(progress).toBeDefined();
     });
 
     test('should accept hex color numbers', () => {
-      const progress = new Progress.Line({ type: 'spinner', index: 0, color: 0xFF8800 });
+      const progress = new Progress.Line({ type: 'spinner', index: 'braille', color: 0xFF8800 });
       expect(progress).toBeDefined();
     });
 
     test('should default color when not specified', () => {
-      const progress = new Progress.Line({ type: 'spinner', index: 0 });
+      const progress = new Progress.Line({ type: 'spinner', index: 'braille' });
       expect(progress).toBeDefined();
     });
 
     test('should fall back to default for unrecognized color names', async () => {
-      const progress = new Progress.Line({ type: 'spinner', index: 0, color: 'nonexistent' });
+      const progress = new Progress.Line({ type: 'spinner', index: 'braille', color: 'nonexistent' });
       progress.start('Testing fallback...');
       await new Promise((resolve) => setTimeout(resolve, 100));
       progress.stop();
     });
 
     test('should accept color on bounce type', () => {
-      const progress = new Progress.Line({ type: 'bounce', index: 1, color: 'purple' });
+      const progress = new Progress.Line({ type: 'bounce', index: 'ball', color: 'purple' });
       expect(progress).toBeDefined();
     });
   });

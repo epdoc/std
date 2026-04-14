@@ -42,7 +42,7 @@ function resolveColor(color: Progress.Color | undefined): number {
  *
  * @example Spinner mode for unknown duration tasks
  * ```ts
- * const progress = new ProgressLine({ type: 'spinner', index: 0, color: 'cyan' });
+ * const progress = new ProgressLine({ type: 'spinner', index: 'braille', color: 'cyan' });
  * progress.start('Connecting to server...');
  * await connectToServer();
  * progress.stop('Connected!');
@@ -50,7 +50,7 @@ function resolveColor(color: Progress.Color | undefined): number {
  *
  * @example Bounce mode for thinking/waiting indicators
  * ```ts
- * const progress = new ProgressLine({ type: 'bounce', index: 1, color: 'purple' });
+ * const progress = new ProgressLine({ type: 'bounce', index: 'comet', color: 'purple' });
  * progress.start('Thinking...');
  * await processRequest();
  * progress.stop('Done!');
@@ -84,10 +84,10 @@ export class ProgressLine {
   #currentMessage = '';
   #isActive = false;
   #currentProgress = 0;
-  #options: Progress.LineOptions = { type: 'spinner', index: 0 };
+  #options: Progress.LineOptions = { type: 'spinner', index: 'braille' };
   #color: number;
 
-  constructor(options: Progress.LineOptions = { type: 'spinner', index: 0 }) {
+  constructor(options: Progress.LineOptions = { type: 'spinner', index: 'braille' }) {
     this.#options = options;
     this.#color = resolveColor(options.color);
     if (options.type === 'horizontal') {
@@ -113,18 +113,18 @@ export class ProgressLine {
     return this;
   }
 
-  spinner(type: 0 | 1 | 2 = 0): this {
+  spinner(type: Progress.Spinner): this {
     this.#options = { type: 'spinner', index: type };
     return this;
   }
 
   comet(): this {
-    this.#options = { type: 'bounce', index: 1 };
+    this.#options = { type: 'bounce', index: 'comet' };
     return this;
   }
 
   bouncyBall(): this {
-    this.#options = { type: 'bounce', index: 0 };
+    this.#options = { type: 'bounce', index: 'ball' };
     return this;
   }
 
@@ -289,10 +289,12 @@ export class ProgressLine {
 
     const opts = this.#options;
     if (Guard.isSpinner(opts)) {
-      const frame = Const.blocks.spinner[opts.index][this.#frameIndex];
+      const subtype = Guard.isSpinnerType(opts.index) ? opts.index : 'braille';
+      const frame = Const.blocks.spinner[subtype][this.#frameIndex];
       output = `\r\x1b[K${rgb24(frame, color)} ${this.#currentMessage}`;
     } else if (Guard.isBounce(opts)) {
-      const frame = Const.blocks.bounce[opts.index][this.#frameIndex];
+      const subtype = Guard.isBounceType(opts.index) ? opts.index : 'comet';
+      const frame = Const.blocks.bounce[subtype][this.#frameIndex];
       output = `\r\x1b[K${rgb24(frame, color)} ${this.#currentMessage}`;
     } else if (Guard.isHorizontal(opts)) {
       // Calculate fractional progress, clamped to [0, width]

@@ -1,4 +1,5 @@
 import type { Integer } from '@epdoc/type';
+import type { blocks } from './consts.ts';
 
 /**
  * A color value specified as either a hex number (e.g. `0xD02020`) or a named
@@ -9,6 +10,10 @@ import type { Integer } from '@epdoc/type';
  */
 export type Color = number | string;
 
+export type Mode = keyof typeof blocks;
+export type Spinner = keyof typeof blocks.spinner;
+export type Bounce = keyof typeof blocks.bounce;
+
 /**
  * Base options shared by all progress line modes.
  */
@@ -17,8 +22,8 @@ export type BaseOptions = {
   color?: Color;
 };
 
-export type SpinnerOptions = BaseOptions & { type: 'spinner'; index: 0 | 1 | 2 };
-export type BounceOptions = BaseOptions & { type: 'bounce'; index: 0 | 1 };
+export type SpinnerOptions = BaseOptions & { type: 'spinner'; index: Spinner };
+export type BounceOptions = BaseOptions & { type: 'bounce'; index: Bounce };
 export type HorizontalOptions = BaseOptions & { type: 'horizontal'; total: number; width: Integer };
 export type VerticalOptions = BaseOptions & { type: 'vertical'; total: number };
 

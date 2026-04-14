@@ -1,11 +1,41 @@
 export const blocks = {
-  spinner: [
-    ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'],
-    ['⠋', '⠙', '⠚', '⠞', '⠖', '⠦', '⠴', '⠲', '⠳', '⠓'],
-    ['▖', '▘', '▝', '▗', '▚', '▞', '█'],
-  ],
-  bounce: [
-    [
+  // spinner: [
+  //   ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'],
+  //   ['⠋', '⠙', '⠚', '⠞', '⠖', '⠦', '⠴', '⠲', '⠳', '⠓'],
+  //   ['▖', '▘', '▝', '▗', '▚', '▞', '█'],
+  //   ['◐', '◓', '◑', '◒'],
+  // ],
+  spinner: {
+    // Braille - smoothest and most reliable
+    braille: ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'], // fav
+    brailleCircle: ['⠋', '⠙', '⠚', '⠞', '⠖', '⠦', '⠴', '⠲', '⠳', '⠓'],
+    brailleDots: ['⣾', '⣽', '⣻', '⢿', '⡿', '⣟', '⣯', '⣷'],
+
+    // Quarter circles - clean and simple
+    circles: ['◐', '◓', '◑', '◒'], // fav
+    circles8: ['◐', '◔', '◑', '◕', '◒', '◖', '◓', '◗'],
+    quadrants: ['◴', '◵', '◶', '◷'],
+
+    // Box drawing - crisp in any terminal
+    boxDraw: ['┤', '┘', '┴', '└', '├', '┌', '┬', '┐'],
+    boxCorners: ['◰', '◳', '◲', '◱'],
+
+    // Simple ASCII - works everywhere
+    ascii: ['|', '/', '-', '\\'], // fav
+    asciiDots: ['.', 'o', 'O', '0', 'O', 'o', '.'],
+
+    // Block elements - universal
+    blocks: ['▖', '▘', '▝', '▗', '▚', '▞', '█'],
+    growingBlocks: ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█', '▇', '▆', '▅', '▄', '▃', '▂', '▁'], // fav
+    thickBlocks: ['▉', '▊', '▋', '▌', '▍', '▎', '▏', '▎', '▍', '▌', '▋', '▊'],
+    bouncingBlocks: ['▖', '▘', '▝', '▗'],
+
+    // Simple geometric - reliable
+    triangles: ['◢', '◣', '◤', '◥'],
+    arrows: ['←', '↖', '↑', '↗', '→', '↘', '↓', '↙'], // fav
+  },
+  bounce: {
+    ball: [
       '(●     )',
       '( ●    )',
       '(  ●   )',
@@ -17,7 +47,7 @@ export const blocks = {
       '(  ●   )',
       '( ●    )',
     ],
-    [
+    comet: [
       '········',
       '█·······',
       '██······',
@@ -45,13 +75,13 @@ export const blocks = {
       '░·······',
       '········',
     ],
-  ],
+  },
   horizontal: ['', '▏', '▎', '▍', '▌', '▋', '▊', '▉'],
   vertical: [' ', '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'],
 } as const;
-export type Mode = keyof typeof blocks;
 
 export const defaultColor = 0xD02020;
+export const favSpinners = ['braille', 'circles', 'ascii', 'growingBlocks', 'arrows', 'triangles'];
 
 /**
  * A map of named colors to their hexadecimal RGB values.

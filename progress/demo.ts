@@ -3,6 +3,7 @@
  * Run with: deno run -A progress/demo.ts
  */
 
+import { blocks, favSpinners } from './src/consts.ts';
 import * as Progress from './src/mod.ts';
 
 // Helper function for delays
@@ -12,9 +13,9 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 // Spinner demos — one per spinner index, each with a different color
 // ---------------------------------------------------------------------------
 
-async function demoSpinnerBraille() {
-  console.log('=== Spinner: Braille dots (index 0, color: cyan) ===\n');
-  const progress = new Progress.Line({ type: 'spinner', index: 0, color: 'cyan' });
+async function demoSpinner(index: Progress.Spinner) {
+  console.log(`=== Spinner: ${index} (color: cyan) ===\n`);
+  const progress = new Progress.Line({ type: 'spinner', index: index, color: 'cyan' });
   progress.start('Initializing...');
   await delay(600);
   progress.update('Loading configuration...');
@@ -25,33 +26,13 @@ async function demoSpinnerBraille() {
   console.log('');
 }
 
-async function demoSpinnerBraille2() {
-  console.log('=== Spinner: Braille wave (index 1, color: 0xF0A040) ===\n');
-  const progress = new Progress.Line({ type: 'spinner', index: 1, color: 0xF0A040 });
-  progress.start('Scanning files...');
-  await delay(800);
-  progress.update('Analyzing data...');
-  await delay(800);
-  progress.stop('Scan complete!');
-  console.log('');
-}
-
-async function demoSpinnerBlocks() {
-  console.log('=== Spinner: Block quadrants (index 2, color: green) ===\n');
-  const progress = new Progress.Line({ type: 'spinner', index: 2, color: 'green' });
-  progress.start('Compiling assets...');
-  await delay(1000);
-  progress.stop('Build succeeded!');
-  console.log('');
-}
-
 // ---------------------------------------------------------------------------
 // Bounce demos — both bounce indices with different colors
 // ---------------------------------------------------------------------------
 
 async function demoBounceParenBall() {
   console.log('=== Bounce: Parenthesized ball (index 0, color: magenta) ===\n');
-  const progress = new Progress.Line({ type: 'bounce', index: 0, color: 'magenta' });
+  const progress = new Progress.Line({ type: 'bounce', index: 'ball', color: 'magenta' });
   progress.start('Deploying to production...');
   await delay(600);
   progress.update('Waiting for health check...');
@@ -64,7 +45,7 @@ async function demoBounceParenBall() {
 
 async function demoBounceSlider() {
   console.log('=== Bounce: Sliding blocks (index 1, color: purple) ===\n');
-  const progress = new Progress.Line({ type: 'bounce', index: 1, color: 'purple' });
+  const progress = new Progress.Line({ type: 'bounce', index: 'comet', color: 'purple' });
   progress.start('Thinking...');
   await delay(1200);
   progress.update('Still thinking...');
@@ -75,7 +56,7 @@ async function demoBounceSlider() {
 
 async function demoBounceHexColor() {
   console.log('=== Bounce: Sliding blocks (index 1, color: 0xA060E0) ===\n');
-  const progress = new Progress.Line({ type: 'bounce', index: 1, color: 0xA060E0 });
+  const progress = new Progress.Line({ type: 'bounce', index: 'comet', color: 0xA060E0 });
   progress.start('Processing request...');
   await delay(1000);
   progress.stop('Request processed!');
@@ -187,13 +168,13 @@ async function demoMixedModes() {
   console.log('=== Mixed Modes: spinner → bounce → horizontal → vertical ===\n');
 
   // Spinner for connection phase
-  const spinner = new Progress.Line({ type: 'spinner', index: 1, color: 'cyan' });
+  const spinner = new Progress.Line({ type: 'spinner', index: 'brailleDots', color: 'cyan' });
   spinner.start('Connecting to server...');
   await delay(800);
   spinner.stop('Connected!');
 
   // Bounce for thinking phase
-  const bouncer = new Progress.Line({ type: 'bounce', index: 1, color: 'purple' });
+  const bouncer = new Progress.Line({ type: 'bounce', index: 'ball', color: 'purple' });
   bouncer.start('Analyzing request...');
   await delay(1000);
   bouncer.stop('Analysis complete!');
@@ -250,12 +231,17 @@ async function demoWidthComparison() {
 
 async function main() {
   // Spinner demos (3 spinner indices)
-  await demoSpinnerBraille();
-  await delay(300);
-  await demoSpinnerBraille2();
-  await delay(300);
-  await demoSpinnerBlocks();
-  await delay(300);
+  for (const index of Object.keys(blocks.spinner)) {
+    await demoSpinner(index as Progress.Spinner);
+    await delay(600);
+  }
+
+  console.log('=== Favourite spinners ===\n');
+
+  for (const index of favSpinners) {
+    await demoSpinner(index as Progress.Spinner);
+    await delay(600);
+  }
 
   // Bounce demos (2 bounce indices)
   await demoBounceParenBall();

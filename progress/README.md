@@ -30,7 +30,7 @@ Animated spinner for indeterminate progress:
 ```typescript
 import { ProgressLine } from '@epdoc/progress';
 
-const progress = new ProgressLine({ type: 'spinner', index: 0, color: 'cyan' });
+const progress = new ProgressLine({ type: 'spinner', index: 'braille', color: 'cyan' });
 progress.start('Initializing...');
 // ... do work ...
 progress.update('Loading configuration...');
@@ -52,13 +52,13 @@ Back-and-forth animation, useful for "thinking" indicators:
 import { ProgressLine } from '@epdoc/progress';
 
 // Bouncing ball
-const progress = new ProgressLine({ type: 'bounce', index: 0, color: 'magenta' });
+const progress = new ProgressLine({ type: 'bounce', index: 'ball', color: 'magenta' });
 progress.start('Deploying...');
 await deploy();
 progress.stop('Deployed!');
 
 // Sliding gradient blocks (OpenCode-style thinking indicator)
-const thinking = new ProgressLine({ type: 'bounce', index: 1, color: 'purple' });
+const thinking = new ProgressLine({ type: 'bounce', index: 'comet', color: 'purple' });
 thinking.start('Analyzing...');
 await analyze();
 thinking.stop('Analysis complete!');
@@ -66,8 +66,8 @@ thinking.stop('Analysis complete!');
 
 **Bounce indices:**
 
-- `0`: Parenthesized ball (● bounces left-right in `()`)
-- `1`: Gradient trail (░▒▓█ sliding with density gradient)
+- `ball`: Parenthesized ball (● bounces left-right in `()`)
+- `comet`: Gradient trail (░▒▓█ sliding with density gradient)
 
 ### Horizontal Progress Bar Mode
 
@@ -133,14 +133,14 @@ for (let i = 0; i <= 40; i++) {
 Use separate instances for different phases:
 
 ```typescript
-// Spinner for connection
-const spinner = new ProgressLine({ type: 'spinner', index: 0 });
+// Spinner for connection, using default 'braille' spinner
+const spinner = new ProgressLine({ type: 'spinner' });
 spinner.start('Connecting...');
 await connect();
 spinner.stop('Connected!');
 
 // Bounce for thinking phase
-const bounce = new ProgressLine({ type: 'bounce', index: 1, color: 'purple' });
+const bounce = new ProgressLine({ type: 'bounce', index: 'comet', color: 'purple' });
 bounce.start('Analyzing...');
 await analyze();
 bounce.stop('Analysis complete!');
@@ -176,9 +176,28 @@ type Color = number | string;
 Configuration options passed to the constructor.
 
 ```typescript
+type Spinner =
+  | 'braille' // fav
+  | 'brailleCircle'
+  | 'brailleDots'
+  | 'circles' // fav
+  | 'circles8'
+  | 'quadrants'
+  | 'boxDraw'
+  | 'boxCorners'
+  | 'ascii' // fav
+  | 'asciiDots'
+  | 'blocks'
+  | 'growingBlocks' // fav
+  | 'thickBlocks'
+  | 'bouncingBlocks'
+  | 'triangles'
+  | 'arrows'; // fav
+type Bounce = 'ball' | 'comet';
+
 type ProgressLineOptions =
-  | { type: 'spinner'; index: 0 | 1 | 2; color?: Color }
-  | { type: 'bounce'; index: 0 | 1; color?: Color }
+  | { type: 'spinner'; index: Spinner; color?: Color }
+  | { type: 'bounce'; index: Bounce; color?: Color }
   | { type: 'horizontal'; total: number; width: number; color?: Color }
   | { type: 'vertical'; total: number; color?: Color };
 ```
