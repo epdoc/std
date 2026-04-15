@@ -60,6 +60,13 @@
   ],
   "relationships": {
     "dependsOn": ["@std/encoding"],
-    "usedBy": ["@epdoc/datetime", "@epdoc/duration", "@epdoc/daterange", "@epdoc/string", "@epdoc/response", "@epdoc/table"]
+    "usedBy": [
+      "@epdoc/datetime",
+      "@epdoc/duration",
+      "@epdoc/daterange",
+      "@epdoc/string",
+      "@epdoc/response",
+      "@epdoc/table"
+    ]
   }
 }
