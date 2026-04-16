@@ -1,8 +1,16 @@
 {
   "name": "@epdoc/table",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "exports": {
     ".": "./src/mod.ts"
+  },
+  "publish": {
+    "include": [
+      "src",
+      "deno.json",
+      "README.md",
+      "library-metadata.json"
+    ]
   },
   "tasks": {
     "fmt": "deno fmt src test *.json",
@@ -13,9 +21,11 @@
     "ok": "deno fmt && deno task lint && deno task check && deno task test && deno task docs"
   },
   "imports": {
-    "@epdoc/datetime": "jsr:@epdoc/datetime@^3.2.3",
-    "@epdoc/duration": "jsr:@epdoc/duration@^0.3.7",
-    "@epdoc/type": "jsr:@epdoc/type@^1.2.6",
-    "@std/fmt": "jsr:@std/fmt@^1.0.9"
+    "@epdoc/datetime": "jsr:@epdoc/datetime@^3.2.4",
+    "@epdoc/duration": "jsr:@epdoc/duration@^0.3.8",
+    "@epdoc/type": "jsr:@epdoc/type@^1.2.8",
+    "@std/assert": "jsr:@std/assert@^1.0.19",
+    "@std/fmt": "jsr:@std/fmt@^1.0.9",
+    "@std/testing": "jsr:@std/testing@^1.0.17"
   }
 }
