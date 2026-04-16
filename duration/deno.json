@@ -1,9 +1,19 @@
 {
   "name": "@epdoc/duration",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "description": "Duration formatting",
   "exports": {
     ".": "./src/mod.ts"
+  },
+  "publish": {
+    "include": [
+      "src",
+      "deno.json",
+      "README.md",
+      "library-metadata.json",
+      "COMPARISON.md",
+      "examples"
+    ]
   },
   "tasks": {
     "fmt": "deno fmt src test *.json",
@@ -14,7 +24,7 @@
     "ok": "deno fmt && deno lint && deno task check && deno task test && deno task docs"
   },
   "imports": {
-    "@epdoc/type": "jsr:@epdoc/type@^1.2.6",
+    "@epdoc/type": "jsr:@epdoc/type@^1.2.8",
     "@std/expect": "jsr:@std/expect@^1.0.18",
     "@std/testing": "jsr:@std/testing@^1.0.17"
   }
