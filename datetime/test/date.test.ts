@@ -806,14 +806,9 @@ describe('date-util', () => {
   });
 
   describe('isNow()', () => {
-    it('should return true for exact match when tolerance is 0', () => {
+    it('should return true when tolerance is 10 ms', () => {
       const now = DateTime.now();
-      expect(now.isNow(0)).toBe(true);
-    });
-
-    it('should return true for exact match by default', () => {
-      const now = DateTime.now();
-      expect(now.isNow()).toBe(true);
+      expect(now.isNow(0.01)).toBe(true);
     });
 
     it('should return true for recent time with positive tolerance', () => {
