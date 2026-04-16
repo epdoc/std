@@ -1,8 +1,16 @@
 {
   "name": "@epdoc/daterange",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "exports": {
     ".": "./src/mod.ts"
+  },
+  "publish": {
+    "include": [
+      "src",
+      "deno.json",
+      "README.md",
+      "library-metadata.json"
+    ]
   },
   "tasks": {
     "fmt": "deno fmt src test *.json",
@@ -13,8 +21,9 @@
     "ok": "deno fmt && deno lint && deno task check && deno task test && deno task docs"
   },
   "imports": {
-    "@epdoc/datetime": "jsr:@epdoc/datetime@^3.2.3",
-    "@epdoc/type": "jsr:@epdoc/type@^1.2.6",
-    "@std/cli": "jsr:@std/cli@^1.0.28"
+    "@epdoc/datetime": "jsr:@epdoc/datetime@^3.2.4",
+    "@epdoc/type": "jsr:@epdoc/type@^1.2.8",
+    "@std/expect": "jsr:@std/expect@^1.0.18",
+    "@std/testing": "jsr:@std/testing@^1.0.17"
   }
 }

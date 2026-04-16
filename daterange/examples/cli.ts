@@ -1,6 +1,5 @@
 #!/usr/bin/env -S deno run --allow-env
 
-import { parseArgs } from '@std/cli/parse-args';
 import { dateList, type DateRangeDef } from '../src/mod.ts';
 
 /**
@@ -19,14 +18,24 @@ import { dateList, type DateRangeDef } from '../src/mod.ts';
  *   deno run --allow-env cli.ts -h 8 "20240701-20240710" "20240801"
  */
 function main() {
-  const flags = parseArgs(Deno.args, {
-    alias: { h: 'hour' },
-    default: { hour: '0' },
-    string: ['hour'],
-  });
+  const args = [...Deno.args];
+  let hourStr = '0';
+  const dateSpecs: string[] = [];
 
-  const h = parseInt(flags.hour, 10);
-  const dateSpecs = flags._;
+  while (args.length > 0) {
+    const arg = args.shift()!;
+    if (arg === '-h' || arg === '--hour') {
+      hourStr = args.shift() ?? '0';
+    } else if (arg.startsWith('--hour=')) {
+      hourStr = arg.split('=')[1];
+    } else if (arg.startsWith('-')) {
+      // Ignore other flags
+    } else {
+      dateSpecs.push(arg);
+    }
+  }
+
+  const h = parseInt(hourStr, 10);
 
   if (dateSpecs.length === 0) {
     console.error('Usage: cli.ts [-h <hour>] <date-range-spec>...');
