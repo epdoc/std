@@ -10,13 +10,13 @@ describe('safe', () => {
   describe('response', () => {
     it('normal', async () => {
       const p: Resp.catchAsArray.Result<string> = await Resp.catchAsArray.wrap<string>(
-        Deno.readTextFile(resolve(pwd, './deno.json')),
+        Deno.readTextFile(resolve(pwd, '../deno.json')),
       );
       expect(p[0]).toBeNull();
       expect(p[1]).toContain('"name": "@epdoc/response');
     });
     it('error', async () => {
-      const [error, data] = await Resp.catchAsArray.wrap<string>(Deno.readTextFile(resolve(pwd, './deno.xyz')));
+      const [error, data] = await Resp.catchAsArray.wrap<string>(Deno.readTextFile(resolve(pwd, '../deno.xyz')));
       expect(error).toBeDefined();
       expect(data).toBeNull();
       if (error) {
@@ -28,14 +28,14 @@ describe('safe', () => {
   });
   describe('api response', () => {
     it('normal', async () => {
-      const [error, data, duration] = await Resp.catchAsArray.twrap(Deno.readTextFile(resolve(pwd, './deno.json')));
+      const [error, data, duration] = await Resp.catchAsArray.twrap(Deno.readTextFile(resolve(pwd, '../deno.json')));
       expect(error).toBeNull;
       expect(data).toContain('"name": "@epdoc/response');
       expect(duration).toBeGreaterThan(0);
     });
     it('error', async () => {
-      const path = resolve(pwd, './deno.xyz');
-      const fs = new FileSpec(pwd, './deno.xyz');
+      const path = resolve(pwd, '../deno.xyz');
+      const fs = new FileSpec(pwd, '../deno.xyz');
       const [error, data, duration] = await Resp.catchAsArray.twrap(fs.readAsString());
       expect(error).toBeDefined();
       if (error) {
