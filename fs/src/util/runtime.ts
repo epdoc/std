@@ -8,7 +8,7 @@ import nodeFs from 'node:fs';
 import nodeOs from 'node:os';
 import nodePath from 'node:path';
 import nodeProcess from 'node:process';
-import { fileURLToPath as nodeFileURLToPath } from 'node:url';
+import { fileURLToPath as nodeFileURLToPath, pathToFileURL as nodePathToFileURL } from 'node:url';
 
 /**
  * Runtime detection constants
@@ -125,6 +125,28 @@ export function fileURLToPath(url: string | URL): string {
   }
 
   return nodeFileURLToPath(url);
+}
+
+/**
+ * Converts a file path to a file URL using the optimal API for the current runtime
+ * @param path - The file path to convert
+ * @returns {URL} The file URL object (e.g., "file:///path/to/file")
+ */
+export function pathToFileURL(path: string): URL {
+  if (Runtime.Deno) {
+    // Deno has native pathToFileURL support
+    // @ts-ignore Deno typings
+    if (typeof Deno.pathToFileURL === 'function') {
+      // @ts-ignore Deno typings
+      return Deno.pathToFileURL(path);
+    }
+    // Fallback: construct URL manually
+    const normalized = path.replace(/\\/g, '/');
+    const prefixed = normalized.startsWith('/') ? normalized : `/${normalized}`;
+    return new URL(`file://${prefixed}`);
+  }
+
+  return nodePathToFileURL(path);
 }
 
 /**

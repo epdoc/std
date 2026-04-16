@@ -318,6 +318,33 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
   }
 
   /**
+   * Creates a new FolderSpec from a file:// URL string.
+   *
+   * @param url - The file URL string (e.g., "file:///path/to/folder")
+   * @returns {FolderSpec} A new FolderSpec instance
+   *
+   * @example
+   * const folder = FolderSpec.fromFileUrl('file:///home/user/documents');
+   * console.log(folder.path); // '/home/user/documents'
+   */
+  public static fromFileUrl(url: string): FolderSpec {
+    return new FolderSpec(Util.fileURLToPath(url));
+  }
+
+  /**
+   * Returns the file:// URL for this folder path.
+   *
+   * @returns {string} The file URL string (e.g., "file:///path/to/folder")
+   *
+   * @example
+   * const folder = new FolderSpec('/home/user/documents');
+   * console.log(folder.toFileUrl()); // 'file:///home/user/documents'
+   */
+  public toFileUrl(): string {
+    return Util.pathToFileURL(this._f).href;
+  }
+
+  /**
    * The absolute, normalized path of this folder.
    *
    * @returns {FS.FolderPath} The folder path as a branded type, ensuring it can't
@@ -391,6 +418,37 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
   add(...args: string[]): FolderSpec {
     const fullPath = path.resolve(this._f, ...args);
     return new FolderSpec(fullPath);
+  }
+
+  /**
+   * Returns the relative path from this folder to a target folder.
+   *
+   * This is useful for creating clean, readable paths for display or for
+   * constructing relative imports. The returned path uses forward slashes
+   * regardless of platform.
+   *
+   * @param target - The target folder to compute the relative path to.
+   * @returns A relative path string using forward slashes.
+   * @throws {Error} If the paths are on different drives (Windows) and cannot be
+   *   relativized.
+   *
+   * @example
+   * const folder = FS.Folder.from('/project/src');
+   * const root = FS.Folder.from('/project');
+   * const relative = folder.relativeTo(root);
+   * // Returns: "src"
+   */
+  relativeTo(target: FolderSpec): string {
+    const relativePath = path.relative(target.path, this._f);
+    // Check if path.relative failed (returns original path when on different drives)
+    if (relativePath === this._f) {
+      throw this.asError(
+        'Cannot compute relative path: paths are on different drives',
+        'relativeTo',
+      );
+    }
+    // Normalize to forward slashes for cross-platform consistency
+    return relativePath.replace(/\\/g, '/');
   }
 
   static home(...args: string[]): FolderSpec {

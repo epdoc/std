@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/fs",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "Type-safe file system operations with FileSpec, FolderSpec, and streaming support for Node.js and Deno",
   "tasks": {
     "fmt": "deno fmt src test *.json",
@@ -14,6 +14,16 @@
   "exports": {
     ".": "./src/mod.ts",
     "./fs": "./src/fs.ts"
+  },
+  "publish": {
+    "include": [
+      "src",
+      "deno.json",
+      "README.md",
+      "library-metadata.json",
+      "EXPORTS-FS.md",
+      "WEBSTREAM.md"
+    ]
   },
   "tests": {
     "include": [
@@ -39,19 +49,18 @@
   },
   "imports": {
     "$mod": "./src/mod.ts",
-    "$fs": "./src/fs.ts",
     "$error": "./src/error/mod.ts",
     "$util": "./src/util/mod.ts",
     "$spec": "./src/spec/mod.ts",
     "$walk": "./src/walk/mod.ts",
     "@epdoc/datetime": "jsr:@epdoc/datetime@^3.2.3",
-    "@epdoc/response": "jsr:@epdoc/response@^0.1.14",
-    "@epdoc/string": "jsr:@epdoc/string@^0.1.24",
     "@epdoc/type": "jsr:@epdoc/type@^1.2.6",
+    "@std/assert": "jsr:@std/assert@^1.0.19",
     "@std/bytes": "jsr:@std/bytes@^1.0.6",
     "@std/encoding": "jsr:@std/encoding@^1.0.10",
-    "@std/fs": "jsr:@std/fs@^1.0.23",
+    "@std/expect": "jsr:@std/expect@^1.0.18",
     "@std/path": "jsr:@std/path@^1.1.4",
+    "@std/testing": "jsr:@std/testing@^1.0.17",
     "@std/toml": "jsr:@std/toml@^1.0.11",
     "@std/yaml": "jsr:@std/yaml@^1.0.12"
   }

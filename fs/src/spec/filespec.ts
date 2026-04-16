@@ -190,6 +190,33 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   }
 
   /**
+   * Creates a new FileSpec from a file:// URL string.
+   *
+   * @param url - The file URL string (e.g., "file:///path/to/file.ts")
+   * @returns {FileSpec} A new FileSpec instance
+   *
+   * @example
+   * const file = FileSpec.fromFileUrl('file:///home/user/documents/file.txt');
+   * console.log(file.path); // '/home/user/documents/file.txt'
+   */
+  public static fromFileUrl(url: string): FileSpec {
+    return new FileSpec(Util.fileURLToPath(url));
+  }
+
+  /**
+   * Returns the file:// URL for this file path.
+   *
+   * @returns {string} The file URL string (e.g., "file:///path/to/file.ts")
+   *
+   * @example
+   * const file = new FileSpec('/home/user/documents/file.txt');
+   * console.log(file.toFileUrl()); // 'file:///home/user/documents/file.txt'
+   */
+  public toFileUrl(): string {
+    return Util.pathToFileURL(this._f).href;
+  }
+
+  /**
    * Return a copy of this object. Does not copy the file.
    * @see FileSpec#copyTo
    */
