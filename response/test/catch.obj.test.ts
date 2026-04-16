@@ -1,7 +1,7 @@
 import { delayPromise } from '@epdoc/type';
 import { assertEquals } from '@std/assert';
 import { describe, it } from '@std/testing/bdd';
-import { wrap } from './catch-obj.ts';
+import * as Resp from '../src/mod.ts';
 
 describe('tryCatch', () => {
   it('handles successful promises', async () => {
@@ -10,7 +10,7 @@ describe('tryCatch', () => {
     const promise = Promise.resolve(testData);
 
     // Execute
-    const result = await wrap(promise);
+    const result = await Resp.catchAsObj.wrap(promise);
 
     // Verify
     assertEquals(result.error, null);
@@ -23,7 +23,7 @@ describe('tryCatch', () => {
     const promise = Promise.reject(new Error(errorMessage));
 
     // Execute
-    const result = await wrap(promise);
+    const result = await Resp.catchAsObj.wrap(promise);
 
     // Verify
     assertEquals(result.data, null);
@@ -42,7 +42,7 @@ describe('tryCatch', () => {
     };
 
     // Execute
-    const result = await wrap(asyncFn());
+    const result = await Resp.catchAsObj.wrap(asyncFn());
 
     // Verify
     assertEquals(result.data, null);
@@ -58,13 +58,13 @@ describe('tryCatch', () => {
     const objectPromise = Promise.resolve({ key: 'value' });
 
     // Execute & Verify
-    const numResult = await wrap(numberPromise);
+    const numResult = await Resp.catchAsObj.wrap(numberPromise);
     assertEquals(numResult.data, 42);
 
-    const strResult = await wrap(stringPromise);
+    const strResult = await Resp.catchAsObj.wrap(stringPromise);
     assertEquals(strResult.data, 'hello');
 
-    const objResult = await wrap(objectPromise);
+    const objResult = await Resp.catchAsObj.wrap(objectPromise);
     assertEquals(objResult.data, { key: 'value' });
   });
 });

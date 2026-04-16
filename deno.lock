@@ -3,18 +3,13 @@
   "specifiers": {
     "jsr:@epdoc/datetime@^3.2.3": "3.2.3",
     "jsr:@epdoc/duration@~0.3.7": "0.3.7",
-    "jsr:@epdoc/fs@^1.3.1": "1.3.1",
-    "jsr:@epdoc/response@~0.1.14": "0.1.14",
-    "jsr:@epdoc/string@~0.1.24": "0.1.24",
     "jsr:@epdoc/type@1.0.3": "1.0.3",
-    "jsr:@epdoc/type@^1.2.6": "1.2.6",
-    "jsr:@std/assert@^1.0.15": "1.0.19",
     "jsr:@std/assert@^1.0.17": "1.0.19",
     "jsr:@std/assert@^1.0.19": "1.0.19",
+    "jsr:@std/async@^1.1.0": "1.2.0",
     "jsr:@std/bytes@^1.0.5": "1.0.5",
     "jsr:@std/bytes@^1.0.6": "1.0.6",
     "jsr:@std/cli@*": "1.0.20",
-    "jsr:@std/cli@^1.0.28": "1.0.28",
     "jsr:@std/collections@^1.1.3": "1.1.6",
     "jsr:@std/data-structures@^1.0.10": "1.0.10",
     "jsr:@std/encoding@*": "1.0.9",
@@ -23,7 +18,6 @@
     "jsr:@std/fmt@*": "1.0.8",
     "jsr:@std/fmt@^1.0.9": "1.0.9",
     "jsr:@std/fs@^1.0.22": "1.0.23",
-    "jsr:@std/fs@^1.0.23": "1.0.23",
     "jsr:@std/internal@^1.0.12": "1.0.12",
     "jsr:@std/path@^1.1.4": "1.1.4",
     "jsr:@std/testing@^1.0.17": "1.0.17",
@@ -45,43 +39,17 @@
     "@epdoc/duration@0.3.7": {
       "integrity": "072439378eeca1e7b83d43d78ca7fe7e3285f3bda0e7554f69c7f7ee4153938a"
     },
-    "@epdoc/fs@1.3.1": {
-      "integrity": "945fea9b960c531e30ebdbf021e0e22c1c89aba5a97b36e062d70adc49c37211",
-      "dependencies": [
-        "jsr:@std/assert@^1.0.15",
-        "jsr:@std/bytes@^1.0.6",
-        "jsr:@std/encoding@^1.0.10",
-        "jsr:@std/path",
-        "jsr:@std/toml",
-        "jsr:@std/yaml"
-      ]
-    },
-    "@epdoc/response@0.1.14": {
-      "integrity": "916cb4e94f6d2ebfeec0997bad82c52b21942f6a86a5d6206bd4bab3d28e2a40",
-      "dependencies": [
-        "jsr:@std/assert@^1.0.19"
-      ]
-    },
-    "@epdoc/string@0.1.24": {
-      "integrity": "eb27e12241f122dbb1793019565c5d002606be290c22bad7eba1a75078c10b42",
-      "dependencies": [
-        "jsr:@std/assert@^1.0.19"
-      ]
-    },
     "@epdoc/type@1.0.3": {
       "integrity": "fec5a44cb1568c77e41ff2139e5503da9291d302ddf3443ed02dca68f7307045"
-    },
-    "@epdoc/type@1.2.6": {
-      "integrity": "d4cccf7df55a40dfd4a70019857b00527f6cd50be6b711e11337914c6da7641e",
-      "dependencies": [
-        "jsr:@std/encoding@^1.0.10"
-      ]
     },
     "@std/assert@1.0.19": {
       "integrity": "eaada96ee120cb980bc47e040f82814d786fe8162ecc53c91d8df60b8755991e",
       "dependencies": [
         "jsr:@std/internal"
       ]
+    },
+    "@std/async@1.2.0": {
+      "integrity": "c059c6f6d95ca7cc012ae8e8d7164d1697113d54b0b679e4372b354b11c2dee5"
     },
     "@std/bytes@1.0.5": {
       "integrity": "4465dd739d7963d964c809202ebea6d5c6b8e3829ef25c6a224290fbb8a1021e"
@@ -91,13 +59,6 @@
     },
     "@std/cli@1.0.20": {
       "integrity": "a8c384a2c98cec6ec6a2055c273a916e2772485eb784af0db004c5ab8ba52333"
-    },
-    "@std/cli@1.0.28": {
-      "integrity": "74ef9b976db59ca6b23a5283469c9072be6276853807a83ec6c7ce412135c70a",
-      "dependencies": [
-        "jsr:@std/fmt@^1.0.9",
-        "jsr:@std/internal"
-      ]
     },
     "@std/collections@1.1.6": {
       "integrity": "b458160ce65ea5ad35da05d0a5cbee4b583677c8b443a10d7beb0c4ac63f2baa"
@@ -128,7 +89,6 @@
     "@std/fs@1.0.23": {
       "integrity": "3ecbae4ce4fee03b180fa710caff36bb5adb66631c46a6460aaad49515565a37",
       "dependencies": [
-        "jsr:@std/internal",
         "jsr:@std/path"
       ]
     },
@@ -154,8 +114,9 @@
       "integrity": "87bdc2700fa98249d48a17cd72413352d3d3680dcfbdb64947fd0982d6bbf681",
       "dependencies": [
         "jsr:@std/assert@^1.0.17",
+        "jsr:@std/async",
         "jsr:@std/data-structures",
-        "jsr:@std/fs@^1.0.22",
+        "jsr:@std/fs",
         "jsr:@std/internal",
         "jsr:@std/path"
       ]
@@ -276,28 +237,21 @@
     "https://deno.land/std@0.224.0/path/windows/to_namespaced_path.ts": "4ffa4fb6fae321448d5fe810b3ca741d84df4d7897e61ee29be961a6aac89a4c"
   },
   "workspace": {
-    "dependencies": [
-      "jsr:@epdoc/duration@~0.3.7",
-      "jsr:@epdoc/fs@^1.3.1",
-      "jsr:@epdoc/string@~0.1.24",
-      "jsr:@epdoc/type@^1.2.6",
-      "jsr:@std/assert@^1.0.19",
-      "jsr:@std/expect@^1.0.18",
-      "jsr:@std/fmt@^1.0.9",
-      "jsr:@std/testing@^1.0.17"
-    ],
     "members": {
       "daterange": {
         "dependencies": [
           "jsr:@epdoc/datetime@^3.2.3",
           "jsr:@epdoc/type@^1.2.6",
-          "jsr:@std/cli@^1.0.28"
+          "jsr:@std/assert@^1.0.19",
+          "jsr:@std/expect@^1.0.18",
+          "jsr:@std/testing@^1.0.17"
         ]
       },
       "datetime": {
         "dependencies": [
           "jsr:@epdoc/type@^1.2.6",
-          "jsr:@std/expect@^1.0.18"
+          "jsr:@std/expect@^1.0.18",
+          "jsr:@std/testing@^1.0.17"
         ]
       },
       "duration": {
@@ -310,13 +264,13 @@
       "fs": {
         "dependencies": [
           "jsr:@epdoc/datetime@^3.2.3",
-          "jsr:@epdoc/response@~0.1.14",
-          "jsr:@epdoc/string@~0.1.24",
           "jsr:@epdoc/type@^1.2.6",
+          "jsr:@std/assert@^1.0.19",
           "jsr:@std/bytes@^1.0.6",
           "jsr:@std/encoding@^1.0.10",
-          "jsr:@std/fs@^1.0.23",
+          "jsr:@std/expect@^1.0.18",
           "jsr:@std/path@^1.1.4",
+          "jsr:@std/testing@^1.0.17",
           "jsr:@std/toml@^1.0.11",
           "jsr:@std/yaml@^1.0.12"
         ]
@@ -324,21 +278,26 @@
       "progress": {
         "dependencies": [
           "jsr:@epdoc/type@^1.2.6",
-          "jsr:@std/assert@^1.0.19",
-          "jsr:@std/fmt@^1.0.9"
+          "jsr:@std/expect@^1.0.18",
+          "jsr:@std/fmt@^1.0.9",
+          "jsr:@std/testing@^1.0.17"
         ]
       },
       "response": {
         "dependencies": [
           "jsr:@epdoc/type@^1.2.6",
-          "jsr:@std/assert@^1.0.19"
+          "jsr:@std/assert@^1.0.19",
+          "jsr:@std/expect@^1.0.18",
+          "jsr:@std/testing@^1.0.17"
         ]
       },
       "string": {
         "dependencies": [
           "jsr:@epdoc/datetime@^3.2.3",
           "jsr:@epdoc/type@^1.2.6",
-          "jsr:@std/assert@^1.0.19"
+          "jsr:@std/assert@^1.0.19",
+          "jsr:@std/expect@^1.0.18",
+          "jsr:@std/testing@^1.0.17"
         ]
       },
       "table": {
@@ -346,18 +305,24 @@
           "jsr:@epdoc/datetime@^3.2.3",
           "jsr:@epdoc/duration@~0.3.7",
           "jsr:@epdoc/type@^1.2.6",
-          "jsr:@std/fmt@^1.0.9"
+          "jsr:@std/assert@^1.0.19",
+          "jsr:@std/fmt@^1.0.9",
+          "jsr:@std/testing@^1.0.17"
         ]
       },
       "terminal": {
         "dependencies": [
+          "jsr:@std/expect@^1.0.18",
           "jsr:@std/fmt@^1.0.9",
-          "jsr:@std/path@^1.1.4"
+          "jsr:@std/path@^1.1.4",
+          "jsr:@std/testing@^1.0.17"
         ]
       },
       "type": {
         "dependencies": [
-          "jsr:@std/encoding@^1.0.10"
+          "jsr:@std/encoding@^1.0.10",
+          "jsr:@std/expect@^1.0.18",
+          "jsr:@std/testing@^1.0.17"
         ]
       }
     }

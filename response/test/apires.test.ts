@@ -1,7 +1,7 @@
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 import { resolve } from 'node:path';
-import { catchError } from './apires.ts';
+import { catchError } from '../src/mod.ts';
 
 const pwd: string = import.meta.dirname as string;
 
