@@ -136,7 +136,7 @@ Consistent API response helpers with safe error wrapping.
 @epdoc/datetime   →  @epdoc/type
 @epdoc/duration   →  @epdoc/type
 @epdoc/fs         →  (no internal @epdoc deps)
-@epdoc/string     →  @epdoc/datetime, @epdoc/type
+@epdoc/string     →  @epdoc/type
 @epdoc/response   →  @epdoc/type
 @epdoc/type       →  (no internal @epdoc deps; foundational package)
 ```

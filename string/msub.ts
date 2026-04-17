@@ -6,9 +6,7 @@
  * literals.
  */
 
-import { assert } from '@std/assert';
-import { isDate, isNumber, isObject } from '@epdoc/type';
-import { isFunction, isString } from '@epdoc/type';
+import { isDate, isFunction, isNumber, isObject, isString } from '@epdoc/type';
 
 /**
  * Options for initializing the MSub instance.
@@ -115,7 +113,9 @@ class MSubImpl implements IMSub {
       } else {
         this.close = this.mirrorBraces(this.open);
       }
-      assert(this.close !== undefined, 'close brace cannot be undefined');
+      if (this.close === undefined) {
+        throw new Error('close brace cannot be undefined');
+      }
       this.uppercase = options.uppercase === true ? true : false;
       this.format = options.format ? options.format : undefined;
     } else {
@@ -175,8 +175,10 @@ class MSubImpl implements IMSub {
 
       const sub = (str: string): string => {
         const p = str.split(':');
-        const key = p.shift();
-        assert(isString(key), 'key must be a string');
+        const key = p.shift() as string;
+        if (!isString(key)) {
+          throw new Error('key must be a string');
+        }
         const format = p.shift();
         let val;
         const index = arr.length && REG.number.test(key) ? parseInt(key, 10) : -1;
@@ -190,7 +192,7 @@ class MSubImpl implements IMSub {
             // @ts-ignore cannot find a ts syntax that makes lint happy
             val = val[format as keyof Date](...p);
           } else if (isFunction(this.format)) {
-            val = this.format(val, format);
+            val = (this.format as FormatCallback)(val, format ?? '');
           } else {
             val = val.toString();
           }
@@ -199,11 +201,13 @@ class MSubImpl implements IMSub {
           if (format && isFunction(val[format as keyof number])) {
             // @ts-ignore cannot find a ts syntax that makes lint happy
             val = val[format as keyof number](...p);
-          } else if (format && isFunction(this.format)) {
-            val = this.format(val, format);
+          } else if (isFunction(this.format)) {
+            val = (this.format as FormatCallback)(val, format ?? '');
           } else {
             val = String(val);
           }
+        } else if (format && isFunction(this.format)) {
+          val = (this.format as FormatCallback)(val, format);
         }
         return val;
       };
@@ -222,7 +226,7 @@ class MSubImpl implements IMSub {
             const key = remainder.slice(0, k);
             const val = sub(key);
             if (val !== undefined) {
-              out += val;
+              out += String(val);
             } else {
               out += this.open + key + this.close;
             }

@@ -8,7 +8,7 @@
     "msub namespace — string substitution: msub.simple() for basic, msub.advanced() for complex patterns"
   ],
   "dependencies": {
-    "internal": ["@epdoc/datetime", "@epdoc/type"],
+    "internal": ["@epdoc/type"],
     "external": ["@std/assert"]
   },
   "keyPatterns": [

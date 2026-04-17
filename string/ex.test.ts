@@ -1,4 +1,3 @@
-import { dateEx, type TzMinutes } from '@epdoc/datetime';
 import { expect } from '@std/expect';
 import { describe, test } from '@std/testing/bdd';
 import { msub, StringEx } from './mod.ts';
@@ -88,19 +87,24 @@ describe('msub', () => {
     );
   });
   test('date custom formatting', () => {
-    const d = new Date('2024-11-15T00:00:00.000Z');
-    const fmt1 = (_d: Date, _f: string) => {
-      return dateEx(_d).setTz(360 as TzMinutes).toISOLocalString() as string;
+    const d = Temporal.ZonedDateTime.from('2024-11-15T00:00:00Z[UTC]');
+    const fmt1 = (_d: Temporal.ZonedDateTime, _f: string) => {
+      return _d.toString() as string;
     };
-    const fmt2 = (d: Date, f: string) => {
-      return dateEx(d).setTz(0 as TzMinutes).format(f);
+    const fmt2 = (val: Temporal.ZonedDateTime, f: string) => {
+      if (val instanceof Temporal.ZonedDateTime) {
+        if (f === 'yyyy/MM/dd') {
+          return `${val.year}/${String(val.month).padStart(2, '0')}/${String(val.day).padStart(2, '0')}`;
+        }
+      }
+      return String(val);
     };
 
-    const r0 = msub.init({ format: fmt1 }).replace('The date is ${a:toISOString}', { a: d });
-    expect(r0).toBe('The date is 2024-11-15T00:00:00.000Z'); // fmt is ignored because a:toISOstring takes precedence
+    const r0 = msub.init({ format: fmt1 }).replace('The date is ${a:toString}', { a: d });
+    expect(r0).toBe('The date is 2024-11-15T00:00:00+00:00[UTC]');
 
     const r1 = msub.init({ format: fmt1 }).replace('The date is ${a}', { a: d });
-    expect(r1).toBe('The date is 2024-11-14T18:00:00.000-06:00');
+    expect(r1).toBe('The date is 2024-11-15T00:00:00+00:00[UTC]');
 
     const r2 = msub.init({ format: fmt2 }).replace('The date is ${a:yyyy/MM/dd}', { a: d });
     expect(r2).toBe('The date is 2024/11/15');
