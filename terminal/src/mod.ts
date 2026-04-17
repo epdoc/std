@@ -25,11 +25,13 @@
 // Re-export from submodules
 export * from './keys.ts';
 export * from './pager.ts';
+export * from './prompt.ts';
 export * from './screen.ts';
 
 // Namespace imports for convenience
 import * as keysModule from './keys.ts';
 import * as pagerModule from './pager.ts';
+import * as promptModule from './prompt.ts';
 import * as screenModule from './screen.ts';
 
 /** Keys namespace for key input handling */
@@ -37,6 +39,9 @@ export const keys = keysModule;
 
 /** Pager namespace for pagination */
 export const pager = pagerModule;
+
+/** Prompt namespace for user input */
+export const prompt = promptModule;
 
 /** Screen namespace for terminal control */
 export const screen = screenModule;

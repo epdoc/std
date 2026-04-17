@@ -1,7 +1,7 @@
 # @epdoc/terminal
 
-Terminal control utilities for CLI applications. Provides screen manipulation, cursor control, key input handling, and
-interactive pagination.
+Terminal control utilities for CLI applications. Provides screen manipulation, cursor control, key input handling,
+interactive pagination, and user prompts.
 
 ## Installation
 
@@ -90,12 +90,32 @@ await pager.autoDisplay(lines, {
 });
 ```
 
+### User Prompts
+
+```typescript
+import { prompt } from '@epdoc/terminal';
+
+// Simple text prompt
+const name = await prompt.promptUser('Enter your name:');
+
+// Prompt with abort keyword (user can type 'quit' to cancel)
+const confirm = await prompt.promptUser('Continue? (type "quit" to cancel):', {
+  abortKeyword: 'quit',
+});
+
+if (!confirm) {
+  console.log('Operation cancelled');
+  return;
+}
+```
+
 ## Exports
 
-- `.` - All namespaces (screen, keys, pager, Keys)
+- `.` - All namespaces (screen, keys, pager, prompt, Keys)
 - `./screen` - Screen and cursor utilities only
 - `./keys` - Key codes and input handling only
 - `./pager` - Interactive pagination only
+- `./prompt` - User input prompts only
 
 ## API Reference
 
@@ -132,6 +152,10 @@ Key codes as string literals: `SPACE`, `ENTER`, `NEWLINE`, `ESC`, `CTRL_C`, `CTR
 
 - `display(lines, options?): Promise<PagerResult>` - Interactive pagination
 - `autoDisplay(lines, options?): Promise<void>` - Auto-advance pagination
+
+### prompt namespace
+
+- `promptUser(message, options?): Promise<string>` - Prompt user for line input
 
 ## Development
 

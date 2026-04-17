@@ -1,13 +1,13 @@
 {
   "identity": {
     "name": "@epdoc/terminal",
-    "purpose": "Terminal control utilities for CLI applications including screen manipulation, cursor control, key input handling, and interactive pagination",
+    "purpose": "Terminal control utilities for CLI applications including screen manipulation, cursor control, key input handling, interactive pagination, and user prompts",
     "type": "utility",
     "complexity": "moderate"
   },
   "quickStart": {
-    "pattern": "Import namespaces (screen, keys, pager) and use their functions",
-    "code": "import { screen, keys, pager } from '@epdoc/terminal';\n\nconst { columns, rows } = screen.getTerminalSize();\nconst key = await keys.readKey();\nawait pager.display(lines, { pageSize: 20 });"
+    "pattern": "Import namespaces (screen, keys, pager, prompt) and use their functions",
+    "code": "import { screen, keys, pager, prompt } from '@epdoc/terminal';\n\nconst { columns, rows } = screen.getTerminalSize();\nconst key = await keys.readKey();\nawait pager.display(lines, { pageSize: 20 });\nconst input = await prompt.promptUser('Enter value:');"
   },
   "exports": [
     {
@@ -27,6 +27,12 @@
       "role": "main_entry",
       "description": "Interactive pagination with less-like navigation",
       "whenToUse": "When displaying large amounts of text that needs pagination"
+    },
+    {
+      "name": "prompt",
+      "role": "main_entry",
+      "description": "User input prompts for CLI applications",
+      "whenToUse": "When you need to prompt the user for text input via stdin"
     },
     {
       "name": "Keys",
@@ -50,6 +56,11 @@
       "name": "Content Pagination",
       "when": "Displaying large output that doesn't fit on screen",
       "code": "const result = await pager.display(lines, {\n  pageSize: 20,\n  showStatus: true,\n  prompt: 'Press space for more, q to quit'\n});"
+    },
+    {
+      "name": "User Input Prompts",
+      "when": "Need to get input from the user via command line",
+      "code": "const name = await prompt.promptUser('Enter your name:');\nconst confirm = await prompt.promptUser('Continue? (type \"quit\" to cancel):', {\n  abortKeyword: 'quit'\n});\nif (!confirm) {\n  console.log('Cancelled');\n  return;\n}"
     }
   ],
   "relationships": {
