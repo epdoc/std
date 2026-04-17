@@ -1,6 +1,6 @@
 import { expect } from '@std/expect';
 import { describe, test } from '@std/testing/bdd';
-import { msub, StringEx } from './mod.ts';
+import { msub, StringEx } from '../src/mod.ts';
 
 describe('StringEx', () => {
   test('pluralize', () => {

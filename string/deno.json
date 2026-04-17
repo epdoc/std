@@ -1,14 +1,12 @@
 {
   "name": "@epdoc/string",
-  "version": "0.1.25",
+  "version": "0.1.26",
   "exports": {
-    ".": "./mod.ts"
+    ".": "./src/mod.ts"
   },
   "publish": {
     "include": [
-      "mod.ts",
-      "ex.ts",
-      "msub.ts",
+      "src",
       "deno.json",
       "README.md",
       "library-metadata.json"
@@ -16,10 +14,10 @@
   },
   "tasks": {
     "fmt": "deno fmt src test *.json",
-    "lint": "deno lint *.json *.ts",
-    "check": "deno check *.json *.ts",
-    "test": "deno test -A *.test.ts",
-    "docs": "deno doc --json mod.ts > library-docs.json",
+    "lint": "deno lint *.json src test",
+    "check": "deno check *.json src test",
+    "test": "deno test -A ./test/*.test.ts",
+    "docs": "deno doc --json ./src/mod.ts > library-docs.json",
     "ok": "deno fmt && deno task lint && deno task check && deno task test && deno task docs"
   },
   "imports": {
