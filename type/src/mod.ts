@@ -60,8 +60,8 @@
  */
 
 // Re-export all modules
-export * from "./combiner.ts";
-export * as _ from "./combiner.ts";
-export * from "./dictutil.ts";
-export { default as stripJsonComments } from "./strip-comments.ts";
-export * from "./types.ts";
+export * from './combiner.ts';
+export * as _ from './combiner.ts';
+export * from './dictutil.ts';
+export { default as stripJsonComments } from './strip-comments.ts';
+export * from './types.ts';
