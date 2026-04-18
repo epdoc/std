@@ -28,7 +28,7 @@ export type StyleFn = (text: string) => string;
  * const whiteOnRed: ColorSpec = { fg: 0xffffff, bg: 0xff0000 };
  * ```
  */
-export type ColorSpec = {
+export type Def = {
   /** Foreground (text) color as a hex number (e.g., 0x51d67c) */
   fg?: number;
   /** Background color as a hex number (e.g., 0x1a1a2e) */
@@ -59,4 +59,66 @@ export type ColorSpec = {
  * const styledText: ColorType = (s) => bold(rgb24(s, 0x58d1eb));
  * ```
  */
-export type ColorType = StyleFn | number | ColorSpec;
+export type Spec = StyleFn | number | Def;
+
+export const palette = {
+  // Neutrals
+  black: 0x000000,
+  charcoal: 0x374151,
+  slate: 0x64748b,
+  steel: 0x8899aa, // blue-gray
+  gray: 0x9ca3af,
+  cream: 0xfdf6e3,
+  tan: 0xd2b48c,
+  taupe: 0xb5a090,
+  stone: 0xa89880,
+  white: 0xffffff,
+
+  // Reds
+  crimson: 0xdc143c,
+  red: 0xef4444,
+  coral: 0xff6b6b,
+  rose: 0xfb7185,
+  pink: 0xef5867,
+  terracotta: 0xe07850,
+  rust: 0xc44f1e,
+
+  // Oranges / Yellows
+  orange: 0xf0883e,
+  amber: 0xffb020,
+  gold: 0xff981a,
+  yellow: 0xfbbf24,
+  lemon: 0xfde047,
+
+  // Greens
+  lime: 0xa3e635,
+  green: 0x51d67c,
+  mint: 0x6ee7b7,
+  teal: 0x2dd4a8,
+  sage: 0x8fad88,
+  olive: 0xa8b040,
+  moss: 0x7a9a5a,
+
+  // Blues
+  navy: 0x1e3a5f,
+  blue: 0x60a5fa,
+  sky: 0x38bdf8,
+  cyan: 0x58d1eb,
+
+  // Purples
+  indigo: 0x818cf8,
+  violet: 0xa78bfa,
+  purple: 0xa855f7,
+  lavender: 0xc4b5fd,
+  lilac: 0xe0a0ff,
+  magenta: 0xe879f9,
+
+  // Earth tones
+  sand: 0xe8c99a,
+  wheat: 0xf5deb3,
+  ochre: 0xcb8c00,
+  bronze: 0xcd7f32,
+  copper: 0xb87333,
+  sienna: 0xc47a45,
+  brown: 0xa0724a,
+} as const;
