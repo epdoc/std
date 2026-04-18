@@ -302,7 +302,7 @@
       },
       "progress": {
         "dependencies": [
-          "jsr:@epdoc/type@^1.2.8",
+          "jsr:@epdoc/type@^1.2.10",
           "jsr:@std/expect@^1.0.18",
           "jsr:@std/fmt@^1.0.9",
           "jsr:@std/testing@^1.0.17"
