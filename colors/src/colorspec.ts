@@ -49,16 +49,16 @@ export type Def = {
  * import { bold, rgb24 } from '@std/fmt/colors';
  *
  * // Foreground color shorthand (most common)
- * const redText: ColorType = 0xff0000;
+ * const redText: Spec = 0xff0000;
  *
  * // Background color
- * const bgBlue: ColorType = { bg: 0x0000ff };
+ * const bgBlue: Spec = { bg: 0x0000ff };
  *
  * // Both foreground and background
- * const whiteOnBlack: ColorType = { fg: 0xffffff, bg: 0x000000 };
+ * const whiteOnBlack: Spec = { fg: 0xffffff, bg: 0x000000 };
  *
  * // Full control with StyleFn
- * const styledText: ColorType = (s) => bold(rgb24(s, 0x58d1eb));
+ * const styledText: Spec = (s) => bold(rgb24(s, 0x58d1eb));
  * ```
  */
 export type Spec = StyleFn | number | Def;
@@ -105,6 +105,10 @@ export function apply(text: string, spec: Spec): string {
   return toStyleFn(spec)(text);
 }
 
+/**
+ * A curated collection of hex color constants.
+ * Includes basic colors, earth tones, and neutrals suitable for CLI applications.
+ */
 export const palette = {
   // Neutrals
   black: 0x000000,
