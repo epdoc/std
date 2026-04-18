@@ -1,4 +1,4 @@
-import type { Integer } from '@epdoc/type';
+import type { Color, Integer } from '@epdoc/type';
 import { bgRgb24, rgb24 } from '@std/fmt/colors';
 import { padVisual, stripAnsi, visibleTruncate } from './terminal.ts';
 import type * as Table from './types.ts';
@@ -53,17 +53,17 @@ export class TableRenderer<T> {
   #data: T[];
   #padding: Integer;
   #widths: Record<keyof T, number> | null = null;
-  #headerStyle: Table.StyleFn | undefined;
-  #headerBgStyle: Table.StyleFn | undefined;
-  #rowStyles: [Table.StyleFn | null | undefined, Table.StyleFn | null | undefined] = [null, null];
-  #rowBgStyles: [Table.StyleFn | null | undefined, Table.StyleFn | null | undefined] = [null, null];
+  #headerStyle: Color.StyleFn | undefined;
+  #headerBgStyle: Color.StyleFn | undefined;
+  #rowStyles: [Color.StyleFn | null | undefined, Color.StyleFn | null | undefined] = [null, null];
+  #rowBgStyles: [Color.StyleFn | null | undefined, Color.StyleFn | null | undefined] = [null, null];
   #noColor: boolean;
   #dividerChar: string = '-';
-  #dividerStyle: Table.StyleFn | undefined;
+  #dividerStyle: Color.StyleFn | undefined;
   #topBorder: boolean = false;
   #bottomBorder: boolean = false;
   #borders: Table.BorderConfig | undefined;
-  static #identity: Table.StyleFn = (s) => s;
+  static #identity: Color.StyleFn = (s) => s;
 
   /**
    * Creates a new TableFormatter with fluent API.
@@ -151,7 +151,7 @@ export class TableRenderer<T> {
    * @param val - A {@link ColorType} specifying the color/style
    * @returns This instance for method chaining
    */
-  headerStyle(val: Table.ColorType): this {
+  headerStyle(val: Color.Spec): this {
     this.#headerStyle = Util.resolveColor(val);
     this.#headerBgStyle = Util.resolveBgColor(val);
     return this;
@@ -163,7 +163,7 @@ export class TableRenderer<T> {
    * @param val - A {@link ColorType} specifying the color/style
    * @returns This instance for method chaining
    */
-  header(val: Table.ColorType): this {
+  header(val: Color.Spec): this {
     return this.headerStyle(val);
   }
 
@@ -173,7 +173,7 @@ export class TableRenderer<T> {
    * @param val - A {@link ColorType} specifying the color/style
    * @returns This instance for method chaining
    */
-  oddRow(val: Table.ColorType): this {
+  oddRow(val: Color.Spec): this {
     this.#rowStyles[0] = Util.resolveColor(val);
     this.#rowBgStyles[0] = Util.resolveBgColor(val);
     return this;
@@ -185,7 +185,7 @@ export class TableRenderer<T> {
    * @param val - A {@link ColorType} specifying the color/style
    * @returns This instance for method chaining
    */
-  evenRow(val: Table.ColorType): this {
+  evenRow(val: Color.Spec): this {
     this.#rowStyles[1] = Util.resolveColor(val);
     this.#rowBgStyles[1] = Util.resolveBgColor(val);
     return this;
@@ -220,7 +220,7 @@ export class TableRenderer<T> {
    * @param val - A {@link ColorType} specifying the color/style
    * @returns This instance for method chaining
    */
-  dividerStyle(val: Table.ColorType): this {
+  dividerStyle(val: Color.Spec): this {
     this.#dividerStyle = Util.resolveColor(val);
     return this;
   }
@@ -257,7 +257,7 @@ export class TableRenderer<T> {
    * @param color - Optional color for border characters
    * @returns This instance for method chaining
    */
-  borders(enabled = true, style: Table.BorderStyle = 'light', color?: Table.ColorType): this {
+  borders(enabled = true, style: Table.BorderStyle = 'light', color?: Color.Spec): this {
     this.#borders = {
       enabled,
       style,
@@ -288,7 +288,7 @@ export class TableRenderer<T> {
    * @param color - Color specification for border characters
    * @returns This instance for method chaining
    */
-  borderColor(color: Table.ColorType): this {
+  borderColor(color: Color.Spec): this {
     if (!this.#borders) {
       this.#borders = { enabled: false };
     }
