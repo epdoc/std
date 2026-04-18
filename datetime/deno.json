@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/datetime",
-  "version": "3.2.4",
+  "version": "3.2.5",
   "exports": "./src/mod.ts",
   "publish": {
     "include": [
@@ -20,7 +20,7 @@
     "ok": "deno fmt && deno task lint && deno task check && deno task test && deno task docs"
   },
   "imports": {
-    "@epdoc/type": "jsr:@epdoc/type@^1.2.8",
+    "@epdoc/type": "jsr:@epdoc/type@^1.2.10",
     "@std/expect": "jsr:@std/expect@^1.0.18",
     "@std/testing": "jsr:@std/testing@^1.0.17"
   }
