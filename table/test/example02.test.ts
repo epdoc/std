@@ -4,12 +4,12 @@
  * Demonstrates how to add colors, header styling, and zebra striping.
  */
 
-import { describe, it } from '@std/testing/bdd';
+import type { Color } from '@epdoc/colors';
 import { bgRgb24, bold, rgb24 } from '@std/fmt/colors';
-import { Color } from '@epdoc/colors';
+import { describe, it } from '@std/testing/bdd';
 import { TableRenderer } from '../src/render.ts';
-import { buildColumns } from '../src/utils.ts';
 import type { ColumnRegistry } from '../src/types.ts';
+import { buildColumns } from '../src/utils.ts';
 
 describe('Example 02: Styled Table', () => {
   it('should render a table with colors and styling', () => {

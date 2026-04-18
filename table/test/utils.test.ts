@@ -1,9 +1,9 @@
+import type { Color } from '@epdoc/colors';
 import { assertEquals } from '@std/assert';
 import { bgRgb24, rgb24 } from '@std/fmt/colors';
 import { describe, it } from '@std/testing/bdd';
-import { buildColumns, calculateColumnWidths, isRowStyle, resolveColor } from '../src/utils.ts';
-import { Color } from '@epdoc/colors';
 import type { Column, ColumnRegistry, RowStyles } from '../src/types.ts';
+import { buildColumns, calculateColumnWidths, isRowStyle, resolveColor } from '../src/utils.ts';
 
 describe('buildColumns', () => {
   type TestRow = {

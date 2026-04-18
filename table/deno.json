@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/table",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "exports": {
     ".": "./src/mod.ts"
   },
@@ -21,6 +21,7 @@
     "ok": "deno fmt && deno task lint && deno task check && deno task test && deno task docs"
   },
   "imports": {
+    "@epdoc/colors": "jsr:@epdoc/colors@^0.1.0",
     "@epdoc/datetime": "jsr:@epdoc/datetime@^3.2.5",
     "@epdoc/duration": "jsr:@epdoc/duration@^0.3.9",
     "@epdoc/type": "jsr:@epdoc/type@^1.2.10",
