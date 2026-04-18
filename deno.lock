@@ -4,6 +4,7 @@
     "jsr:@epdoc/colors@~0.1.2": "0.1.2",
     "jsr:@epdoc/datetime@^3.2.6": "3.2.6",
     "jsr:@epdoc/duration@~0.3.10": "0.3.10",
+    "jsr:@epdoc/fs@^1.3.5": "1.3.5",
     "jsr:@epdoc/type@1.0.3": "1.0.3",
     "jsr:@epdoc/type@^1.2.11": "1.2.11",
     "jsr:@std/assert@^1.0.17": "1.0.19",
@@ -45,6 +46,17 @@
     },
     "@epdoc/duration@0.3.10": {
       "integrity": "0ad3d0099beb0e900d383484484dfb90c688b9fa0006c81bade8c0c188c7f828"
+    },
+    "@epdoc/fs@1.3.5": {
+      "integrity": "5e84efd0fbf5bcd1bcbd431e6a3a15a74a52a20e57e30031e8c807f390d64e12",
+      "dependencies": [
+        "jsr:@std/assert@^1.0.19",
+        "jsr:@std/bytes@^1.0.6",
+        "jsr:@std/encoding@^1.0.10",
+        "jsr:@std/path",
+        "jsr:@std/toml",
+        "jsr:@std/yaml"
+      ]
     },
     "@epdoc/type@1.0.3": {
       "integrity": "fec5a44cb1568c77e41ff2139e5503da9291d302ddf3443ed02dca68f7307045"
