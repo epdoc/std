@@ -1,5 +1,5 @@
-import type { Color, Integer } from '@epdoc/type';
-import { bgRgb24, rgb24 } from '@std/fmt/colors';
+import { Color } from '@epdoc/colors';
+import type { Integer } from '@epdoc/type';
 import { padVisual, stripAnsi, visibleTruncate } from './terminal.ts';
 import type * as Table from './types.ts';
 import { BORDER_STYLES } from './types.ts';
@@ -337,29 +337,8 @@ export class TableRenderer<T> {
    * Apply border color to a string if configured.
    */
   #applyBorderColor(str: string): string {
-    if (this.#noColor || !this.#borders?.color) {
-      return str;
-    }
-
-    const color = this.#borders.color;
-
-    if (typeof color === 'function') {
-      // StyleFn
-      return color(str);
-    } else if (typeof color === 'number') {
-      // Hex color number
-      return rgb24(str, color);
-    } else {
-      // ColorSpec object { fg?, bg? }
-      let result = str;
-      if (color.bg !== undefined) {
-        result = bgRgb24(result, color.bg);
-      }
-      if (color.fg !== undefined) {
-        result = rgb24(result, color.fg);
-      }
-      return result;
-    }
+    if (this.#noColor || !this.#borders?.color) return str;
+    return Color.apply(str, this.#borders.color);
   }
 
   /**

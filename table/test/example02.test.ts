@@ -6,9 +6,10 @@
 
 import { describe, it } from '@std/testing/bdd';
 import { bgRgb24, bold, rgb24 } from '@std/fmt/colors';
+import { Color } from '@epdoc/colors';
 import { TableRenderer } from '../src/render.ts';
 import { buildColumns } from '../src/utils.ts';
-import type { ColumnRegistry, StyleFn } from '../src/types.ts';
+import type { ColumnRegistry } from '../src/types.ts';
 
 describe('Example 02: Styled Table', () => {
   it('should render a table with colors and styling', () => {
@@ -36,7 +37,7 @@ describe('Example 02: Styled Table', () => {
     const bgEven = 0x1a1a2e;
 
     // Color function for status column
-    const statusColor = (_v: unknown, row: ServerStatus): StyleFn | undefined => {
+    const statusColor = (_v: unknown, row: ServerStatus): Color.StyleFn | undefined => {
       if (row.status === 'running') return (s: string) => rgb24(s, green);
       if (row.status === 'stopped') return (s: string) => rgb24(s, red);
       if (row.status === 'warning') return (s: string) => rgb24(s, amber);
@@ -44,7 +45,7 @@ describe('Example 02: Styled Table', () => {
     };
 
     // Color function for CPU column (warn if > 80%)
-    const cpuColor = (v: unknown, _row: ServerStatus): StyleFn | undefined => {
+    const cpuColor = (v: unknown, _row: ServerStatus): Color.StyleFn | undefined => {
       const cpu = v as number;
       if (cpu > 80) return (s: string) => rgb24(s, red);
       if (cpu > 60) return (s: string) => rgb24(s, amber);

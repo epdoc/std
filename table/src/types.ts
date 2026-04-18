@@ -1,4 +1,4 @@
-import type { ColorType } from '@epdoc/type/colorspec';
+import type { Color } from '@epdoc/colors';
 
 // ── Column definition ──────────────────────────────────────────────────────
 
@@ -53,7 +53,7 @@ export type Column<T> = {
    *   : (s) => rgb24(s, red)
    * ```
    */
-  color?: (value: unknown, row: T) => ColorType | undefined;
+  color?: (value: unknown, row: T) => Color.Spec | undefined;
 };
 
 // ── Column registry & builder ──────────────────────────────────────────────
@@ -109,7 +109,7 @@ export interface Options<T> {
    * headerStyle: (s) => bold(rgb24(s, 0x58d1eb))
    * ```
    */
-  headerStyle?: ColorType;
+  headerStyle?: Color.Spec;
   /**
    * Two {@link ColorType} specifications applied to alternating data rows
    * for zebra-striping. The first entry styles rows 0, 2, 4… (even indices).
@@ -129,7 +129,7 @@ export interface Options<T> {
    * rowStyles: [null, null]
    * ```
    */
-  rowStyles?: [ColorType | null | undefined, ColorType | null | undefined];
+  rowStyles?: [Color.Spec | null | undefined, Color.Spec | null | undefined];
   /**
    * When `true`, strips all ANSI color codes from output. Useful for writing
    * to files, logs, or terminals without color support.
@@ -179,7 +179,7 @@ export interface Options<T> {
    * dividerStyle: (s) => bold(rgb24(s, 0x888888))
    * ```
    */
-  dividerStyle?: ColorType;
+  dividerStyle?: Color.Spec;
   /**
    * When `true`, renders a divider line above the header row.
    * The divider uses `dividerChar` and `dividerStyle` for its appearance.
@@ -244,7 +244,7 @@ export interface Options<T> {
 
 export type Alignment = 'left' | 'right' | 'center';
 
-export type RowStyles = [ColorType | null | undefined, ColorType | null | undefined];
+export type RowStyles = [Color.Spec | null | undefined, Color.Spec | null | undefined];
 
 // ── Border types ───────────────────────────────────────────────────────────
 
@@ -359,7 +359,7 @@ export interface BorderConfig {
    * color: (s) => rgb24(s, 0x888888)
    * ```
    */
-  color?: ColorType;
+  color?: Color.Spec;
 
   /**
    * Custom border character set. Only used when `style` is `'custom'`.

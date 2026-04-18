@@ -1,3 +1,5 @@
+import { bgRgb24, rgb24 } from '@std/fmt/colors';
+
 /**
  * A function that wraps text with ANSI styling. Compatible with all functions
  * from `@std/fmt/colors` (e.g. `bold`, `rgb24`, `dim`, `green`).
@@ -60,6 +62,48 @@ export type Def = {
  * ```
  */
 export type Spec = StyleFn | number | Def;
+
+/**
+ * Converts a {@link Spec} into a {@link StyleFn}.
+ *
+ * - `StyleFn` — returned as-is
+ * - `number` — wrapped as `rgb24(text, n)` (foreground shorthand)
+ * - `Def` — applies `fg` via `rgb24` and/or `bg` via `bgRgb24`
+ *
+ * @example
+ * ```ts
+ * import { Color } from '@epdoc/colors';
+ *
+ * const fn = Color.toStyleFn(Color.palette.cyan);  // number → fg fn
+ * const fn2 = Color.toStyleFn({ fg: 0xffffff, bg: 0x1a1a2e });
+ * ```
+ */
+export function toStyleFn(spec: Spec): StyleFn {
+  if (typeof spec === 'function') return spec;
+  if (typeof spec === 'number') return (s) => rgb24(s, spec);
+  return (s: string): string => {
+    let r = s;
+    if (spec.fg !== undefined) r = rgb24(r, spec.fg);
+    if (spec.bg !== undefined) r = bgRgb24(r, spec.bg);
+    return r;
+  };
+}
+
+/**
+ * Applies a {@link Spec} to a string, returning the styled result.
+ * Convenience wrapper over {@link toStyleFn}.
+ *
+ * @example
+ * ```ts
+ * import { Color } from '@epdoc/colors';
+ *
+ * const styled = Color.apply('hello', Color.palette.gold);
+ * const styled2 = Color.apply('world', { fg: 0xffffff, bg: 0x1a1a2e });
+ * ```
+ */
+export function apply(text: string, spec: Spec): string {
+  return toStyleFn(spec)(text);
+}
 
 export const palette = {
   // Neutrals

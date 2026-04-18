@@ -1,4 +1,4 @@
-import type { ColorSpec, StyleFn } from './types.ts';
+import type { Color } from '@epdoc/colors';
 
 /**
  * Named colors from @std/fmt/colors that can be used in the simple API.
@@ -26,8 +26,7 @@ export type StdColorName =
  * Can be a named color from @std/fmt/colors, a hex number, a ColorSpec with bg/fg,
  * or a style function.
  */
-export type SimpleColor = StdColorName | number | ColorSpec | StyleFn;
-
+export type SimpleColor = StdColorName | Color.Spec;
 /**
  * Format types available in the simple API.
  */

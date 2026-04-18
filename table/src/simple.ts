@@ -19,6 +19,7 @@ import {
   white,
   yellow,
 } from '@std/fmt/colors';
+import { Color } from '@epdoc/colors';
 import { formatters as builtinFormatters } from './formatters.ts';
 import { TableRenderer } from './render.ts';
 import type {
@@ -30,7 +31,7 @@ import type {
   StdColorName,
   TableBuilder,
 } from './simple-types.ts';
-import type { BorderStyle, ColorType, Column, StyleFn } from './types.ts';
+import type { BorderStyle, Column } from './types.ts';
 
 // Default colors for the simple API
 const DEFAULT_COLORS: Record<string, number> = {
@@ -70,10 +71,10 @@ const STD_COLORS: Record<StdColorName, (s: string) => string> = {
 /**
  * Resolves a SimpleColor to a ColorType (StyleFn, number, or ColorSpec).
  */
-function resolveSimpleColor(color: SimpleColor, palette: Record<string, number>): ColorType {
+function resolveSimpleColor(color: SimpleColor, palette: Record<string, number>): Color.Spec {
   // If it's already a function, return it
   if (typeof color === 'function') {
-    return color as StyleFn;
+    return color as Color.StyleFn;
   }
 
   // If it's a number, return it (hex color)
@@ -81,9 +82,9 @@ function resolveSimpleColor(color: SimpleColor, palette: Record<string, number>)
     return color;
   }
 
-  // If it's an object, it's a ColorSpec - return as-is
+  // If it's an object, it's a Color.Def - return as-is
   if (typeof color === 'object' && color !== null) {
-    return color as ColorType;
+    return color as Color.Spec;
   }
 
   // If it's a named color from @std/fmt/colors, use that
@@ -107,30 +108,10 @@ function resolveSimpleColor(color: SimpleColor, palette: Record<string, number>)
 }
 
 /**
- * Converts a SimpleColor to a StyleFn for consistent application.
+ * Converts a SimpleColor to a Color.StyleFn for consistent application.
  */
-function colorToStyleFn(color: SimpleColor, palette: Record<string, number>): StyleFn {
-  const resolved = resolveSimpleColor(color, palette);
-
-  if (typeof resolved === 'function') {
-    return resolved;
-  }
-
-  if (typeof resolved === 'number') {
-    return (s: string) => rgb24(s, resolved);
-  }
-
-  // ColorSpec object - apply both foreground and background
-  return (s: string): string => {
-    let result = s;
-    // Import bgRgb24 dynamically to avoid circular dependency
-    // Actually, we need to import it properly
-    // For now, just apply foreground
-    if ('fg' in resolved && resolved.fg !== undefined) {
-      result = rgb24(result, resolved.fg as number);
-    }
-    return result;
-  };
+function colorToStyleFn(color: SimpleColor, palette: Record<string, number>): Color.StyleFn {
+  return Color.toStyleFn(resolveSimpleColor(color, palette));
 }
 
 /**
@@ -139,10 +120,10 @@ function colorToStyleFn(color: SimpleColor, palette: Record<string, number>): St
 function createColorFn<T>(
   color: SimpleColor | ((value: unknown, row: T) => SimpleColor | undefined),
   palette: Record<string, number>,
-): (value: unknown, row: T) => ColorType | undefined {
+): (value: unknown, row: T) => Color.Spec | undefined {
   if (typeof color === 'function' && color.length >= 1) {
     // It's a value/row callback
-    return (value: unknown, row: T): ColorType | undefined => {
+    return (value: unknown, row: T): Color.Spec | undefined => {
       const result = (color as (value: unknown, row: T) => SimpleColor | undefined)(value, row);
       if (result === undefined) return undefined;
       return resolveSimpleColor(result, palette);
@@ -393,9 +374,9 @@ class TableBuilderImpl<T> implements TableBuilder<T> {
       columns: Column<T>[];
       data: T[];
       padding?: number;
-      headerStyle?: ColorType;
-      rowStyles?: [ColorType | null | undefined, ColorType | null | undefined];
-      borders?: { enabled: boolean; style?: BorderStyle; color?: ColorType };
+      headerStyle?: Color.Spec;
+      rowStyles?: [Color.Spec | null | undefined, Color.Spec | null | undefined];
+      borders?: { enabled: boolean; style?: BorderStyle; color?: Color.Spec };
       noColor?: boolean;
     } = {
       columns,

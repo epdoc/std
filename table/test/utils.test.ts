@@ -2,7 +2,8 @@ import { assertEquals } from '@std/assert';
 import { bgRgb24, rgb24 } from '@std/fmt/colors';
 import { describe, it } from '@std/testing/bdd';
 import { buildColumns, calculateColumnWidths, isRowStyle, resolveColor } from '../src/utils.ts';
-import type { Column, ColumnRegistry, RowStyles, StyleFn } from '../src/types.ts';
+import { Color } from '@epdoc/colors';
+import type { Column, ColumnRegistry, RowStyles } from '../src/types.ts';
 
 describe('buildColumns', () => {
   type TestRow = {
@@ -73,7 +74,7 @@ describe('buildColumns', () => {
 
   it('should include formatter and color callbacks', () => {
     const testFormatter = (v: unknown) => String(v);
-    const testColor = (_v: unknown, _row: TestRow): StyleFn | undefined => (s) => rgb24(s, 0xff0000);
+    const testColor = (_v: unknown, _row: TestRow): Color.StyleFn | undefined => (s) => rgb24(s, 0xff0000);
 
     const registry: ColumnRegistry<TestRow> = {
       id: { header: 'ID', formatter: testFormatter, color: testColor },
@@ -209,7 +210,7 @@ describe('calculateColumnWidths', () => {
 
 describe('resolveColor', () => {
   it('should return function as-is when passed StyleFn', () => {
-    const testFn: StyleFn = (s) => s.toUpperCase();
+    const testFn: Color.StyleFn = (s) => s.toUpperCase();
     const result = resolveColor(testFn);
     assertEquals(result, testFn);
     assertEquals(result('hello'), 'HELLO');
@@ -239,8 +240,8 @@ describe('resolveColor', () => {
   it('should handle ColorSpec with both fg and bg', () => {
     const styleFn = resolveColor({ fg: 0xff0000, bg: 0x00ff00 });
     const result = styleFn('test');
-    // Apply bg first, then fg
-    const expected = rgb24(bgRgb24('test', 0x00ff00), 0xff0000);
+    // Apply fg first, then bg
+    const expected = bgRgb24(rgb24('test', 0xff0000), 0x00ff00);
     assertEquals(result, expected);
   });
 

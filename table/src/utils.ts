@@ -1,4 +1,5 @@
-import { bgRgb24, rgb24 } from '@std/fmt/colors';
+import { Color } from '@epdoc/colors';
+import { bgRgb24 } from '@std/fmt/colors';
 import * as Terminal from './terminal.ts';
 import type * as Table from './types.ts';
 
@@ -89,19 +90,8 @@ export function calculateColumnWidths<T>(
  * const fn3 = resolveColor((s) => bold(s));
  * ```
  */
-export function resolveColor(val: Table.ColorType): Table.StyleFn {
-  if (typeof val === 'function') return val;
-  if (typeof val === 'number' && !isNaN(val)) {
-    return (s) => rgb24(s, val);
-  }
-  // ColorSpec object (val is neither function nor number, must be ColorSpec)
-  const spec = val as Table.ColorSpec;
-  return (s: string): string => {
-    let result = s;
-    if (spec.bg !== undefined) result = bgRgb24(result, spec.bg);
-    if (spec.fg !== undefined) result = rgb24(result, spec.fg);
-    return result;
-  };
+export function resolveColor(val: Color.Spec): Color.StyleFn {
+  return Color.toStyleFn(val);
 }
 
 /**
@@ -113,14 +103,10 @@ export function resolveColor(val: Table.ColorType): Table.StyleFn {
  * @param val - The color/style specification
  * @returns A StyleFn that applies only background, or undefined
  */
-export function resolveBgColor(val: Table.ColorType): Table.StyleFn | undefined {
-  // Functions and numbers typically represent foreground styling;
-  // we can't extract just the background component from them
-  if (typeof val === 'function') return undefined;
-  if (typeof val === 'number') return undefined; // shorthand for foreground
-  const spec = val as Table.ColorSpec;
-  if (spec.bg !== undefined) {
-    return (s) => bgRgb24(s, spec.bg!);
+export function resolveBgColor(val: Color.Spec): Color.StyleFn | undefined {
+  if (typeof val === 'function' || typeof val === 'number') return undefined;
+  if (val.bg !== undefined) {
+    return (s) => bgRgb24(s, val.bg!);
   }
   return undefined;
 }
