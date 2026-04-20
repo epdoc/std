@@ -1,5 +1,5 @@
 import { REGEX } from './consts.ts';
-import type { AsFloatOpts, CompareResult, Dict, Integer, RegExpDef } from './types.ts';
+import type { AsFloatOpts, CompareResult, Dict, Integer, PosInteger, RegExpDef, WholeNumber } from './types.ts';
 
 /**
  * Checks if the given value is a boolean.
@@ -87,7 +87,7 @@ export function isInteger(val: unknown): val is Integer {
  * @param val - The value to check.
  * @returns True if the value is a positive integer, otherwise false.
  */
-export function isPosInteger(val: unknown): val is Integer {
+export function isPosInteger(val: unknown): val is PosInteger {
   return isInteger(val) && val > 0;
 }
 
@@ -96,7 +96,7 @@ export function isPosInteger(val: unknown): val is Integer {
  * @param val - The value to check.
  * @returns True if the value is a whole number, otherwise false.
  */
-export function isWholeNumber(val: unknown): val is Integer {
+export function isWholeNumber(val: unknown): val is WholeNumber {
   return isInteger(val) && val >= 0;
 }
 

@@ -4,6 +4,16 @@
 export type Integer = number;
 
 /**
+ * A simple alias for code hinting. 0, 1, 2, 3, ...
+ */
+export type WholeNumber = Integer;
+
+/**
+ * A simple alias for code hinting. 1, 2, 3, ...
+ */
+export type PosInteger = WholeNumber;
+
+/**
  * A dictionary type where keys are strings and values are unknown. If you want
  * keys to be PropertyKey, then look elsewhere or submit a pull request to add
  * it as a separate type.
