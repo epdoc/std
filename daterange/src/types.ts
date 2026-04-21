@@ -4,6 +4,9 @@
  * This module exports the type definitions for the @epdoc/daterange package.
  */
 
+import { DateTime, type ISODate } from '@epdoc/datetime';
+import { _ } from '@epdoc/type';
+
 /**
  * Represents a date range definition with optional after (start) and before (end) instants.
  *
@@ -25,9 +28,9 @@
  */
 export type DateRangeDef = {
   /** The start of the range (inclusive). If undefined, range extends to the beginning of time. */
-  after?: Temporal.Instant;
+  after?: DateTime;
   /** The end of the range (inclusive). If undefined, range extends to the end of time. */
-  before?: Temporal.Instant;
+  before?: DateTime;
 };
 
 /**
@@ -44,9 +47,9 @@ export type DateRangeDef = {
  */
 export type DateRangeJSON = {
   /** ISO 8601 formatted instant string for the start of the range */
-  after?: string;
+  after?: ISODate;
   /** ISO 8601 formatted instant string for the end of the range */
-  before?: string;
+  before?: ISODate;
 };
 
 /**
@@ -54,7 +57,7 @@ export type DateRangeJSON = {
  */
 export type DateRangeParseOptions = {
   /** Reference instant for relative time calculations (default: now) */
-  reference?: Temporal.Instant;
+  reference?: DateTime;
   /** Whether to make end dates inclusive by setting to 23:59:59.999 (default: true) */
   inclusiveEnd?: boolean;
   /** Default hour to use for day-only dates (0-23, default: 0) */
@@ -64,34 +67,14 @@ export type DateRangeParseOptions = {
 /**
  * Type guard to check if a value is a valid DateRangeDef.
  */
-export function isDateRangeDef(val: unknown): val is DateRangeDef {
-  if (typeof val !== 'object' || val === null) {
-    return false;
-  }
-  const obj = val as Record<string, unknown>;
+export function isDateRangeDef(obj: unknown): obj is DateRangeDef {
+  if (!_.isDict(obj)) return false;
 
-  // Check if it has valid after/before properties (both optional)
-  const hasAfter = 'after' in obj;
-  const hasBefore = 'before' in obj;
+  const dict = obj as Record<string, unknown>;
+  const keys = Object.keys(dict);
 
-  if (!hasAfter && !hasBefore) {
-    return false;
-  }
-
-  // If present, after/before should be Temporal.Instant-like
-  if (hasAfter && obj.after !== undefined) {
-    const after = obj.after;
-    if (!(after instanceof Temporal.Instant) && typeof after !== 'object') {
-      return false;
-    }
-  }
-
-  if (hasBefore && obj.before !== undefined) {
-    const before = obj.before;
-    if (!(before instanceof Temporal.Instant) && typeof before !== 'object') {
-      return false;
-    }
-  }
-
-  return true;
+  return (
+    keys.length > 0 &&
+    keys.every((k) => (k === 'after' || k === 'before') && dict[k] instanceof DateTime)
+  );
 }

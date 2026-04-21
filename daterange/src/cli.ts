@@ -22,6 +22,7 @@
  * ```
  */
 import type { LetterChar } from '@epdoc/type';
+import { DateTime } from '@epdoc/datetime';
 import { DateRange, DateRanges, parseRelativeTime } from './mod.ts';
 import { dateStringToInstant } from './util.ts';
 
@@ -124,7 +125,7 @@ export const dateRangeOptions = {
    * // User can pass: -R "2024,202501-202503"
    * ```
    */
-  ranges: (flags = '-d, --date <date-range>'): DateRangeOptionDef => {
+  ranges: (flags = '-R, --ranges <ranges>'): DateRangeOptionDef => {
     const match = flags.match(/^(?:-(\w),\s*)?--(\w+)(?:\s+([<\[]\w+[>\]]))?$/);
     if (!match) {
       throw new Error(`Invalid option flags: ${flags}`);
@@ -179,7 +180,9 @@ export const dateRangeOptions = {
 
         // Try as ISO date
         try {
-          return Temporal.Instant.from(val);
+          return DateTime.tryFrom(val) ?? (() => {
+            throw new Error(`Invalid date/time: ${val}`);
+          })();
         } catch {
           // Try as compact date (YYYYMMDD, YYYYMM, etc.)
           try {
@@ -230,7 +233,9 @@ export const dateRangeOptions = {
 
         // Try as ISO date
         try {
-          return Temporal.Instant.from(val);
+          return DateTime.tryFrom(val) ?? (() => {
+            throw new Error(`Invalid date/time: ${val}`);
+          })();
         } catch {
           // Try as compact date (YYYYMMDD, YYYYMM, etc.)
           try {
@@ -276,7 +281,7 @@ export const dateRangeOptions = {
         if (!since) {
           throw new Error(`Invalid time window: ${val}`);
         }
-        const until = Temporal.Now.instant();
+        const until = DateTime.now();
         return new DateRange(since, until);
       },
     };

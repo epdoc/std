@@ -1,5 +1,6 @@
 import { expect } from '@std/expect';
 import { describe, test } from '@std/testing/bdd';
+import { DateTime } from '@epdoc/datetime';
 import { dateRangeOptions, isDateRangeOptionDef } from '../src/cli.ts';
 import { DateRange, DateRanges } from '../src/mod.ts';
 
@@ -72,21 +73,21 @@ describe('dateRangeOptions', () => {
 
     test('should parse relative time', () => {
       const opt = dateRangeOptions.since();
-      const result = opt.argParser!('1d') as Temporal.Instant;
-      expect(result).toBeInstanceOf(Temporal.Instant);
+      const result = opt.argParser!('1d') as DateTime;
+      expect(result).toBeInstanceOf(DateTime);
     });
 
     test('should parse ISO date', () => {
       const opt = dateRangeOptions.since();
-      const result = opt.argParser!('2025-01-01T00:00:00Z') as Temporal.Instant;
-      expect(result).toBeInstanceOf(Temporal.Instant);
-      expect(result.toString()).toBe('2025-01-01T00:00:00Z');
+      const result = opt.argParser!('2025-01-01T00:00:00Z') as DateTime;
+      expect(result).toBeInstanceOf(DateTime);
+      expect(result.toISOString()).toBe('2025-01-01T00:00:00+00:00');
     });
 
     test('should parse compact date', () => {
       const opt = dateRangeOptions.since();
-      const result = opt.argParser!('20250101') as Temporal.Instant;
-      expect(result).toBeInstanceOf(Temporal.Instant);
+      const result = opt.argParser!('20250101') as DateTime;
+      expect(result).toBeInstanceOf(DateTime);
     });
 
     test('should throw for invalid date', () => {
@@ -105,14 +106,14 @@ describe('dateRangeOptions', () => {
 
     test('should parse relative time', () => {
       const opt = dateRangeOptions.until();
-      const result = opt.argParser!('-1h') as Temporal.Instant;
-      expect(result).toBeInstanceOf(Temporal.Instant);
+      const result = opt.argParser!('-1h') as DateTime;
+      expect(result).toBeInstanceOf(DateTime);
     });
 
     test('should parse "now" keyword', () => {
       const opt = dateRangeOptions.until();
-      const result = opt.argParser!('now') as Temporal.Instant;
-      expect(result).toBeInstanceOf(Temporal.Instant);
+      const result = opt.argParser!('now') as DateTime;
+      expect(result).toBeInstanceOf(DateTime);
     });
   });
 
@@ -131,9 +132,9 @@ describe('dateRangeOptions', () => {
 
     test('should create range from now', () => {
       const opt = dateRangeOptions.window();
-      const before = Temporal.Now.instant();
+      const before = DateTime.now();
       const result = opt.argParser!('1h') as DateRange;
-      const after = Temporal.Now.instant();
+      const after = DateTime.now();
 
       // Range should be approximately 1 hour ago to now
       expect(result.after.epochMilliseconds).toBeLessThan(after.epochMilliseconds);
@@ -163,8 +164,8 @@ describe('dateRangeOptions', () => {
       const sinceOpt = dateRangeOptions.since();
       const untilOpt = dateRangeOptions.until();
 
-      const after = sinceOpt.argParser!('1d') as Temporal.Instant;
-      const before = untilOpt.argParser!('now') as Temporal.Instant;
+      const after = sinceOpt.argParser!('1d') as DateTime;
+      const before = untilOpt.argParser!('now') as DateTime;
 
       const range = new DateRange(after, before);
       // Range should be approximately 24 hours
@@ -179,7 +180,7 @@ describe('dateRangeOptions', () => {
       const range = windowOpt.argParser!('24h') as DateRange;
 
       // Range should end at approximately "now"
-      const now = Temporal.Now.instant();
+      const now = DateTime.now();
       const beforeDiff = Math.abs(now.epochMilliseconds - range.before.epochMilliseconds);
       expect(beforeDiff).toBeLessThanOrEqual(1000);
 
@@ -200,15 +201,14 @@ describe('dateRangeOptions', () => {
 });
 
 function expectInstant(
-  instant: Temporal.Instant,
+  dt: DateTime,
   expected: {
     year: number;
     month: number;
     day: number;
   },
 ) {
-  const localTz = Temporal.Now.timeZoneId();
-  const zdt = instant.toZonedDateTimeISO(localTz);
+  const zdt = dt.withTz('local').temporal as Temporal.ZonedDateTime;
   expect(zdt.year).toBe(expected.year);
   expect(zdt.month).toBe(expected.month);
   expect(zdt.day).toBe(expected.day);
