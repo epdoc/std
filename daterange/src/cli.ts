@@ -1,300 +1,243 @@
 /**
  * @module
  *
- * This module provides CLI option definitions for @epdoc/daterange that can be used
- * with @epdoc/cliapp or any CLI framework supporting similar option definitions.
+ * Ready-to-use CLI option definitions for date ranges, compatible with
+ * `@epdoc/cliapp`'s `OptionDefMap`.
  *
- * These are plain factory functions returning option definition objects - they don't
- * depend on any specific CLI framework.
+ * ## Quick start
  *
- * @example
+ * Spread any combination of the pre-built option defs into your `optionDefs`:
+ *
  * ```ts
- * import { dateRangeOptions } from '@epdoc/daterange/cli';
- * import * as CliApp from '@epdoc/cliapp';
+ * import type * as CliApp from '@epdoc/cliapp';
+ * import { dateRangeOptionDefs } from '@epdoc/daterange';
  *
- * class MyCommand extends CliApp.Cmd.AbstractBase {
- *   defineOptions() {
- *     this.option(dateRangeOptions.range()).emit();
- *     this.option(dateRangeOptions.since()).emit();
- *     this.option(dateRangeOptions.until()).emit();
- *   }
+ * export const optionDefs: CliApp.OptionDefMap = {
+ *   ...dateRangeOptionDefs,   // includes: date, ranges, since, until, window
+ *   // your other options…
+ * };
+ * ```
+ *
+ * Or pick individual entries:
+ *
+ * ```ts
+ * import { dateOptionDef, sinceOptionDef, untilOptionDef } from '@epdoc/daterange';
+ *
+ * export const optionDefs: CliApp.OptionDefMap = {
+ *   date: dateOptionDef,
+ *   since: sinceOptionDef,
+ *   until: untilOptionDef,
+ * };
+ * ```
+ *
+ * For colorized help text in a `helpText()` method, use `buildDateHelp()`:
+ *
+ * ```ts
+ * import { buildDateHelp } from '@epdoc/daterange';
+ *
+ * helpText(): string {
+ *   const msg = new CustomMsgBuilder();
+ *   buildDateHelp(msg);
+ *   return msg.format();
  * }
  * ```
  */
-import type { LetterChar } from '@epdoc/type';
 import { DateTime } from '@epdoc/datetime';
-import { DateRange, DateRanges, parseRelativeTime } from './mod.ts';
-import { dateStringToInstant } from './util.ts';
-
-export type Params = `[${string}]` | `<${string}>`;
+import { DateRange, DateRanges, dateRanges, dateStringToInstant, parseRelativeTime } from './mod.ts';
 
 /**
- * Option definition compatible with @epdoc/cliapp and similar frameworks.
+ * Minimal interface for the builder methods used by `buildDateHelp`.
+ * Compatible with `ConsoleMsgBuilder` and any subclass — no dependency on
+ * `@epdoc/logger` required in this package.
  */
-export interface DateRangeOptionDef {
-  /** Short flag (e.g., "r") */
-  short?: LetterChar;
-  /** Option name (e.g., "range") */
-  name: string;
-  /** Parameter syntax (e.g., "<range>") */
-  params?: Params;
-  /** Description text */
-  description: string;
-  /** Argument parser function */
-  argParser?: (str: string) => unknown;
-  /** Default value */
-  defVal?: string | number | boolean | string[];
-  /** Valid choices */
-  choices?: string[];
+export interface DateHelpBuilder {
+  h2(...args: unknown[]): this;
+  label(...args: unknown[]): this;
+  value(...args: unknown[]): this;
+  text(...args: unknown[]): this;
+  code(...args: unknown[]): this;
 }
 
 /**
- * Pre-built CLI option definitions for date ranges.
+ * Appends colorized date range help text to any compatible MsgBuilder.
  *
- * These factory functions return option definition objects that can be used
- * with @epdoc/cliapp's `this.option()` method or similar CLI frameworks.
+ * Keeps `@epdoc/daterange` free of a logger dependency — the caller supplies
+ * their own builder instance.
  *
  * @example
  * ```ts
- * // Single date range
- * this.option(dateRangeOptions.range()).emit();
- *
- * // Multiple date ranges
- * this.option(dateRangeOptions.ranges()).emit();
- *
- * // Individual boundaries
- * this.option(dateRangeOptions.since()).emit();
- * this.option(dateRangeOptions.until()).emit();
- *
- * // Custom flags
- * this.option(dateRangeOptions.range('-d, --date <date>')).emit();
+ * helpText(): string {
+ *   const msg = new CustomMsgBuilder();
+ *   msg.h1('\nDate Range Formats\n');
+ *   buildDateHelp(msg);
+ *   return msg.format();
+ * }
  * ```
  */
-export const dateRangeOptions = {
-  /**
-   * Single date range option.
-   *
-   * Parses a string like "1d-now", "20240101-20240131", "today" into a DateRange.
-   *
-   * @param flags - Option flags (default: '-d, --date [dates]')
-   * @returns Option definition
-   *
-   * @example
-   * ```ts
-   * this.option(dateRangeOptions.range()).emit();
-   * // User can pass: -d 1d-now, --date 20240101-20240131, --date today
-   * ```
-   */
-  range: (flags = '-d, --date [dates]'): DateRangeOptionDef => {
-    const match = flags.match(/^(?:-(\w),\s*)?--([\w-]+)(?:\s+([<\[]\w+[>\]]))?$/);
-    if (!match) {
-      throw new Error(`Invalid option flags: ${flags}`);
-    }
+export function buildDateHelp<T extends DateHelpBuilder>(msg: T): T {
+  msg.h2('\nAbsolute Dates (local timezone):\n');
+  msg.label('  YYYYMMDD          ').text('Single date — e.g. ').code('20240115').text('\n');
+  msg.label('  YYYYMM            ').text('Whole month — e.g. ').code('202401').text('\n');
+  msg.label('  YYYY              ').text('Whole year — e.g. ').code('2024').text('\n');
+  msg.label('  YYYYMMDD-YYYYMMDD ').text('Date range — e.g. ').code('20240101-20241231').text('\n');
 
-    const [, short, name, params] = match;
+  msg.h2('\nRelative Times (from now):\n');
+  msg.label('  Ns, Nm, Nh, Nd    ').text('Seconds/minutes/hours/days — e.g. ').code('1d').text(', ').code('2h30m').text(
+    '\n',
+  );
+  msg.label('  now               ').text('Current time\n');
+  msg.label('  today             ').text('Start of today\n');
+  msg.label('  yesterday         ').text('Start of yesterday\n');
+  msg.label('  tomorrow          ').text('Start of tomorrow\n');
 
-    return {
-      short: short as LetterChar,
-      name,
-      params: (params as Params) || '[dates]',
-      description: 'Date range (e.g., 1d-now, 20240101-20240131, today)',
-      argParser: (val: string) => {
-        const ranges = DateRanges.parse(val);
-        if (ranges.ranges.length === 0) {
-          throw new Error(`Invalid date range: ${val}`);
-        }
-        if (ranges.ranges.length > 1) {
-          throw new Error(`Expected single date range, got ${ranges.ranges.length}. Use ranges() for multiple ranges.`);
-        }
-        return ranges.ranges[0];
-      },
-    };
+  msg.h2('\nMultiple Ranges (comma-separated):\n');
+  msg.value('  2024,202501-202503\n');
+  msg.value('  1d-now,20240101-20240201\n');
+
+  msg.h2('\nExamples:\n');
+  msg.label('  -d ').value('20240101-20241231  ').text('All of 2024\n');
+  msg.label('  -d ').value('7d-now             ').text('Last 7 days\n');
+  msg.label('  -d ').value('today              ').text('Today only\n');
+  msg.label('  -d ').value('2024,2025          ').text('All of 2024 and 2025\n');
+
+  return msg;
+}
+
+const DATE_HELP: string = `
+ABSOLUTE DATES (local timezone):
+  YYYYMMDD          Single date (e.g., 20240115)
+  YYYYMM            Whole month (e.g., 202401)
+  YYYY              Whole year (e.g., 2024)
+  YYYYMMDD-YYYYMMDD Date range (e.g., 20240101-20241231)
+
+RELATIVE TIMES (from now):
+  Ns, Nm, Nh, Nd    Seconds, minutes, hours, days (e.g., 1d, 2h30m)
+  now               Current time
+  today / yesterday / tomorrow
+
+MULTIPLE RANGES (comma-separated):
+  2024,202501-202503
+  1d-now,20240101-20240201
+
+EXAMPLES:
+  -d 20240101-20241231     All of 2024
+  -d 7d-now                Last 7 days
+  -d today                 Today only
+  -d 2024,2025             All of 2024 and 2025
+`;
+
+/** Parses any date range expression into a `DateTime`. */
+function parseDateTimeArg(val: string): DateTime {
+  const result = parseRelativeTime(val) ?? DateTime.tryFrom(val);
+  if (result) return result;
+  try {
+    return dateStringToInstant(val);
+  } catch { /* fall through */ }
+  throw new Error(`Invalid date/time: ${val}`);
+}
+
+/**
+ * `-d, --date <date-range>` — parses to `DateRanges`.
+ * Accepts any combination of absolute, relative, and comma-separated ranges.
+ */
+export const dateOptionDef = {
+  short: 'd',
+  name: 'date',
+  params: '<date-range>' as const,
+  description: "Date range(s) (e.g., 20240101-20241231, 7d-now, today). Enter '?' for more help.",
+  argParser: dateRanges,
+  help: DATE_HELP,
+};
+
+/**
+ * `-r, --range <date-range>` — parses a **single** date range to `DateRange`.
+ * Throws if the input resolves to more than one range.
+ */
+export const rangeOptionDef = {
+  short: 'r',
+  name: 'range',
+  params: '<date-range>' as const,
+  description: "Single date range (e.g., 20240101-20241231, 7d-now). Enter '?' for more help.",
+  argParser: (val: string): DateRange => {
+    const dr = dateRanges(val);
+    if (dr.ranges.length !== 1) throw new Error(`Expected a single date range, got ${dr.ranges.length}`);
+    return dr.ranges[0] as DateRange;
   },
+  help: DATE_HELP,
+};
 
-  /**
-   * Multiple date ranges option.
-   *
-   * Parses comma-separated ranges like "2024,202501-202503,1d-now" into DateRanges.
-   *
-   * @param flags - Option flags (default: '-R, --ranges <ranges>')
-   * @returns Option definition
-   *
-   * @example
-   * ```ts
-   * this.option(dateRangeOptions.ranges()).emit();
-   * // User can pass: -R "2024,202501-202503"
-   * ```
-   */
-  ranges: (flags = '-R, --ranges <ranges>'): DateRangeOptionDef => {
-    const match = flags.match(/^(?:-(\w),\s*)?--(\w+)(?:\s+([<\[]\w+[>\]]))?$/);
-    if (!match) {
-      throw new Error(`Invalid option flags: ${flags}`);
-    }
+/**
+ * `-R, --ranges <date-ranges>` — parses comma-separated ranges to `DateRanges`.
+ * Identical to `dateOptionDef` but uses `-R`/`--ranges` flags.
+ */
+export const rangesOptionDef = {
+  short: 'R',
+  name: 'ranges',
+  params: '<date-ranges>' as const,
+  description: "Comma-separated date ranges (e.g., 2024,202501-202503,1d-now). Enter '?' for more help.",
+  argParser: dateRanges,
+  help: DATE_HELP,
+};
 
-    const [, short, name, params] = match;
+/**
+ * `-s, --since <date>` — parses a start boundary to `DateTime`.
+ * Combine with `untilOptionDef` to build a `DateRange` in your command handler.
+ */
+export const sinceOptionDef = {
+  short: 's',
+  name: 'since',
+  params: '<date>' as const,
+  description: 'Start date/time (e.g., 1d, 20240101, 2024-01-01T00:00:00Z)',
+  argParser: parseDateTimeArg,
+};
 
-    return {
-      short: short as LetterChar,
-      name,
-      params: (params as Params) || '<date-range>',
-      description: 'Comma-separated date ranges (e.g., 2024,202501-202503,1d-now)',
-      argParser: (val: string) => {
-        return DateRanges.parse(val);
-      },
-    };
-  },
+/**
+ * `-u, --until <date>` — parses an end boundary to `DateTime`. Defaults to `now`.
+ * Combine with `sinceOptionDef` to build a `DateRange` in your command handler.
+ */
+export const untilOptionDef = {
+  short: 'u',
+  name: 'until',
+  params: '<date>' as const,
+  description: 'End date/time (e.g., now, -1h, 20240131). Default: now',
+  defVal: 'now',
+  argParser: parseDateTimeArg,
+};
 
-  /**
-   * Start time (since) option.
-   *
-   * Parses a relative time or absolute date string into a Temporal.Instant.
-   *
-   * @param flags - Option flags (default: '-s, --since <since>')
-   * @returns Option definition
-   *
-   * @example
-   * ```ts
-   * this.option(dateRangeOptions.since()).emit();
-   * // User can pass: -s 1d, --since 20240101, --since "2024-01-01T00:00:00Z"
-   * ```
-   */
-  since: (flags = '-s, --since <since>'): DateRangeOptionDef => {
-    const match = flags.match(/^(?:-(\w),\s*)?--(\w+)(?:\s+([<\[]\w+[>\]]))?$/);
-    if (!match) {
-      throw new Error(`Invalid option flags: ${flags}`);
-    }
-
-    const [, short, name, params] = match;
-
-    return {
-      short: short as LetterChar,
-      name,
-      params: (params as Params) || '<since>',
-      description: 'Start time (e.g., 1d, 2h30m, 20240101, 2024-01-01T00:00:00Z)',
-      argParser: (val: string) => {
-        // Try relative time first
-        const result = parseRelativeTime(val);
-        if (result) {
-          return result;
-        }
-
-        // Try as ISO date
-        try {
-          return DateTime.tryFrom(val) ?? (() => {
-            throw new Error(`Invalid date/time: ${val}`);
-          })();
-        } catch {
-          // Try as compact date (YYYYMMDD, YYYYMM, etc.)
-          try {
-            return dateStringToInstant(val);
-          } catch {
-            throw new Error(`Invalid date/time: ${val}`);
-          }
-        }
-      },
-    };
-  },
-
-  /**
-   * End time (until) option.
-   *
-   * Parses a relative time or absolute date string into a Temporal.Instant.
-   * Defaults to 'now' if not specified.
-   *
-   * @param flags - Option flags (default: '-e, --until <until>')
-   * @returns Option definition
-   *
-   * @example
-   * ```ts
-   * this.option(dateRangeOptions.until()).emit();
-   * // User can pass: -e now, --until 1h (1 hour from now), --until 20240131
-   * ```
-   */
-  until: (flags = '-e, --until <until>'): DateRangeOptionDef => {
-    const match = flags.match(/^(?:-(\w),\s*)?--(\w+)(?:\s+([<\[]\w+[>\]]))?$/);
-    if (!match) {
-      throw new Error(`Invalid option flags: ${flags}`);
-    }
-
-    const [, short, name, params] = match;
-
-    return {
-      short: short as LetterChar,
-      name,
-      params: (params as Params) || '<until>',
-      description: 'End time (e.g., now, -1h, 20240131). Default: now',
-      defVal: 'now',
-      argParser: (val: string) => {
-        // Try relative time first
-        const result = parseRelativeTime(val);
-        if (result) {
-          return result;
-        }
-
-        // Try as ISO date
-        try {
-          return DateTime.tryFrom(val) ?? (() => {
-            throw new Error(`Invalid date/time: ${val}`);
-          })();
-        } catch {
-          // Try as compact date (YYYYMMDD, YYYYMM, etc.)
-          try {
-            return dateStringToInstant(val);
-          } catch {
-            throw new Error(`Invalid date/time: ${val}`);
-          }
-        }
-      },
-    };
-  },
-
-  /**
-   * Time window option.
-   *
-   * Parses a duration string (e.g., "24h", "7d") to specify a lookback window from now.
-   * This is a convenience option that sets both since and until implicitly.
-   *
-   * @param flags - Option flags (default: '-w, --window <window>')
-   * @returns Option definition
-   *
-   * @example
-   * ```ts
-   * this.option(dateRangeOptions.window()).emit();
-   * // User can pass: -w 24h (last 24 hours), --window 7d (last 7 days)
-   * ```
-   */
-  window: (flags = '-w, --window <window>'): DateRangeOptionDef => {
-    const match = flags.match(/^(?:-(\w),\s*)?--(\w+)(?:\s+([<\[]\w+[>\]]))?$/);
-    if (!match) {
-      throw new Error(`Invalid option flags: ${flags}`);
-    }
-
-    const [, short, name, params] = match;
-
-    return {
-      short: short as LetterChar,
-      name,
-      params: (params as Params) || '<window>',
-      description: 'Time window from now (e.g., 24h, 7d, 30m)',
-      argParser: (val: string) => {
-        const since = parseRelativeTime(val);
-        if (!since) {
-          throw new Error(`Invalid time window: ${val}`);
-        }
-        const until = DateTime.now();
-        return new DateRange(since, until);
-      },
-    };
+/**
+ * `-w, --window <duration>` — parses a lookback duration to a `DateRange` ending now.
+ * Convenience alternative to using `--since` + `--until`.
+ *
+ * @example `--window 7d` → DateRange from 7 days ago to now
+ */
+export const windowOptionDef = {
+  short: 'w',
+  name: 'window',
+  params: '<duration>' as const,
+  description: 'Lookback window ending now (e.g., 24h, 7d, 30m)',
+  argParser: (val: string): DateRange => {
+    const since = parseRelativeTime(val);
+    if (!since) throw new Error(`Invalid time window: ${val}`);
+    return new DateRange(since, DateTime.now());
   },
 };
 
 /**
- * Type guard to check if a value is a DateRangeOptionDef.
+ * Ready-to-use `CliApp.OptionDefMap` fragment with all date range options.
+ * Spread into your own `optionDefs` and remove any you don't need.
  */
-export function isDateRangeOptionDef(val: unknown): val is DateRangeOptionDef {
-  if (typeof val !== 'object' || val === null) {
-    return false;
-  }
-  const obj = val as Record<string, unknown>;
-  return typeof obj.name === 'string' && typeof obj.description === 'string';
+export const dateRangeOptionDefs = {
+  date: dateOptionDef,
+  range: rangeOptionDef,
+  ranges: rangesOptionDef,
+  since: sinceOptionDef,
+  until: untilOptionDef,
+  window: windowOptionDef,
+} as const;
+
+/**
+ * Type guard to check if a value is a `DateRanges` instance.
+ */
+export function isDateRanges(val: unknown): val is DateRanges {
+  return val instanceof DateRanges;
 }

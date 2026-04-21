@@ -2,162 +2,183 @@
 
 ## Overview
 
-@epdoc/daterange is a Deno module for parsing flexible date range strings and managing collections of date ranges using
-Temporal.Instant. It provides both low-level parsing utilities and high-level CLI integration for command-line
-applications.
+`@epdoc/daterange` parses flexible date range strings and manages collections of date ranges. All boundaries are
+`DateTime` objects from `@epdoc/datetime`. Built on the Temporal API.
 
-## Key Capabilities
-
-### 1. Relative Time Parsing
-
-Parse human-friendly relative time expressions:
-
-- Single units: `1d`, `2h`, `30m`, `10s`, `1y`
-- Combined units: `1d12h30m` (1 day, 12 hours, 30 minutes)
-- Negative (future): `-1h` (1 hour from now)
-- Keywords: `now`, `today`, `yesterday`, `tomorrow`, `startOfDay`, `endOfDay`
-
-### 2. Date Range Classes
-
-- **DateRange**: Single interval with after/before boundaries
-  - Supports Date, Temporal.Instant, ISO strings, relative strings
-  - Operations: contains, overlaps, intersect, union, duration
-  - Iteration: iterate over days or hours within range
-
-- **DateRanges**: Collection of multiple ranges
-  - Check containment across any range
-  - Merge overlapping ranges
-  - Serialization to compact, JSON, or ISO 8601 interval formats
-
-### 3. Flexible Date Parsing
-
-Accepts multiple date formats:
-
-- Compact: `2025`, `202502`, `20250215`, `202502151030`
-- ISO 8601: `2025-01-01T00:00:00Z`
-- Relative: `1d`, `now`, `today`
-- Ranges: `20250101-20250131`, `1d-now`, `20250101-`
-
-### 4. CLI Integration
-
-Pre-built option definitions for @epdoc/cliapp:
-
-- `dateRangeOptions.range()` → `-d, --date [dates]` (single range)
-- `dateRangeOptions.ranges()` → `-R, --ranges <ranges>` (multiple ranges)
-- `dateRangeOptions.since()` → `-s, --since <since>` (start time)
-- `dateRangeOptions.until()` → `-e, --until <until>` (end time)
-- `dateRangeOptions.window()` → `-w, --window <window>` (time window)
-
-All options support custom flags via parameter.
-
-## Common Patterns
-
-### Parse Command-Line Date Range
-
-```typescript
-const range = DateRanges.parse('1d-now').ranges[0];
-// or
-const range = dateRangeOptions.range().argParser('1d-now') as DateRange;
-```
-
-### Check if Date Falls in Range
-
-```typescript
-const dr = dateRanges('20250101-20250131');
-const isContained = dr.contains(Temporal.Now.instant());
-// or with Date
-const isContained = dr.contains(new Date());
-```
-
-### Filter Data by Date Range
-
-```typescript
-const range = DateRange.fromRelative('7d', 'now');
-const recentData = allData.filter((item) => range.contains(item.timestamp));
-```
-
-### CLI Command with Date Options
-
-```typescript
-class HistoryCommand extends CliApp.Cmd.AbstractBase {
-  defineOptions() {
-    this.option(dateRangeOptions.range()).emit();
-    this.option(dateRangeOptions.since()).emit();
-    this.option(dateRangeOptions.until()).emit();
-  }
-
-  execute(opts) {
-    // opts.date is DateRange (if provided)
-    // opts.since is Temporal.Instant
-    // opts.until is Temporal.Instant
-
-    // Build range from since/until if date not provided
-    const range = opts.date || new DateRange(opts.since, opts.until);
-
-    // Fetch data within range
-    const data = await fetchHistory(range);
-  }
-}
-```
-
-## Important Notes
-
-### Temporal.Instant vs Date
-
-- All operations return Temporal.Instant (not Date)
-- Date inputs are automatically converted to Temporal.Instant
-- Boundaries are inclusive (both after and before are included)
-
-### Timezone Handling
-
-- Compact date strings (YYYYMMDD) are interpreted in local timezone
-- ISO strings with timezone info are parsed accordingly
-- Relative times are calculated from reference time in local context
-
-### Inclusive vs Exclusive
-
-- Range boundaries are inclusive (unlike old v0.x behavior)
-- `range.contains(range.after)` returns true
-- `range.contains(range.before)` returns true
-
-### Version 1.0.0 Breaking Changes
-
-- Returns Temporal.Instant instead of Date
-- Boundaries are now inclusive
-- dateList() signature changed to accept options object
-- New DateRange class for single intervals
-
-## File Structure
+## Architecture
 
 ```
 src/
-├── mod.ts              # Main exports
-├── types.ts            # Type definitions, INSTANT_MIN/MAX
+├── mod.ts              # Public exports
+├── types.ts            # DateRangeDef, DateRangeJSON, DateRangeParseOptions
 ├── date-range.ts       # DateRange class (single interval)
 ├── date-ranges.ts      # DateRanges class (collection)
-├── relative-time.ts    # parseRelativeTime function
+├── relative-time.ts    # parseRelativeTime → DateTime
 ├── util.ts             # dateList, dateRanges, dateStringToInstant
-└── cli.ts              # dateRangeOptions for CLI integration
+└── cli.ts              # OptionDef exports for @epdoc/cliapp
+```
+
+## Key Design Decisions
+
+- **DateTime everywhere**: `DateRange.after` and `DateRange.before` are `DateTime`, not `Temporal.Instant`. All parsers
+  return `DateTime`.
+- **Immutable boundaries**: `DateRange` fields are public but treated as immutable; operations return new instances.
+- **Local timezone for compact dates**: `YYYYMMDD`, `YYYYMM`, `YYYY` strings are always interpreted in the local
+  timezone via `Temporal.Now.timeZoneId()`.
+- **ISO strings preserve offset**: `DateTime.from('2024-03-15T10:30:00+05:30')` stores a `ZonedDateTime` with the
+  original offset, not UTC.
+- **Open boundaries**: `DateTime.min()` / `DateTime.max()` represent open-ended range boundaries. Use `isNearMin()` /
+  `isNearMax()` to detect them.
+
+## Core Types
+
+```typescript
+type DateRangeDef = { after?: DateTime; before?: DateTime };
+type DateRangeJSON = { after?: ISODate; before?: ISODate };
+type DateRangeParseOptions = {
+  reference?: DateTime; // default: DateTime.now()
+  inclusiveEnd?: boolean; // default: true
+  defaultHour?: number; // default: 0
+};
+```
+
+## DateRange Class
+
+```typescript
+// Construction
+new DateRange()                          // min → max (open)
+new DateRange(after, before)             // DateTime boundaries
+new DateRange(def)                       // from DateRangeDef
+DateRange.fromDef(def)                   // static factory
+DateRange.fromRelative('1d', 'now')      // from relative strings
+
+// Properties
+range.after   // DateTime (DateTime.min() if open)
+range.before  // DateTime (DateTime.max() if open)
+
+// Operations — all use DateTime.compare internally
+range.contains(dt)        // DateTime | Date | Temporal.Instant | string
+range.overlaps(other)
+range.intersect(other)    // DateRange | null
+range.union(other)        // DateRange | DateRange[]
+range.duration()          // milliseconds
+
+// Iteration
+for (const dt of range.iterate('day')) { … }   // Generator<DateTime>
+for (const dt of range.iterate('hour')) { … }
+
+// Serialization
+range.toJSON()            // DateRangeJSON (omits open boundaries)
+range.toCompactString()   // '20250101-20250131' (local time)
+range.toISOInterval()     // '2025-01-01T.../2025-01-31T...' or '..'
+```
+
+## DateRanges Class
+
+```typescript
+new DateRanges(defs?)          // from DateRangeDef[]
+DateRanges.parse(str, opts?)   // static factory from string
+
+dr.ranges                      // readonly DateRange[]
+dr.contains(dt)                // DateTime | Date | Temporal.Instant | string
+dr.merge()                     // merges overlapping ranges in-place
+dr.add(range)                  // DateRange | DateRangeDef
+dr.hasOneAfterDate()           // DateTime | undefined
+dr.fromJSON(json)              // populate from DateRangeJSON[]
+dr.toJSON()                    // DateRangeJSON[]
+dr.toCompactString()           // comma-joined compact strings
+dr.toISOInterval()             // string[]
+dr.toString()                  // human-readable local time
+```
+
+## Parsing Functions
+
+### `parseRelativeTime(input, reference?)`
+
+Returns `DateTime | undefined`. Reference defaults to `DateTime.now()`.
+
+Keywords: `now`, `today`, `yesterday`, `tomorrow`, `startofday`, `endofday`\
+Units: `y`, `d`, `h`, `m`, `s` — combinable: `1d12h30m`\
+Negative = future: `-1h`
+
+### `dateStringToInstant(s, h?)`
+
+Returns `DateTime` in local timezone. Formats: `YYYY`, `YYYYMM`, `YYYYMMDD`, `YYYYMMDDhh`, `YYYYMMDDhhmm`,
+`YYYYMMDDhhmmss`.
+
+### `dateList(val, options?)`
+
+Returns `DateRangeDef[]`. Comma-separated. Each component can be:
+
+- Compact date string → `dateStringToInstant`
+- Relative time → `parseRelativeTime`
+- ISO string → `DateTime.tryFrom`
+- Range `start-end` (either side optional)
+
+Year/month/day-only strings expand to cover the full period (inclusive by default).
+
+### `dateRanges(val, options?)`
+
+Convenience wrapper: `new DateRanges(dateList(val, options))`.
+
+## CLI Option Defs
+
+All exports are plain objects compatible with `CliApp.OptionDef` / `CliApp.OptionDefMap`.
+
+```typescript
+// Individual defs
+dateOptionDef; // -d, --date    → DateRanges
+rangeOptionDef; // -r, --range   → DateRange (single only, throws for multiple)
+rangesOptionDef; // -R, --ranges  → DateRanges
+sinceOptionDef; // -s, --since   → DateTime
+untilOptionDef; // -u, --until   → DateTime  (defVal: 'now')
+windowOptionDef; // -w, --window  → DateRange (duration ending now)
+
+// All-in-one map
+dateRangeOptionDefs; // { date, range, ranges, since, until, window }
+```
+
+### `buildDateHelp(msg)`
+
+Appends colorized date format help to any builder implementing `{ h2, label, value, text, code }`. No `@epdoc/logger`
+dependency required in this package — the caller provides the builder.
+
+```typescript
+import { buildDateHelp } from '@epdoc/daterange';
+
+helpText(): string {
+  const msg = new CustomMsgBuilder();
+  buildDateHelp(msg);
+  return msg.format();
+}
+```
+
+## Common Patterns
+
+### Build a DateRange from --since / --until options
+
+```typescript
+const range = new DateRange(opts.since as DateTime, opts.until as DateTime);
+```
+
+### Filter records by date range
+
+```typescript
+const range = DateRange.fromRelative('7d', 'now')!;
+const recent = records.filter((r) => range.contains(r.timestamp));
+```
+
+### Serialize / deserialize
+
+```typescript
+const json = dr.toJSON();
+// later…
+const dr2 = new DateRanges();
+dr2.fromJSON(json);
 ```
 
 ## Dependencies
 
-- `@epdoc/type` - Type guards and utilities
+- `@epdoc/datetime` — `DateTime` class, `INSTANT_MIN`/`INSTANT_MAX`
+- `@epdoc/type` — type guards (`isString`, `isNonEmptyArray`, etc.)
 - Temporal API (built into Deno)
-
-## Testing
-
-Run tests:
-
-```bash
-cd daterange && deno task test
-```
-
-Tests cover:
-
-- Relative time parsing (single/combined units, keywords)
-- Date string parsing (all compact formats)
-- DateRange operations (contains, overlaps, intersect, union)
-- DateRanges collections (merge, contains)
-- CLI options (all option types, custom flags)
-- Integration scenarios

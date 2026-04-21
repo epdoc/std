@@ -32,5 +32,16 @@ export { dateList, dateRanges, dateStringToDate, dateStringToInstant } from './u
 export { INSTANT_MAX, INSTANT_MIN } from '@epdoc/datetime';
 export { type DateRangeDef, type DateRangeJSON, type DateRangeParseOptions, isDateRangeDef } from './types.ts';
 
-// CLI option helpers (framework-agnostic)
-export { type DateRangeOptionDef, dateRangeOptions, isDateRangeOptionDef } from './cli.ts';
+// CLI option helpers for @epdoc/cliapp
+export {
+  buildDateHelp,
+  dateOptionDef,
+  dateRangeOptionDefs,
+  isDateRanges,
+  rangeOptionDef,
+  rangesOptionDef,
+  sinceOptionDef,
+  untilOptionDef,
+  windowOptionDef,
+} from './cli.ts';
+export type { DateHelpBuilder } from './cli.ts';
