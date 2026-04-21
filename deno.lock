@@ -275,7 +275,7 @@
       },
       "daterange": {
         "dependencies": [
-          "jsr:@epdoc/datetime@^3.2.7",
+          "jsr:@epdoc/datetime@^3.2.8",
           "jsr:@epdoc/type@^1.2.13",
           "jsr:@std/expect@^1.0.19",
           "jsr:@std/testing@^1.0.18"
