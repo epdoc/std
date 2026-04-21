@@ -223,19 +223,20 @@ export class DateTime {
         // Number is treated as epoch milliseconds
         this._value = Temporal.Instant.fromEpochMilliseconds(arg);
       } else if (_.isString(arg)) {
-        // String parsing - check for ISO with timezone first
         const isoString = arg as string;
         try {
-          // Try to parse as ISO 8601 string
-          if (isoString.match(/Z|[+-]\d{2}:\d{2}$/)) {
-            // Has timezone info - create ZonedDateTime
-            this._value = Temporal.Instant.from(isoString).toZonedDateTimeISO('UTC');
+          const offsetMatch = isoString.match(/([+-]\d{2}:\d{2}|Z)(\[.*\])?$/);
+          if (offsetMatch) {
+            // Preserve the original offset as the timezone ID.
+            // ZonedDateTime.from requires a bracket annotation.
+            const offset = offsetMatch[1] === 'Z' ? '+00:00' : offsetMatch[1];
+            const bare = isoString.replace(/\[.*\]$/, '');
+            this._value = Temporal.ZonedDateTime.from(`${bare}[${offset}]`);
           } else {
-            // No timezone - create Instant (assumes UTC for parsing)
+            // No timezone — store as Instant
             this._value = Temporal.Instant.from(isoString);
           }
         } catch {
-          // Fallback: try Date parsing
           const d = new Date(isoString);
           if (_.isValidDate(d)) {
             this._value = Temporal.Instant.fromEpochMilliseconds(d.getTime());
@@ -811,7 +812,6 @@ export class DateTime {
     let timeZoneId: string | undefined;
 
     if (val === undefined && this._value instanceof Temporal.ZonedDateTime) {
-      // Leave timezone as-is
       return this;
     } else if (val === 'local' || val === undefined) {
       timeZoneId = Temporal.Now.timeZoneId();
@@ -820,34 +820,21 @@ export class DateTime {
     } else if (util.isIANATZ(val)) {
       timeZoneId = val as string;
     } else if (util.isISOTZ(val)) {
-      // Convert ISOTZ to a timezone identifier
-      // For offset strings like "-06:00", we use Etc/GMT+6
-      // Etc/GMT+X = UTC-X (behind UTC), Etc/GMT-X = UTC+X (ahead of UTC)
-      const offset = util.parseISOTZ(val as ISOTZ);
-      if (offset === undefined) {
-        throw new Error(`Invalid ISOTZ value: ${val}`);
-      }
-      const hours = Math.floor(Math.abs(offset) / 60);
-      // Invert sign: positive offset (behind UTC) -> Etc/GMT+, negative offset (ahead UTC) -> Etc/GMT-
-      const sign = offset >= 0 ? '+' : '-';
-      timeZoneId = `Etc/GMT${sign}${hours}`;
+      // Use the offset string directly as timezone ID — Temporal supports this
+      // and it preserves sub-hour offsets (e.g. "+05:30")
+      timeZoneId = val as string;
     } else if (isMinutes(val)) {
-      // Convert minutes to Etc/GMT format
-      const hours = Math.floor(Math.abs(val) / 60);
-      // Invert sign: positive offset (behind UTC) -> Etc/GMT+, negative offset (ahead UTC) -> Etc/GMT-
-      const sign = val >= 0 ? '+' : '-';
-      timeZoneId = `Etc/GMT${sign}${hours}`;
-    } else if (_.isNumber(val)) {
-      // Handle the case where val is a number (TzMinutes without undefined)
-      const hours = Math.floor(Math.abs(val) / 60);
-      // Invert sign: positive offset (behind UTC) -> Etc/GMT+, negative offset (ahead UTC) -> Etc/GMT-
-      const sign = val >= 0 ? '+' : '-';
-      timeZoneId = `Etc/GMT${sign}${hours}`;
+      // Convert minutes offset to ±HH:MM offset string
+      // Convention: positive minutes = behind UTC (Americas), negative = ahead (Asia)
+      const absMin = Math.abs(val);
+      const hh = String(Math.floor(absMin / 60)).padStart(2, '0');
+      const mm = String(absMin % 60).padStart(2, '0');
+      // Invert sign: positive offset (behind UTC) → negative ISO offset
+      timeZoneId = val >= 0 ? `-${hh}:${mm}` : `+${hh}:${mm}`;
     } else {
       throw new Error(`Invalid timezone value: ${val}`);
     }
 
-    // Convert to ZonedDateTime based on current type
     if (this._value instanceof Temporal.Instant) {
       this._value = this._value.toZonedDateTimeISO(timeZoneId);
     } else if (this._value instanceof Temporal.PlainDateTime) {
@@ -1220,6 +1207,68 @@ export class DateTime {
       throw new Error('Unknown temporal type');
     }
     return epochMs / 86400000 + 2440587.5;
+  }
+
+  /**
+   * Returns the Julian Day Number (integer) for the **calendar date** this
+   * DateTime falls on in the given timezone.
+   *
+   * Two events at the same instant but in different timezones may return
+   * different Julian Day Numbers — e.g. an event at 23:00 UTC on Wednesday
+   * in Canada (UTC-7) is still Wednesday there (JDN N), but already Thursday
+   * in Australia (UTC+10) (JDN N+1).
+   *
+   * @param tz - Timezone to use. Defaults to the timezone already set on this
+   *   DateTime, or local if none.
+   */
+  public julianDayInTz(tz?: 'local' | IANATZ | ISOTZ | TzMinutes): JulianDay {
+    const zdt = this.withTz(tz ?? (this._value instanceof Temporal.ZonedDateTime ? undefined : 'local'))
+      ._value as Temporal.ZonedDateTime;
+    const { year, month, day } = zdt;
+    // Proleptic Gregorian calendar → Julian Day Number (integer, noon-based)
+    const a = Math.floor((14 - month) / 12);
+    const y = year + 4800 - a;
+    const m = month + 12 * a - 3;
+    return (day + Math.floor((153 * m + 2) / 5) + 365 * y +
+      Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045) as JulianDay;
+  }
+
+  /**
+   * Returns a new DateTime set to the start of the calendar day (00:00:00.000)
+   * in the given timezone.
+   *
+   * @param tz - Timezone to use. Defaults to the timezone already set, or local.
+   */
+  public startOfDay(tz?: 'local' | IANATZ | ISOTZ | TzMinutes): DateTime {
+    const zdt = this.withTz(tz ?? (this._value instanceof Temporal.ZonedDateTime ? undefined : 'local'))
+      ._value as Temporal.ZonedDateTime;
+    return new DateTime(zdt.with({ hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0, nanosecond: 0 }));
+  }
+
+  /**
+   * Returns a new DateTime set to the end of the calendar day (23:59:59.999)
+   * in the given timezone.
+   *
+   * @param tz - Timezone to use. Defaults to the timezone already set, or local.
+   */
+  public endOfDay(tz?: 'local' | IANATZ | ISOTZ | TzMinutes): DateTime {
+    const zdt = this.withTz(tz ?? (this._value instanceof Temporal.ZonedDateTime ? undefined : 'local'))
+      ._value as Temporal.ZonedDateTime;
+    return new DateTime(
+      zdt.with({ hour: 23, minute: 59, second: 59, millisecond: 999, microsecond: 0, nanosecond: 0 }),
+    );
+  }
+
+  /**
+   * Returns the `Temporal.PlainDate` for the calendar date this DateTime falls
+   * on in the given timezone.
+   *
+   * @param tz - Timezone to use. Defaults to the timezone already set, or local.
+   */
+  public toPlainDate(tz?: 'local' | IANATZ | ISOTZ | TzMinutes): Temporal.PlainDate {
+    const zdt = this.withTz(tz ?? (this._value instanceof Temporal.ZonedDateTime ? undefined : 'local'))
+      ._value as Temporal.ZonedDateTime;
+    return zdt.toPlainDate();
   }
 
   /**
