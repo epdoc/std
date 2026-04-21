@@ -851,4 +851,89 @@ describe('date-util', () => {
       expect(yesterday.isNow(2 * 24 * 60 * 60)).toBe(true); // within last 2 days
     });
   });
+
+  describe('add', () => {
+    it('should add days to a date', () => {
+      const d = DateTime.from('2024-03-15T10:30:00Z');
+      const future = d.add({ days: 7 });
+      // Temporal may return Z or +00:00 for UTC
+      expect(future.toISOString()).toMatch(/^2024-03-22T10:30:00(Z|\+00:00)$/);
+    });
+
+    it('should add hours and minutes', () => {
+      const d = DateTime.from('2024-03-15T10:30:00Z');
+      const future = d.add({ hours: 2, minutes: 30 });
+      expect(future.toISOString()).toMatch(/^2024-03-15T13:00:00(Z|\+00:00)$/);
+    });
+
+    it('should add months', () => {
+      const d = DateTime.from('2024-01-15T10:30:00Z');
+      const future = d.add({ months: 2 });
+      expect(future.toISOString()).toMatch(/^2024-03-15T10:30:00(Z|\+00:00)$/);
+    });
+
+    it('should not mutate the original', () => {
+      const d = DateTime.from('2024-03-15T10:30:00Z');
+      const originalISO = d.toISOString();
+      d.add({ days: 7 });
+      expect(d.toISOString()).toEqual(originalISO);
+    });
+
+    it('should work with ZonedDateTime', () => {
+      const d = DateTime.from('2024-03-15T10:30:00Z').withTz('America/New_York' as IANATZ);
+      const future = d.add({ days: 1 });
+      expect(future.toISOString()).toMatch(/^2024-03-16/);
+    });
+
+    it('should work with PlainDateTime', () => {
+      const d = new DateTime(2024, 2, 15, 10, 30); // March 15, 2024 10:30
+      const future = d.add({ days: 1 });
+      expect(future.toString()).toEqual('2024-03-16T10:30:00');
+    });
+  });
+
+  describe('subtract', () => {
+    it('should subtract days from a date', () => {
+      const d = DateTime.from('2024-03-15T10:30:00Z');
+      const past = d.subtract({ days: 7 });
+      expect(past.toISOString()).toMatch(/^2024-03-08T10:30:00(Z|\+00:00)$/);
+    });
+
+    it('should subtract hours and minutes', () => {
+      const d = DateTime.from('2024-03-15T10:30:00Z');
+      const past = d.subtract({ hours: 2, minutes: 30 });
+      expect(past.toISOString()).toMatch(/^2024-03-15T08:00:00(Z|\+00:00)$/);
+    });
+
+    it('should subtract months', () => {
+      const d = DateTime.from('2024-03-15T10:30:00Z');
+      const past = d.subtract({ months: 2 });
+      expect(past.toISOString()).toMatch(/^2024-01-15T10:30:00(Z|\+00:00)$/);
+    });
+
+    it('should not mutate the original', () => {
+      const d = DateTime.from('2024-03-15T10:30:00Z');
+      const originalISO = d.toISOString();
+      d.subtract({ days: 7 });
+      expect(d.toISOString()).toEqual(originalISO);
+    });
+
+    it('should work with ZonedDateTime', () => {
+      const d = DateTime.from('2024-03-15T10:30:00Z').withTz('America/New_York' as IANATZ);
+      const past = d.subtract({ days: 1 });
+      expect(past.toISOString()).toMatch(/^2024-03-14/);
+    });
+
+    it('should work with PlainDateTime', () => {
+      const d = new DateTime(2024, 2, 15, 10, 30); // March 15, 2024 10:30
+      const past = d.subtract({ days: 1 });
+      expect(past.toString()).toEqual('2024-03-14T10:30:00');
+    });
+
+    it('add and subtract should be inverse operations', () => {
+      const d = DateTime.from('2024-03-15T10:30:00Z');
+      const result = d.add({ days: 7 }).subtract({ days: 7 });
+      expect(result.equals(d)).toBe(true);
+    });
+  });
 });

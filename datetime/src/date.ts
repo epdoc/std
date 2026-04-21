@@ -428,6 +428,38 @@ export class DateTime {
   }
 
   /**
+   * Adds a duration to the date/time.
+   * @param val - The duration to add (Temporal.DurationLike).
+   * @returns A new DateTime instance with the duration added.
+   * @example
+   * ```typescript
+   * const now = DateTime.now();
+   * const future = now.add({ days: 7 });
+   * ```
+   */
+  add(val: Temporal.DurationLike): DateTime {
+    const result = this.clone();
+    result._value = this._value.add(val);
+    return result;
+  }
+
+  /**
+   * Subtracts a duration from the date/time.
+   * @param val - The duration to subtract (Temporal.DurationLike).
+   * @returns A new DateTime instance with the duration subtracted.
+   * @example
+   * ```typescript
+   * const now = DateTime.now();
+   * const past = now.subtract({ days: 7 });
+   * ```
+   */
+  subtract(val: Temporal.DurationLike): DateTime {
+    const result = this.clone();
+    result._value = this._value.subtract(val);
+    return result;
+  }
+
+  /**
    * Compares two DateTime values and returns a comparison result.
    * Both DateTimes must represent Instants (not PlainDateTime).
    *
