@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/string",
-  "version": "0.1.28",
+  "version": "0.1.29",
   "exports": {
     ".": "./src/mod.ts"
   },
@@ -21,7 +21,7 @@
     "ok": "deno fmt && deno task lint && deno task check && deno task test && deno task docs"
   },
   "imports": {
-    "@epdoc/type": "jsr:@epdoc/type@^1.2.12",
+    "@epdoc/type": "jsr:@epdoc/type@^1.2.13",
     "@std/expect": "jsr:@std/expect@^1.0.19",
     "@std/testing": "jsr:@std/testing@^1.0.18"
   }
