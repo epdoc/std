@@ -144,7 +144,7 @@ export const dateOptionDef = {
   short: 'd',
   name: 'date',
   params: '<date-range>' as const,
-  description: "Date range(s) (e.g., 20240101-20241231, 7d-now, today). Enter '?' for more help.",
+  description: 'Date range(s) (e.g., 20240101-20241231, 7d-now, today).',
   argParser: dateRanges,
   help: DATE_HELP,
 };
@@ -157,7 +157,7 @@ export const rangeOptionDef = {
   short: 'r',
   name: 'range',
   params: '<date-range>' as const,
-  description: "Single date range (e.g., 20240101-20241231, 7d-now). Enter '?' for more help.",
+  description: 'Single date range (e.g., 20240101-20241231, 7d-now).',
   argParser: (val: string): DateRange => {
     const dr = dateRanges(val);
     if (dr.ranges.length !== 1) throw new Error(`Expected a single date range, got ${dr.ranges.length}`);
@@ -174,7 +174,7 @@ export const rangesOptionDef = {
   short: 'R',
   name: 'ranges',
   params: '<date-ranges>' as const,
-  description: "Comma-separated date ranges (e.g., 2024,202501-202503,1d-now). Enter '?' for more help.",
+  description: 'Comma-separated date ranges (e.g., 2024,202501-202503,1d-now).',
   argParser: dateRanges,
   help: DATE_HELP,
 };
