@@ -22,8 +22,8 @@
   },
   "imports": {
     "@epdoc/datetime": "jsr:@epdoc/datetime@^3.2.6",
-    "@epdoc/type": "jsr:@epdoc/type@^1.2.11",
-    "@std/expect": "jsr:@std/expect@^1.0.18",
-    "@std/testing": "jsr:@std/testing@^1.0.17"
+    "@epdoc/type": "jsr:@epdoc/type@^1.2.12",
+    "@std/expect": "jsr:@std/expect@^1.0.19",
+    "@std/testing": "jsr:@std/testing@^1.0.18"
   }
 }
