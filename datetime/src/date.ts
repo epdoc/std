@@ -440,7 +440,7 @@ export class DateTime {
    */
   add(val: Temporal.DurationLike): DateTime {
     const result = this.clone();
-    result._value = this._value.add(val);
+    result._value = this.#temporalForArithmetic().add(val);
     return result;
   }
 
@@ -456,8 +456,20 @@ export class DateTime {
    */
   subtract(val: Temporal.DurationLike): DateTime {
     const result = this.clone();
-    result._value = this._value.subtract(val);
+    result._value = this.#temporalForArithmetic().subtract(val);
     return result;
+  }
+
+  /**
+   * Returns the appropriate Temporal object for arithmetic.
+   * Temporal.Instant only supports time units; for calendar units (days, weeks,
+   * months, years) we must use a ZonedDateTime. We promote to local tz on demand.
+   */
+  #temporalForArithmetic(): Temporal.Instant | Temporal.ZonedDateTime | Temporal.PlainDateTime {
+    if (this._value instanceof Temporal.Instant) {
+      return this._value.toZonedDateTimeISO(Temporal.Now.timeZoneId());
+    }
+    return this._value;
   }
 
   /**
