@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/daterange",
-  "version": "2.1.14",
+  "version": "2.1.15",
   "exports": {
     ".": "./src/mod.ts"
   },
@@ -21,7 +21,7 @@
     "ok": "deno fmt && deno lint && deno task check && deno task test && deno task docs"
   },
   "imports": {
-    "@epdoc/datetime": "jsr:@epdoc/datetime@^3.2.9",
+    "@epdoc/datetime": "jsr:@epdoc/datetime@^3.2.11",
     "@epdoc/type": "jsr:@epdoc/type@^1.2.13",
     "@std/expect": "jsr:@std/expect@^1.0.19",
     "@std/testing": "jsr:@std/testing@^1.0.18"

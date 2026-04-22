@@ -54,13 +54,13 @@ function parseKeyword(input: string, now: DateTime): DateTime | undefined {
       return now;
     case 'today':
     case 'startofday':
-      return now.startOfDay('local');
+      return now.withTz().startOfDay();
     case 'endofday':
-      return now.endOfDay('local');
+      return now.withTz().endOfDay();
     case 'yesterday':
-      return now.subtract({ days: 1 }).startOfDay('local');
+      return now.withTz().subtract({ days: 1 }).startOfDay();
     case 'tomorrow':
-      return now.add({ days: 1 }).startOfDay('local');
+      return now.withTz().add({ days: 1 }).startOfDay();
     default:
       return undefined;
   }
