@@ -476,6 +476,67 @@ export class DateTime {
   }
 
   /**
+   * Returns a new DateTime with specific date/time components replaced.
+   * This delegates to the underlying Temporal object's `with()` method.
+   *
+   * ## Supported fields (ZonedDateTime / PlainDateTime)
+   * - `year`, `month`, `day`, `hour`, `minute`, `second`, `millisecond`
+   * - `microsecond`, `nanosecond`, `era`, `eraYear`
+   *
+   * ## Not supported for Instant
+   * If the internal value is an `Instant`, you must call `withTz()` first
+   * to establish a timezone before using `with()`.
+   *
+   * @param fields - The fields to replace, using Temporal's `DurationLike` shape.
+   * @returns A new DateTime instance with the specified components replaced.
+   * @throws Error if called on an Instant without a timezone.
+   *
+   * @example
+   * ```typescript
+   * // Floor to the start of the current hour
+   * const d = DateTime.from('2024-03-15T10:30:45.123Z');
+   * d.with({ minute: 0, second: 0, millisecond: 0 }).toISOString();
+   * // "2024-03-15T10:00:00.000Z"
+   *
+   * // Ceil to the start of the next hour
+   * d.add({ hours: 1 }).with({ minute: 0, second: 0, millisecond: 0 }).toISOString();
+   * // "2024-03-15T11:00:00.000Z"
+   *
+   * // Set a specific date component
+   * d.with({ day: 1 }).toISOString(); // "2024-03-01T10:30:45.123Z"
+   * ```
+   */
+  with(
+    fields: {
+      year?: number;
+      month?: number;
+      day?: number;
+      hour?: number;
+      minute?: number;
+      second?: number;
+      millisecond?: number;
+      microsecond?: number;
+      nanosecond?: number;
+      era?: string;
+      eraYear?: number;
+      offset?: string;
+      timeZone?: string;
+    },
+  ): DateTime {
+    const result = this.clone();
+    if (this._value instanceof Temporal.ZonedDateTime) {
+      result._value = this._value.with(fields as unknown as Parameters<Temporal.ZonedDateTime['with']>[0]);
+    } else if (this._value instanceof Temporal.PlainDateTime) {
+      result._value = this._value.with(fields as unknown as Parameters<Temporal.PlainDateTime['with']>[0]);
+    } else if (this._value instanceof Temporal.Instant) {
+      throw new Error('Cannot use with() on Instant: use withTz() to set a timezone first');
+    } else {
+      throw new Error('Unknown temporal type');
+    }
+    return result;
+  }
+
+  /**
    * Returns the appropriate Temporal object for arithmetic.
    * Temporal.Instant only supports time units; for calendar units (days, weeks,
    * months, years) we must use a ZonedDateTime. We promote to local tz on demand.
@@ -485,6 +546,23 @@ export class DateTime {
       return this._value.toZonedDateTimeISO(Temporal.Now.timeZoneId());
     }
     return this._value;
+  }
+
+  /**
+   * Returns a ZonedDateTime for calendar-boundary operations.
+   * - ZonedDateTime is used as-is.
+   * - Instant is promoted to UTC.
+   * - PlainDateTime is promoted to the local timezone.
+   */
+  #zonedDateTimeForCalendar(): Temporal.ZonedDateTime {
+    if (this._value instanceof Temporal.ZonedDateTime) {
+      return this._value;
+    } else if (this._value instanceof Temporal.Instant) {
+      return this._value.toZonedDateTimeISO('UTC');
+    } else if (this._value instanceof Temporal.PlainDateTime) {
+      return this._value.toZonedDateTime(Temporal.Now.timeZoneId());
+    }
+    throw new Error('Unknown temporal type');
   }
 
   /**
@@ -1262,28 +1340,175 @@ export class DateTime {
 
   /**
    * Returns a new DateTime set to the start of the calendar day (00:00:00.000)
-   * in the given timezone.
+   * using the timezone already set on this DateTime.
    *
-   * @param tz - Timezone to use. Defaults to the timezone already set, or local.
+   * - If the internal value is a `ZonedDateTime`, its timezone is used.
+   * - If the internal value is an `Instant`, UTC is used.
+   * - If the internal value is a `PlainDateTime`, the local timezone is used.
+   *
+   * Chain `.withTz()` before this method to operate in a specific timezone.
+   *
+   * @example
+   * ```typescript
+   * const d = DateTime.from('2024-03-15T10:30:45.123Z');
+   * d.startOfDay().toISOString(); // "2024-03-15T00:00:00.000Z"
+   *
+   * const d2 = DateTime.from('2024-03-15T10:30:45.123Z').withTz('America/New_York');
+   * d2.startOfDay().toISOString(); // "2024-03-15T00:00:00.000-04:00"
+   * ```
    */
-  public startOfDay(tz?: 'local' | IANATZ | ISOTZ | TzMinutes): DateTime {
-    const zdt = this.withTz(tz ?? (this._value instanceof Temporal.ZonedDateTime ? undefined : 'local'))
-      ._value as Temporal.ZonedDateTime;
+  public startOfDay(): DateTime {
+    const zdt = this.#zonedDateTimeForCalendar();
     return new DateTime(zdt.with({ hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0, nanosecond: 0 }));
   }
 
   /**
-   * Returns a new DateTime set to the end of the calendar day (23:59:59.999)
-   * in the given timezone.
+   * Returns a new DateTime set to the end of the calendar day.
+   * By default this is 23:59:59.999 (one millisecond before the next day).
+   * The `backoffMs` parameter controls how far to back off from the start
+   * of the next day.
    *
-   * @param tz - Timezone to use. Defaults to the timezone already set, or local.
+   * - If the internal value is a `ZonedDateTime`, its timezone is used.
+   * - If the internal value is an `Instant`, UTC is used.
+   * - If the internal value is a `PlainDateTime`, the local timezone is used.
+   *
+   * @param backoffMs - Milliseconds to subtract from the start of the next day.
+   *   Defaults to 1, giving 23:59:59.999. Use 0 for the exact start of the next day.
+   * @example
+   * ```typescript
+   * const d = DateTime.from('2024-03-15T10:30:00Z');
+   * d.endOfDay().toISOString();       // "2024-03-15T23:59:59.999Z"
+   * d.endOfDay(0).toISOString();      // "2024-03-16T00:00:00.000Z"
+   * d.endOfDay(1000).toISOString();   // "2024-03-15T23:59:59.000Z"
+   * ```
    */
-  public endOfDay(tz?: 'local' | IANATZ | ISOTZ | TzMinutes): DateTime {
-    const zdt = this.withTz(tz ?? (this._value instanceof Temporal.ZonedDateTime ? undefined : 'local'))
-      ._value as Temporal.ZonedDateTime;
+  public endOfDay(backoffMs: number = 1): DateTime {
+    return this.startOfDay().add({ days: 1 }).subtract({ milliseconds: backoffMs });
+  }
+
+  /**
+   * Returns a new DateTime set to the start of the calendar year (Jan 1 00:00:00.000)
+   * using the timezone already set on this DateTime.
+   *
+   * - If the internal value is a `ZonedDateTime`, its timezone is used.
+   * - If the internal value is an `Instant`, UTC is used.
+   * - If the internal value is a `PlainDateTime`, the local timezone is used.
+   *
+   * @example
+   * ```typescript
+   * const d = DateTime.from('2024-07-15T10:30:00Z');
+   * d.startOfYear().toISOString(); // "2024-01-01T00:00:00.000Z"
+   * ```
+   */
+  public startOfYear(): DateTime {
+    const zdt = this.#zonedDateTimeForCalendar();
     return new DateTime(
-      zdt.with({ hour: 23, minute: 59, second: 59, millisecond: 999, microsecond: 0, nanosecond: 0 }),
+      zdt.with({ month: 1, day: 1, hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0, nanosecond: 0 }),
     );
+  }
+
+  /**
+   * Returns a new DateTime set to the end of the calendar year.
+   * By default this is Dec 31 23:59:59.999 (one millisecond before the next year).
+   *
+   * @param backoffMs - Milliseconds to subtract from the start of the next year.
+   *   Defaults to 1.
+   * @example
+   * ```typescript
+   * const d = DateTime.from('2024-07-15T10:30:00Z');
+   * d.endOfYear().toISOString(); // "2024-12-31T23:59:59.999Z"
+   * ```
+   */
+  public endOfYear(backoffMs: number = 1): DateTime {
+    return this.startOfYear().add({ years: 1 }).subtract({ milliseconds: backoffMs });
+  }
+
+  /**
+   * Returns a new DateTime set to the start of the calendar month (1st 00:00:00.000)
+   * using the timezone already set on this DateTime.
+   *
+   * - If the internal value is a `ZonedDateTime`, its timezone is used.
+   * - If the internal value is an `Instant`, UTC is used.
+   * - If the internal value is a `PlainDateTime`, the local timezone is used.
+   *
+   * @example
+   * ```typescript
+   * const d = DateTime.from('2024-03-15T10:30:00Z');
+   * d.startOfMonth().toISOString(); // "2024-03-01T00:00:00.000Z"
+   * ```
+   */
+  public startOfMonth(): DateTime {
+    const zdt = this.#zonedDateTimeForCalendar();
+    return new DateTime(
+      zdt.with({ day: 1, hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0, nanosecond: 0 }),
+    );
+  }
+
+  /**
+   * Returns a new DateTime set to the end of the calendar month.
+   * By default this is the last millisecond of the last day of the month.
+   *
+   * @param backoffMs - Milliseconds to subtract from the start of the next month.
+   *   Defaults to 1.
+   * @example
+   * ```typescript
+   * const d = DateTime.from('2024-03-15T10:30:00Z');
+   * d.endOfMonth().toISOString(); // "2024-03-31T23:59:59.999Z"
+   * ```
+   */
+  public endOfMonth(backoffMs: number = 1): DateTime {
+    return this.startOfMonth().add({ months: 1 }).subtract({ milliseconds: backoffMs });
+  }
+
+  /**
+   * Returns a new DateTime set to the start of the calendar week at 00:00:00.000
+   * using the timezone already set on this DateTime.
+   *
+   * The week start day follows ISO-8601 conventions where Monday=1 and Sunday=7.
+   *
+   * - If the internal value is a `ZonedDateTime`, its timezone is used.
+   * - If the internal value is an `Instant`, UTC is used.
+   * - If the internal value is a `PlainDateTime`, the local timezone is used.
+   *
+   * @param dayOfWeek - The day that starts the week (1=Monday, 7=Sunday). Defaults to 1.
+   * @example
+   * ```typescript
+   * const d = DateTime.from('2024-03-15T10:30:00Z'); // Friday
+   * d.startOfWeek().toISOString();            // "2024-03-11T00:00:00.000Z" (Monday)
+   * d.startOfWeek(7).toISOString();           // "2024-03-10T00:00:00.000Z" (Sunday)
+   * d.startOfWeek(5).toISOString();           // "2024-03-15T00:00:00.000Z" (Friday)
+   * ```
+   */
+  public startOfWeek(dayOfWeek: number = 1): DateTime {
+    const zdt = this.#zonedDateTimeForCalendar();
+    const diff = (zdt.dayOfWeek - dayOfWeek + 7) % 7;
+    const startZdt = zdt.subtract({ days: diff }).with({
+      hour: 0,
+      minute: 0,
+      second: 0,
+      millisecond: 0,
+      microsecond: 0,
+      nanosecond: 0,
+    });
+    return new DateTime(startZdt);
+  }
+
+  /**
+   * Returns a new DateTime set to the end of the calendar week.
+   * By default this is the last millisecond before the start of the next week.
+   *
+   * @param dayOfWeek - The day that starts the week (1=Monday, 7=Sunday). Defaults to 1.
+   * @param backoffMs - Milliseconds to subtract from the start of the next week.
+   *   Defaults to 1.
+   * @example
+   * ```typescript
+   * const d = DateTime.from('2024-03-15T10:30:00Z'); // Friday
+   * d.endOfWeek().toISOString();      // "2024-03-17T23:59:59.999Z" (Sunday)
+   * d.endOfWeek(7).toISOString();     // "2024-03-16T23:59:59.999Z" (Saturday)
+   * ```
+   */
+  public endOfWeek(dayOfWeek: number = 1, backoffMs: number = 1): DateTime {
+    return this.startOfWeek(dayOfWeek).add({ weeks: 1 }).subtract({ milliseconds: backoffMs });
   }
 
   /**

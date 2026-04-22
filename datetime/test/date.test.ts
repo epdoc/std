@@ -936,4 +936,139 @@ describe('date-util', () => {
       expect(result.equals(d)).toBe(true);
     });
   });
+
+  describe('startOfDay / endOfDay', () => {
+    it('startOfDay uses UTC offset for Z-suffixed string', () => {
+      const d = DateTime.from('2024-03-15T10:30:45.123Z');
+      expect(d.startOfDay().toISOString()).toEqual('2024-03-15T00:00:00+00:00');
+    });
+
+    it('startOfDay uses ZonedDateTime timezone', () => {
+      const d = DateTime.from('2024-03-15T10:30:45.123Z').withTz('America/New_York' as IANATZ);
+      expect(d.startOfDay().toISOString()).toEqual('2024-03-15T00:00:00-04:00');
+    });
+
+    it('endOfDay defaults to 23:59:59.999', () => {
+      const d = DateTime.from('2024-03-15T10:30:00Z');
+      expect(d.endOfDay().toISOString()).toEqual('2024-03-15T23:59:59.999+00:00');
+    });
+
+    it('endOfDay with backoffMs=0 gives start of next day', () => {
+      const d = DateTime.from('2024-03-15T10:30:00Z');
+      expect(d.endOfDay(0).toISOString()).toEqual('2024-03-16T00:00:00+00:00');
+    });
+
+    it('endOfDay with custom backoff', () => {
+      const d = DateTime.from('2024-03-15T10:30:00Z');
+      expect(d.endOfDay(1000).toISOString()).toEqual('2024-03-15T23:59:59+00:00');
+    });
+  });
+
+  describe('startOfYear / endOfYear', () => {
+    it('startOfYear returns Jan 1 00:00:00 UTC offset', () => {
+      const d = DateTime.from('2024-07-15T10:30:00Z');
+      expect(d.startOfYear().toISOString()).toEqual('2024-01-01T00:00:00+00:00');
+    });
+
+    it('endOfYear defaults to last ms of year', () => {
+      const d = DateTime.from('2024-07-15T10:30:00Z');
+      expect(d.endOfYear().toISOString()).toEqual('2024-12-31T23:59:59.999+00:00');
+    });
+
+    it('endOfYear with backoffMs=0 gives start of next year', () => {
+      const d = DateTime.from('2024-07-15T10:30:00Z');
+      expect(d.endOfYear(0).toISOString()).toEqual('2025-01-01T00:00:00+00:00');
+    });
+  });
+
+  describe('startOfMonth / endOfMonth', () => {
+    it('startOfMonth returns 1st 00:00:00 UTC offset', () => {
+      const d = DateTime.from('2024-03-15T10:30:00Z');
+      expect(d.startOfMonth().toISOString()).toEqual('2024-03-01T00:00:00+00:00');
+    });
+
+    it('endOfMonth defaults to last ms of month', () => {
+      const d = DateTime.from('2024-03-15T10:30:00Z');
+      expect(d.endOfMonth().toISOString()).toEqual('2024-03-31T23:59:59.999+00:00');
+    });
+
+    it('endOfMonth handles February in a leap year', () => {
+      const d = DateTime.from('2024-02-15T10:30:00Z');
+      expect(d.endOfMonth().toISOString()).toEqual('2024-02-29T23:59:59.999+00:00');
+    });
+
+    it('endOfMonth handles February in a non-leap year', () => {
+      const d = DateTime.from('2023-02-15T10:30:00Z');
+      expect(d.endOfMonth().toISOString()).toEqual('2023-02-28T23:59:59.999+00:00');
+    });
+  });
+
+  describe('startOfWeek / endOfWeek', () => {
+    it('startOfWeek defaults to Monday', () => {
+      // 2024-03-15 is a Friday
+      const d = DateTime.from('2024-03-15T10:30:00Z');
+      expect(d.startOfWeek().toISOString()).toEqual('2024-03-11T00:00:00+00:00');
+    });
+
+    it('startOfWeek stays on same day if already target day', () => {
+      // 2024-03-11 is a Monday
+      const d = DateTime.from('2024-03-11T10:30:00Z');
+      expect(d.startOfWeek().toISOString()).toEqual('2024-03-11T00:00:00+00:00');
+    });
+
+    it('startOfWeek with Sunday as start', () => {
+      // 2024-03-15 is Friday; previous Sunday is 2024-03-10
+      const d = DateTime.from('2024-03-15T10:30:00Z');
+      expect(d.startOfWeek(7).toISOString()).toEqual('2024-03-10T00:00:00+00:00');
+    });
+
+    it('startOfWeek with Friday as start', () => {
+      // 2024-03-15 is Friday
+      const d = DateTime.from('2024-03-15T10:30:00Z');
+      expect(d.startOfWeek(5).toISOString()).toEqual('2024-03-15T00:00:00+00:00');
+    });
+
+    it('endOfWeek defaults to Sunday 23:59:59.999', () => {
+      // 2024-03-15 is Friday; week ends Sunday 2024-03-17
+      const d = DateTime.from('2024-03-15T10:30:00Z');
+      expect(d.endOfWeek().toISOString()).toEqual('2024-03-17T23:59:59.999+00:00');
+    });
+
+    it('endOfWeek with Sunday start ends Saturday', () => {
+      // 2024-03-15 is Friday; Sunday-start week ends Saturday 2024-03-16
+      const d = DateTime.from('2024-03-15T10:30:00Z');
+      expect(d.endOfWeek(7).toISOString()).toEqual('2024-03-16T23:59:59.999+00:00');
+    });
+
+    it('endOfWeek with custom backoff', () => {
+      const d = DateTime.from('2024-03-15T10:30:00Z');
+      expect(d.endOfWeek(1, 0).toISOString()).toEqual('2024-03-18T00:00:00+00:00');
+    });
+  });
+
+  describe('with()', () => {
+    it('should replace components on ZonedDateTime', () => {
+      const d = DateTime.from('2024-03-15T10:30:45.123Z').withTz('utc');
+      const floored = d.with({ minute: 0, second: 0, millisecond: 0 });
+      expect(floored.toISOString()).toEqual('2024-03-15T10:00:00+00:00');
+    });
+
+    it('should replace components on PlainDateTime', () => {
+      const d = new DateTime(2024, 2, 15, 10, 30, 45, 123);
+      const floored = d.with({ minute: 0, second: 0, millisecond: 0 });
+      expect(floored.toString()).toEqual('2024-03-15T10:00:00');
+    });
+
+    it('should throw on Instant without timezone', () => {
+      const d = DateTime.from(Temporal.Instant.from('2024-03-15T10:30:45.123Z'));
+      expect(() => d.with({ minute: 0 })).toThrow('use withTz() to set a timezone first');
+    });
+
+    it('should not mutate the original', () => {
+      const d = DateTime.from('2024-03-15T10:30:45.123Z').withTz('utc');
+      const originalISO = d.toISOString();
+      d.with({ hour: 0 });
+      expect(d.toISOString()).toEqual(originalISO);
+    });
+  });
 });

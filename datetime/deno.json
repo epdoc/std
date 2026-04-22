@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/datetime",
-  "version": "3.2.10",
+  "version": "3.2.11",
   "exports": "./src/mod.ts",
   "publish": {
     "include": [
