@@ -1,6 +1,6 @@
+import { DateTime } from '@epdoc/datetime';
 import { expect } from '@std/expect';
 import { describe, test } from '@std/testing/bdd';
-import { DateTime } from '@epdoc/datetime';
 import {
   dateList,
   DateRange,

@@ -4,7 +4,7 @@
  * Provides the DateRanges class for working with collections of date ranges.
  */
 import { DateTime } from '@epdoc/datetime';
-import { isNonEmptyArray } from '@epdoc/type';
+import { _, isNonEmptyArray } from '@epdoc/type';
 import { DateRange } from './date-range.ts';
 import type { DateRangeDef, DateRangeJSON, DateRangeParseOptions } from './types.ts';
 import { dateList } from './util.ts';
@@ -16,7 +16,7 @@ export class DateRanges {
   private _ranges: DateRange[] = [];
 
   constructor(dateRanges?: DateRangeDef | DateRangeDef[]) {
-    if (isNonEmptyArray(dateRanges)) {
+    if (_.isArray(dateRanges)) {
       this._ranges = dateRanges.map((def) => DateRange.fromDef(def));
     } else if (dateRanges) {
       this._ranges = [DateRange.fromDef(dateRanges)];
