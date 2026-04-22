@@ -260,6 +260,21 @@ export class DateTime {
   }
 
   /**
+   * Returns the epoch milliseconds (Unix timestamp) of this DateTime.
+   * Only available for Instant and ZonedDateTime; throws for PlainDateTime.
+   *
+   * @example
+   * ```typescript
+   * const d = DateTime.from('2024-03-15T10:30:00Z');
+   * console.log(d.epochMilliseconds); // 1710499800000
+   * ```
+   * @throws Error if the internal value is a PlainDateTime
+   */
+  valueOf(): number {
+    return this.epochMilliseconds;
+  }
+
+  /**
    * Returns the internal Temporal object (Instant, PlainDateTime, or ZonedDateTime).
    */
   get temporal(): Temporal.Instant | Temporal.PlainDateTime | Temporal.ZonedDateTime {
