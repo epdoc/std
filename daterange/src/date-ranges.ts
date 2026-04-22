@@ -15,16 +15,20 @@ import { dateList } from './util.ts';
 export class DateRanges {
   private _ranges: DateRange[] = [];
 
-  constructor(dateRanges?: DateRangeDef[]) {
+  constructor(dateRanges?: DateRangeDef | DateRangeDef[]) {
     if (isNonEmptyArray(dateRanges)) {
       this._ranges = dateRanges.map((def) => DateRange.fromDef(def));
+    } else if (dateRanges) {
+      this._ranges = [DateRange.fromDef(dateRanges)];
     }
   }
 
-  init(ranges?: DateRangeDef[]): this {
+  init(ranges?: DateRangeDef | DateRangeDef[]): this {
     this._ranges = [];
     if (isNonEmptyArray(ranges)) {
       this._ranges = ranges.map((def) => DateRange.fromDef(def));
+    } else if (ranges) {
+      this._ranges = [DateRange.fromDef(ranges)];
     }
     return this;
   }
