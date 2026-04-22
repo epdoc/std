@@ -12,7 +12,7 @@ import { dateList } from './util.ts';
 /**
  * Represents a collection of date ranges.
  */
-export class DateRanges {
+export class DateRanges implements Iterable<DateRange> {
   private _ranges: DateRange[] = [];
 
   constructor(dateRanges?: DateRangeDef | DateRangeDef[]) {
@@ -143,5 +143,9 @@ export class DateRanges {
       };
       return `from ${fmt(r.after)} to ${fmt(r.before)}`;
     }).join(', ');
+  }
+
+  [Symbol.iterator](): Iterator<DateRange> {
+    return this._ranges[Symbol.iterator]();
   }
 }

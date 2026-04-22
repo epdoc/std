@@ -261,6 +261,77 @@ describe('daterange', () => {
   });
 
   describe('DateRanges', () => {
+    test('constructor should accept single DateRangeDef', () => {
+      const dt = dateStringToInstant('20250101');
+      const def: DateRangeDef = { after: dt };
+      const dr = new DateRanges(def);
+      expect(dr.ranges.length).toBe(1);
+      expectDateTime(dr.ranges[0].after, { year: 2025, month: 1, day: 1 });
+    });
+
+    test('constructor should accept array of DateRangeDef', () => {
+      const defs: DateRangeDef[] = [
+        { after: dateStringToInstant('20250101') },
+        { after: dateStringToInstant('20250201') },
+      ];
+      const dr = new DateRanges(defs);
+      expect(dr.ranges.length).toBe(2);
+    });
+
+    test('init should accept single DateRangeDef', () => {
+      const dr = new DateRanges();
+      const dt = dateStringToInstant('20250301');
+      const def: DateRangeDef = { after: dt };
+      dr.init(def);
+      expect(dr.ranges.length).toBe(1);
+      expectDateTime(dr.ranges[0].after, { year: 2025, month: 3, day: 1 });
+    });
+
+    test('init should accept array of DateRangeDef', () => {
+      const dr = new DateRanges();
+      const defs: DateRangeDef[] = [
+        { after: dateStringToInstant('20250101') },
+        { after: dateStringToInstant('20250201') },
+      ];
+      dr.init(defs);
+      expect(dr.ranges.length).toBe(2);
+    });
+
+    test('should be iterable with for...of', () => {
+      const dr = dateRanges('20250101-20250115,20250201-20250215');
+      const collected: DateRange[] = [];
+      for (const range of dr) {
+        collected.push(range);
+      }
+      expect(collected.length).toBe(2);
+      expect(collected[0]).toBeInstanceOf(DateRange);
+      expect(collected[1]).toBeInstanceOf(DateRange);
+    });
+
+    test('should be iterable with spread operator', () => {
+      const dr = dateRanges('20250101-20250115,20250201-20250215');
+      const arr = [...dr];
+      expect(arr.length).toBe(2);
+      expect(arr[0]).toBeInstanceOf(DateRange);
+      expect(arr[1]).toBeInstanceOf(DateRange);
+    });
+
+    test('should be iterable with Array.from', () => {
+      const dr = dateRanges('20250101-20250115');
+      const arr = Array.from(dr);
+      expect(arr.length).toBe(1);
+      expect(arr[0]).toBeInstanceOf(DateRange);
+    });
+
+    test('iteration should work on empty DateRanges', () => {
+      const dr = new DateRanges();
+      const collected: DateRange[] = [];
+      for (const range of dr) {
+        collected.push(range);
+      }
+      expect(collected.length).toBe(0);
+    });
+
     test('contains should work with DateTime, Date, Temporal.Instant, and string', () => {
       const dr = dateRanges('20250101-20250131');
 
