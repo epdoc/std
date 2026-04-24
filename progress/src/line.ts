@@ -1,3 +1,4 @@
+import { getTerminalSize, visualTruncate } from '@epdoc/terminal/screen';
 import { _, type Integer } from '@epdoc/type';
 import { rgb24 } from '@std/fmt/colors';
 import * as Const from './consts.ts';
@@ -268,6 +269,19 @@ export class ProgressLine {
   }
 
   /**
+   * Truncate a message to fit within the terminal width, accounting for overhead.
+   *
+   * @param message - The message to potentially truncate
+   * @param overhead - Number of characters used by the indicator (frame + space, etc.)
+   * @returns Truncated message that fits within terminal width
+   */
+  #truncateMessage(message: string, overhead: number): string {
+    const terminalWidth = getTerminalSize().columns;
+    const maxMessageWidth = terminalWidth - overhead;
+    return visualTruncate(message, Math.max(0, maxMessageWidth));
+  }
+
+  /**
    * Render the current frame to stderr.
    *
    * In spinner and bounce modes, displays the current frame character with the
@@ -291,11 +305,13 @@ export class ProgressLine {
     if (Guard.isSpinner(opts)) {
       const subtype = Guard.isSpinnerType(opts.index) ? opts.index : 'braille';
       const frame = Const.blocks.spinner[subtype][this.#frameIndex];
-      output = `\r\x1b[K${rgb24(frame, color)} ${this.#currentMessage}`;
+      const truncatedMessage = this.#truncateMessage(this.#currentMessage, 2); // frame + space
+      output = `\r\x1b[K${rgb24(frame, color)} ${truncatedMessage}`;
     } else if (Guard.isBounce(opts)) {
       const subtype = Guard.isBounceType(opts.index) ? opts.index : 'comet';
       const frame = Const.blocks.bounce[subtype][this.#frameIndex];
-      output = `\r\x1b[K${rgb24(frame, color)} ${this.#currentMessage}`;
+      const truncatedMessage = this.#truncateMessage(this.#currentMessage, 2); // frame + space
+      output = `\r\x1b[K${rgb24(frame, color)} ${truncatedMessage}`;
     } else if (Guard.isHorizontal(opts)) {
       // Calculate fractional progress, clamped to [0, width]
       const exactProgress = Math.min(opts.width, Math.max(0, (this.#currentProgress / opts.total) * opts.width));
@@ -313,13 +329,15 @@ export class ProgressLine {
       // Build the bar: colored filled portion + empty spaces
       const filled = '█'.repeat(fullBlocks) + partialBlock;
       const empty = ' '.repeat(emptyCount);
-      output = `\r\x1b[K${rgb24(filled, color)}${empty} ${this.#currentMessage}`;
+      const truncatedMessage = this.#truncateMessage(this.#currentMessage, opts.width + 1); // bar + space
+      output = `\r\x1b[K${rgb24(filled, color)}${empty} ${truncatedMessage}`;
     } else if (Guard.isVertical(opts)) {
       // Calculate vertical fill level (0-8 for the 9 block characters), clamped
       const exactProgress = Math.min(8, Math.max(0, (this.#currentProgress / opts.total) * 8));
       const blockIndex = Math.floor(exactProgress);
       const bar = Const.blocks.vertical[blockIndex];
-      output = `\r\x1b[K${rgb24(bar, color)} ${this.#currentMessage}`;
+      const truncatedMessage = this.#truncateMessage(this.#currentMessage, 2); // block + space
+      output = `\r\x1b[K${rgb24(bar, color)} ${truncatedMessage}`;
     }
 
     Deno.stderr.writeSync(encoder.encode(output));

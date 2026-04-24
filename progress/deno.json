@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/progress",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "exports": {
     ".": "./src/mod.ts"
   },
@@ -22,6 +22,7 @@
     "ok": "deno fmt && deno task lint && deno task check && deno task test && deno task docs"
   },
   "imports": {
+    "@epdoc/terminal": "jsr:@epdoc/terminal@^0.0.12",
     "@epdoc/type": "jsr:@epdoc/type@^1.2.13",
     "@std/expect": "jsr:@std/expect@^1.0.19",
     "@std/fmt": "jsr:@std/fmt@^1.0.10",
