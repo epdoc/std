@@ -297,7 +297,7 @@
       },
       "fs": {
         "dependencies": [
-          "jsr:@epdoc/datetime@^3.2.9",
+          "jsr:@epdoc/datetime@^3.2.11",
           "jsr:@epdoc/type@^1.2.13",
           "jsr:@std/assert@^1.0.19",
           "jsr:@std/bytes@^1.0.6",
