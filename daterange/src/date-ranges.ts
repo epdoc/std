@@ -103,17 +103,30 @@ export class DateRanges implements Iterable<DateRange> {
   }
 
   /**
+   * Populates from an array of DateRangeDef objects (DateTime values).
+   */
+  static fromDef(defs?: DateRangeDef[]): DateRanges {
+    if (!isNonEmptyArray(defs)) return new DateRanges();
+    const result = new DateRanges();
+    for (const def of defs) {
+      result._ranges.push(DateRange.fromDef(def));
+    }
+    return result;
+  }
+
+  /**
    * Populates from an array of DateRangeJSON objects (ISO string values).
    */
-  fromJSON(json?: DateRangeJSON[]): void {
-    this._ranges = [];
-    if (!isNonEmptyArray(json)) return;
+  static fromJSON(json?: DateRangeJSON[]): DateRanges {
+    if (!isNonEmptyArray(json)) return new DateRanges();
+    const result = new DateRanges();
     for (const item of json) {
       const def: DateRangeDef = {};
       if (item.after) def.after = DateTime.tryFrom(item.after);
       if (item.before) def.before = DateTime.tryFrom(item.before);
-      this._ranges.push(DateRange.fromDef(def));
+      result._ranges.push(DateRange.fromDef(def));
     }
+    return result;
   }
 
   toJSON(): DateRangeJSON[] {

@@ -1,4 +1,4 @@
-import { DateTime } from '@epdoc/datetime';
+import { DateTime, type ISODate } from '@epdoc/datetime';
 import { expect } from '@std/expect';
 import { describe, test } from '@std/testing/bdd';
 import {
@@ -486,30 +486,29 @@ describe('daterange', () => {
       const s = '20250115-20250116';
       const dr1 = dateRanges(s);
       const json = dr1.toJSON();
-      const dr2 = new DateRanges();
-      dr2.fromJSON(json);
-      expect(dr2.toCompactString()).toBe(dr1.toCompactString());
+      const dr2 = DateRanges.fromJSON(json);
+      expect(dr2).toBeInstanceOf(DateRanges);
+      expect(dr2!.toCompactString()).toBe(dr1.toCompactString());
     });
 
     test('should correctly deserialize multiple ranges', () => {
       const s = '202501-202502,2026';
       const dr1 = dateRanges(s);
       const json = dr1.toJSON();
-      const dr2 = new DateRanges();
-      dr2.fromJSON(json);
-      expect(dr2.toCompactString()).toBe(dr1.toCompactString());
+      const dr2 = DateRanges.fromJSON(json);
+      expect(dr2).toBeInstanceOf(DateRanges);
+      expect(dr2!.toCompactString()).toBe(dr1.toCompactString());
     });
 
     test('should handle an empty array', () => {
-      const dr = new DateRanges();
-      dr.fromJSON([]);
+      const dr = DateRanges.fromJSON([]);
+      expect(dr).toBeDefined();
       expect(dr.ranges.length).toBe(0);
     });
 
     test('should handle invalid date strings gracefully', () => {
-      const dr = new DateRanges();
-      // Cast to bypass type check — testing runtime behavior
-      dr.fromJSON([{ after: 'invalid date' as unknown as import('@epdoc/datetime').ISODate }]);
+      const dr = DateRanges.fromJSON([{ after: 'invalid date' as unknown as ISODate }]);
+      expect(dr).toBeDefined();
       expect(dr.ranges.length).toBe(1);
       expect(dr.ranges[0].after.isMin()).toBe(true);
     });
