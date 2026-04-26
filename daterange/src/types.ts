@@ -71,10 +71,18 @@ export function isDateRangeDef(obj: unknown): obj is DateRangeDef {
   if (!_.isDict(obj)) return false;
 
   const dict = obj as Record<string, unknown>;
-  const keys = Object.keys(dict);
 
-  return (
-    keys.length > 0 &&
-    keys.every((k) => (k === 'after' || k === 'before') && dict[k] instanceof DateTime)
-  );
+  // 1. Identify which relevant keys are present
+  const hasAfter = 'after' in dict;
+  const hasBefore = 'before' in dict;
+
+  // 2. It's only a DateRangeDef if it has at least one of these
+  // (otherwise it's just a generic dictionary)
+  if (!hasAfter && !hasBefore) return false;
+
+  // 3. Validate that the keys we found are actually DateTimes
+  const isAfterValid = !hasAfter || dict.after instanceof DateTime;
+  const isBeforeValid = !hasBefore || dict.before instanceof DateTime;
+
+  return isAfterValid && isBeforeValid;
 }

@@ -10,7 +10,7 @@ import { DateRanges } from './date-ranges.ts';
 import { parseRelativeTime } from './relative-time.ts';
 import type { DateRangeDef, DateRangeParseOptions } from './types.ts';
 
-const DAY_MS = 24 * 3600 * 1000;
+const _DAY_MS = 24 * 3600 * 1000;
 
 /**
  * Converts a compact date string to a DateTime in local time.
@@ -94,7 +94,7 @@ export function dateStringToInstant(s: string, h: Integer = 0): DateTime {
     millisecond: 0,
   });
 
-  return new DateTime(plainDateTime.toZonedDateTime(localTz));
+  return DateTime.of(plainDateTime.toZonedDateTime(localTz));
 }
 
 /**
@@ -185,40 +185,37 @@ function parseRangeComponent(s: string, reference?: DateTime): DateTime | undefi
 function calculateBeforeInstant(
   start: DateTime,
   originalLength: number,
-  h: Integer,
+  h: number,
   inclusive: boolean,
 ): DateTime {
-  const zdt = (start.withTz('local').temporal) as Temporal.ZonedDateTime;
+  // Ensure we are working with a ZonedDateTime in the local timezone
+  const zdt = start.withTz('local').temporal as Temporal.ZonedDateTime;
 
-  if (originalLength === 4) { // YYYY - end of year
-    return new DateTime(
-      zdt.with({
-        month: 12,
-        day: 31,
-        hour: inclusive ? 23 : h,
-        minute: inclusive ? 59 : 0,
-        second: inclusive ? 59 : 0,
-        millisecond: inclusive ? 999 : 0,
-      }),
-    );
-  } else if (originalLength === 6) { // YYYYMM - end of month
-    const daysInMonth = getDaysInMonth(zdt.year, zdt.month);
-    return new DateTime(
-      zdt.with({
-        day: daysInMonth,
-        hour: inclusive ? 23 : h,
-        minute: inclusive ? 59 : 0,
-        second: inclusive ? 59 : 0,
-        millisecond: inclusive ? 999 : 0,
-      }),
-    );
-  } else if (originalLength === 8) { // YYYYMMDD - end of day
-    if (inclusive) {
-      return new DateTime(zdt.with({ hour: 23, minute: 59, second: 59, millisecond: 999 }));
-    }
-    return start.add({ milliseconds: DAY_MS });
-  } else { // precise timestamp
-    return start;
+  // Define the time components based on inclusivity
+  const timeParams = inclusive
+    ? { hour: 23, minute: 59, second: 59, millisecond: 999 }
+    : { hour: h, minute: 0, second: 0, millisecond: 0 };
+
+  switch (originalLength) {
+    case 4: // YYYY - Move to the last moment of the year
+      return DateTime.of(
+        zdt.with({ month: 12, day: 31, ...timeParams }),
+      );
+
+    case 6: // YYYYMM - Move to the last moment of the month
+      return DateTime.of(
+        zdt.with({ day: zdt.daysInMonth, ...timeParams }),
+      );
+
+    case 8: // YYYYMMDD - Move to the end of the day or start of next
+      if (inclusive) {
+        return DateTime.of(zdt.with(timeParams));
+      }
+      // If exclusive, simply add 1 day
+      return start.add({ days: 1 });
+
+    default: // Precise timestamp or unrecognized length
+      return start;
   }
 }
 

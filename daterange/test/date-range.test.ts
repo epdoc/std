@@ -22,7 +22,7 @@ function expectDateTime(
     second?: number;
   },
 ) {
-  expect(dt).toBeInstanceOf(DateTime);
+  expect(dt).toBeInstanceOf(DateTime as any);
   if (dt) {
     const zdt = dt.withTz('local').temporal as Temporal.ZonedDateTime;
     expect(zdt.year).toBe(expected.year);
@@ -39,7 +39,7 @@ describe('daterange', () => {
     test('should parse single units', () => {
       const now = DateTime.now();
       const oneDay = parseRelativeTime('1d');
-      expect(oneDay).toBeInstanceOf(DateTime);
+      expect(oneDay).toBeInstanceOf(DateTime as any);
       const diffMs = now.epochMilliseconds - oneDay!.epochMilliseconds;
       expect(diffMs).toBeGreaterThanOrEqual(86400000 - 1000);
       expect(diffMs).toBeLessThanOrEqual(86400000 + 1000);
@@ -48,7 +48,7 @@ describe('daterange', () => {
     test('should parse combined units', () => {
       const now = DateTime.now();
       const oneDayTwelveHours = parseRelativeTime('1d12h');
-      expect(oneDayTwelveHours).toBeInstanceOf(DateTime);
+      expect(oneDayTwelveHours).toBeInstanceOf(DateTime as any);
       const diffMs = now.epochMilliseconds - oneDayTwelveHours!.epochMilliseconds;
       const expectedMs = 86400000 + 43200000;
       expect(diffMs).toBeGreaterThanOrEqual(expectedMs - 1000);
@@ -58,7 +58,7 @@ describe('daterange', () => {
     test('should parse negative (future) values', () => {
       const now = DateTime.now();
       const oneHourFuture = parseRelativeTime('-1h');
-      expect(oneHourFuture).toBeInstanceOf(DateTime);
+      expect(oneHourFuture).toBeInstanceOf(DateTime as any);
       const diffMs = oneHourFuture!.epochMilliseconds - now.epochMilliseconds;
       expect(diffMs).toBeGreaterThanOrEqual(3600000 - 1000);
       expect(diffMs).toBeLessThanOrEqual(3600000 + 1000);
@@ -66,10 +66,10 @@ describe('daterange', () => {
 
     test('should parse keywords', () => {
       const now = parseRelativeTime('now');
-      expect(now).toBeInstanceOf(DateTime);
+      expect(now).toBeInstanceOf(DateTime as any);
 
       const today = parseRelativeTime('today');
-      expect(today).toBeInstanceOf(DateTime);
+      expect(today).toBeInstanceOf(DateTime as any);
       const zdt = today!.withTz('local').temporal as Temporal.ZonedDateTime;
       expect(zdt.hour).toBe(0);
       expect(zdt.minute).toBe(0);
@@ -213,8 +213,8 @@ describe('daterange', () => {
     test('Relative time: 1d-now', () => {
       const d: DateRangeDef[] = dateList('1d-now');
       expect(d.length).toBe(1);
-      expect(d[0].after).toBeInstanceOf(DateTime);
-      expect(d[0].before).toBeInstanceOf(DateTime);
+      expect(d[0].after).toBeInstanceOf(DateTime as any);
+      expect(d[0].before).toBeInstanceOf(DateTime as any);
 
       const now = DateTime.now();
       const diffMs = now.epochMilliseconds - d[0].after!.epochMilliseconds;
@@ -246,10 +246,10 @@ describe('daterange', () => {
       expect(ranges).toBeInstanceOf(Array);
       expect(ranges.length).toBe(2);
 
-      expect(ranges[0]).toBeInstanceOf(DateRange);
+      expect(ranges[0]).toBeInstanceOf(DateRange as any);
       expectDateTime(ranges[0].after, { year: 2025, month: 1, day: 1 });
 
-      expect(ranges[1]).toBeInstanceOf(DateRange);
+      expect(ranges[1]).toBeInstanceOf(DateRange as any);
       expectDateTime(ranges[1].after, { year: 2026, month: 1, day: 1 });
     });
 
@@ -304,23 +304,23 @@ describe('daterange', () => {
         collected.push(range);
       }
       expect(collected.length).toBe(2);
-      expect(collected[0]).toBeInstanceOf(DateRange);
-      expect(collected[1]).toBeInstanceOf(DateRange);
+      expect(collected[0]).toBeInstanceOf(DateRange as any);
+      expect(collected[1]).toBeInstanceOf(DateRange as any);
     });
 
     test('should be iterable with spread operator', () => {
       const dr = dateRanges('20250101-20250115,20250201-20250215');
       const arr = [...dr];
       expect(arr.length).toBe(2);
-      expect(arr[0]).toBeInstanceOf(DateRange);
-      expect(arr[1]).toBeInstanceOf(DateRange);
+      expect(arr[0]).toBeInstanceOf(DateRange as any);
+      expect(arr[1]).toBeInstanceOf(DateRange as any);
     });
 
     test('should be iterable with Array.from', () => {
       const dr = dateRanges('20250101-20250115');
       const arr = Array.from(dr);
       expect(arr.length).toBe(1);
-      expect(arr[0]).toBeInstanceOf(DateRange);
+      expect(arr[0]).toBeInstanceOf(DateRange as any);
     });
 
     test('iteration should work on empty DateRanges', () => {
@@ -367,7 +367,7 @@ describe('daterange', () => {
     test('should create from DateTime values', () => {
       const after = DateTime.from('2025-01-01T00:00:00Z');
       const before = DateTime.from('2025-01-31T23:59:59Z');
-      const range = new DateRange(after, before);
+      const range = DateRange.from(after, before);
 
       expect(range.after).toBe(after);
       expect(range.before).toBe(before);
@@ -379,7 +379,7 @@ describe('daterange', () => {
     });
 
     test('contains should be inclusive', () => {
-      const range = new DateRange(
+      const range = DateRange.from(
         DateTime.from('2025-01-01T00:00:00Z'),
         DateTime.from('2025-01-31T23:59:59Z'),
       );
@@ -390,11 +390,11 @@ describe('daterange', () => {
     });
 
     test('overlaps should detect overlapping ranges', () => {
-      const r1 = new DateRange(
+      const r1 = DateRange.from(
         DateTime.from('2025-01-01T00:00:00Z'),
         DateTime.from('2025-01-15T00:00:00Z'),
       );
-      const r2 = new DateRange(
+      const r2 = DateRange.from(
         DateTime.from('2025-01-10T00:00:00Z'),
         DateTime.from('2025-01-20T00:00:00Z'),
       );
@@ -402,23 +402,23 @@ describe('daterange', () => {
     });
 
     test('intersect should return overlapping portion', () => {
-      const r1 = new DateRange(
+      const r1 = DateRange.from(
         DateTime.from('2025-01-01T00:00:00Z'),
         DateTime.from('2025-01-15T00:00:00Z'),
       );
-      const r2 = new DateRange(
+      const r2 = DateRange.from(
         DateTime.from('2025-01-10T00:00:00Z'),
         DateTime.from('2025-01-20T00:00:00Z'),
       );
 
       const intersection = r1.intersect(r2);
-      expect(intersection).toBeInstanceOf(DateRange);
+      expect(intersection).toBeInstanceOf(DateRange as any);
       expect(intersection!.after.toISOString()).toBe('2025-01-10T00:00:00+00:00');
       expect(intersection!.before.toISOString()).toBe('2025-01-15T00:00:00+00:00');
     });
 
     test('duration should return milliseconds', () => {
-      const range = new DateRange(
+      const range = DateRange.from(
         DateTime.from('2025-01-01T00:00:00Z'),
         DateTime.from('2025-01-02T00:00:00Z'),
       );
@@ -428,14 +428,14 @@ describe('daterange', () => {
     test('after/before should be DateTime', () => {
       const after = DateTime.from('2025-01-01T00:00:00Z');
       const before = DateTime.from('2025-01-31T23:59:59Z');
-      const range = new DateRange(after, before);
+      const range = DateRange.from(after, before);
 
-      expect(range.after).toBeInstanceOf(DateTime);
-      expect(range.before).toBeInstanceOf(DateTime);
+      expect(range.after).toBeInstanceOf(DateTime as any);
+      expect(range.before).toBeInstanceOf(DateTime as any);
     });
 
     test('default after/before should be min/max', () => {
-      const range = new DateRange(undefined, undefined);
+      const range = DateRange.from(undefined, undefined);
       expect(range.after.isMin()).toBe(true);
       expect(range.before.isMax()).toBe(true);
     });

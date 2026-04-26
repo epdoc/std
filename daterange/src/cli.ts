@@ -218,7 +218,7 @@ export const windowOptionDef = {
   argParser: (val: string): DateRange => {
     const since = parseRelativeTime(val);
     if (!since) throw new Error(`Invalid time window: ${val}`);
-    return new DateRange(since, DateTime.now());
+    return DateRange.from(since, DateTime.now());
   },
 };
 

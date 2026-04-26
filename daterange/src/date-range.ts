@@ -8,31 +8,66 @@ import { DateTime } from '@epdoc/datetime';
 import { parseRelativeTime } from './relative-time.ts';
 import { type DateRangeDef, type DateRangeJSON, isDateRangeDef } from './types.ts';
 
+const LIMIT: Record<'min' | 'max', DateTime> = {
+  min: DateTime.min().add({ hours: 48 }),
+  max: DateTime.max().subtract({ hours: 48 }),
+};
+
 /**
  * Represents a single date range with `after` (start) and `before` (end) DateTime values.
  * Both boundaries are inclusive when checking containment.
  */
 export class DateRange {
   /** Start of the range (inclusive). DateTime.min() represents the beginning of time. */
-  after: DateTime;
+  readonly after: DateTime;
   /** End of the range (inclusive). DateTime.max() represents the end of time. */
-  before: DateTime;
+  readonly before: DateTime;
 
-  constructor(after?: DateTime | DateRangeDef | DateRange, before?: DateTime) {
-    if (after instanceof DateRange || isDateRangeDef(after)) {
-      this.after = after.after ?? DateTime.min();
-      this.before = after.before ?? DateTime.max();
-    } else {
-      this.after = after ?? DateTime.min();
-      this.before = before ?? DateTime.max();
-    }
+  /**
+   * The constructor is now "Dumb" and Private.
+   * It performs no logic; it only receives validated data.
+   */
+  private constructor(after: DateTime, before: DateTime) {
+    this.after = after;
+    this.before = before;
   }
 
   /**
-   * Creates a DateRange from a DateRangeDef.
+   * The 'Standard' way to create a range from raw values.
+   */
+  static from(after?: DateTime, before?: DateTime): DateRange {
+    return new DateRange(
+      after ?? LIMIT.min,
+      before ?? LIMIT.max,
+    );
+  }
+
+  /**
+   * Specialized factory for the definition object.
    */
   static fromDef(def: DateRangeDef): DateRange {
-    return new DateRange(def.after ?? DateTime.min(), def.before ?? DateTime.max());
+    // Note: Type guard check is still performed here
+    if (!isDateRangeDef(def)) throw new Error('Invalid DateRangeDef');
+
+    return new DateRange(
+      def.after ?? LIMIT.min,
+      def.before ?? LIMIT.max,
+    );
+  }
+
+  /**
+   * Clone factory to create a new instance from an existing one.
+   */
+  static fromRange(other: DateRange): DateRange {
+    return new DateRange(other.after, other.before);
+  }
+
+  static fromISO(after: string, before: string): DateRange | undefined {
+    const a = DateTime.fromString(after);
+    const b = DateTime.fromString(before);
+    // // Assuming Luxon or similar where .isValid is the check
+    // if (!a.isValid || !b.isValid) return undefined;
+    return DateRange.from(a, b);
   }
 
   /**
@@ -43,7 +78,7 @@ export class DateRange {
     const a = parseRelativeTime(after);
     const b = parseRelativeTime(before);
     if (!a || !b) return undefined;
-    return new DateRange(a, b);
+    return DateRange.from(a, b);
   }
 
   /**

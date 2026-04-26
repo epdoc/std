@@ -105,13 +105,27 @@ export class DateRanges implements Iterable<DateRange> {
   /**
    * Populates from an array of DateRangeDef objects (DateTime values).
    */
-  static fromDef(defs?: DateRangeDef[]): DateRanges {
-    if (!isNonEmptyArray(defs)) return new DateRanges();
+  static fromDef(def?: DateRangeDef | DateRangeDef[]): DateRanges {
     const result = new DateRanges();
-    for (const def of defs) {
-      result._ranges.push(DateRange.fromDef(def));
+    const defs = _.isArray(def) ? def : def ? [def] : [];
+    if (isNonEmptyArray(defs)) {
+      for (const def of defs) {
+        result._ranges.push(DateRange.fromDef(def));
+      }
     }
     return result;
+  }
+
+  /**
+   * Converts a string representation of date ranges into a DateRanges object.
+   *
+   * @param val - A string containing date ranges separated by commas
+   * @param options - Parse options
+   * @returns A DateRanges object
+   * @see dateList for the parsing logic
+   */
+  static fromCliString(val: string, options?: DateRangeParseOptions): DateRanges {
+    return new DateRanges(dateList(val, options));
   }
 
   /**
