@@ -1,6 +1,7 @@
 export type { Brand } from '@epdoc/type';
 import type { Brand, Integer } from '@epdoc/type';
 
+export type TzAny = 'local' | 'utc' | TzMinutes | ISOTZ | IANATZ;
 /**
  * Represents a timezone offset in minutes from UTC.
  * This is a **semantic type alias** for `number` (specifically an integer in the range -720 to +720),

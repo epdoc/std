@@ -1,6 +1,6 @@
 import type { CompareResult } from '@epdoc/type';
 import { _ } from '@epdoc/type';
-import type { GMTTZ, GoogleSheetsDate, IANATZ, ISOTZ, ISOTzDate, JulianDay, TzMinutes } from './types.ts';
+import type { GoogleSheetsDate, IANATZ, ISOTZ, ISOTzDate, JulianDay, TzAny, TzMinutes } from './types.ts';
 import { INSTANT_MAX, INSTANT_MIN } from './types.ts';
 import * as util from './utils.ts';
 
@@ -29,7 +29,7 @@ import * as util from './utils.ts';
  * ## Timezone Handling
  *
  * When created without timezone information (Instant or PlainDateTime), methods
- * requiring timezone context will throw an error. Use `.tz()` or `.withTz()` to
+ * requiring timezone context will throw an error. Use `setTz()` or `withTz()` to
  * set the timezone before calling such methods.
  *
  * @example
@@ -37,11 +37,11 @@ import * as util from './utils.ts';
  * // Create with timezone
  * const d1 = DateTime.from('2024-01-15T10:30:00Z').withTz('America/New_York');
  *
- * // Create as Instant, then add timezone
- * const d2 = DateTime.from().withTz(360); // 360 minutes = -06:00 offset
+ * // Create as Instant, then add timezone using ISO offset
+ * const d2 = DateTime.from().withTz('-06:00'); // UTC-06:00 offset
  *
  * // Create with wall-clock time
- * const d3 = new DateTime(2024, 0, 15, 10, 30); // January 15, 2024 10:30:00
+ * const d3 = DateTime.fromComponents(2024, 1, 15, 10, 30); // January 15, 2024 10:30:00
  * d3.setTz('America/New_York'); // Now has timezone
  * ```
  *
@@ -69,8 +69,8 @@ import * as util from './utils.ts';
 
 // const INVALID_DATE_STRING = 'Invalid Date';
 // const GOOGLE_TO_UNIX_EPOCH_DAYS = 25568; // Sheets treats 1900 as a leap year, so we subtract 1.
-const MS_PER_MIN = 60000;
-const MIN_PER_DAY = 1440;
+const _MS_PER_MIN = 60000;
+const _MIN_PER_DAY = 1440;
 const MS_PER_DAY = 86400000;
 const tNullMs = new Date(Date.UTC(1899, 11, 30, 0, 0, 0, 0)).getTime(); // the starting value for Google
 
@@ -88,7 +88,7 @@ function isMinutes(val: unknown): val is TzMinutes {
  *
  * DateTime objects are immutable. Methods that would change the date/time value
  * return a new DateTime instance (e.g., `withTz()`, `clone()`). The mutable
- * exception is `tz()`, which sets timezone on the current instance.
+ * exception is `setTz()`, which sets timezone on the current instance.
  *
  * ## Type Safety
  *
@@ -111,7 +111,7 @@ function isMinutes(val: unknown): val is TzMinutes {
  * const meeting = DateTime.from('2024-03-15T14:30:00-05:00');
  *
  * // From components
- * const birthday = new DateTime(2024, 2, 15); // March 15, 2024
+ * const birthday = DateTime.fromComponents(2024, 3, 15); // March 15, 2024
  * birthday.setTz('America/Chicago');
  *
  * // Formatting
@@ -126,7 +126,202 @@ function isMinutes(val: unknown): val is TzMinutes {
  * @see {@link DateTime.from} Factory method for creating DateTime instances
  */
 export class DateTime {
+  /** * Internal Temporal storage.
+   */
   protected _value: Temporal.Instant | Temporal.PlainDateTime | Temporal.ZonedDateTime;
+
+  /**
+   * Private constructor to enforce static factory usage.
+   * No logic happens here; it is purely for assignment.
+   */
+  private constructor(value: Temporal.Instant | Temporal.PlainDateTime | Temporal.ZonedDateTime) {
+    this._value = value;
+  }
+
+  /**
+   * Creates a copy of this DateTime instance.
+   * The clone has the same internal value but is a separate object.
+   *
+   * @returns A new DateTime instance with the same value
+   *
+   * @example
+   * ```typescript
+   * const d1 = DateTime.from('2024-03-15T10:30:00Z');
+   * const d2 = d1.clone();
+   * console.log(d1.equals(d2)); // true (same value)
+   * console.log(d1 === d2);     // false (different objects)
+   * ```
+   */
+  clone(): DateTime {
+    return new DateTime(this._value);
+  }
+
+  /**
+   * Creates a DateTime from a Temporal object.
+   * This is a convenience wrapper around the private constructor.
+   *
+   * @param value - A Temporal.Instant, Temporal.PlainDateTime, or Temporal.ZonedDateTime
+   * @returns A new DateTime instance wrapping the provided Temporal object
+   *
+   * @example
+   * ```typescript
+   * const instant = Temporal.Now.instant();
+   * const dt = DateTime.of(instant);
+   *
+   * const zdt = Temporal.ZonedDateTime.from('2024-03-15T10:30:00-05:00[America/New_York]');
+   * const dt2 = DateTime.of(zdt);
+   * ```
+   */
+  static of(value: Temporal.Instant | Temporal.PlainDateTime | Temporal.ZonedDateTime): DateTime {
+    return new DateTime(value);
+  }
+
+  /**
+   * Creates a DateTime representing the current moment.
+   * Returns an Instant (UTC time without timezone context).
+   * Use withTimezone() to convert to a specific timezone.
+   *
+   * @example
+   * ```typescript
+   * // Current time as Instant
+   * const now = DateTime.now();
+   *
+   * // Current time in a specific timezone
+   * const nyNow = DateTime.now().withTz('America/New_York');
+   * ```
+   */
+  static now(): DateTime {
+    return DateTime.from();
+  }
+
+  /**
+   * Creates a DateTime from a legacy JavaScript Date object.
+   * The Date object is converted to an Instant based on its epoch milliseconds.
+   *
+   * @param date - A JavaScript Date object
+   * @returns A new DateTime instance representing the same instant
+   * @throws Error if the Date object is invalid
+   *
+   * @example
+   * ```typescript
+   * const jsDate = new Date('2024-03-15T10:30:00Z');
+   * const dt = DateTime.fromDate(jsDate);
+   * console.log(dt.toISOString()); // "2024-03-15T10:30:00Z"
+   * ```
+   */
+  static fromDate(date: Date): DateTime {
+    if (!_.isValidDate(date)) throw new Error('Invalid Date object provided.');
+    return new DateTime(Temporal.Instant.fromEpochMilliseconds(date.getTime()));
+  }
+
+  /**
+   * Creates a DateTime from epoch milliseconds (Unix timestamp).
+   * The timestamp represents the number of milliseconds since January 1, 1970, 00:00:00 UTC.
+   *
+   * @param ms - Epoch milliseconds
+   * @returns A new DateTime instance representing that instant
+   *
+   * @example
+   * ```typescript
+   * const timestamp = 1710499800000; // 2024-03-15T10:30:00Z
+   * const dt = DateTime.fromEpochMilliseconds(timestamp);
+   * console.log(dt.toISOString()); // "2024-03-15T10:30:00Z"
+   * ```
+   */
+  static fromEpochMilliseconds(ms: number): DateTime {
+    return new DateTime(Temporal.Instant.fromEpochMilliseconds(ms));
+  }
+
+  /**
+   * Parses an ISO 8601 date string or attempts to parse using legacy Date parsing.
+   *
+   * - Strings with timezone info (Z or offset like +05:00) become ZonedDateTime
+   * - Strings without timezone become PlainDateTime (wall-clock time)
+   * - Falls back to legacy Date parsing for non-ISO formats like "July 4, 1776"
+   *
+   * @param isoString - The date string to parse
+   * @returns A new DateTime instance
+   * @throws Error if the string cannot be parsed
+   *
+   * @example
+   * ```typescript
+   * // With timezone - becomes ZonedDateTime
+   * const d1 = DateTime.fromString('2024-03-15T10:30:00-05:00');
+   *
+   * // UTC - becomes ZonedDateTime with Z offset
+   * const d2 = DateTime.fromString('2024-03-15T10:30:00Z');
+   *
+   * // Without timezone - becomes PlainDateTime
+   * const d3 = DateTime.fromString('2024-03-15T10:30:00');
+   *
+   * // Legacy format fallback
+   * const d4 = DateTime.fromString('July 4, 2024');
+   * ```
+   */
+  static fromString(isoString: string): DateTime {
+    try {
+      // Logic fix: Detect if the string has a timezone offset/ID
+      // 'Z', '+05:00', or '[America/New_York]'
+      const hasTimezone = /Z|[+-]\d{2}:?\d{2}|\[.*\]$/.test(isoString);
+
+      if (hasTimezone) {
+        // Temporal natively handles Z and offsets (+05:00)
+        return new DateTime(Temporal.ZonedDateTime.from(isoString));
+      } else {
+        // No timezone: treat as PlainDateTime (wall-clock time without timezone)
+        return new DateTime(Temporal.PlainDateTime.from(isoString));
+      }
+    } catch {
+      // Fallback for non-ISO strings like "July 4, 1776"
+      const d = new Date(isoString);
+      if (!isNaN(d.getTime())) {
+        return new DateTime(Temporal.Instant.fromEpochMilliseconds(d.getTime()));
+      }
+      throw new Error(`Invalid date string: "${isoString}"`);
+    }
+  }
+
+  /**
+   * Creates a DateTime from individual date/time components.
+   * Returns a PlainDateTime (wall-clock time without timezone).
+   *
+   * Note: Month is 1-indexed (1 = January, 12 = December) to align with Temporal standard.
+   * Time components default to midnight (00:00:00.000) if not specified.
+   *
+   * @param year - The full year (e.g., 2024)
+   * @param month - The month (1-12, where 1 = January)
+   * @param day - The day of the month (1-31)
+   * @param hour - The hour (0-23), defaults to 0
+   * @param minute - The minute (0-59), defaults to 0
+   * @param second - The second (0-59), defaults to 0
+   * @param millisecond - The millisecond (0-999), defaults to 0
+   * @returns A new DateTime instance representing the specified components
+   *
+   * @example
+   * ```typescript
+   * // Date only - defaults to midnight
+   * const d1 = DateTime.fromComponents(2024, 3, 15); // March 15, 2024 00:00:00
+   *
+   * // With time components
+   * const d2 = DateTime.fromComponents(2024, 3, 15, 14, 30, 0, 0); // March 15, 2024 14:30:00
+   *
+   * // Add timezone after creation
+   * const d3 = DateTime.fromComponents(2024, 1, 1);
+   * d3.setTz('America/New_York');
+   * ```
+   */
+  static fromComponents(
+    year: number,
+    month: number,
+    day: number,
+    hour = 0,
+    minute = 0,
+    second = 0,
+    millisecond = 0,
+  ): DateTime {
+    const val = new Temporal.PlainDateTime(year, month, day, hour, minute, second, millisecond);
+    return new DateTime(val);
+  }
 
   /**
    * Creates a new DateTime instance with flexible input options.
@@ -139,7 +334,7 @@ export class DateTime {
    * ### No Arguments
    * Creates a DateTime for the current moment as a {@link Temporal.Instant}.
    * ```typescript
-   * const now = new DateTime();
+   * const now = DateTime.from();
    * ```
    *
    * ### Single Temporal Object
@@ -149,50 +344,50 @@ export class DateTime {
    * - {@link Temporal.PlainDateTime} - Wall-clock time without timezone
    *
    * ```typescript
-   * const d1 = new DateTime(Temporal.Now.instant());
-   * const d2 = new DateTime(Temporal.ZonedDateTime.from('2024-03-15T10:30:00-05:00[America/New_York]'));
-   * const d3 = new DateTime(Temporal.PlainDateTime.from({ year: 2024, month: 3, day: 15 }));
+   * const d1 = DateTime.from(Temporal.Now.instant());
+   * const d2 = DateTime.from(Temporal.ZonedDateTime.from('2024-03-15T10:30:00-05:00[America/New_York]'));
+   * const d3 = DateTime.from(Temporal.PlainDateTime.from({ year: 2024, month: 3, day: 15 }));
    * ```
    *
    * ### Single Legacy Object
    * Converts legacy JavaScript Date objects:
    * ```typescript
-   * const d = new DateTime(new Date()); // Converts to Instant
+   * const d = DateTime.from(new Date()); // Converts to Instant
    * ```
    *
    * ### Numeric Timestamp
    * Interprets numbers as epoch milliseconds:
    * ```typescript
-   * const d = new DateTime(1709913600000); // Specific timestamp as Instant
+   * const d = DateTime.from(1709913600000); // Specific timestamp as Instant
    * ```
    *
    * ### ISO String
    * Parses ISO 8601 strings:
    * - Strings with timezone info (e.g., `Z` or `+05:00`) become ZonedDateTime
-   * - Strings without timezone become Instant
+   * - Strings without timezone become PlainDateTime
    * ```typescript
-   * const d1 = new DateTime('2024-03-15T10:30:00Z'); // Instant
-   * const d2 = new DateTime('2024-03-15T10:30:00+05:00'); // ZonedDateTime
+   * const d1 = DateTime.from('2024-03-15T10:30:00Z'); // Instant
+   * const d2 = DateTime.from('2024-03-15T10:30:00+05:00'); // ZonedDateTime
    * ```
    *
-   * ### Date Components (Multiple Arguments)
-   * Creates a {@link Temporal.PlainDateTime} from year, month, day, etc:
+   * ### Date Components
+   * Creates a {@link Temporal.PlainDateTime} from year, month, day, etc using {@link DateTime.fromComponents}:
    * ```typescript
-   * // Year, month (0-11), day, hour, minute, second, millisecond
-   * const d = new DateTime(2024, 2, 15, 10, 30, 0, 0); // March 15, 2024 10:30:00
+   * // Year, month (1-12), day, hour, minute, second, millisecond
+   * const d = DateTime.fromComponents(2024, 3, 15, 10, 30, 0, 0); // March 15, 2024 10:30:00
    * ```
    *
    * ### Clone Another DateTime
    * ```typescript
-   * const original = new DateTime('2024-03-15');
-   * const clone = new DateTime(original); // Independent copy
+   * const original = DateTime.from('2024-03-15');
+   * const clone = original.clone(); // Independent copy
    * ```
    *
    * ## Important Notes
    *
-   * - **Month Indexing**: When using multiple arguments, month is 0-indexed (0=January, 11=December)
+   * - **Month Indexing**: When using fromComponents, month is 1-indexed (1=January, 12=December) to match Temporal standard
    * - **Timezone Required**: Methods like `toISOLocalString()` require a ZonedDateTime.
-   *   Call `.tz()` or `.withTz()` before using these methods.
+   *   Call `setTz()` or `withTz()` before using these methods.
    *
    * @param args - Variable arguments depending on the desired construction method
    * @throws {Error} When given an unsupported argument type or invalid date string
@@ -202,61 +397,42 @@ export class DateTime {
    * @see {@link Temporal.PlainDateTime}
    * @see {@link Temporal.ZonedDateTime}
    */
-  constructor(...args: unknown[]) {
-    if (!args.length) {
-      // No args: current time as Instant
-      this._value = Temporal.Now.instant();
-    } else if (args.length === 1) {
-      const arg = args[0];
-      if (arg instanceof Temporal.Instant) {
-        this._value = arg;
-      } else if (arg instanceof Temporal.ZonedDateTime) {
-        this._value = arg;
-      } else if (arg instanceof Temporal.PlainDateTime) {
-        this._value = arg;
-      } else if (arg instanceof DateTime) {
-        this._value = arg._value;
-      } else if (arg instanceof Date) {
-        // Convert Date to Instant
-        this._value = Temporal.Instant.fromEpochMilliseconds(arg.getTime());
-      } else if (_.isNumber(arg)) {
-        // Number is treated as epoch milliseconds
-        this._value = Temporal.Instant.fromEpochMilliseconds(arg);
-      } else if (_.isString(arg)) {
-        const isoString = arg as string;
-        try {
-          const offsetMatch = isoString.match(/([+-]\d{2}:\d{2}|Z)(\[.*\])?$/);
-          if (offsetMatch) {
-            // Preserve the original offset as the timezone ID.
-            // ZonedDateTime.from requires a bracket annotation.
-            const offset = offsetMatch[1] === 'Z' ? '+00:00' : offsetMatch[1];
-            const bare = isoString.replace(/\[.*\]$/, '');
-            this._value = Temporal.ZonedDateTime.from(`${bare}[${offset}]`);
-          } else {
-            // No timezone — store as Instant
-            this._value = Temporal.Instant.from(isoString);
-          }
-        } catch {
-          const d = new Date(isoString);
-          if (_.isValidDate(d)) {
-            this._value = Temporal.Instant.fromEpochMilliseconds(d.getTime());
-          } else {
-            throw new Error(`Invalid date string: ${isoString}`);
-          }
-        }
-      } else {
-        throw new Error(`Unsupported argument type: ${typeof arg}`);
-      }
-    } else {
-      // Multiple arguments: year, month, day, hour, minute, second, ms
-      // Stored as PlainDateTime (no timezone yet)
-      const [year, month, day, hour = 0, minute = 0, second = 0, millisecond = 0] = args as number[];
-      this._value = new Temporal.PlainDateTime(year, month + 1, day, hour, minute, second, millisecond);
+  static from(arg?: unknown): DateTime {
+    // 1. No arguments: Current Time
+    if (_.isNullOrUndefined(arg)) {
+      return new DateTime(Temporal.Now.instant());
     }
-  }
 
-  clone(): DateTime {
-    return new DateTime(this);
+    // 2. Clone existing DateTime
+    if (arg instanceof DateTime) {
+      return new DateTime(arg._value);
+    }
+
+    // 3. Raw Temporal objects
+    if (
+      arg instanceof Temporal.Instant ||
+      arg instanceof Temporal.ZonedDateTime ||
+      arg instanceof Temporal.PlainDateTime
+    ) {
+      return new DateTime(arg);
+    }
+
+    // 4. Legacy JS Date
+    if (_.isDate(arg)) {
+      return DateTime.fromDate(arg);
+    }
+
+    // 5. Epoch Milliseconds (Numbers)
+    if (typeof arg === 'number') {
+      return new DateTime(Temporal.Instant.fromEpochMilliseconds(arg));
+    }
+
+    // 6. Strings (ISO, Timezones, or Legacy fallback)
+    if (_.isString(arg)) {
+      return DateTime.fromString(arg);
+    }
+
+    throw new Error(`Unsupported DateTime input: ${typeof arg}`);
   }
 
   /**
@@ -311,13 +487,33 @@ export class DateTime {
     return Math.floor(this.epochMilliseconds / 1000);
   }
 
-  static from(...args: unknown[]): DateTime {
-    return new DateTime(...args);
-  }
-
+  /**
+   * Attempts to create a DateTime from the provided arguments.
+   * Returns undefined if creation fails, instead of throwing an error.
+   *
+   * This is the non-throwing variant of {@link DateTime.from}. Use this when
+   * you want to handle invalid input gracefully without try/catch.
+   *
+   * @param args - Same arguments as {@link DateTime.from}
+   * @returns A DateTime instance if valid, otherwise undefined
+   *
+   * @example
+   * ```typescript
+   * // Valid input returns DateTime
+   * const d1 = DateTime.tryFrom('2024-03-15T10:30:00Z');
+   * console.log(d1?.toISOString()); // "2024-03-15T10:30:00Z"
+   *
+   * // Invalid input returns undefined
+   * const d2 = DateTime.tryFrom('invalid-date');
+   * console.log(d2); // undefined
+   *
+   * // Useful for conditional logic
+   * const dt = DateTime.tryFrom(someUserInput) ?? DateTime.now();
+   * ```
+   */
   static tryFrom(...args: unknown[]): DateTime | undefined {
     try {
-      return new DateTime(...args);
+      return DateTime.from(...args);
     } catch {
       return undefined;
     }
@@ -372,7 +568,7 @@ export class DateTime {
    */
   static isValid(val: unknown): boolean {
     try {
-      new DateTime(val);
+      DateTime.from(val);
       return true;
     } catch {
       return false;
@@ -411,24 +607,6 @@ export class DateTime {
   }
 
   /**
-   * Creates a DateTime representing the current moment.
-   * Returns an Instant (UTC time without timezone context).
-   * Use withTz() to convert to a specific timezone.
-   *
-   * @example
-   * ```typescript
-   * // Current time as Instant
-   * const now = DateTime.now();
-   *
-   * // Current time in a specific timezone
-   * const nyNow = DateTime.now().withTz('America/New_York');
-   * ```
-   */
-  static now(): DateTime {
-    return new DateTime();
-  }
-
-  /**
    * Converts the internal value to a Temporal.Instant for comparison.
    * Throws if the internal value is a PlainDateTime (which has no instant).
    */
@@ -446,6 +624,11 @@ export class DateTime {
   /**
    * Adds a duration to the date/time.
    * @param val - The duration to add (Temporal.DurationLike).
+   * @param tz - Optional timezone context for the operation. If the internal value is an Instant,
+   * it will be promoted to a ZonedDateTime in the specified timezone for accurate calendar
+   * arithmetic. For ZonedDateTime and PlainDateTime, the timezone context is used as needed for
+   * operations involving calendar units (days, months, years). By default, it uses 'utc' for
+   * Instant and 'local' for PlainDateTime.
    * @returns A new DateTime instance with the duration added.
    * @example
    * ```typescript
@@ -453,9 +636,9 @@ export class DateTime {
    * const future = now.add({ days: 7 });
    * ```
    */
-  add(val: Temporal.DurationLike): DateTime {
+  add(val: Temporal.DurationLike, tz?: TzAny): DateTime {
     const result = this.clone();
-    result._value = this.#temporalForArithmetic().add(val);
+    result._value = this.#temporalForArithmetic(tz).add(val);
     return result;
   }
 
@@ -469,9 +652,9 @@ export class DateTime {
    * const past = now.subtract({ days: 7 });
    * ```
    */
-  subtract(val: Temporal.DurationLike): DateTime {
+  subtract(val: Temporal.DurationLike, tz?: TzAny): DateTime {
     const result = this.clone();
-    result._value = this.#temporalForArithmetic().subtract(val);
+    result._value = this.#temporalForArithmetic(tz).subtract(val);
     return result;
   }
 
@@ -484,7 +667,7 @@ export class DateTime {
    * - `microsecond`, `nanosecond`, `era`, `eraYear`
    *
    * ## Not supported for Instant
-   * If the internal value is an `Instant`, you must call `withTz()` first
+   * If the internal value is an `Instant`, you must call `withTimezone()` first
    * to establish a timezone before using `with()`.
    *
    * @param fields - The fields to replace, using Temporal's `DurationLike` shape.
@@ -541,9 +724,12 @@ export class DateTime {
    * Temporal.Instant only supports time units; for calendar units (days, weeks,
    * months, years) we must use a ZonedDateTime. We promote to local tz on demand.
    */
-  #temporalForArithmetic(): Temporal.Instant | Temporal.ZonedDateTime | Temporal.PlainDateTime {
+  #temporalForArithmetic(tz?: TzAny): Temporal.Instant | Temporal.ZonedDateTime | Temporal.PlainDateTime {
     if (this._value instanceof Temporal.Instant) {
-      return this._value.toZonedDateTimeISO(Temporal.Now.timeZoneId());
+      return this.withTz(tz ? tz : 'utc').temporal;
+      // return this._value.toZonedDateTimeISO(Temporal.Now.timeZoneId());
+    } else if (this._value instanceof Temporal.PlainDateTime) {
+      return this.withTz(tz ? tz : 'local').temporal;
     }
     return this._value;
   }
@@ -803,23 +989,11 @@ export class DateTime {
    * console.log(now.isNow()); // true (or very close)
    * ```
    */
-  isNow(toleranceSeconds: number = 0): boolean {
-    const thisMs = this.toInstant().epochMilliseconds;
-    const nowMs = Temporal.Now.instant().epochMilliseconds;
 
-    if (toleranceSeconds === 0) {
-      return thisMs === nowMs;
-    }
-
-    const toleranceMs = toleranceSeconds * 1000;
-
-    if (toleranceSeconds > 0) {
-      // Positive: within tolerance BEFORE now (recent)
-      return thisMs >= nowMs - toleranceMs && thisMs <= nowMs;
-    } else {
-      // Negative: within tolerance AFTER now (soon)
-      return thisMs >= nowMs && thisMs <= nowMs - toleranceMs;
-    }
+  isNow(seconds: number = 0): boolean {
+    const now = Temporal.Now.instant().epochMilliseconds;
+    const thisMs = this.epochMilliseconds;
+    return Math.abs(now - thisMs) <= seconds * 1000;
   }
 
   /**
@@ -896,7 +1070,8 @@ export class DateTime {
 
   /**
    * Set the timezone to use when outputting as a string, eg. with
-   * toISOString(). A positive value of 360 is equivalent to '-06:00'.
+   * toISOString(). A positive value of 360 is equivalent to '+06:00' (ISO 8601
+   * convention: positive = ahead of UTC).
    *
    * Converts the internal value to a ZonedDateTime if it's an Instant or PlainDateTime.
    * If using an IANA timezone string (e.g., "America/New_York"), this method
@@ -910,10 +1085,11 @@ export class DateTime {
    * - 'utc': Use UTC timezone
    * - undefined: Leave timezone as-is if already set, otherwise use local timezone
    *
-   * @param val Minutes, an ISOTZ string, an IANATZ string, or a special value ('local' | 'utc').
+   * @param val Minutes (ISO 8601 convention: positive = ahead of UTC), an ISOTZ string,
+   * an IANATZ string, or a special value ('local' | 'utc').
    * @throws Error if the timezone cannot be determined or set.
    */
-  setTz(val?: 'local' | 'utc' | TzMinutes | ISOTZ | IANATZ): this {
+  setTz(val?: TzAny): this {
     let timeZoneId: string | undefined;
 
     if (val === undefined && this._value instanceof Temporal.ZonedDateTime) {
@@ -930,12 +1106,12 @@ export class DateTime {
       timeZoneId = val as string;
     } else if (isMinutes(val)) {
       // Convert minutes offset to ±HH:MM offset string
-      // Convention: positive minutes = behind UTC (Americas), negative = ahead (Asia)
+      // ISO 8601 convention: positive minutes = ahead of UTC (Asia), negative = behind (Americas)
       const absMin = Math.abs(val);
       const hh = String(Math.floor(absMin / 60)).padStart(2, '0');
       const mm = String(absMin % 60).padStart(2, '0');
-      // Invert sign: positive offset (behind UTC) → negative ISO offset
-      timeZoneId = val >= 0 ? `-${hh}:${mm}` : `+${hh}:${mm}`;
+      // ISO convention: positive offset (ahead UTC) → positive ISO offset
+      timeZoneId = val >= 0 ? `+${hh}:${mm}` : `-${hh}:${mm}`;
     } else {
       throw new Error(`Invalid timezone value: ${val}`);
     }
@@ -967,8 +1143,8 @@ export class DateTime {
    *
    * // Create a date that is implicitly in the local timezone.
    * const d = new Date(2024, 0, 1, 11, 59, 59);
-   * // Treat the date as if it were in a -06:00 timezone.
-   * const d2 = DateTime.from(d).withTz(360).date;
+   * // Treat the date as if it were in a +06:00 timezone using minutes.
+   * const d2 = DateTime.from(d).withTz(-360).date;
    * assertStrictEquals(d2.toISOString(), '2024-01-01T17:59:59.000Z');
    * ```
    *
@@ -985,15 +1161,19 @@ export class DateTime {
    *
    * // Output in UTC
    * console.log(d.withTz('utc').toISOString()); // "2024-03-15T10:30:00.000Z"
+   *
+   * // Use ISO offset string (positive = ahead of UTC, as per ISO 8601)
+   * console.log(d.withTz('+05:30').toISOString()); // "2024-03-15T16:00:00.000+05:30"
    * ```
    *
-   * Note that val '-06:00' `ISOTZ` equals 360 `Minutes`, and '+06:00' equals -360.
-   * @param val The timezone offset in minutes, an ISOTZ string, an IANATZ string,
-   * or a special value ('local' | 'utc'). If not specified and no timezone is set,
-   * the local timezone is used.
+   * Note: val '-06:00' `ISOTZ` equals -360 `Minutes` (ISO 8601 convention),
+   * and '+06:00' equals +360.
+   * @param val Minutes (ISO 8601 convention: positive = ahead of UTC), an ISOTZ string,
+   * an IANATZ string, or a special value ('local' | 'utc').
+   * If not specified and no timezone is set, the local timezone is used.
    * @returns A new `DateTime` object with the adjusted date.
    */
-  withTz(val?: 'local' | 'utc' | TzMinutes | ISOTZ | IANATZ): DateTime {
+  withTz(val?: TzAny): DateTime {
     const result = this.clone();
     result.setTz(val);
     return result;
@@ -1002,17 +1182,18 @@ export class DateTime {
   /**
    * Returns the timezone offset in minutes.
    * Only available if the internal value is a ZonedDateTime.
-   * Uses JavaScript convention where positive values indicate timezones behind UTC
-   * (e.g., Americas) and negative values indicate timezones ahead of UTC (e.g., Asia).
+   * Uses ISO 8601 convention where positive values indicate timezones ahead of UTC
+   * (e.g., Asia) and negative values indicate timezones behind UTC (e.g., Americas).
    * @returns The timezone offset in minutes, or undefined if no timezone is set.
    */
-  getOffset(): TzMinutes | undefined {
+  getTzOffset(): TzMinutes | undefined {
     if (this._value instanceof Temporal.ZonedDateTime) {
       // Parse the offset string (e.g., "-05:00" or "+05:30")
       const offsetStr = this._value.offset;
       const match = offsetStr.match(/^([+-])(\d{2}):(\d{2})$/);
       if (match) {
-        const sign = match[1] === '-' ? 1 : -1; // Invert sign for JS convention
+        // ISO convention: positive offset = ahead of UTC
+        const sign = match[1] === '+' ? 1 : -1;
         const hours = parseInt(match[2], 10);
         const minutes = parseInt(match[3], 10);
         return (sign * (hours * 60 + minutes)) as TzMinutes;
@@ -1034,12 +1215,14 @@ export class DateTime {
   }
 
   /**
-   * Validate whether the internal Temporal object is valid.
-   * Temporal objects are always valid when properly constructed.
+   * Validate whether the internal Temporal object exists.
+   * Throws an error if the DateTime instance has no internal value.
+   * @throws Error if the DateTime instance has no internal value
    */
   #validate() {
-    // Temporal objects are always valid after construction
-    // This method is kept for API compatibility
+    if (!this._value) {
+      throw new Error('DateTime instance has no internal value.');
+    }
   }
 
   /**
@@ -1077,6 +1260,50 @@ export class DateTime {
       throw new Error('Cannot convert PlainDateTime to ISO string: use withTz() to set a timezone first');
     }
     throw new Error('Unknown temporal type');
+  }
+
+  /**
+   * Returns an ISO 8601 string representing this date in its local timezone.
+   * If the internal value is not a ZonedDateTime, it converts it to the
+   * local timezone before formatting.
+   *
+   * @param showMs - Whether to include milliseconds in the output. Defaults to true.
+   *                 When true: "2024-03-15T10:30:00.000-05:00"
+   *                 When false: "2024-03-15T10:30:00-05:00"
+   * @returns An ISO 8601 string with timezone offset
+   *
+   * @example
+   * ```typescript
+   * const d = DateTime.from('2024-03-15T10:30:00.123Z').withTz('America/New_York');
+   * console.log(d.toISOLocalString());        // "2024-03-15T06:30:00.000-04:00"
+   * console.log(d.toISOLocalString(false));   // "2024-03-15T06:30:00-04:00"
+   * ```
+   * @deprecated Use toISOString({ fractionalSecondDigits: showMs ? 3 : 0 }) instead for more consistent formatting options.
+   * This method is retained for backward compatibility but may be removed in future versions.
+   * The toISOString() method with options provides more flexible and consistent formatting capabilities, including control over fractional seconds and timezone name inclusion.
+   * Example using toISOString():
+   * ```typescript
+   * const d = DateTime.from('2024-03-15T10:30:00.123Z').withTz('America/New_York');
+   * console.log(d.toISOString({ fractionalSecondDigits: 3 })); // "2024-03-15T06:30:00.000-04:00"
+   * console.log(d.toISOString({ fractionalSecondDigits: 0 })); // "2024-03-15T06:30:00-04:00"
+   * ```
+   */
+  public toISOLocalString(showMs: boolean = true): ISOTzDate {
+    // 1. Ensure we have a ZonedDateTime to get an accurate offset-aware string
+    const zdt = this._value instanceof Temporal.ZonedDateTime
+      ? this._value
+      : this.withTz('local').temporal as Temporal.ZonedDateTime;
+
+    // 2. Use Temporal's native toString for accuracy and performance.
+    // 'fractionalSecondDigits' handles the showMs requirement perfectly.
+    // 'offset: "always"' ensures we get 'Z' or '+05:00' suffix.
+    const result = zdt.toString({
+      fractionalSecondDigits: showMs ? 3 : 0,
+      timeZoneName: 'never', // We want the offset, not the [America/New_York] label
+      offset: 'auto', // 'auto' uses 'Z' for UTC, '+HH:MM' otherwise
+    });
+
+    return result as ISOTzDate;
   }
 
   /**
@@ -1326,7 +1553,7 @@ export class DateTime {
    * @param tz - Timezone to use. Defaults to the timezone already set on this
    *   DateTime, or local if none.
    */
-  public julianDayInTz(tz?: 'local' | IANATZ | ISOTZ | TzMinutes): JulianDay {
+  public julianDayInTz(tz?: TzAny): JulianDay {
     const zdt = this.withTz(tz ?? (this._value instanceof Temporal.ZonedDateTime ? undefined : 'local'))
       ._value as Temporal.ZonedDateTime;
     const { year, month, day } = zdt;
@@ -1346,7 +1573,7 @@ export class DateTime {
    * - If the internal value is an `Instant`, UTC is used.
    * - If the internal value is a `PlainDateTime`, the local timezone is used.
    *
-   * Chain `.withTz()` before this method to operate in a specific timezone.
+   * Chain `.withTimezone()` before this method to operate in a specific timezone.
    *
    * @example
    * ```typescript
@@ -1450,14 +1677,15 @@ export class DateTime {
    *
    * @param backoffMs - Milliseconds to subtract from the start of the next month.
    *   Defaults to 1.
+   * @param tz - The timezone to use for the calculation. Defaults to 'local'.
    * @example
    * ```typescript
    * const d = DateTime.from('2024-03-15T10:30:00Z');
    * d.endOfMonth().toISOString(); // "2024-03-31T23:59:59.999Z"
    * ```
    */
-  public endOfMonth(backoffMs: number = 1): DateTime {
-    return this.startOfMonth().add({ months: 1 }).subtract({ milliseconds: backoffMs });
+  public endOfMonth(backoffMs: number = 1, tz: TzAny = 'local'): DateTime {
+    return this.startOfMonth().add({ months: 1 }, tz).subtract({ milliseconds: backoffMs }, tz);
   }
 
   /**
@@ -1479,18 +1707,17 @@ export class DateTime {
    * d.startOfWeek(5).toISOString();           // "2024-03-15T00:00:00.000Z" (Friday)
    * ```
    */
-  public startOfWeek(dayOfWeek: number = 1): DateTime {
+  startOfWeek(dayOfWeek: number = 1): DateTime {
     const zdt = this.#zonedDateTimeForCalendar();
+
+    // Calculate difference to the requested start day
     const diff = (zdt.dayOfWeek - dayOfWeek + 7) % 7;
-    const startZdt = zdt.subtract({ days: diff }).with({
-      hour: 0,
-      minute: 0,
-      second: 0,
-      millisecond: 0,
-      microsecond: 0,
-      nanosecond: 0,
-    });
-    return new DateTime(startZdt);
+
+    // 1. Subtract the days
+    // 2. Use startOfDay() - it's cleaner than manually setting 00:00:00
+    const startZdt = zdt.subtract({ days: diff }).startOfDay();
+
+    return DateTime.of(startZdt);
   }
 
   /**
@@ -1507,7 +1734,7 @@ export class DateTime {
    * d.endOfWeek(7).toISOString();     // "2024-03-16T23:59:59.999Z" (Saturday)
    * ```
    */
-  public endOfWeek(dayOfWeek: number = 1, backoffMs: number = 1): DateTime {
+  endOfWeek(dayOfWeek: number = 1, backoffMs: number = 1): DateTime {
     return this.startOfWeek(dayOfWeek).add({ weeks: 1 }).subtract({ milliseconds: backoffMs });
   }
 
@@ -1517,10 +1744,15 @@ export class DateTime {
    *
    * @param tz - Timezone to use. Defaults to the timezone already set, or local.
    */
-  public toPlainDate(tz?: 'local' | IANATZ | ISOTZ | TzMinutes): Temporal.PlainDate {
-    const zdt = this.withTz(tz ?? (this._value instanceof Temporal.ZonedDateTime ? undefined : 'local'))
-      ._value as Temporal.ZonedDateTime;
-    return zdt.toPlainDate();
+  toPlainDate(tz?: TzAny): Temporal.PlainDate {
+    // Determine the context. If no TZ provided, try to use existing, fallback to local.
+    const contextTz = tz ?? (this._value instanceof Temporal.ZonedDateTime ? undefined : 'local');
+
+    // withTz handles the conversion logic
+    const dt = this.withTz(contextTz);
+
+    // Access the temporal object directly (casting safely because withTz returns a ZonedDateTime)
+    return (dt.temporal as Temporal.ZonedDateTime).toPlainDate();
   }
 
   /**
@@ -1528,81 +1760,73 @@ export class DateTime {
    * the date stored in this `DateTime` object. The offset can vary by date due
    * to Daylight Saving Time.
    *
-   * This method leverages the `Intl.DateTimeFormat` API to determine the
-   * offset for a given IANA time zone identifier.
+   * Uses ISO 8601 convention where positive values indicate timezones ahead of UTC
+   * (e.g., Asia) and negative values indicate timezones behind UTC (e.g., Americas).
    *
    * @param iana The IANA time zone string (e.g., "America/New_York").
    * @returns The time zone offset in minutes, or `undefined` if parsing fails.
-   *          A positive value indicates a time zone that is behind UTC (e.g.,
-   *          the Americas), while a negative value indicates a time zone ahead
-   *          of UTC (e.g., Asia).
+   *          A positive value indicates a time zone that is ahead of UTC (e.g.,
+   *          Asia), while a negative value indicates a time zone behind UTC
+   *          (e.g., Americas).
    *
    * @example
    * ```ts
-   * // Get the offset for a winter date (EST)
-   * const dWinter = new DateTime('2024-01-01T12:00:00Z');
-   * const estOffset = dWinter.ianaTzParse("America/New_York");
-   * // estOffset will be 300
+   * // Get the offset for a winter date (EST = UTC-05:00)
+   * const dWinter = DateTime.from('2024-01-01T12:00:00Z');
+   * const estOffset = dWinter.getOffsetForIANA("America/New_York");
+   * // estOffset will be -300
    *
-   * // Get the offset for a summer date (EDT)
-   * const dSummer = new DateTime('2024-07-01T12:00:00Z');
-   * const edtOffset = dSummer.ianaTzParse("America/New_York");
-   * // edtOffset will be 240
+   * // Get the offset for a summer date (EDT = UTC-04:00)
+   * const dSummer = DateTime.from('2024-07-01T12:00:00Z');
+   * const edtOffset = dSummer.getOffsetForIANA("America/New_York");
+   * // edtOffset will be -240
+   *
+   * // Asia/Tokyo is ahead of UTC (UTC+09:00)
+   * const dTokyo = DateTime.from('2024-01-01T12:00:00Z');
+   * const tokyoOffset = dTokyo.getOffsetForIANA("Asia/Tokyo");
+   * // tokyoOffset will be +540
    * ```
    */
-  getOffsetForIANA(iana: IANATZ): TzMinutes | undefined {
+  getTzOffsetForIANA(iana: IANATZ): TzMinutes | undefined {
     try {
-      // Get the epoch milliseconds from the internal value to create a Date
-      let epochMs: number;
+      // 1. Get an Instant from our internal value
+      let instant: Temporal.Instant;
+
       if (this._value instanceof Temporal.Instant) {
-        epochMs = this._value.epochMilliseconds;
+        instant = this._value;
       } else if (this._value instanceof Temporal.ZonedDateTime) {
-        epochMs = this._value.epochMilliseconds;
-      } else if (this._value instanceof Temporal.PlainDateTime) {
-        // PlainDateTime doesn't have an epoch - use local timezone
-        const localTz = Temporal.Now.timeZoneId();
-        epochMs = this._value.toZonedDateTime(localTz).epochMilliseconds;
+        instant = this._value.toInstant();
       } else {
-        return undefined;
+        // For PlainDateTime, we must assume a timezone to find the offset
+        // Use the system local timezone as your previous code did
+        const localTz = Temporal.Now.timeZoneId();
+        instant = this._value.toZonedDateTime(localTz).toInstant();
       }
 
-      const date = new Date(epochMs);
-      const options: Intl.DateTimeFormatOptions = {
-        timeZone: iana,
-        timeZoneName: 'longOffset',
-      };
+      // 2. Use Temporal to get the offset string (e.g., "-05:00")
+      // This is much faster and safer than Intl.DateTimeFormat
+      const offsetString = instant.toZonedDateTimeISO(iana).offset;
 
-      const formattedParts = new Intl.DateTimeFormat('en-US', options).formatToParts(date);
-      const timeZoneNamePart = formattedParts.find((part) => part.type === 'timeZoneName');
-
-      if (!timeZoneNamePart) {
-        return undefined;
-      }
-
-      const offsetString = timeZoneNamePart.value as GMTTZ; // e.g., "GMT-05:00"
-      if (offsetString === 'GMT') {
+      // 3. Convert ISO offset string to minutes
+      // Temporal offsets are always in [+|-]HH:MM format or 'Z'
+      if (offsetString === 'Z' || offsetString === '+00:00') {
         return 0 as TzMinutes;
       }
 
-      // Regex to extract hours and minutes, handling both positive and negative offsets.
-      const match = offsetString.match(/GMT([+-])(\d{1,2}):?(\d{2})?/);
+      const match = offsetString.match(/^([+-])(\d{2}):(\d{2})$/);
+      if (!match) return undefined;
 
-      if (!match) {
-        return undefined;
-      }
+      const [_, signStr, hoursStr, minutesStr] = match;
+      const sign = signStr === '+' ? 1 : -1;
+      const hours = parseInt(hoursStr, 10);
+      const minutes = parseInt(minutesStr, 10);
 
-      const sign = match[1] === '+' ? -1 : 1;
-      const hours = parseInt(match[2], 10);
-      const minutes = parseInt(match[3] || '0', 10);
-
-      const totalOffsetMinutes = sign * (hours * 60 + minutes);
-
-      return totalOffsetMinutes as TzMinutes;
-    } catch (_e) {
+      // Return total offset in minutes
+      return (sign * (hours * 60 + minutes)) as TzMinutes;
+    } catch {
       return undefined;
     }
   }
-
   /**
    * Get the date in a Google Sheets value. This method compensates for a bug in
    * Google Sheets where it incorrectly adjusts dates based on the sheet's
@@ -1620,71 +1844,106 @@ export class DateTime {
    * const sheetValue = d.toGoogleSheetsDate();
    * ```
    */
-  public toGoogleSheetsDate(): GoogleSheetsDate {
+  toGoogleSheetsDate(): GoogleSheetsDate {
     this.#validate();
-    // Get epoch milliseconds from the internal value
-    let epochMs: number;
-    if (this._value instanceof Temporal.Instant) {
-      epochMs = this._value.epochMilliseconds;
+
+    // 1. Convert whatever we have to a PlainDateTime (Wall Clock)
+    // If it's a ZonedDateTime, we use its specific timezone.
+    // If it's an Instant, we must assume a timezone (usually 'local' or 'UTC').
+    let plain: Temporal.PlainDateTime;
+
+    if (this._value instanceof Temporal.PlainDateTime) {
+      plain = this._value;
     } else if (this._value instanceof Temporal.ZonedDateTime) {
-      epochMs = this._value.epochMilliseconds;
-    } else if (this._value instanceof Temporal.PlainDateTime) {
-      // PlainDateTime doesn't have an epoch - use local timezone
-      const localTz = Temporal.Now.timeZoneId();
-      epochMs = this._value.toZonedDateTime(localTz).epochMilliseconds;
+      plain = this._value.toPlainDateTime();
     } else {
-      throw new Error('Unknown temporal type');
+      // For Instant: Convert to the local wall clock time
+      plain = this._value.toZonedDateTimeISO(Temporal.Now.timeZoneId()).toPlainDateTime();
     }
 
-    // Get timezone offset in minutes (local machine offset)
-    const localOffset = new Date(epochMs).getTimezoneOffset();
-    return ((epochMs - tNullMs) / MS_PER_MIN - localOffset) / MIN_PER_DAY as GoogleSheetsDate;
+    // 2. Calculate epoch milliseconds for this Wall Clock time as if it were UTC.
+    // This aligns it with the tNullMs (Dec 30, 1899) which is also wall-clock based.
+    const wallClockMs = plain.toZonedDateTime('UTC').epochMilliseconds;
+
+    // 3. Simple division: (Difference in MS) / (MS per Day)
+    return (wallClockMs - tNullMs) / MS_PER_DAY as GoogleSheetsDate;
   }
 
   /**
-   * Creates a DateTime object from a Google Sheets serial date number
-   * that was created with a local timezone offset.
+   * Converts a Google Sheets serial date to a DateTime instance. Google Sheets serials represent
+   * the number of days since Dec 30, 1899, and are created with a local timezone offset. To
+   * correctly convert a Google Sheets serial date to a DateTime object, you must provide the IANA
+   * timezone string of the spreadsheet. This ensures that the conversion accounts for any
+   * timezone differences and DST transitions specific to that zone.
+   *
    * @param serial The Google Sheets serial date number.
-   * @param ianaTz The IANA timezone string of the spreadsheet, which is a
-   * required parameter. This value can be retrieved from the spreadsheet's
-   * settings.
+   * @param ianaTz The IANA timezone string of the spreadsheet, which is a required parameter. This
+   * value can be retrieved from the spreadsheet's settings.
    * @returns A DateTime object.
+   */
+  /**
+   * Converts a Google Sheets serial date to a DateTime instance.
+   * Google Sheets serials represent the number of days since Dec 30, 1899.
    */
   static fromGoogleSheetsDate(serial: GoogleSheetsDate, ianaTz: IANATZ): DateTime | undefined {
     if (!_.isNumber(serial)) {
       return undefined;
     }
+
+    // 1. Calculate the absolute epoch milliseconds
+    // tNullMs should be the epoch for 1899-12-30
     const ms = MS_PER_DAY * serial + tNullMs;
-    const result = new DateTime(ms);
-    const minOffset = result.ianaTzParse(ianaTz);
-    if (minOffset && result._value instanceof Temporal.Instant) {
-      // Adjust the instant by the timezone offset
-      result._value = Temporal.Instant.fromEpochMilliseconds(result._value.epochMilliseconds + minOffset * MS_PER_MIN);
+
+    // 2. Google Sheets dates represent "Wall Clock" time.
+    // We create an Instant representing that wall clock time in UTC.
+    const tempInstant = Temporal.Instant.fromEpochMilliseconds(ms);
+
+    // 3. Convert that Instant to a PlainDateTime (removing the UTC context)
+    const plain = tempInstant.toZonedDateTimeISO('UTC').toPlainDateTime();
+
+    // 4. "Attach" the intended timezone to that wall-clock time
+    // This correctly handles DST transitions for that specific IANA zone.
+    try {
+      const zdt = plain.toZonedDateTime(ianaTz);
+      return DateTime.of(zdt);
+    } catch (_e) {
+      // Fallback if IANA zone is invalid or transition is ambiguous
+      return DateTime.from(ms);
     }
-    return result;
   }
 
+  /**
+   * Creates a DateTime from a PDF date string (e.g., "D:20230526144100-06'00'").
+   * Returns undefined if the string is not a valid PDF date format.
+   */
   static fromPdfDate(s: string): DateTime | undefined {
-    const p = s.match(/^D:(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(.*)$/);
-    if (p) {
-      const tzRaw = p[7];
-      if (util.isPDFTZ(tzRaw)) {
-        const tzOffset: TzMinutes | undefined = util.parsePDFTZ(tzRaw);
-        const dateEx = new DateTime(
-          _.asInt(p[1]),
-          _.asInt(p[2]) - 1,
-          _.asInt(p[3]),
-          _.asInt(p[4]),
-          _.asInt(p[5]),
-          _.asInt(p[6]),
-        );
-        if (tzOffset !== undefined) {
-          return dateEx.withTz(tzOffset);
-        }
-        return dateEx;
+    // PDF Date Format: D:YYYYMMDDHHmmSSOHH'mm'
+    const p = s.match(/^D:(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(.*)$/);
+    if (!p) return undefined;
+
+    const [_full, year, month, day, hour, minute, second, tzRaw] = p;
+
+    // Create the base DateTime using our components factory.
+    // Note: PDF months are 01-12, which matches our 1-indexed fromComponents.
+    const dt = DateTime.fromComponents(
+      _.asInt(year),
+      _.asInt(month),
+      _.asInt(day),
+      _.asInt(hour),
+      _.asInt(minute),
+      _.asInt(second),
+    );
+
+    if (util.isPDFTZ(tzRaw)) {
+      const tzOffset: TzMinutes | undefined = util.parsePDFTZ(tzRaw);
+
+      if (tzOffset !== undefined) {
+        // withTz returns a new DateTime instance with the offset applied
+        return dt.withTz(tzOffset);
       }
     }
-    return undefined;
+
+    return dt;
   }
 
   /**
@@ -1707,23 +1966,23 @@ export class DateTime {
 
   /**
    * @returns
-   * @deprecated Use getOffset()
+   * @deprecated Use getOffset() which follows ISO 8601 convention (positive = ahead of UTC).
    */
   getTz(): TzMinutes | undefined {
-    return this.getOffset();
+    return this.getTzOffset();
   }
 
   /**
    * @deprecated Use getOffsetForIANA()
    */
-  public ianaTzParse(iana: IANATZ): TzMinutes | undefined {
-    return this.getOffsetForIANA(iana);
+  ianaTzParse(iana: IANATZ): TzMinutes | undefined {
+    return this.getTzOffsetForIANA(iana);
   }
 
   /**
    * @deprecated Use toGoogleSheetsDate()
    */
-  public googleSheetsDate(): GoogleSheetsDate {
+  googleSheetsDate(): GoogleSheetsDate {
     return this.toGoogleSheetsDate();
   }
 
@@ -1763,90 +2022,4 @@ export class DateTime {
     // Delegate to withTz('utc').format()
     return this.withTz('utc').format(format);
   }
-
-  /**
-   * Output the date in the form '2016-05-01T11:49:21-07:00'. This differs from
-   * `Date.toISOString` which always uses UTC in the output. The timezone used
-   * is set by the tz() method or defaults to the local timezone of the machine.
-   *
-   * @deprecated Use `withTz('local').toISOString()` instead. For example:
-   * ```typescript
-   * const d = DateTime.from('2024-03-15T10:30:00Z').withTz('America/New_York');
-   * // Use original timezone
-   * d.toISOString(); // "2024-03-15T06:30:00.000-04:00"
-   * // Use local timezone
-   * d.withTz('local').toISOString(); // e.g. "2024-03-15T03:30:00.000-07:00"
-   * ```
-   *
-   * @param showMs Set to false to hide (truncate) milliseconds
-   * @returns The formatted date string with timezone offset
-   * @throws Error if the internal value is not a ZonedDateTime (call .tz() or .withTz() first)
-   */
-  public toISOLocalString(showMs: boolean = true): ISOTzDate {
-    // Delegate to toISOString for ZonedDateTime, handling the showMs parameter
-    if (this._value instanceof Temporal.ZonedDateTime) {
-      const zdt = this._value;
-      const pad = (n: number, len: number = 2) => String(n).padStart(len, '0');
-
-      let s = `${zdt.year}-${pad(zdt.month)}-${pad(zdt.day)}T${pad(zdt.hour)}:${pad(zdt.minute)}:${pad(zdt.second)}`;
-
-      if (showMs) {
-        s += `.${pad(zdt.millisecond, 3)}`;
-      }
-
-      const offset = zdt.offset;
-      s += offset === '+00:00' ? 'Z' : offset;
-
-      return s as ISOTzDate;
-    }
-
-    // For other types, set local timezone first then call toISOString
-    return this.withTz('local').toISOLocalString(showMs);
-  }
 }
-
-/**
- * Factory function for creating DateTime instances.
- *
- * This is the recommended way to create DateTime objects. It provides a more
- * concise syntax and better type inference in some cases.
- *
- * @param args - Arguments passed to the DateTime constructor
- * @returns A new DateTime instance
- *
- * @example
- * ```typescript
- * // Current time
- * const now = dateEx();
- *
- * // From ISO string
- * const d1 = dateEx('2024-03-15T10:30:00Z');
- *
- * // From timestamp
- * const d2 = dateEx(1709913600000);
- *
- * // From Date object
- * const d3 = dateEx(new Date());
- *
- * // From Temporal objects
- * const d4 = dateEx(Temporal.Now.instant());
- * const d5 = dateEx(Temporal.PlainDateTime.from({ year: 2024, month: 3, day: 15 }));
- *
- * // From year/month/day components
- * const d6 = dateEx(2024, 2, 15, 10, 30, 0); // March 15, 2024 10:30:00
- *
- * // Clone another DateTime
- * const d7 = dateEx(d1);
- * ```
- *
- * @see {@link DateTime} For detailed constructor documentation
- * @deprecated Use {@link DateTime.from} instead
- */
-export function dateEx(...args: unknown[]): DateTime {
-  return new DateTime(...args);
-}
-
-/**
- * @deprecated Use DateTime
- */
-export class DateEx extends DateTime {}

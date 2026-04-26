@@ -9,26 +9,63 @@ const REG = {
   ianaTz: /^[A-Za-z_]+\/[A-Za-z_]+$/,
 };
 
+/**
+ * Checks if a value is a valid ISO 8601 date string.
+ * Valid formats include: "2024-03-15T10:30:00Z", "2024-03-15T10:30:00+05:00", "2024-03-15T10:30:00.123Z"
+ * @param s - The value to check
+ * @returns True if the value is a valid ISO date string
+ */
 export function isISODate(s: unknown): s is ISODate {
   return _.isString(s) && REG.isoDate.test(s);
 }
 
+/**
+ * Checks if a value is a valid ISO 8601 timezone offset string.
+ * Valid formats include: "Z", "+05:00", "-05:00"
+ * @param s - The value to check
+ * @returns True if the value is a valid ISO timezone string
+ */
 export function isISOTZ(s: unknown): s is ISOTZ {
   return _.isString(s) && REG.isoTz.test(s);
 }
 
+/**
+ * Checks if a value is a valid GMT timezone offset string.
+ * Valid formats include: "GMT-05:00", "GMT+01:00"
+ * @param s - The value to check
+ * @returns True if the value is a valid GMT timezone string
+ */
 export function isGMTTZ(s: unknown): s is GMTTZ {
   return _.isString(s) && REG.gmtTz.test(s);
 }
 
+/**
+ * Checks if a value is a valid PDF timezone offset string.
+ * Valid formats include: "Z", "-06'00'", "+0530", "-06"
+ * @param s - The value to check
+ * @returns True if the value is a valid PDF timezone string
+ */
 export function isPDFTZ(s: unknown): s is PDFTZ {
   return _.isString(s) && REG.pdfTz.test(s);
 }
 
+/**
+ * Checks if a value is a valid IANA timezone identifier.
+ * Valid formats include: "America/New_York", "Europe/London", "UTC"
+ * @param s - The value to check
+ * @returns True if the value is a valid IANA timezone string
+ */
 export function isIANATZ(s: unknown): s is IANATZ {
   return _.isString(s) && REG.ianaTz.test(s);
 }
 
+/**
+ * Casts a number to a GoogleSheetsDate type.
+ * Throws an error if the value is not a valid Google Sheets date.
+ * @param value - The number to cast
+ * @returns The value as a GoogleSheetsDate
+ * @throws Error if the value is not a valid Google Sheets date
+ */
 export function asGoogleSheetsDate(value: number): GoogleSheetsDate {
   if (!isValidGoogleSheetsDate(value)) {
     throw new Error(`Invalid Google Sheets Date: ${value}`);
@@ -36,10 +73,22 @@ export function asGoogleSheetsDate(value: number): GoogleSheetsDate {
   return value as GoogleSheetsDate;
 }
 
+/**
+ * Type guard to check if a value is a valid Google Sheets date.
+ * Google Sheets dates are serial numbers representing days since Dec 30, 1899.
+ * @param value - The value to check
+ * @returns True if the value is a valid Google Sheets date
+ */
 export function isGoogleSheetsDate(value: unknown): value is GoogleSheetsDate {
   return typeof value === 'number' && isValidGoogleSheetsDate(value);
 }
 
+/**
+ * Validates whether a number is a valid Google Sheets date.
+ * Valid dates are between 0 (Dec 30, 1899) and 2958465 (~Dec 31, 9999).
+ * @param value - The number to validate
+ * @returns True if the value is within the valid Google Sheets date range
+ */
 export function isValidGoogleSheetsDate(value: number): boolean {
   return (
     Number.isFinite(value) &&
@@ -49,6 +98,12 @@ export function isValidGoogleSheetsDate(value: number): boolean {
   );
 }
 
+/**
+ * Safely converts a value to a GoogleSheetsDate or returns null.
+ * Returns null if the value is not a valid Google Sheets date.
+ * @param value - The value to convert
+ * @returns The value as a GoogleSheetsDate, or null if invalid
+ */
 export function safeGoogleSheetsDate(value: unknown): GoogleSheetsDate | null {
   return isGoogleSheetsDate(value) ? value : null;
 }
@@ -168,6 +223,19 @@ export function stringToDate(s: string, opts?: DateParseOptions): Date | undefin
 
   return date;
 }
+
+/**
+ * Formats a timezone offset in minutes as an ISO 8601 string.
+ * Uses ISO 8601 convention where positive minutes = ahead of UTC.
+ * @param m - Timezone offset in minutes (positive = ahead of UTC)
+ * @returns ISO 8601 timezone string (e.g., "Z", "+05:00", "-05:00")
+ * @example
+ * ```typescript
+ * formatTzAsISOTZ(0);     // "Z"
+ * formatTzAsISOTZ(330);   // "+05:30"
+ * formatTzAsISOTZ(-300);  // "-05:00"
+ * ```
+ */
 export function formatTzAsISOTZ(m: TzMinutes): ISOTZ {
   if (m === 0) {
     return 'Z' as ISOTZ;
@@ -176,6 +244,18 @@ export function formatTzAsISOTZ(m: TzMinutes): ISOTZ {
     String(Math.abs(m) % 60).padStart(2, '0') as ISOTZ;
 }
 
+/**
+ * Parses an ISO 8601 timezone string to minutes offset.
+ * Returns positive minutes for ahead of UTC, negative for behind.
+ * @param val - ISO timezone string (e.g., "Z", "+05:00", "-05:00")
+ * @returns Timezone offset in minutes, or undefined if parsing fails
+ * @example
+ * ```typescript
+ * parseISOTZ("Z");        // 0
+ * parseISOTZ("+05:30");   // 330
+ * parseISOTZ("-05:00");   // -300
+ * ```
+ */
 export function parseISOTZ(val: ISOTZ): TzMinutes | undefined {
   const p = val.match(/(Z|((\+|\-)(\d\d):(\d\d)))$/);
   if (p && p.length > 1) {
@@ -190,6 +270,19 @@ export function parseISOTZ(val: ISOTZ): TzMinutes | undefined {
   }
 }
 
+/**
+ * Parses a PDF timezone string to minutes offset.
+ * PDF format allows "Z", "-06'00'", "+0530", "-06", etc.
+ * Returns positive minutes for ahead of UTC, negative for behind.
+ * @param val - PDF timezone string
+ * @returns Timezone offset in minutes, or undefined if parsing fails
+ * @example
+ * ```typescript
+ * parsePDFTZ("Z");         // 0
+ * parsePDFTZ("-06'00'");   // -360
+ * parsePDFTZ("+0530");     // 330
+ * ```
+ */
 export function parsePDFTZ(val: PDFTZ): TzMinutes | undefined {
   const p = val.match(/Z|((\+|\-)(\d\d)(\d\d)?)$/);
   if (p && p.length > 1) {
