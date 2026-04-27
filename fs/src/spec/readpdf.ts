@@ -1,8 +1,8 @@
-import { DateEx } from '@epdoc/datetime';
+import { DateTime } from '@epdoc/datetime';
 
 export interface PDFMetadata {
-  creationDate?: Date;
-  modificationDate?: Date;
+  creationDate?: DateTime;
+  modificationDate?: DateTime;
   title?: string;
   author?: string;
   producer?: string;
@@ -167,10 +167,10 @@ export class PDFMetadataReader {
     return metadata;
   }
 
-  static #parsePDFDate(dateStr: string): Date | undefined {
+  static #parsePDFDate(dateStr: string): DateTime | undefined {
     // Use DateEx from @epdoc/datetime for PDF date parsing
     try {
-      return DateEx.fromPdfDate(dateStr)?.date;
+      return DateTime.fromPdfDate(dateStr);
     } catch {
       return undefined;
     }

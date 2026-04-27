@@ -3,7 +3,7 @@ import * as Spec from '$spec'; // Import Spec
 import { FileSpec, FolderSpec, type FSSpec, SymlinkSpec } from '$spec'; // Import Spec
 import type { WalkOptions } from '$walk';
 import { walk } from '$walk'; // Import walk from $walk
-import { DateEx } from '@epdoc/datetime';
+import { DateTime } from '@epdoc/datetime';
 import { _ } from '@epdoc/type';
 import path from 'node:path';
 import type { FilePath, Path } from '../types.ts';
@@ -103,7 +103,7 @@ export async function safeCopyFile(
       } else if (conflictStrategy?.type === fileConflictStrategyType.renameWithDatetime) {
         const sep = conflictStrategy.separator || '-';
         const prefix = conflictStrategy.prefix || '';
-        const ds = new DateEx().format(conflictStrategy.format || 'yyyyMMddHHmmssSSS');
+        const ds = DateTime.now().format(conflictStrategy.format || 'yyyyMMddHHmmssSSS');
         const newPath = new FileSpec(
           fsDest.dirname,
           fsDest.basename + sep + prefix + ds + fsDest.extname,
@@ -117,7 +117,7 @@ export async function safeCopyFile(
       } else if (conflictStrategy?.type === fileConflictStrategyType.renameWithEpochMs) {
         const sep = conflictStrategy.separator || '-';
         const prefix = conflictStrategy.prefix || '';
-        const ds = new Date().getTime().toString();
+        const ds = DateTime.now().epochMilliseconds.toString();
         const newPath = new FileSpec(
           fsDest.dirname,
           fsDest.basename + sep + prefix + ds + fsDest.extname,

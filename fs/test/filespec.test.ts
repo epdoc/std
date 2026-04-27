@@ -1,5 +1,7 @@
+// deno-lint-ignore-file no-explicit-any
 import type * as FS from '$mod';
 import { DigestAlgorithm, FileSpec, FolderSpec } from '$mod';
+import { DateTime } from '@epdoc/datetime';
 import { _ } from '@epdoc/type';
 import { expect } from '@std/expect';
 import { afterAll, beforeAll, describe, it, test } from '@std/testing/bdd';
@@ -171,9 +173,9 @@ describe('FileSpec', () => {
   describe('PDF Operations', () => {
     test('getPdfDate() returns creation date from PDF metadata', async () => {
       const date = await pdfFile.getPdfDate();
-      expect(date).toBeInstanceOf(Date);
+      expect(date).toBeInstanceOf(DateTime as any);
       if (date) {
-        expect(date.toISOString()).toBe('2018-02-01T00:00:00.000Z');
+        expect(date.toISOString()).toMatch(/^2018-02-01T00:00:00(Z|\+00:00)$/);
       }
     });
   });

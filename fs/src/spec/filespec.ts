@@ -1,6 +1,6 @@
 import * as Error from '$error';
 import * as Util from '$util';
-import { DateEx } from '@epdoc/datetime';
+import { DateTime } from '@epdoc/datetime';
 import { _, type DeepCopyOpts, type Dict, type Integer, stripJsonComments } from '@epdoc/type';
 import { assert } from '@std/assert';
 import { decodeBase64, encodeBase64 } from '@std/encoding';
@@ -501,7 +501,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * For PDF files, gets the Creation Date of this file by reading its metadata using PDFMetadataReader.
    * @returns {Promise<Date | undefined>} A promise that resolves with the creation date of the PDF file, or undefined if not found.
    */
-  async getPdfDate(): Promise<Date | undefined> {
+  async getPdfDate(): Promise<DateTime | undefined> {
     try {
       const metadata = await PDFMetadataReader.extractMetadata(this._f);
       return metadata.creationDate;
@@ -1346,10 +1346,8 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
           // DateEx can parse many formats, but we'll try to use the provided format if possible
           // For now, let's use DateEx to parse the string
           const ds = match[1];
-          const dex = new DateEx(ds);
-          if (!isNaN(dex.date.getTime())) {
-            time = dex.date.getTime();
-          }
+          const dex = DateTime.fromString(ds);
+          time = dex.epochMilliseconds;
         } catch {
           // Fallback to mtime
         }
@@ -1451,7 +1449,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
     } else if (opts.type === Util.fileConflictStrategyType.renameWithDatetime) {
       const sep = opts.separator || '-';
       const prefix = opts.prefix || '';
-      const ds = new DateEx().format(opts.format || 'yyyyMMddHHmmssSSS');
+      const ds = DateTime.now().format(opts.format || 'yyyyMMddHHmmssSSS');
       const newFsDest = new FileSpec(this.dirname, this.basename + sep + prefix + ds + this.extname + tilde);
       const exists = await newFsDest.exists();
       if (exists && opts.errorIfExists) {
@@ -1461,7 +1459,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
     } else if (opts.type === Util.fileConflictStrategyType.renameWithEpochMs) {
       const sep = opts.separator || '-';
       const prefix = opts.prefix || '';
-      const ds = new Date().getTime().toString();
+      const ds = DateTime.now().epochMilliseconds.toString();
       const newFsDest = new FileSpec(this.dirname, this.basename + sep + prefix + ds + this.extname + tilde);
       const exists = await newFsDest.exists();
       if (exists && opts.errorIfExists) {
