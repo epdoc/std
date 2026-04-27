@@ -11,6 +11,8 @@ logs
 tmp*
 tmp
 
+.vscode/
+
 # Build directory
 dist
 
