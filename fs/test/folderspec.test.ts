@@ -219,6 +219,39 @@ describe('FolderSpec', () => {
     });
   });
 
+  describe('contains()', () => {
+    test('returns true for a file directly inside the folder', () => {
+      const folder = new FolderSpec('/my/path');
+      expect(folder.contains(new FileSpec('/my/path/x.jpg'))).toBe(true);
+    });
+
+    test('returns true for a file in a subdirectory', () => {
+      const folder = new FolderSpec('/my');
+      expect(folder.contains(new FileSpec('/my/path/x.jpg'))).toBe(true);
+    });
+
+    test('returns true for a subfolder', () => {
+      const folder = new FolderSpec('/my');
+      expect(folder.contains(new FolderSpec('/my/path'))).toBe(true);
+    });
+
+    test('returns false for a path outside the folder', () => {
+      const folder = new FolderSpec('/my/path');
+      expect(folder.contains(new FolderSpec('/my'))).toBe(false);
+    });
+
+    test('returns false for the folder itself', () => {
+      const folder = new FolderSpec('/my/path');
+      expect(folder.contains(new FolderSpec('/my/path'))).toBe(false);
+    });
+
+    test('accepts a plain string path', () => {
+      const folder = new FolderSpec('/my/path');
+      expect(folder.contains('/my/path/x.jpg')).toBe(true);
+      expect(folder.contains('/other/path/x.jpg')).toBe(false);
+    });
+  });
+
   describe('Constructor Variants', () => {
     test('creates FolderSpec from URL and relative path', () => {
       const folder = new FolderSpec(import.meta.url, './test-folder');

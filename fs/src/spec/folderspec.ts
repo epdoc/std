@@ -421,6 +421,23 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
   }
 
   /**
+   * Returns true if the given path is located within this folder.
+   *
+   * @param spec - A path string, FSSpecBase (FileSpec, FolderSpec, etc.), or any object with a `path` property.
+   * @returns {boolean} True if `spec` is a descendant of this folder.
+   *
+   * @example
+   * const folder = new FolderSpec('/my/path');
+   * folder.contains(new FileSpec('/my/path/x.jpg')); // true
+   * folder.contains(new FolderSpec('/my'));           // false
+   */
+  contains(spec: FSSpecBase | string): boolean {
+    const target = typeof spec === 'string' ? spec : spec.path;
+    const rel = path.relative(this._f, target);
+    return rel.length > 0 && !rel.startsWith('..');
+  }
+
+  /**
    * Returns the relative path from this folder to a target folder.
    *
    * This is useful for creating clean, readable paths for display or for
