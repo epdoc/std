@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-explicit-any
 import { expect } from '@std/expect';
 import { describe, test } from '@std/testing/bdd';
 import { DateTime } from '@epdoc/datetime';
@@ -27,7 +28,7 @@ describe('dateRangeOptionDefs', () => {
 describe('dateOptionDef', () => {
   const parse = dateOptionDef.argParser!;
   test('parses YYYYMMDD to DateRanges', () => {
-    expect(parse('20250115')).toBeInstanceOf(DateRanges);
+    expect(parse('20250115')).toBeInstanceOf(DateRange as any);
   });
   test('parses comma-separated ranges', () => {
     const result = parse('2024,2025') as DateRanges;
@@ -44,7 +45,7 @@ describe('dateOptionDef', () => {
 describe('rangeOptionDef', () => {
   const parse = rangeOptionDef.argParser!;
   test('parses single range to DateRange', () => {
-    expect(parse('20250101-20250131')).toBeInstanceOf(DateRange);
+    expect(parse('20250101-20250131')).toBeInstanceOf(DateRange as any);
   });
   test('throws for multiple ranges', () => {
     expect(() => parse('2024,2025')).toThrow();
@@ -55,7 +56,7 @@ describe('rangesOptionDef', () => {
   const parse = rangesOptionDef.argParser!;
   test('parses multiple ranges to DateRanges', () => {
     const result = parse('2024,2025') as DateRanges;
-    expect(result).toBeInstanceOf(DateRanges);
+    expect(result).toBeInstanceOf(DateRange as any);
     expect(result.ranges.length).toBe(2);
   });
 });
@@ -63,13 +64,13 @@ describe('rangesOptionDef', () => {
 describe('sinceOptionDef', () => {
   const parse = sinceOptionDef.argParser!;
   test('parses relative time to DateTime', () => {
-    expect(parse('1d')).toBeInstanceOf(DateTime);
+    expect(parse('1d')).toBeInstanceOf(DateTime as any);
   });
   test('parses compact date to DateTime', () => {
-    expect(parse('20250101')).toBeInstanceOf(DateTime);
+    expect(parse('20250101')).toBeInstanceOf(DateTime as any);
   });
   test('parses ISO string to DateTime', () => {
-    expect(parse('2025-01-01T00:00:00Z')).toBeInstanceOf(DateTime);
+    expect(parse('2025-01-01T00:00:00Z')).toBeInstanceOf(DateTime as any);
   });
   test('throws for invalid input', () => {
     expect(() => parse('not-a-date')).toThrow();
@@ -82,10 +83,10 @@ describe('untilOptionDef', () => {
     expect(untilOptionDef.defVal).toBe('now');
   });
   test('parses now to DateTime', () => {
-    expect(parse('now')).toBeInstanceOf(DateTime);
+    expect(parse('now')).toBeInstanceOf(DateTime as any);
   });
   test('parses future relative time to DateTime', () => {
-    expect(parse('-1h')).toBeInstanceOf(DateTime);
+    expect(parse('-1h')).toBeInstanceOf(DateTime as any);
   });
 });
 
@@ -93,7 +94,7 @@ describe('windowOptionDef', () => {
   const parse = windowOptionDef.argParser!;
   test('parses duration to DateRange ending near now', () => {
     const result = parse('24h') as DateRange;
-    expect(result).toBeInstanceOf(DateRange);
+    expect(result).toBeInstanceOf(DateRange as any);
     expect(result.duration()).toBeGreaterThanOrEqual(86400000 - 1000);
     expect(result.duration()).toBeLessThanOrEqual(86400000 + 1000);
   });
@@ -103,7 +104,7 @@ describe('windowOptionDef', () => {
 });
 
 describe('isDateRanges', () => {
-  test('true for DateRanges', () => expect(isDateRanges(new DateRanges())).toBe(true));
-  test('false for DateRange', () => expect(isDateRanges(new DateRange())).toBe(false));
+  test('true for DateRanges', () => expect(isDateRanges(DateRanges.from([]))).toBe(true));
+  test('false for DateRange', () => expect(isDateRanges(DateRange.from())).toBe(false));
   test('false for string', () => expect(isDateRanges('2025')).toBe(false));
 });

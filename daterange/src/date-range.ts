@@ -94,8 +94,9 @@ export class DateRange {
   /**
    * Checks if this range overlaps with another range.
    */
-  overlaps(other: DateRange): boolean {
-    return this.after.isSameOrBefore(other.before) && other.after.isSameOrBefore(this.before);
+  overlaps(other: DateRange, msTolerance: number = 0): boolean {
+    return this.after.isSameOrBefore(other.before.add({ milliseconds: msTolerance })) &&
+      other.after.isSameOrBefore(this.before.add({ milliseconds: msTolerance }));
   }
 
   /**
@@ -113,8 +114,8 @@ export class DateRange {
    * If they overlap or touch, returns a single merged DateRange.
    * If they don't overlap, returns an array of both ranges.
    */
-  union(other: DateRange): DateRange | DateRange[] {
-    if (!this.overlaps(other)) return [this, other];
+  union(other: DateRange, msTolerance: number = 10): DateRange | DateRange[] {
+    if (!this.overlaps(other, msTolerance)) return [this, other];
     const newAfter = this.after.isBefore(other.after) ? this.after : other.after;
     const newBefore = this.before.isAfter(other.before) ? this.before : other.before;
     return new DateRange(newAfter, newBefore);

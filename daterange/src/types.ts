@@ -73,8 +73,8 @@ export function isDateRangeDef(obj: unknown): obj is DateRangeDef {
   const dict = obj as Record<string, unknown>;
 
   // 1. Identify which relevant keys are present
-  const hasAfter = 'after' in dict;
-  const hasBefore = 'before' in dict;
+  const hasAfter = 'after' in dict && !_.isNullOrUndefined(dict.after);
+  const hasBefore = 'before' in dict && !_.isNullOrUndefined(dict.before);
 
   // 2. It's only a DateRangeDef if it has at least one of these
   // (otherwise it's just a generic dictionary)

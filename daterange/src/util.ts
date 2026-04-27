@@ -228,7 +228,7 @@ function calculateBeforeInstant(
  */
 export function dateRanges(val: string, options: DateRangeParseOptions = {}): DateRanges {
   const defs = dateList(val, options);
-  return new DateRanges(defs);
+  return DateRanges.fromDef(defs);
 }
 
 /**
