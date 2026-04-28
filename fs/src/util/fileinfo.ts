@@ -1,8 +1,9 @@
+import { DateTime } from '@epdoc/datetime';
 import { isFunction } from '@epdoc/type';
 import type { Dirent, Stats } from 'node:fs';
 import path from 'node:path';
 import { FileSpec, FolderSpec, SymlinkSpec, type TypedFSSpec } from '../spec/mod.ts';
-import type { FileInfo, FolderPath } from '../types.ts';
+import type { FileInfo, FolderPath, GID, Mode, UID } from '../types.ts';
 
 /**
  * Converts Node.js `Stats` object to a `FileInfo` object.
@@ -19,16 +20,16 @@ export function statsToFileInfo(stats: Stats): FileInfo {
     isDirectory: isDirectory,
     isSymlink: isSymlink,
     size: stats.size,
-    modifiedAt: stats.mtime,
-    atime: stats.atime,
-    createdAt: stats.birthtime,
-    ctime: stats.ctime,
+    modifiedAt: DateTime.fromDate(stats.mtime),
+    atime: DateTime.fromDate(stats.atime),
+    createdAt: DateTime.fromDate(stats.birthtime),
+    ctime: DateTime.fromDate(stats.ctime),
     dev: stats.dev,
     ino: stats.ino,
-    mode: stats.mode,
+    mode: stats.mode as Mode,
     nlink: stats.nlink,
-    uid: stats.uid,
-    gid: stats.gid,
+    uid: stats.uid as UID,
+    gid: stats.gid as GID,
     rdev: stats.rdev,
     blksize: stats.blksize,
     blocks: stats.blocks,

@@ -150,9 +150,26 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
    * // From another FolderSpec
    * const backup = new FolderSpec(logs, 'backups');
    */
-  public constructor(...args: FS.PathSegment[]) {
+  constructor(...args: FS.PathSegment[]) {
     super();
     this._f = Util.resolvePathArgs(...args) as FS.FolderPath; // Cast to FolderPath
+  }
+
+  static from(...args: FS.PathSegment[]): FolderSpec {
+    return new FolderSpec(...args);
+  }
+
+  static fromPath(f: FS.FolderPath): FolderSpec {
+    return new FolderSpec(f);
+  }
+
+  /**
+   * Returnt the parent folder for a file
+   * @param f
+   * @returns
+   */
+  static fromFileSpec(f: FileSpec): FolderSpec {
+    return FolderSpec.fromPath(f.dirname);
   }
 
   /**
@@ -204,6 +221,10 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
    */
   parentFolder(): FolderSpec {
     return new FolderSpec(this.dirname);
+  }
+
+  get folderName(): FS.FolderName {
+    return this.name as FS.FolderName;
   }
 
   /**
@@ -399,7 +420,7 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
    */
   get folderNames(): FS.FolderName[] {
     return this._folders.map((fs) => {
-      return fs.filename as FS.FolderName;
+      return fs.folderName;
     });
   }
 
@@ -618,7 +639,7 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
   async getFolders(regex?: RegExp): Promise<FolderSpec[]> {
     const allEntries = await this.readDir();
     const results = allEntries
-      .filter((spec): spec is FolderSpec => spec instanceof FolderSpec && (!regex || regex.test(spec.filename)));
+      .filter((spec): spec is FolderSpec => spec instanceof FolderSpec && (!regex || regex.test(spec.folderName)));
     return results;
   }
 
@@ -693,9 +714,9 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
     for (const fsItem of allEntries) {
       let bMatch = false;
       if (opts.match) {
-        if (_.isString(opts.match) && fsItem.filename === opts.match) {
+        if (_.isString(opts.match) && fsItem.name === opts.match) {
           bMatch = true;
-        } else if (_.isRegExp(opts.match) && opts.match.test(fsItem.filename)) {
+        } else if (_.isRegExp(opts.match) && opts.match.test(fsItem.name)) {
           bMatch = true;
         }
       } else {

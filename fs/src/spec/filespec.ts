@@ -239,19 +239,23 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * method, this does NOT include the extension.
    * @return {string} The base portion of the filename, which excludes the file's extension.
    */
-  get basename(): string {
-    return path.basename(this._f).replace(/\.[^\.]*$/, '');
+  get basename(): FS.FileBasename {
+    // Returns 'file.name' from 'file.name.html'
+    return path.basename(this._f).replace(/\.[^\.]*$/, '') as FS.FileBasename;
+  }
+
+  get filename(): FS.FileName {
+    return this.name as FS.FileName;
   }
 
   /**
-   * Test for equality with the basename of this file.
+   * Test for equality with the basename (no extension) of this file.
    * @param name
    * @returns {boolean} True if equal
    */
-  isNamed(name: string): boolean {
+  isBasename(name: string): boolean {
     return name === this.basename;
   }
-
   /**
    * Returns the extension with the dot included. For example, '/path/to/file.name.html' will return
    * '.html'. If the file has no extension, or if the filename starts with a dot and has no other
@@ -261,6 +265,11 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    */
   get extname(): string {
     return path.extname(this._f);
+  }
+
+  get ext(): FS.FileExt {
+    const ext = path.extname(this._f);
+    return (ext.startsWith('.') ? ext.slice(1) : ext) as FS.FileExt;
   }
 
   /**
@@ -1385,7 +1394,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
       );
       if (pattern.test(filename)) {
         const stats = await file.stats();
-        time = stats?.modifiedAt?.getTime();
+        time = stats?.modifiedAt?.epochMilliseconds;
       }
     }
 

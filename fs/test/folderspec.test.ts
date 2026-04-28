@@ -1,5 +1,5 @@
-import { FileSpec, FolderSpec } from '$mod';
 import type * as FS from '$mod';
+import { FileSpec, FolderSpec } from '$mod';
 import { expect } from '@std/expect';
 import { afterAll, beforeAll, describe, test } from '@std/testing/bdd';
 import * as fs from 'node:fs/promises';
@@ -85,7 +85,7 @@ describe('FolderSpec', () => {
       const folder = new FolderSpec(testDir);
       const folders = await folder.getFolders();
       expect(folders.length).toBe(1);
-      expect(folders[0].filename).toBe('subdir');
+      expect(folders[0].folderName).toBe('subdir');
     });
 
     test('getChildren() returns files and folders', async () => {
@@ -108,7 +108,7 @@ describe('FolderSpec', () => {
       const folder = new FolderSpec(testDir);
       const filtered = await folder.getFolders(/^sub/);
       expect(filtered.length).toBe(1);
-      expect(filtered[0].filename).toBe('subdir');
+      expect(filtered[0].folderName).toBe('subdir');
     });
   });
 
@@ -127,7 +127,7 @@ describe('FolderSpec', () => {
       const files = await folder.getFiles();
       const sorted = FolderSpec.sortByFilename(files);
 
-      const filenames = sorted.map((f) => f.filename);
+      const filenames = sorted.map((f) => f.name);
       expect(filenames).toEqual(['file1.txt', 'file2.json']);
     });
   });
@@ -286,7 +286,7 @@ describe('FolderSpec', () => {
     test('creates FolderSpec from URL and relative path', () => {
       const folder = new FolderSpec(import.meta.url, './test-folder');
       expect(folder).toBeInstanceOf(FolderSpec);
-      expect(folder.filename).toBe('test-folder');
+      expect(folder.folderName).toBe('test-folder');
     });
   });
 });

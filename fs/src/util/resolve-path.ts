@@ -29,23 +29,30 @@ export const isFileNameCheck = (val: unknown): val is FS.FileName =>
  * The return type is determined by the last segment of the path.
  */
 export function resolvePathArgs(...args: FS.PathSegment[]): FS.Path {
+  // Start with CWD as the root
   const parts: string[] = [Deno.cwd()];
 
-  for (let adx = 0; adx < args.length; ++adx) {
-    const item = args[adx];
+  for (let i = 0; i < args.length; i++) {
+    const item = args[i];
+    const isFirst = i === 0;
 
     if (item instanceof FSSpecBase) {
-      if (adx === 0) {
+      if (isFirst) {
         parts.push(item.path);
       } else {
-        throw new Error(`A path may only use a ${item.constructor.name} as it's first parameter`);
+        throw new Error(`A path may only use a ${item.constructor.name} as its first parameter`);
       }
-    } else if (isString(item)) {
+    } else if (typeof item === 'string') {
+      // If it's an absolute path but NOT the first argument, that's usually a bug
+      if (!isFirst && path.isAbsolute(item)) {
+        throw new Error(`Absolute path "${item}" found at index ${i}. Only the first argument can be absolute.`);
+      }
       parts.push(item);
     } else {
-      throw new Error('Invalid argument type: ' + typeof item);
+      throw new Error(`Invalid argument type: ${typeof item}`);
     }
   }
 
+  // path.resolve creates an absolute path, so we cast to our branded Path
   return path.resolve(...parts) as FS.Path;
 }

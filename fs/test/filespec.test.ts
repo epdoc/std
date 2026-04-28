@@ -221,9 +221,9 @@ describe('FileSpec', () => {
 
     test('creates FileSpec from URL and absolute path', () => {
       const absPath = path.resolve('somefile.json');
-      const file = new FileSpec(import.meta.url, absPath);
-      expect(file).toBeInstanceOf(FileSpec);
-      expect(file.path.endsWith('somefile.json')).toBe(true);
+      expect(() => {
+        const _file = new FileSpec(import.meta.url, absPath);
+      }).toThrow(/Only the first argument can be absolute/);
     });
   });
 
@@ -244,7 +244,7 @@ describe('FileSpec', () => {
       const originalGid = stats?.gid;
 
       // Test with same gid (should not fail)
-      if (originalGid !== null) {
+      if (!_.isNullOrUndefined(originalGid)) {
         await expect(testFile.chgrp(originalGid as FS.GID)).resolves.not.toThrow();
       }
     });

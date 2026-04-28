@@ -6,6 +6,7 @@ import * as fs from 'node:fs';
 import path from 'node:path';
 import type * as FS from '../types.ts';
 import type { CopyOptions, FileInfo, FSEntry, Path, RemoveOptions } from '../types.ts';
+import type { DateTime } from '@epdoc/datetime';
 
 /**
  * Abstract class representing a file system item, which may be of unknown type,
@@ -52,8 +53,8 @@ export abstract class FSSpecBase {
    * For example, for `/path/to/file.name.html`, this returns `/path/to`.
    * @returns The directory name.
    */
-  get dirname(): string {
-    return path.dirname(this._f);
+  get dirname(): FS.FolderPath {
+    return path.dirname(this._f) as FS.FolderPath;
   }
 
   /**
@@ -61,8 +62,8 @@ export abstract class FSSpecBase {
    * For example, for `/path/to/file.name.html`, this returns `file.name.html`.
    * @returns The filename.
    */
-  get filename(): string {
-    return path.basename(this._f);
+  get name(): FS.Name {
+    return path.basename(this._f) as FS.Name;
   }
 
   /**
@@ -200,7 +201,7 @@ export abstract class FSSpecBase {
    * @param {boolean} force - When `true`, forces a refresh of the file stats cache.
    * @returns {Promise<Date | undefined>} A promise that resolves to the creation date, or undefined if not available.
    */
-  async createdAt(force = false): Promise<Date | null | undefined> {
+  async createdAt(force = false): Promise<DateTime | null | undefined> {
     const info = await this.stats(force);
     return info?.createdAt;
   }
@@ -214,7 +215,7 @@ export abstract class FSSpecBase {
    * @param {boolean} force - When `true`, forces a refresh of the file stats cache.
    * @returns {Promise<Date | undefined>} A promise that resolves to the modification date, or undefined if not available.
    */
-  async modifiedAt(force = false): Promise<Date | null | undefined> {
+  async modifiedAt(force = false): Promise<DateTime | null | undefined> {
     const info = await this.stats(force);
     return info?.modifiedAt;
   }
@@ -259,7 +260,7 @@ export abstract class FSSpecBase {
       if (options?.preserveTimestamps !== false) {
         const sourceInfo = await this.stats();
         if (sourceInfo?.atime && sourceInfo?.modifiedAt) {
-          await fs.promises.utimes(dest, sourceInfo.atime, sourceInfo.modifiedAt);
+          await fs.promises.utimes(dest, sourceInfo.atime.date, sourceInfo.modifiedAt.date);
         }
       }
     } catch (err) {

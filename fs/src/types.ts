@@ -1,5 +1,6 @@
 import type { FSSpecBase } from '$spec';
-import type { Brand, DeepCopyOpts, Integer, StripJsonCommentsOpts } from '@epdoc/type';
+import type { DateTime } from '@epdoc/datetime';
+import type { Brand, DeepCopyOpts, EmptyDict, Integer, StripJsonCommentsOpts } from '@epdoc/type';
 import type { DigestAlgorithm } from './consts.ts';
 
 /**
@@ -11,6 +12,28 @@ export type FilePath = Brand<string, 'FilePath'>;
  * Represents a folder path.
  */
 export type FolderPath = Brand<string, 'FolderPath'>;
+
+export type Path = FilePath | FolderPath;
+
+/**
+ * Enforces that the string must look like a relative path
+ * (starting with a dot or a standard character, not a slash).
+ */
+type RelativeString = `./${string}` | `../${string}` | (string & EmptyDict);
+
+/**
+ * Represents a relative path to a file.
+ */
+export type RelativeFilePath = Brand<RelativeString, 'RelativeFilePath'>;
+
+/**
+ * Represents a relative path to a folder, specifically for use in
+ * configurations like deno.json workspace members.
+ * Example: "./packages/tools" or "libs/core"
+ */
+export type RelativeFolderPath = Brand<RelativeString, 'RelativeFolderPath'>;
+
+export type RelativePath = RelativeFilePath | RelativeFolderPath;
 
 /**
  * Represents a file name including its extension.
@@ -34,11 +57,9 @@ export type FileExt = Brand<string, 'FileExt'>;
  */
 export type FolderName = Brand<string, 'FolderName'>;
 
-export type Path = FilePath | FolderPath;
 export type Name = FileName | FolderName;
 
-export type PathSegment = FSSpecBase | string;
-
+export type PathSegment = FSSpecBase | Path | RelativePath | string;
 /**
  * Represents a user ID.
  */
@@ -138,7 +159,7 @@ export type DigestAlgorithmType = keyof typeof DigestAlgorithm;
  * Represents a file system entry with simplified properties.
  */
 export interface FSEntry {
-  path: string;
+  path: Path;
   name: string;
   isFile: boolean;
   isDirectory: boolean;
@@ -162,19 +183,19 @@ export interface FileInfo {
   /** The last modification time of the file. This corresponds to the `mtime`
    * field from `stat` on Linux/Mac OS and `ftLastWriteTime` on Windows. This
    * may not be available on all platforms. */
-  modifiedAt: Date | null;
+  modifiedAt: DateTime | null;
   /** The last access time of the file. This corresponds to the `atime`
    * field from `stat` on Unix and `ftLastAccessTime` on Windows. This may not
    * be available on all platforms. */
-  atime: Date | null;
+  atime: DateTime | null;
   /** The creation time of the file. This corresponds to the `birthtime`
    * field from `stat` on Mac/BSD and `ftCreationTime` on Windows. This may
    * not be available on all platforms. */
-  createdAt: Date | null;
+  createdAt: DateTime | null;
   /** The last change time of the file. This corresponds to the `ctime`
    * field from `stat` on Mac/BSD and `ChangeTime` on Windows. This may
    * not be available on all platforms. */
-  ctime: Date | null;
+  ctime: DateTime | null;
   /** ID of the device containing the file. */
   dev: number;
   /** Corresponds to the inode number on Unix systems. On Windows, this is
@@ -184,17 +205,17 @@ export interface FileInfo {
   /** The underlying raw `st_mode` bits that contain the standard Unix
    * permissions for this file/directory.
    */
-  mode: number | null;
+  mode: Mode | null;
   /** Number of hard links pointing to this file. */
   nlink: number | null;
   /** User ID of the owner of this file.
    *
    * _Linux/Mac OS only._ */
-  uid: number | null;
+  uid: UID | null;
   /** Group ID of the owner of this file.
    *
    * _Linux/Mac OS only._ */
-  gid: number | null;
+  gid: GID | null;
   /** Device ID of this file.
    *
    * _Linux/Mac OS only._ */
