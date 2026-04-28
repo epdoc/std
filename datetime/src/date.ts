@@ -1948,12 +1948,9 @@ export class DateTime {
 
   /**
    * Returns the underlying date as a native JavaScript Date object.
-   * @deprecated Use .temporal instead to access the Temporal object.
    */
   get date(): Date {
-    if (this._value instanceof Temporal.Instant) {
-      return new Date(this._value.epochMilliseconds);
-    } else if (this._value instanceof Temporal.ZonedDateTime) {
+    if (this._value instanceof Temporal.Instant || this._value instanceof Temporal.ZonedDateTime) {
       return new Date(this._value.epochMilliseconds);
     } else if (this._value instanceof Temporal.PlainDateTime) {
       // PlainDateTime has no epoch - assume local timezone for backward compatibility
