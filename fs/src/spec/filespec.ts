@@ -325,6 +325,33 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   }
 
   /**
+   * Returns the depth of this file relative to an ancestor folder.
+   *
+   * Computes how many directory levels deep this file is from the specified
+   * ancestor. Returns -1 if the specified folder is not actually an ancestor.
+   *
+   * @param ancestor - The potential ancestor folder to compute depth from.
+   * @returns The number of directory levels, or -1 if not an ancestor.
+   *
+   * @example
+   * const file = FS.File.from('/project/src/main.ts');
+   * const root = FS.Folder.from('/project');
+   * file.depth(root); // Returns: 2
+   *
+   * @example
+   * const file = FS.File.from('/other/path/file.ts');
+   * const root = FS.Folder.from('/project');
+   * file.depth(root); // Returns: -1
+   */
+  depth(ancestor: FolderSpec): Integer {
+    const relPath = this.relativeTo(ancestor);
+    if (relPath.startsWith('..')) {
+      return -1 as Integer;
+    }
+    return (relPath === '' ? 0 : relPath.split('/').length) as Integer;
+  }
+
+  /**
    * Looks at the extension of the filename to determine if it is one of the
    * listed types.
    * @param type List of types (eg. 'jpg', 'png')

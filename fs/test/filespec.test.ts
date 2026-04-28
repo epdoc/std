@@ -74,6 +74,38 @@ describe('FileSpec', () => {
       const isFile = await file.isFile();
       expect(isFile).toBe(false);
     });
+
+    test('relativeTo() returns correct relative path to folder', () => {
+      const root = new FolderSpec(testDir);
+      const file = new FileSpec(testDir, 'subdir', 'file.txt');
+      const relPath = file.relativeTo(root);
+      expect(relPath).toBe('subdir/file.txt');
+    });
+
+    test('relativeTo() returns correct relative path to file', () => {
+      const otherFile = new FileSpec(testDir, 'other.txt');
+      const file = new FileSpec(testDir, 'subdir', 'file.txt');
+      const relPath = file.relativeTo(otherFile);
+      expect(relPath).toBe('subdir/file.txt');
+    });
+
+    test('depth() returns 1 when file is directly in ancestor folder', () => {
+      const root = new FolderSpec(testDir);
+      const file = new FileSpec(testDir, 'file.txt');
+      expect(file.depth(root)).toBe(1);
+    });
+
+    test('depth() returns correct depth for nested file', () => {
+      const root = new FolderSpec(testDir);
+      const file = new FileSpec(testDir, 'level1', 'level2', 'file.txt');
+      expect(file.depth(root)).toBe(3);
+    });
+
+    test('depth() returns -1 when folder is not an ancestor', () => {
+      const otherRoot = new FolderSpec('/completely/different/path');
+      const file = new FileSpec(testDir, 'file.txt');
+      expect(file.depth(otherRoot)).toBe(-1);
+    });
   });
 
   describe('File Operations', () => {

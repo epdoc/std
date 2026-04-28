@@ -58,7 +58,7 @@
 
 import * as Util from '$util';
 import { walk, type WalkOptions } from '$walk';
-import { _, type Dict } from '@epdoc/type';
+import { _, type Dict, type Integer } from '@epdoc/type';
 import { type Dirent, promises as nfs } from 'node:fs';
 import path from 'node:path';
 import type * as FS from '../types.ts';
@@ -466,6 +466,33 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
     }
     // Normalize to forward slashes for cross-platform consistency
     return relativePath.replace(/\\/g, '/');
+  }
+
+  /**
+   * Returns the depth of this folder relative to an ancestor folder.
+   *
+   * Computes how many directory levels deep this folder is from the specified
+   * ancestor. Returns -1 if the specified folder is not actually an ancestor.
+   *
+   * @param ancestor - The potential ancestor folder to compute depth from.
+   * @returns The number of directory levels, or -1 if not an ancestor.
+   *
+   * @example
+   * const folder = FS.Folder.from('/project/src/utils');
+   * const root = FS.Folder.from('/project');
+   * folder.depth(root); // Returns: 2
+   *
+   * @example
+   * const folder = FS.Folder.from('/other/path');
+   * const root = FS.Folder.from('/project');
+   * folder.depth(root); // Returns: -1
+   */
+  depth(ancestor: FolderSpec): Integer {
+    const relPath = this.relativeTo(ancestor);
+    if (relPath.startsWith('..')) {
+      return -1 as Integer;
+    }
+    return (relPath === '' ? 0 : relPath.split('/').length) as Integer;
   }
 
   static home(...args: string[]): FolderSpec {

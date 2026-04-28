@@ -38,6 +38,36 @@ describe('FolderSpec', () => {
       const folder = new FolderSpec(subDir);
       expect(folder.dirname).toBe(testDir);
     });
+
+    test('relativeTo() returns correct relative path', () => {
+      const root = new FolderSpec(testDir);
+      const nested = new FolderSpec(subDir);
+      const relPath = nested.relativeTo(root);
+      expect(relPath).toBe('subdir');
+    });
+
+    test('depth() returns 0 for same folder', () => {
+      const folder = new FolderSpec(testDir);
+      expect(folder.depth(folder)).toBe(0);
+    });
+
+    test('depth() returns 1 for direct child folder', () => {
+      const root = new FolderSpec(testDir);
+      const child = new FolderSpec(subDir);
+      expect(child.depth(root)).toBe(1);
+    });
+
+    test('depth() returns correct depth for deeply nested folder', () => {
+      const root = new FolderSpec(testDir);
+      const deepFolder = new FolderSpec(testDir, 'a', 'b', 'c');
+      expect(deepFolder.depth(root)).toBe(3);
+    });
+
+    test('depth() returns -1 when folder is not an ancestor', () => {
+      const otherRoot = new FolderSpec('/completely/different/path');
+      const folder = new FolderSpec(subDir);
+      expect(folder.depth(otherRoot)).toBe(-1);
+    });
   });
 
   describe('Content Enumeration', () => {
