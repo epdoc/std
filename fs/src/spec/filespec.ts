@@ -16,7 +16,7 @@ import { FSSpecBase } from './basespec.ts';
 import { FileSpecWriter } from './filespecwriter.ts';
 import { FolderSpec } from './folderspec.ts';
 import { FSSpec } from './fsspec.ts';
-import type { ICopyableSpec, IRootableSpec, ISafeCopyableSpec } from './icopyable.ts';
+import type { IClonableSpec, IRootableSpec, ISafeCopyableSpec } from './icopyable.ts';
 import { PDFMetadataReader } from './readpdf.ts';
 import type { JsonReplacer } from './types.ts';
 
@@ -26,23 +26,23 @@ const REG = {
   json: /\.json$/i,
   jsonc: /\.jsonc$/i,
   txt: /\.(txt|text)$/i,
-  lineSeparator: new RegExp(/\r?\0?\n/),
-  leadingDot: new RegExp(/^\./),
-  BOM: new RegExp(/^\uFEFF/),
+  lineSeparator: /\r?\0?\n/,
+  leadingDot: /^\./,
+  BOM: /^\uFEFF/,
 };
 const BUFSIZE = 2 * 8192;
 
 /**
  * Class representing a file system entry when it is known to be a file.
  */
-export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec, ISafeCopyableSpec {
+export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec, ISafeCopyableSpec {
   #file?: nfs.FileHandle;
 
   /**
    * Public constructor for FileSpec.
    * @param args - Path segments to resolve.
    */
-  public constructor(...args: FS.PathSegment[]) {
+  constructor(...args: FS.PathSegment[]) {
     super();
     this._f = Util.resolvePathArgs(...args) as FS.FilePath; // Cast to FilePath
   }
@@ -51,31 +51,9 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
     return this._f as FS.FilePath;
   }
 
-  /**
-   * Return the FolderSpec for the folder that contains this file.
-   */
-  parentFolder(): FolderSpec {
-    return new FolderSpec(this.dirname);
-  }
-
-  /**
-   * Creates a new FileSpec from a file URL, typically from `import.meta.url`.
-   * This allows for creating paths relative to the current module.
-   *
-   * @param metaUrl - The `import.meta.url` of the calling module.
-   * @param paths - Additional path segments to join.
-   * @returns {FileSpec} A new FileSpec instance.
-   *
-   * @example
-   * // Assuming this code is in /path/to/your/project/src/app.ts
-   * const configFile = FileSpec.fromMeta(import.meta.url, '../data/config.json');
-   * // configFile.path will be /path/to/your/project/data/config.json
-   */
-  public static fromMeta(metaUrl: string, ...paths: string[]): FileSpec {
-    const dir = path.dirname(Util.fileURLToPath(metaUrl));
-    const fullPath = path.join(dir, ...paths);
-    return new FileSpec(fullPath);
-  }
+  // ============================================================================
+  // STATIC FACTORY METHODS
+  // ============================================================================
 
   /**
    * Creates a new FileSpec for the current working directory, optionally with
@@ -86,6 +64,8 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    *
    * @example
    * const file = FileSpec.cwd('config.json');  // e.g. /current/dir/config.json
+   *
+   * @category Factory Methods
    */
   public static cwd(...args: string[]): FileSpec {
     const fullPath = Util.resolvePath(Util.getCwd(), ...args);
@@ -101,6 +81,8 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    *
    * @example
    * const bashrc = FileSpec.home('.bashrc');  // e.g. /home/user/.bashrc
+   *
+   * @category Factory Methods
    */
   public static home(...args: string[]): FileSpec {
     const fullPath = Util.resolvePath(Util.getHomeDir(), ...args);
@@ -119,6 +101,8 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    *
    * @example
    * const settings = FileSpec.config('myapp', 'settings.json');  // e.g. ~/.config/myapp/settings.json
+   *
+   * @category Factory Methods
    */
   public static config(...args: string[]): FileSpec {
     // Check for XDG_CONFIG_HOME first (standard Linux/Debian)
@@ -130,6 +114,47 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
 
     // Fallback for macOS and standard Linux home
     return FileSpec.home('.config', ...args);
+  }
+
+  /**
+   * Creates a new FileSpec from a file:// URL string.
+   *
+   * When called with just a URL, the URL is converted directly to a path.
+   * When called with additional path segments, the URL's directory is extracted
+   * and the segments are joined to create a path relative to that directory.
+   *
+   * This is especially useful with `import.meta.url` to create paths relative
+   * to the current module's location.
+   *
+   * @param url - A file URL string (e.g., `import.meta.url` or "file:///path/to/file.ts")
+   * @param paths - Optional path segments to join relative to the URL's directory.
+   *   When omitted, the URL itself is used as the file path.
+   * @returns {FileSpec} A new FileSpec instance
+   *
+   * @example
+   * // Get the current module's file path
+   * const currentFile = FileSpec.fromFileUrl(import.meta.url);
+   *
+   * @example
+   * // Create a path relative to the current module's directory
+   * const configFile = FileSpec.fromFileUrl(import.meta.url, '../config.json');
+   *
+   * @example
+   * // Convert any file URL to a path
+   * const file = FileSpec.fromFileUrl('file:///home/user/documents/file.txt');
+   * console.log(file.path); // '/home/user/documents/file.txt'
+   *
+   * @category Factory Methods
+   */
+  public static fromFileUrl(url: FS.FileUrl, ...paths: string[]): FileSpec {
+    if (paths.length === 0) {
+      // No additional paths: use the URL directly as the file path
+      return new FileSpec(Util.fileURLToPath(url));
+    }
+    // With additional paths: extract directory and join paths relative to it
+    const dir = path.dirname(Util.fileURLToPath(url));
+    const fullPath = path.join(dir, ...paths);
+    return new FileSpec(fullPath);
   }
 
   /**
@@ -161,6 +186,8 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * the env variable `TMPDIR`, or the system's default, usually `/tmp`). Note that if the passed `dir` is relative, the path returned  will also be relative. Be mindful of
    * this when changing working directory
    * @returns A new FileSpec object with the path
+   *
+   * @category Factory Methods
    */
   public static async makeTemp(opts: { prefix?: string; suffix?: string; dir?: string } = {}): Promise<FileSpec> {
     const tmpRoot = opts.dir ? Util.resolvePath(opts.dir) : Util.getTempDir();
@@ -189,47 +216,9 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
     }
   }
 
-  /**
-   * Creates a new FileSpec from a file:// URL string.
-   *
-   * @param url - The file URL string (e.g., "file:///path/to/file.ts")
-   * @returns {FileSpec} A new FileSpec instance
-   *
-   * @example
-   * const file = FileSpec.fromFileUrl('file:///home/user/documents/file.txt');
-   * console.log(file.path); // '/home/user/documents/file.txt'
-   */
-  public static fromFileUrl(url: string): FileSpec {
-    return new FileSpec(Util.fileURLToPath(url));
-  }
-
-  /**
-   * Returns the file:// URL for this file path.
-   *
-   * @returns {string} The file URL string (e.g., "file:///path/to/file.ts")
-   *
-   * @example
-   * const file = new FileSpec('/home/user/documents/file.txt');
-   * console.log(file.toFileUrl()); // 'file:///home/user/documents/file.txt'
-   */
-  public toFileUrl(): string {
-    return Util.pathToFileURL(this._f).href;
-  }
-
-  /**
-   * Return a copy of this object. Does not copy the file.
-   * @see FileSpec#copyTo
-   */
-  copy(): FileSpec {
-    const result = new FileSpec(this);
-    this.copyParamsTo(result);
-    return result;
-  }
-
-  override copyParamsTo(target: FSSpecBase): FSSpecBase {
-    super.copyParamsTo(target);
-    return target;
-  }
+  // ============================================================================
+  // PATH PROPERTIES & INSPECTION
+  // ============================================================================
 
   /**
    * Returns the file's base file name, minus it's extension. For example, for
@@ -238,12 +227,17 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * [basename](https://nodejs.org/api/path.html#pathbasenamepath-suffix)
    * method, this does NOT include the extension.
    * @return {string} The base portion of the filename, which excludes the file's extension.
+   *
+   * @category Path Properties
    */
   get basename(): FS.FileBasename {
     // Returns 'file.name' from 'file.name.html'
     return path.basename(this._f).replace(/\.[^\.]*$/, '') as FS.FileBasename;
   }
 
+  /**
+   * @category Path Properties
+   */
   get filename(): FS.FileName {
     return this.name as FS.FileName;
   }
@@ -256,20 +250,135 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   isBasename(name: string): boolean {
     return name === this.basename;
   }
+
   /**
    * Returns the extension with the dot included. For example, '/path/to/file.name.html' will return
    * '.html'. If the file has no extension, or if the filename starts with a dot and has no other
    * dots (like a .gitignore file), it returns an empty string.
    *
    * @return {string} File extension, including the decimal character.
+   *
+   * @category Path Properties
    */
   get extname(): string {
     return path.extname(this._f);
   }
 
+  /**
+   * @category Path Properties
+   */
   get ext(): FS.FileExt {
     const ext = path.extname(this._f);
     return (ext.startsWith('.') ? ext.slice(1) : ext) as FS.FileExt;
+  }
+
+  /**
+   * Return the FolderSpec for the folder that contains this file.
+   *
+   * @category Path Properties
+   */
+  parentFolder(): FolderSpec {
+    return new FolderSpec(this.dirname);
+  }
+
+  /**
+   * Looks at the extension of the filename to determine if it is one of the
+   * listed types.
+   * @param type List of types (eg. 'jpg', 'png')
+   * @returns
+   *
+   * @category Type Checking
+   */
+  isExtType(...type: (RegExp | string)[]): boolean {
+    const lowerCaseExt = this.extname.toLowerCase().replace(/^\./, '');
+    for (const entry of type) {
+      if (_.isRegExp(entry)) {
+        if (entry.test(lowerCaseExt)) {
+          return true;
+        }
+      } else if (_.isString(entry)) {
+        if (entry.toLowerCase() === lowerCaseExt) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Tests the extension to see if this is a PDF file.
+   * @param [testContents=false] If true, tests the file contents as well (not implemented).
+   * @returns {boolean} True if the extension indicates this is a PDF file.
+   *
+   * @category Type Checking
+   */
+  isPdf(_testContents = false): boolean {
+    return REG.pdf.test(this.extname);
+  }
+
+  /**
+   * Tests the extension to see if this is an XML file.
+   * @returns  {boolean} True if the extension indicates this is an XML file.
+   *
+   * @category Type Checking
+   */
+  isXml(): boolean {
+    return REG.xml.test(this.extname);
+  }
+
+  /**
+   * Tests the extension to see if this is a text file.
+   * @returns {boolean} True if the extension indicates this is a text file.
+   *
+   * @category Type Checking
+   */
+  isTxt(): boolean {
+    return REG.txt.test(this.extname);
+  }
+
+  /**
+   * Tests the extension to see if this is a JSON file.
+   * @returns {boolean} True if the extension indicates this is a JSON file.
+   *
+   * @category Type Checking
+   */
+  isJson(): boolean {
+    return REG.json.test(this.extname);
+  }
+
+  /**
+   * Tests the extension to see if this is a JSONC file.
+   * @returns {boolean} True if the extension indicates this is a JSONC file.
+   *
+   * @category Type Checking
+   */
+  isJsonc(): boolean {
+    return REG.jsonc.test(this.extname);
+  }
+
+  // ============================================================================
+  // PATH MANIPULATION
+  // ============================================================================
+
+  /**
+   * Creates a shallow clone of this FileSpec instance.
+   *
+   * Copies the path and cached file info, but **does not** copy the actual
+   * file on disk. Use `copyTo()` or `safeCopy()` for filesystem operations.
+   *
+   * @returns {FileSpec} A new FileSpec with the same path and cached state
+   * @see {@link copyTo} to copy the actual file contents
+   * @see {@link copyParamsTo} for internal use
+   */
+  clone(): FileSpec {
+    const result = new FileSpec(this);
+    this.copyParamsTo(result);
+    return result;
+  }
+
+  override copyParamsTo(target: FSSpecBase): FSSpecBase {
+    super.copyParamsTo(target);
+    return target;
   }
 
   /**
@@ -283,6 +392,8 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * const original = new FileSpec('/Users/jpravetz/projects/file.txt');
    * const updated = original.add('new_folder', 'new_file.txt');
    * console.log(updated.path); // e.g. '/Users/jpravetz/projects/new_folder/new_file.txt'
+   *
+   * @category Path Manipulation
    */
   add(...args: string[]): FileSpec {
     if (args.length === 1 && _.isArray(args[0])) {
@@ -316,6 +427,8 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * const otherFile = FS.File.from('/project/main.ts');
    * const relative = file.relativeTo(otherFile);
    * // Returns: "src/deps.ts"
+   *
+   * @category Path Manipulation
    */
   relativeTo(target: FolderSpec | FileSpec): string {
     // When target is a FileSpec, use its directory; when FolderSpec, use the folder path
@@ -339,6 +452,8 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * Computes how many directory levels deep this file is from the specified
    * ancestor. Returns -1 if the specified folder is not actually an ancestor.
    *
+   * @category Path Manipulation
+   *
    * @param ancestor - The potential ancestor folder to compute depth from.
    * @returns The number of directory levels, or -1 if not an ancestor.
    *
@@ -361,95 +476,11 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   }
 
   /**
-   * Looks at the extension of the filename to determine if it is one of the
-   * listed types.
-   * @param type List of types (eg. 'jpg', 'png')
-   * @returns
-   */
-  isExtType(...type: (RegExp | string)[]): boolean {
-    const lowerCaseExt = this.extname.toLowerCase().replace(/^\./, '');
-    for (const entry of type) {
-      if (_.isRegExp(entry)) {
-        if (entry.test(lowerCaseExt)) {
-          return true;
-        }
-      } else if (_.isString(entry)) {
-        if (entry.toLowerCase() === lowerCaseExt) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  /**
-   * Tests the extension to see if this is a PDF file.
-   * @param [testContents=false] If true, tests the file contents as well (not implemented).
-   * @returns {boolean} True if the extension indicates this is a PDF file.
-   */
-  isPdf(_testContents = false): boolean {
-    return REG.pdf.test(this.extname);
-  }
-
-  /**
-   * Tests the extension to see if this is an XML file.
-   * @returns  {boolean} True if the extension indicates this is an XML file.
-   */
-  isXml(): boolean {
-    return REG.xml.test(this.extname);
-  }
-
-  /**
-   * Tests the extension to see if this is a text file.
-   * @returns {boolean} True if the extension indicates this is a text file.
-   */
-  isTxt(): boolean {
-    return REG.txt.test(this.extname);
-  }
-
-  /**
-   * Tests the extension to see if this is a JSON file.
-   * @returns {boolean} True if the extension indicates this is a JSON file.
-   */
-
-  isJson(): boolean {
-    return REG.json.test(this.extname);
-  }
-
-  /**
-   * Tests the extension to see if this is a JSONC file.
-   * @returns {boolean} True if the extension indicates this is a JSONC file.
-   */
-
-  isJsonc(): boolean {
-    return REG.jsonc.test(this.extname);
-  }
-
-  async size(force = false): Promise<Integer | undefined> {
-    const info = await this.stats(force);
-    return (info && _.isPosInteger(info.size)) ? info.size as Integer : undefined;
-  }
-
-  /**
- * Asynchronously reads a specified number of bytes from the file and returns
- * them as an FSBytes instance. In order to determine what type of file this is,
- * at least 24 bytes must be read.
-
- * @param [length=24] The number of bytes to read from the file. Defaults to 24.
- * @returns {Promise<FSBytes>} A promise that resolves with an FSBytes instance
- * containing the read bytes, or rejects with an error.
- */
-  async getBytes(length = 24): Promise<FSBytes> {
-    const buf = new Uint8Array(length);
-    const _numRead = await this.readBytes(buf, 0);
-    this.close();
-    return new FSBytes(buf);
-  }
-
-  /**
    * Set or change the extension of this file. `This` must be a file.
    * @param ext The extension. The string may or may not include a leading '.'.
    * @returns {this} The current FSItem instance.
+   *
+   * @category Path Manipulation
    */
   setExt(ext: string): this {
     if (!REG.leadingDot.test(ext)) {
@@ -466,6 +497,8 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * Set or change the basename of this file. `This` must be a file.
    * @param val The new basename for the file.
    * @returns {this} The current FSItem instance.
+   *
+   * @category Path Manipulation
    */
   setBasename(val: string): this {
     if (val !== this.basename) {
@@ -476,66 +509,54 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   }
 
   /**
-   * For files, calculate the checksum of this file using SHA1
-   * @returns {Promise<string>} A promise that resolves with the checksum of the file.'
-   * @deprecated - Use digest() instead
+   * Returns the file:// URL for this file path.
+   *
+   * @returns {string} The file URL string (e.g., "file:///path/to/file.ts")
+   *
+   * @example
+   * const file = new FileSpec('/home/user/documents/file.txt');
+   * console.log(file.toFileUrl()); // 'file:///home/user/documents/file.txt'
+   *
+   * @category Path Manipulation
    */
-  checksum(): Promise<string> {
-    return this.digest();
+  public toFileUrl(): string {
+    return Util.pathToFileURL(this._f).href;
+  }
+
+  // ============================================================================
+  // FILE METADATA
+  // ============================================================================
+
+  /**
+   * @category File Metadata
+   */
+  async size(force = false): Promise<Integer | undefined> {
+    const info = await this.stats(force);
+    return (info && _.isPosInteger(info.size)) ? info.size as Integer : undefined;
   }
 
   /**
-   * Generates a digest (hash) of the file's contents using the specified algorithm.
+   * Asynchronously reads a specified number of bytes from the file and returns
+   * them as an FSBytes instance. In order to determine what type of file this is,
+   * at least 24 bytes must be read.
+   * @param [length=24] The number of bytes to read from the file. Defaults to 24.
+   * @returns {Promise<FSBytes>} A promise that resolves with an FSBytes instance
+   * containing the read bytes, or rejects with an error.
    *
-   * @param type - The digest algorithm to use (e.g., 'sha1', 'sha256', 'md5'). Defaults to 'sha1'.
-   * @returns A promise that resolves to the hexadecimal representation of the digest.
+   * @category File Metadata
    */
-  async digest(type: FS.DigestAlgorithmValues = DigestAlgorithm.sha1): Promise<string> {
-    const buf = new Uint8Array(BUFSIZE);
-    const hash = crypto.createHash(type);
-
-    let position = 0;
-    let bytesRead: number | null = 0;
-    try {
-      while (bytesRead !== null) {
-        bytesRead = await this.readBytes(buf, position, false);
-        if (bytesRead !== null) {
-          hash.update(buf.slice(0, bytesRead));
-          position += bytesRead;
-        }
-      }
-      this.close();
-    } catch (error) {
-      this.close();
-      throw this.asError(error);
-    }
-    return hash.digest('hex');
-  }
-
-  /**
-   * Ensures that the parent folder to this file exists.
-   *
-   * This method will consult our FolderSpec helpers and, if the parent
-   * folder does not exist, attempt to create it. Errors are thrown as
-   * specific subclasses of Error.FSError so callers can respond to
-   * common filesystem failure modes (e.g. not found, permission denied).
-   *
-   * @throws {FSNotFoundError|FSPermissionError|Error.FSError} When the parent
-   * directory cannot be created or validated. The thrown error will be an
-   * instance of a subclass of Error.FSError with `.path` set to the file path.
-   */
-  async ensureParentDir(): Promise<void> {
-    const parent = new FolderSpec(this.dirname);
-    try {
-      await parent.ensureDir();
-    } catch (err: unknown) {
-      throw this.asError(err, 'ensureParentDir');
-    }
+  async getBytes(length = 24): Promise<FSBytes> {
+    const buf = new Uint8Array(length);
+    const _numRead = await this.readBytes(buf, 0);
+    this.close();
+    return new FSBytes(buf);
   }
 
   /**
    * For PDF files, gets the Creation Date of this file by reading its metadata using PDFMetadataReader.
    * @returns {Promise<Date | undefined>} A promise that resolves with the creation date of the PDF file, or undefined if not found.
+   *
+   * @category File Metadata
    */
   async getPdfDate(): Promise<DateTime | undefined> {
     try {
@@ -546,31 +567,13 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
     }
   }
 
-  /**
-   * For PDF files, gets the Creation Date of this file file by reading it's
-   * metadata.
-   * @returns {Promise<Date | undefined>} A promise that resolves with the creation date of the PDF file, or undefined if not found.
-   */
-  // getPdfDateDeprecated(): Promise<Date | undefined> {
-  //   return Promise.resolve()
-  //     .then(() => {
-  //       return Deno.readFile(this._f);
-  //     })
-  //     .then((arrayBuffer) => {
-  //       return PDFDocument.load(arrayBuffer, { updateMetadata: false });
-  //     })
-  //     .then((pdf) => {
-  //       const pdfDate = pdf.getCreationDate();
-  //       if (pdfDate) {
-  //         return Promise.resolve(pdfDate);
-  //       }
-  //       return Promise.reject(new Error('No creation date found'));
-  //     })
-  //     .catch((err) => {
-  //       throw _.asError(err, { path: this._f, cause: 'getPdfDate' });
-  //     });
-  // }
+  // ============================================================================
+  // LOW-LEVEL I/O (FILE HANDLE MANAGEMENT)
+  // ============================================================================
 
+  /**
+   * @category File I/O
+   */
   async open(opts: { read?: boolean; write?: boolean; create?: boolean }): Promise<nfs.FileHandle> {
     try {
       // map read/write flags to Node flags
@@ -589,6 +592,9 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
     }
   }
 
+  /**
+   * @category File I/O
+   */
   close(): void {
     if (this.#file) {
       // close is async on Node; keep signature void to match callers
@@ -607,6 +613,8 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * const buf = new Uint8Array(100);
    * const numberOfBytesRead = await fileSpec.read(buf,0);
    * ```
+   *
+   * @category File I/O
    */
   async readBytes(buffer: Uint8Array, position: Integer = 0, close = false): Promise<number | null> {
     try {
@@ -626,6 +634,10 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
     }
   }
 
+  // ============================================================================
+  // READ OPERATIONS
+  // ============================================================================
+
   /**
    * Reads the entire file as a Uint8Array. Can optionally decode base64-encoded content.
    *
@@ -641,6 +653,8 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * const base64File = await file.readAsBytes('base64');
    * // If file contains "SGVsbG8=" the result will be:
    * // Uint8Array [72, 101, 108, 108, 111] ("Hello" in ASCII)
+   *
+   * @category Read Operations
    */
   async readAsBytes(encoding?: 'base64'): Promise<Uint8Array> {
     try {
@@ -662,6 +676,8 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * @returns {Promise<string>} A promise that resolves with the file contents as a string
    *
    * @throws {FSNotFoundError|FSPermissionError|FSReadError|Error.FSError} When the file cannot be read or decoded.
+   *
+   * @category Read Operations
    */
   async readAsString(encoding?: 'base64'): Promise<string> {
     try {
@@ -680,6 +696,8 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   /**
    * Reads the file as a string and splits it into lines.
    * @returns {Promise<string[]>} A promise that resolves with an array of lines.
+   *
+   * @category Read Operations
    */
   async readAsLines(continuation?: string): Promise<string[]> {
     try {
@@ -734,8 +752,7 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    * @see {@link isJsonc} - Method that determines if the file should be treated as JSONC
    * @see {@link readAsString} - Underlying method that reads the file content
    *
-   * @async
-   * @category File Operations
+   * @category Read Operations
    */
   async readJson<T = unknown>(options?: Util.ReadJsonOptions): Promise<T> {
     try {
@@ -771,63 +788,118 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   }
 
   /**
-   * Reads the file as JSON, parses it, and performs a deep copy with optional transformations. If
-   * the file is JSONC, comments are stripped before parsing.
+   * Reads the file as TOML and parses it.
+   * The `@std/toml` dependency is loaded dynamically only when this method is called.
+   * @template T - The expected type of the parsed TOML data.
+   * @returns {Promise<T>} A promise that resolves with the parsed TOML content.
+   * @throws {Error} If the file cannot be read or the TOML cannot be parsed.
    *
-   * This method is unique in that it allows you to deeply clone and transform JSON data as it is
-   * read from disk, supporting advanced options such as recursive file inclusion, RegExp detection,
-   * and custom transformation hooks.
-   *
-   * @param [options] - Options for the deep copy operation:
-   *   @param [options.replace=Dict] - If set, replaces keys with values throughout `a`.
-   *   @param [options.pre='{'] - Prefix string for detecting replacement strings and URLs
-   *   in string values.
-   *   @param [options.post='}'] - Suffix string for detecting replacement strings and URLs
-   *   in string values.
-   *   @param [options.includeUrl=false] - Recursively loads and merges JSON from URLs or
-   *   file paths found in string values.
-   *   @param [options.detectRegExp=false] - If true, detects and reconstructs RegExp
-   *   objects from plain objects using asRegExp.
-   *   @param [opts.stripJsonComments=false] - If true, strip JSON comments (jsonc)
-   * @returns {Promise<unknown>} A promise that resolves with the deeply copied and transformed JSON
-   * content.
-   *
-   * @example
-   * // Recursively load and merge referenced files
-   * const data = await file.deepReadJson({ includeUrl: true });
-   *
-   * @deprecated Use readJson() with deepCopy option instead.
+   * @category Read Operations
    */
-  readJsonEx<T = unknown>(opts: FS.FsDeepJsonDeserializeOpts = {}): Promise<T> {
-    return this.readJson<T>({
-      deepCopy: true,
-      includeUrl: opts.includeUrl,
-      stripComments: opts.stripComments,
-    });
+  async readToml<T = unknown>(): Promise<T> {
+    try {
+      const { parse } = await import('@std/toml');
+      const s = await this.readAsString();
+      return parse(s) as T;
+    } catch (err) {
+      throw this.asError(err, 'readToml');
+    }
   }
 
   /**
-   * @param value
-   * @param options
-   * @param space
-   * @param opts
-   * @returns
-   * @deprecated use writeJson() instead.
+   * Reads the file as YAML and parses it.
+   * The `@std/yaml` dependency is loaded dynamically only when this method is called.
+   * @template T - The expected type of the parsed YAML data.
+   * @returns {Promise<T>} A promise that resolves with the parsed YAML content.
+   * @throws {Error} If the file cannot be read or the YAML cannot be parsed.
+   *
+   * @category Read Operations
    */
-  writeJsonEx(
-    value: unknown,
-    options: DeepCopyOpts | null = null,
-    space?: string | number,
-    writeOpts?: Util.SafeWriteOptions,
-  ): Promise<this> {
-    // Always use jsonSerialize for writeJsonEx to maintain backward compatibility
-    const opts: Util.WriteJsonOptions = {
-      deepCopy: options || true, // Use true for default deep copy behavior
-      space: space,
-      safe: writeOpts?.safe,
-      backupStrategy: writeOpts?.backupStrategy,
-    };
-    return this.#writeJsonWithDeepCopy(value, opts);
+  async readYaml<T = unknown>(): Promise<T> {
+    try {
+      const { parse } = await import('@std/yaml');
+      const s = await this.readAsString();
+      return parse(s) as T;
+    } catch (err) {
+      throw this.asError(err, 'readYaml');
+    }
+  }
+
+  // ============================================================================
+  // WRITE OPERATIONS
+  // ============================================================================
+
+  /**
+   * Writes data to the file.
+   *
+   * @param data - The data to write:
+   *   - string: Text content with encoding
+   *   - string[]: Array of lines to join with newlines
+   *   - Uint8Array: Raw binary data
+   * @param [type='utf8'] - Text encoding (ignored for Uint8Array)
+   * @returns {Promise<void>} Promise that resolves to this when write completes
+   *
+   * @example
+   * // Write text content
+   * await file.write('Hello world');
+   *
+   * // Write array of lines
+   * await file.write(['line 1', 'line 2']);
+   *
+   * // Write binary data
+   * const bytes = new Uint8Array([72, 101, 108, 108, 111]);
+   * await file.write(bytes);
+   *
+   * @category Write Operations
+   */
+  async write(data: string | string[] | Uint8Array, opts?: Util.SafeWriteOptions): Promise<this> {
+    if (opts?.safe || opts?.backupStrategy) {
+      return this.#writeWithOpts(
+        (file) => file.write(data, { ...opts, safe: false, backupStrategy: undefined }),
+        opts,
+      );
+    }
+    let fileHandle: nfs.FileHandle | undefined;
+    try {
+      fileHandle = await nfs.open(this._f, 'w');
+      if (data instanceof Uint8Array) {
+        await fileHandle.write(data);
+      } else {
+        const text = _.isArray(data) ? data.join('\n') : data;
+        await fileHandle.write(new TextEncoder().encode(text));
+      }
+      await fileHandle.sync(); // Ensure data is flushed to disk
+    } catch (err) {
+      throw this.asError(err);
+    } finally {
+      if (fileHandle) {
+        await fileHandle.close();
+      }
+    }
+    return this;
+  }
+
+  /**
+   * Encodes input as base64 and writes to the file.
+   * @param data - The data to encode and write as base64
+   * @returns {Promise<void>} A promise that resolves to this when the write completes
+   *
+   * @example
+   * // Write string as base64
+   * await file.writeBase64('Hello world');
+   * // File contains: SGVsbG8gd29ybGQ=
+   *
+   * // Write binary data as base64
+   * const bytes = new Uint8Array([72, 101, 108, 108, 111]);
+   * await file.writeBase64(bytes);
+   * // File contains: SGVsbG8=
+   *
+   * @category Write Operations
+   */
+  async writeBase64(data: string | Uint8Array | ArrayBuffer, opts?: Util.SafeWriteOptions): Promise<this> {
+    const encoded = encodeBase64(data);
+    await this.write(encoded, opts);
+    return this;
   }
 
   /**
@@ -871,6 +943,8 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
    *
    * // Combined: formatting + safe write
    * await file.writeJson(data, null, 2, { safe: true });
+   *
+   * @category Write Operations
    */
   writeJson(data: unknown, writeOpts?: Util.WriteJsonOptions): Promise<this>;
   writeJson(data: unknown, replacer?: JsonReplacer, space?: string | number): Promise<this>;
@@ -907,6 +981,492 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
 
     // Direct write implementation
     return this.#writeJsonDirect(data, opts);
+  }
+
+  /**
+   * Writes data to the file in TOML format.
+   * This method uses a high-durability write strategy: it opens a file handle,
+   * writes the encoded TOML string, and explicitly calls `sync()` to ensure
+   * the data is flushed to the physical storage device before closing.
+   * The `@std/toml` dependency is loaded dynamically only when this method is called.
+   * @param data - The data to write as TOML.
+   * @param opts - Options for writing the TOML file.
+   * @param opts.toml - Options for the TOML stringifier.
+   * @param opts.toml.keyAlignment - If `true`, aligns all keys in the TOML output.
+   * @param opts.write - Safe write options for atomic writes and backup strategies.
+   * @param opts.write.safe - If `true`, writes atomically to a temp file and moves it into place.
+   * @param opts.write.backupStrategy - Strategy for backing up the existing file before overwriting.
+   * @see {@link FileConflictStrategy} for backup strategy options.
+   * @returns {Promise<this>} A promise that resolves to this instance.
+   * @throws {Error} If the file cannot be written or data cannot be synced to disk.
+   *
+   * @category Write Operations
+   */
+  async writeToml(
+    data: Dict<unknown>,
+    opts?: {
+      toml?: Parameters<typeof import('@std/toml').stringify>[1];
+      write?: Util.SafeWriteOptions;
+    },
+  ): Promise<this> {
+    if (opts?.write?.safe || opts?.write?.backupStrategy) {
+      return this.#writeWithOpts(
+        (file) => file.writeToml(data, { toml: opts.toml }),
+        opts.write,
+      );
+    }
+    let fileHandle: nfs.FileHandle | undefined;
+    try {
+      const { stringify } = await import('@std/toml');
+      const text = stringify(data, opts?.toml);
+
+      fileHandle = await nfs.open(this._f, 'w');
+      await fileHandle.write(new TextEncoder().encode(text));
+      await fileHandle.sync(); // Ensure data is flushed to disk
+    } catch (err) {
+      throw this.asError(err, 'writeToml');
+    } finally {
+      if (fileHandle) {
+        await fileHandle.close();
+      }
+    }
+    return this;
+  }
+
+  /**
+   * Writes data to the file in YAML format.
+   * This method uses a high-durability write strategy: it opens a file handle,
+   * writes the encoded YAML string, and explicitly calls `sync()` to ensure
+   * the data is flushed to the physical storage device before closing.
+   * The `@std/yaml` dependency is loaded dynamically only when this method is called.
+   * @param data - The data to write as YAML.
+   * @param opts - Options for writing the YAML file.
+   * @param opts.yaml - Options for the YAML stringifier (e.g., indent, skipInvalid).
+   * @param opts.write - Safe write options for atomic writes and backup strategies.
+   * @param opts.write.safe - If `true`, writes atomically to a temp file and moves it into place.
+   * @param opts.write.backupStrategy - Strategy for backing up the existing file before overwriting.
+   * @see {@link FileConflictStrategy} for backup strategy options.
+   * @returns {Promise<this>} A promise that resolves to this instance.
+   * @throws {Error} If the file cannot be written or data cannot be synced to disk.
+   *
+   * @category Write Operations
+   */
+  async writeYaml(
+    data: unknown,
+    opts?: {
+      yaml?: Parameters<typeof import('@std/yaml').stringify>[1];
+      write?: Util.SafeWriteOptions;
+    },
+  ): Promise<this> {
+    if (opts?.write?.safe || opts?.write?.backupStrategy) {
+      return this.#writeWithOpts(
+        (file) => file.writeYaml(data, { yaml: opts.yaml }),
+        opts.write,
+      );
+    }
+    let fileHandle: nfs.FileHandle | undefined;
+    try {
+      const { stringify } = await import('@std/yaml');
+      const text = stringify(data, opts?.yaml);
+
+      fileHandle = await nfs.open(this._f, 'w');
+      await fileHandle.write(new TextEncoder().encode(text));
+      await fileHandle.sync(); // Ensure data is flushed to disk
+    } catch (err) {
+      throw this.asError(err, 'writeYaml');
+    } finally {
+      if (fileHandle) {
+        await fileHandle.close();
+      }
+    }
+    return this;
+  }
+
+  // ============================================================================
+  // FILE OPERATIONS (MOVE, COPY, BACKUP)
+  // ============================================================================
+
+  /**
+   * Ensures that the parent folder to this file exists.
+   *
+   * This method will consult our FolderSpec helpers and, if the parent
+   * folder does not exist, attempt to create it. Errors are thrown as
+   * specific subclasses of Error.FSError so callers can respond to
+   * common filesystem failure modes (e.g. not found, permission denied).
+   *
+   * @throws {FSNotFoundError|FSPermissionError|Error.FSError} When the parent
+   * directory cannot be created or validated. The thrown error will be an
+   * instance of a subclass of Error.FSError with `.path` set to the file path.
+   *
+   * @category File Operations
+   */
+  async ensureParentDir(): Promise<void> {
+    const parent = new FolderSpec(this.dirname);
+    try {
+      await parent.ensureDir();
+    } catch (err: unknown) {
+      throw this.asError(err, 'ensureParentDir');
+    }
+  }
+
+  /**
+   * Moves this file to a new location.
+   * @param dest - The destination. If a `FolderSpec` is provided, the file is
+   * moved into that folder. If a `FileSpec` is provided, the file is moved and
+   * renamed to the path of that `FileSpec`.
+   * @param options - Options for the move operation.
+   * @param {boolean} [options.overwrite=false] - If true, the destination file
+   * will be overwritten if it already exists.
+   * @returns A promise that resolves to the new FileSpec.
+   * @throws {Error.NotFound} If the source file does not exist.
+   * @throws {Error.AlreadyExists} If `options.overwrite` is false and the
+   * destination file already exists.
+   *
+   * @category File Operations
+   */
+  async moveTo(dest: FolderSpec | FileSpec, options?: FS.MoveOptions): Promise<FileSpec> {
+    if (!await this.exists()) {
+      throw new Error.NotFound('File does not exist', { code: 'ENOENT', path: this._f });
+    }
+
+    const destFile = (dest instanceof FileSpec) ? dest : new FileSpec(dest, this.filename);
+    await destFile.ensureParentDir();
+
+    try {
+      if (options?.overwrite) {
+        await nfs.rename(this._f, destFile.path);
+      } else {
+        const destExists = await destFile.exists(true);
+        if (destExists) {
+          throw new Error.AlreadyExists('Destination file already exists', { path: destFile.path });
+        }
+        await nfs.rename(this._f, destFile.path);
+      }
+      this.clearInfo();
+    } catch (err: unknown) {
+      throw this.asError(err, 'moveTo');
+    }
+    return destFile;
+  }
+
+  /**
+   * Safely copies the file to a new destination, with built-in handling for
+   * name conflicts to prevent accidental data loss.
+   *
+   * This method delegates to a shared `safeCopy` utility. If the destination
+   * file already exists, the default behavior is to back up the destination
+   * file by renaming it with a `~` suffix before performing the copy.
+   *
+   * @param destFile - The destination. If a `FolderSpec` or folder path is
+   * provided, the file is copied into it under its original name. If a
+   * `FileSpec` or file path is provided, it is copied to that exact path.
+   * @param opts - Options to control the copy behavior.
+   * @param {boolean} [opts.overwrite=false] - If true, directly overwrites the
+   * destination file without creating a backup.
+   * @param {FileConflictStrategy} [opts.conflictStrategy] - The strategy to use if
+   * the destination exists and `overwrite` is false. Defaults to renaming the
+   * destination with a tilde.
+   * @returns A promise that resolves when the copy operation is complete.
+   *
+   * @category File Operations
+   */
+  safeCopy(destFile: FS.FilePath | FileSpec | FolderSpec | FSSpec, opts: Util.SafeCopyOpts = {}): Promise<void> {
+    return Util.safeCopy(this, destFile, opts);
+  }
+
+  /**
+   * Backs up the current file by moving it to a new path, determined by the
+   * chosen strategy. This is useful for preserving a file before overwriting it.
+   * The `moveTo` operation is called with `overwrite: true`, ensuring the
+   * backup file is created.
+   * @param opts - The strategy for resolving a file conflict to generate the
+   * backup path. Defaults to renaming with a tilde (`~`).
+   * @param {'renameWithTilde' | 'renameWithNumber' | 'overwrite' | 'error'} [opts.type='renameWithTilde'] - The backup strategy.
+   *   - `renameWithTilde`: Appends a `~` to the filename.
+   *   - `renameWithNumber`: Appends an incrementing number (e.g., `-01`).
+   *   - `overwrite`: Uses the same path (no-op for backup path generation).
+   *   - `error`: Throws an error if the file exists (via `#getNewPath`).
+   * @param {boolean} [opts.errorIfExists=false] - If true, throws an error if the generated backup path already exists.
+   * @param {string} [opts.separator='-'] - Separator for `renameWithNumber`.
+   * @param {string} [opts.prefix=''] - Prefix for `renameWithNumber`.
+   * @param {number} [opts.limit=32] - Max attempts for `renameWithNumber`.
+   * @returns A promise that resolves with a `FileSpec` for the new backup
+   * file, or `undefined` if no backup path was generated.
+   * @throws {Error.NotFound} If the source file does not exist (from `moveTo`).
+   * @throws {Error.AlreadyExists} If the chosen backup strategy results in a
+   * path that already exists and `opts.errorIfExists` is true.
+   *
+   * @category File Operations
+   */
+  async backup(
+    opts: Util.FileConflictStrategy = { type: 'renameWithTilde', errorIfExists: false },
+  ): Promise<FileSpec | undefined> {
+    const newPath: FS.FilePath | undefined = await this.#getNewPath(opts);
+    if (newPath && isFilePath(newPath)) {
+      const newFile = new FileSpec(newPath);
+      await this.moveTo(newFile, { overwrite: true });
+      if ('keep' in opts && opts.keep) {
+        await this.#rotateBackups(opts.keep, opts);
+      }
+      return newFile;
+    }
+  }
+
+  /**
+   * Finds the next available indexed filename. For example, for `filename.ext`,
+   * tries `filename-01.ext`, `filename-02.ext`, etc until it finds a filename
+   * that is not used.
+   * @param [limit=32] - The maximum number of attempts to find an available filename.
+   * @param [sep='-'] - The separator to use between the filename and the index.
+   * @param [prefix=''] - A prefix to add before the index.
+   * @param [suffix=''] - A suffix to add after the extension.
+   * @returns {Promise<FilePath | undefined>} A promise that resolves with an available file path, or undefined if not found.
+   *
+   * @category File Operations
+   */
+  async findAvailableIndexFilename(
+    _limit: Integer = 32,
+    sep: string = '-',
+    prefix: string = '',
+    suffix: string = '',
+  ): Promise<FS.FilePath | undefined> {
+    let newFsDest: FileSpec | undefined;
+    let count = 0;
+    let looking = true;
+    while (looking) {
+      newFsDest = new FileSpec(
+        this.dirname,
+        this.basename + sep + prefix + _.pad(++count, 2) + this.extname + suffix,
+      );
+      looking = await newFsDest.exists();
+    }
+    if (!looking && newFsDest instanceof FileSpec) {
+      return newFsDest.path;
+    }
+  }
+
+  // ============================================================================
+  // COMPARISON & EQUALITY
+  // ============================================================================
+
+  /**
+   * Compares this file to another file to determine if they are equal.
+   *
+   * The comparison is done first by size. If the sizes are equal, it can
+   * optionally perform a checksum comparison for byte-for-byte equality.
+   *
+   * @param arg - The file to compare against. Can be a path string, a
+   * `FileSpec`, or a generic `FSSpec`.
+   * @param opts - Options to control the comparison.
+   * @param {boolean} [opts.checksum=true] - If true, performs a checksum
+   * comparison if the file sizes are identical. If false, only file sizes
+   * are compared.
+   * @returns A promise that resolves to `true` if the files are deemed equal,
+   * otherwise `false`.
+   *
+   * @category Comparison
+   */
+  async equalTo(arg: FS.FilePath | FileSpec | FSSpec, opts: FS.EqualOptions = { checksum: true }): Promise<boolean> {
+    if (arg instanceof FileSpec) {
+      return await this.#equal(arg, opts);
+    }
+    if (arg instanceof FSSpec) {
+      const fs = await arg.resolvedType();
+      if (fs instanceof FileSpec) {
+        return await this.#equal(fs, opts);
+      }
+      return false;
+    }
+    if (isFilePath(arg)) {
+      const fs = new FileSpec(arg);
+      const isFile = await fs.isFile();
+      if (isFile) {
+        return await this.#equal(fs, opts);
+      }
+      return false;
+    }
+    // invalid usage -> throw a usage specific error subclass
+    throw this.asError('Invalid filesEqual argument', 'filesEqual');
+  }
+
+  // ============================================================================
+  // PERMISSIONS
+  // ============================================================================
+
+  /**
+   * Changes the owner of the file.
+   * @param uid - User ID
+   * @param gid - Group ID (optional)
+   *
+   * @remarks For bulk operations on large directory trees, shell scripts using
+   * `find` with batched `-exec ... {} +` are significantly more efficient than
+   * JavaScript/TypeScript iteration.
+   *
+   * @category Permissions
+   */
+  async chown(uid: FS.UID, gid?: FS.GID): Promise<void> {
+    await nfs.chown(this._f, uid, gid ?? -1);
+  }
+
+  /**
+   * Changes the group of the file.
+   * @param gid - Group ID
+   *
+   * @remarks For bulk operations on large directory trees, shell scripts using
+   * `find` with batched `-exec ... {} +` are significantly more efficient than
+   * JavaScript/TypeScript iteration.
+   *
+   * @category Permissions
+   */
+  async chgrp(gid: FS.GID): Promise<void> {
+    await nfs.chown(this._f, -1, gid);
+  }
+
+  /**
+   * Changes the permissions of the file.
+   * @param mode - File mode (permissions)
+   *
+   * @remarks For bulk operations on large directory trees, shell scripts using
+   * `find` with batched `-exec ... {} +` are significantly more efficient than
+   * JavaScript/TypeScript iteration.
+   *
+   * @category Permissions
+   */
+  async chmod(mode: FS.Mode): Promise<void> {
+    await nfs.chmod(this._f, mode);
+  }
+
+  // ============================================================================
+  // STREAMS
+  // ============================================================================
+
+  /**
+   * Creates a Web Streams API ReadableStream for reading from the file.
+   * This returns a modern web-compatible stream that works with fetch(), Response.body,
+   * and other Web APIs. Use this for modern JavaScript/TypeScript applications.
+   *
+   * @returns A promise that resolves to a Web Streams API ReadableStream
+   * @example
+   * ```typescript
+   * const webStream = await file.readableStream();
+   * const reader = webStream.getReader();
+   * const { value, done } = await reader.read();
+   * ```
+   *
+   * @category Streams
+   */
+  public async readableStream(): Promise<ReadableStream<Uint8Array>> {
+    const file = await this.open({ read: true });
+    const nodeStream = file.createReadStream();
+    return Readable.toWeb(nodeStream) as ReadableStream<Uint8Array>;
+  }
+
+  /**
+   * Creates a Web Streams API WritableStream for writing to the file.
+   * This returns a modern web-compatible stream that works with fetch(), Response.body,
+   * and other Web APIs. Use this for modern JavaScript/TypeScript applications.
+   *
+   * @returns A promise that resolves to a Web Streams API WritableStream
+   * @example
+   * ```typescript
+   * const webStream = await file.writableStream();
+   * const writer = webStream.getWriter();
+   * await writer.write(new TextEncoder().encode('Hello World'));
+   * await writer.close();
+   * ```
+   *
+   * @category Streams
+   */
+  public writableStream(): WritableStream<Uint8Array> {
+    const nodeStream = fs.createWriteStream(this.path);
+    return Writable.toWeb(nodeStream) as WritableStream<Uint8Array>;
+  }
+
+  /**
+   * Creates a Node.js readable stream for reading the file.
+   * This returns a Node.js stream compatible with libraries like PDFKit, Express, etc.
+   * Use this when working with Node.js libraries that expect Node.js streams.
+   *
+   * @returns A promise that resolves to a Node.js Readable stream
+   * @example
+   * ```typescript
+   * const nodeStream = await file.nodeReadableStream();
+   * nodeStream.pipe(someWritableStream);
+   * ```
+   *
+   * @category Streams
+   */
+  public async nodeReadableStream(): Promise<NodeJS.ReadableStream> {
+    const file = await this.open({ read: true });
+    return file.createReadStream();
+  }
+
+  /**
+   * Creates a Node.js writable stream for writing to the file.
+   * This returns a Node.js stream compatible with libraries like PDFKit, Express, etc.
+   * Use this when working with Node.js libraries that expect Node.js streams.
+   * PDFKit specifically requires this type of stream for proper PDF generation.
+   *
+   * @returns A Node.js Writable stream (synchronous, no Promise needed)
+   * @example
+   * ```typescript
+   * const nodeStream = file.nodeWritableStream();
+   * pdfDoc.pipe(nodeStream); // PDFKit example
+   * nodeStream.write('Hello World');
+   * nodeStream.end();
+   * ```
+   *
+   * @category Streams
+   */
+  public nodeWritableStream(): NodeJS.WritableStream {
+    return fs.createWriteStream(this.path);
+  }
+
+  public async pipeFrom(source: ReadableStream<Uint8Array>): Promise<void> {
+    const destination = await this.writableStream();
+    await source.pipeTo(destination);
+  }
+
+  public async pipeTo(destination: WritableStream<Uint8Array>): Promise<void> {
+    const source = await this.readableStream();
+    await source.pipeTo(destination);
+  }
+
+  public async writer(): Promise<FileSpecWriter> {
+    const stream = await this.writableStream();
+    return new FileSpecWriter(stream);
+  }
+
+  // ============================================================================
+  // PRIVATE HELPERS
+  // ============================================================================
+
+  /**
+   * Generates a digest (hash) of the file's contents using the specified algorithm.
+   *
+   * @param type - The digest algorithm to use (e.g., 'sha1', 'sha256', 'md5'). Defaults to 'sha1'.
+   * @returns A promise that resolves to the hexadecimal representation of the digest.
+   */
+  async digest(type: FS.DigestAlgorithmValues = DigestAlgorithm.sha1): Promise<string> {
+    const buf = new Uint8Array(BUFSIZE);
+    const hash = crypto.createHash(type);
+
+    let position = 0;
+    let bytesRead: number | null = 0;
+    try {
+      while (bytesRead !== null) {
+        bytesRead = await this.readBytes(buf, position, false);
+        if (bytesRead !== null) {
+          hash.update(buf.slice(0, bytesRead));
+          position += bytesRead;
+        }
+      }
+      this.close();
+    } catch (error) {
+      this.close();
+      throw this.asError(error);
+    }
+    return hash.digest('hex');
   }
 
   /**
@@ -967,135 +1527,6 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
   }
 
   /**
-   * Reads the file as TOML and parses it.
-   * The `@std/toml` dependency is loaded dynamically only when this method is called.
-   * @template T - The expected type of the parsed TOML data.
-   * @returns {Promise<T>} A promise that resolves with the parsed TOML content.
-   * @throws {Error} If the file cannot be read or the TOML cannot be parsed.
-   */
-  async readToml<T = unknown>(): Promise<T> {
-    try {
-      const { parse } = await import('@std/toml');
-      const s = await this.readAsString();
-      return parse(s) as T;
-    } catch (err) {
-      throw this.asError(err, 'readToml');
-    }
-  }
-
-  /**
-   * Writes data to the file in TOML format.
-   * This method uses a high-durability write strategy: it opens a file handle,
-   * writes the encoded TOML string, and explicitly calls `sync()` to ensure
-   * the data is flushed to the physical storage device before closing.
-   * The `@std/toml` dependency is loaded dynamically only when this method is called.
-   * @param data - The data to write as TOML.
-   * @param opts - Options for writing the TOML file.
-   * @param opts.toml - Options for the TOML stringifier.
-   * @param opts.toml.keyAlignment - If `true`, aligns all keys in the TOML output.
-   * @param opts.write - Safe write options for atomic writes and backup strategies.
-   * @param opts.write.safe - If `true`, writes atomically to a temp file and moves it into place.
-   * @param opts.write.backupStrategy - Strategy for backing up the existing file before overwriting.
-   * @see {@link FileConflictStrategy} for backup strategy options.
-   * @returns {Promise<this>} A promise that resolves to this instance.
-   * @throws {Error} If the file cannot be written or data cannot be synced to disk.
-   */
-  async writeToml(
-    data: Dict<unknown>,
-    opts?: {
-      toml?: Parameters<typeof import('@std/toml').stringify>[1];
-      write?: Util.SafeWriteOptions;
-    },
-  ): Promise<this> {
-    if (opts?.write?.safe || opts?.write?.backupStrategy) {
-      return this.#writeWithOpts(
-        (file) => file.writeToml(data, { toml: opts.toml }),
-        opts.write,
-      );
-    }
-    let fileHandle: nfs.FileHandle | undefined;
-    try {
-      const { stringify } = await import('@std/toml');
-      const text = stringify(data, opts?.toml);
-
-      fileHandle = await nfs.open(this._f, 'w');
-      await fileHandle.write(new TextEncoder().encode(text));
-      await fileHandle.sync(); // Ensure data is flushed to disk
-    } catch (err) {
-      throw this.asError(err, 'writeToml');
-    } finally {
-      if (fileHandle) {
-        await fileHandle.close();
-      }
-    }
-    return this;
-  }
-
-  /**
-   * Reads the file as YAML and parses it.
-   * The `@std/yaml` dependency is loaded dynamically only when this method is called.
-   * @template T - The expected type of the parsed YAML data.
-   * @returns {Promise<T>} A promise that resolves with the parsed YAML content.
-   * @throws {Error} If the file cannot be read or the YAML cannot be parsed.
-   */
-  async readYaml<T = unknown>(): Promise<T> {
-    try {
-      const { parse } = await import('@std/yaml');
-      const s = await this.readAsString();
-      return parse(s) as T;
-    } catch (err) {
-      throw this.asError(err, 'readYaml');
-    }
-  }
-
-  /**
-   * Writes data to the file in YAML format.
-   * This method uses a high-durability write strategy: it opens a file handle,
-   * writes the encoded YAML string, and explicitly calls `sync()` to ensure
-   * the data is flushed to the physical storage device before closing.
-   * The `@std/yaml` dependency is loaded dynamically only when this method is called.
-   * @param data - The data to write as YAML.
-   * @param opts - Options for writing the YAML file.
-   * @param opts.yaml - Options for the YAML stringifier (e.g., indent, skipInvalid).
-   * @param opts.write - Safe write options for atomic writes and backup strategies.
-   * @param opts.write.safe - If `true`, writes atomically to a temp file and moves it into place.
-   * @param opts.write.backupStrategy - Strategy for backing up the existing file before overwriting.
-   * @see {@link FileConflictStrategy} for backup strategy options.
-   * @returns {Promise<this>} A promise that resolves to this instance.
-   * @throws {Error} If the file cannot be written or data cannot be synced to disk.
-   */
-  async writeYaml(
-    data: unknown,
-    opts?: {
-      yaml?: Parameters<typeof import('@std/yaml').stringify>[1];
-      write?: Util.SafeWriteOptions;
-    },
-  ): Promise<this> {
-    if (opts?.write?.safe || opts?.write?.backupStrategy) {
-      return this.#writeWithOpts(
-        (file) => file.writeYaml(data, { yaml: opts.yaml }),
-        opts.write,
-      );
-    }
-    let fileHandle: nfs.FileHandle | undefined;
-    try {
-      const { stringify } = await import('@std/yaml');
-      const text = stringify(data, opts?.yaml);
-
-      fileHandle = await nfs.open(this._f, 'w');
-      await fileHandle.write(new TextEncoder().encode(text));
-      await fileHandle.sync(); // Ensure data is flushed to disk
-    } catch (err) {
-      throw this.asError(err, 'writeYaml');
-    } finally {
-      if (fileHandle) {
-        await fileHandle.close();
-      }
-    }
-    return this;
-  }
-
-  /**
    * Perform an atomic write: write to a temp file, then move into place.
    * @param writeFn - Function that writes content to the provided FileSpec
    */
@@ -1143,172 +1574,6 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
       throw e;
     }
     return this;
-  }
-
-  /**
-   * Encodes input as base64 and writes to the file.
-   * @param data - The data to encode and write as base64
-   * @returns {Promise<void>} A promise that resolves to this when the write completes
-   *
-   * @example
-   * // Write string as base64
-   * await file.writeBase64('Hello world');
-   * // File contains: SGVsbG8gd29ybGQ=
-   *
-   * // Write binary data as base64
-   * const bytes = new Uint8Array([72, 101, 108, 108, 111]);
-   * await file.writeBase64(bytes);
-   * // File contains: SGVsbG8=
-   */
-  async writeBase64(data: string | Uint8Array | ArrayBuffer, opts?: Util.SafeWriteOptions): Promise<this> {
-    const encoded = encodeBase64(data);
-    await this.write(encoded, opts);
-    return this;
-  }
-
-  /**
-   * Writes data to the file.
-   *
-   * @param data - The data to write:
-   *   - string: Text content with encoding
-   *   - string[]: Array of lines to join with newlines
-   *   - Uint8Array: Raw binary data
-   * @param [type='utf8'] - Text encoding (ignored for Uint8Array)
-   * @returns {Promise<void>} Promise that resolves to this when write completes
-   *
-   * @example
-   * // Write text content
-   * await file.write('Hello world');
-   *
-   * // Write array of lines
-   * await file.write(['line 1', 'line 2']);
-   *
-   * // Write binary data
-   * const bytes = new Uint8Array([72, 101, 108, 108, 111]);
-   * await file.write(bytes);
-   */
-  async write(data: string | string[] | Uint8Array, opts?: Util.SafeWriteOptions): Promise<this> {
-    if (opts?.safe || opts?.backupStrategy) {
-      return this.#writeWithOpts(
-        (file) => file.write(data, { ...opts, safe: false, backupStrategy: undefined }),
-        opts,
-      );
-    }
-    let fileHandle: nfs.FileHandle | undefined;
-    try {
-      fileHandle = await nfs.open(this._f, 'w');
-      if (data instanceof Uint8Array) {
-        await fileHandle.write(data);
-      } else {
-        const text = _.isArray(data) ? data.join('\n') : data;
-        await fileHandle.write(new TextEncoder().encode(text));
-      }
-      await fileHandle.sync(); // Ensure data is flushed to disk
-    } catch (err) {
-      throw this.asError(err);
-    } finally {
-      if (fileHandle) {
-        await fileHandle.close();
-      }
-    }
-    return this;
-  }
-
-  /**
-   * Moves this file to a new location.
-   * @param dest - The destination. If a `FolderSpec` is provided, the file is
-   * moved into that folder. If a `FileSpec` is provided, the file is moved and
-   * renamed to the path of that `FileSpec`.
-   * @param options - Options for the move operation.
-   * @param {boolean} [options.overwrite=false] - If true, the destination file
-   * will be overwritten if it already exists.
-   * @returns A promise that resolves to the new FileSpec.
-   * @throws {Error.NotFound} If the source file does not exist.
-   * @throws {Error.AlreadyExists} If `options.overwrite` is false and the
-   * destination file already exists.
-   */
-  async moveTo(dest: FolderSpec | FileSpec, options?: FS.MoveOptions): Promise<FileSpec> {
-    if (!await this.exists()) {
-      throw new Error.NotFound('File does not exist', { code: 'ENOENT', path: this._f });
-    }
-
-    const destFile = (dest instanceof FileSpec) ? dest : new FileSpec(dest, this.filename);
-    await destFile.ensureParentDir();
-
-    try {
-      if (options?.overwrite) {
-        await nfs.rename(this._f, destFile.path);
-      } else {
-        const destExists = await destFile.exists(true);
-        if (destExists) {
-          throw new Error.AlreadyExists('Destination file already exists', { path: destFile.path });
-        }
-        await nfs.rename(this._f, destFile.path);
-      }
-      this.clearInfo();
-    } catch (err: unknown) {
-      throw this.asError(err, 'moveTo');
-    }
-    return destFile;
-  }
-
-  /**
-   * Safely copies the file to a new destination, with built-in handling for
-   * name conflicts to prevent accidental data loss.
-   *
-   * This method delegates to a shared `safeCopy` utility. If the destination
-   * file already exists, the default behavior is to back up the destination
-   * file by renaming it with a `~` suffix before performing the copy.
-   *
-   * @param destFile - The destination. If a `FolderSpec` or folder path is
-   * provided, the file is copied into it under its original name. If a
-   * `FileSpec` or file path is provided, it is copied to that exact path.
-   * @param opts - Options to control the copy behavior.
-   * @param {boolean} [opts.overwrite=false] - If true, directly overwrites the
-   * destination file without creating a backup.
-   * @param {FileConflictStrategy} [opts.conflictStrategy] - The strategy to use if
-   * the destination exists and `overwrite` is false. Defaults to renaming the
-   * destination with a tilde.
-   * @returns A promise that resolves when the copy operation is complete.
-   */
-  safeCopy(destFile: FS.FilePath | FileSpec | FolderSpec | FSSpec, opts: Util.SafeCopyOpts = {}): Promise<void> {
-    return Util.safeCopy(this, destFile, opts);
-  }
-
-  /**
-   * Backs up the current file by moving it to a new path, determined by the
-   * chosen strategy. This is useful for preserving a file before overwriting it.
-   * The `moveTo` operation is called with `overwrite: true`, ensuring the
-   * backup file is created.
-   * @param opts - The strategy for resolving a file conflict to generate the
-   * backup path. Defaults to renaming with a tilde (`~`).
-   * @param {'renameWithTilde' | 'renameWithNumber' | 'overwrite' | 'error'} [opts.type='renameWithTilde'] - The backup strategy.
-   *   - `renameWithTilde`: Appends a `~` to the filename.
-   *   - `renameWithNumber`: Appends an incrementing number (e.g., `-01`).
-   *   - `overwrite`: Uses the same path (no-op for backup path generation).
-   *   - `error`: Throws an error if the file exists (via `#getNewPath`).
-   * @param {boolean} [opts.errorIfExists=false] - If true, throws an error if the generated backup path already exists.
-   * @param {string} [opts.separator='-'] - Separator for `renameWithNumber`.
-   * @param {string} [opts.prefix=''] - Prefix for `renameWithNumber`.
-   * @param {number} [opts.limit=32] - Max attempts for `renameWithNumber`.
-   * @returns A promise that resolves with a `FileSpec` for the new backup
-   * file, or `undefined` if no backup path was generated.
-   * @throws {Error.NotFound} If the source file does not exist (from `moveTo`).
-   * @throws {Error.AlreadyExists} If the chosen backup strategy results in a
-   * path that already exists and `opts.errorIfExists` is true.
-   */
-  async backup(
-    opts: Util.FileConflictStrategy = { type: 'renameWithTilde', errorIfExists: false },
-  ): Promise<FileSpec | undefined> {
-    const newPath: FS.FilePath | undefined = await this.#getNewPath(opts);
-    if (newPath && isFilePath(newPath)) {
-      const newFile = new FileSpec(newPath);
-      await this.moveTo(newFile, { overwrite: true });
-      if ('keep' in opts && opts.keep) {
-        await this.#rotateBackups(opts.keep, opts);
-      }
-      return newFile;
-    }
   }
 
   async #rotateBackups(
@@ -1401,76 +1666,6 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
     return time;
   }
 
-  /**
-   * Compares this file to another file to determine if they are equal.
-   *
-   * The comparison is done first by size. If the sizes are equal, it can
-   * optionally perform a checksum comparison for byte-for-byte equality.
-   *
-   * @param arg - The file to compare against. Can be a path string, a
-   * `FileSpec`, or a generic `FSSpec`.
-   * @param opts - Options to control the comparison.
-   * @param {boolean} [opts.checksum=true] - If true, performs a checksum
-   * comparison if the file sizes are identical. If false, only file sizes
-   * are compared.
-   * @returns A promise that resolves to `true` if the files are deemed equal,
-   * otherwise `false`.
-   */
-  async equalTo(arg: FS.FilePath | FileSpec | FSSpec, opts: FS.EqualOptions = { checksum: true }): Promise<boolean> {
-    if (arg instanceof FileSpec) {
-      return await this.#equal(arg, opts);
-    }
-    if (arg instanceof FSSpec) {
-      const fs = await arg.resolvedType();
-      if (fs instanceof FileSpec) {
-        return await this.#equal(fs, opts);
-      }
-      return false;
-    }
-    if (isFilePath(arg)) {
-      const fs = new FileSpec(arg);
-      const isFile = await fs.isFile();
-      if (isFile) {
-        return await this.#equal(fs, opts);
-      }
-      return false;
-    }
-    // invalid usage -> throw a usage specific error subclass
-    throw this.asError('Invalid filesEqual argument', 'filesEqual');
-  }
-
-  /**
-   * Returns a temporary file path by appending a tilde (~).
-   * @returns {Promise<FilePath>} A promise that resolves to the temporary file path.
-   * @deprecated
-   */
-  getUniquePath(): Promise<FS.FilePath> {
-    return Promise.resolve((this.path + '~') as FS.FilePath);
-  }
-
-  /**
-   * Returns a unique file path by appending a number if the file already exists.
-   * @returns {Promise<FilePath>} A promise that resolves to a unique file path.
-   * @deprecated
-   */
-  getUniqueFile(): Promise<FS.FilePath> {
-    return new Promise<FS.FilePath>((resolve) => {
-      let count = 0;
-      const sep = '-';
-      const prefix = 'copy';
-      const check = async (newFs: FileSpec) => {
-        const exists = await newFs.exists();
-        if (exists) {
-          const newFsDest = new FileSpec(this.dirname, this.basename + sep + prefix + _.pad(++count, 2) + this.extname);
-          check(newFsDest);
-        } else {
-          resolve(newFs.path);
-        }
-      };
-      check(this);
-    });
-  }
-
   async #getNewPath(opts: Util.FileConflictStrategy): Promise<FS.FilePath | undefined> {
     const tilde = ('keep' in opts && opts.keep) ? '~' : '';
     if (opts.type === Util.fileConflictStrategyType.renameWithTilde) {
@@ -1509,37 +1704,6 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
         throw new Error.AlreadyExists('File exists', { code: 'EEXIST', path: this._f });
       }
       return undefined;
-    }
-  }
-
-  /**
-   * Finds the next available indexed filename. For example, for `filename.ext`,
-   * tries `filename-01.ext`, `filename-02.ext`, etc until it finds a filename
-   * that is not used.
-   * @param [limit=32] - The maximum number of attempts to find an available filename.
-   * @param [sep='-'] - The separator to use between the filename and the index.
-   * @param [prefix=''] - A prefix to add before the index.
-   * @param [suffix=''] - A suffix to add after the extension.
-   * @returns {Promise<FilePath | undefined>} A promise that resolves with an available file path, or undefined if not found.
-   */
-  async findAvailableIndexFilename(
-    _limit: Integer = 32,
-    sep: string = '-',
-    prefix: string = '',
-    suffix: string = '',
-  ): Promise<FS.FilePath | undefined> {
-    let newFsDest: FileSpec | undefined;
-    let count = 0;
-    let looking = true;
-    while (looking) {
-      newFsDest = new FileSpec(
-        this.dirname,
-        this.basename + sep + prefix + _.pad(++count, 2) + this.extname + suffix,
-      );
-      looking = await newFsDest.exists();
-    }
-    if (!looking && newFsDest instanceof FileSpec) {
-      return newFsDest.path;
     }
   }
 
@@ -1623,117 +1787,108 @@ export class FileSpec extends FSSpecBase implements ICopyableSpec, IRootableSpec
     return true;
   }
 
+  // ============================================================================
+  // DEPRECATED METHODS
+  // ============================================================================
+
   /**
-   * Changes the owner of the file.
-   * @param uid - User ID
-   * @param gid - Group ID (optional)
+   * For files, calculate the checksum of this file using SHA1
+   * @returns {Promise<string>} A promise that resolves with the checksum of the file.'
+   * @deprecated - Use digest() instead
    */
-  async chown(uid: FS.UID, gid?: FS.GID): Promise<void> {
-    await nfs.chown(this._f, uid, gid ?? -1);
+  checksum(): Promise<string> {
+    return this.digest();
   }
 
   /**
-   * Changes the group of the file.
-   * @param gid - Group ID
-   */
-  async chgrp(gid: FS.GID): Promise<void> {
-    await nfs.chown(this._f, -1, gid);
-  }
-
-  /**
-   * Changes the permissions of the file.
-   * @param mode - File mode (permissions)
-   */
-  async chmod(mode: FS.Mode): Promise<void> {
-    await nfs.chmod(this._f, mode);
-  }
-
-  /**
-   * Creates a Web Streams API ReadableStream for reading from the file.
-   * This returns a modern web-compatible stream that works with fetch(), Response.body,
-   * and other Web APIs. Use this for modern JavaScript/TypeScript applications.
+   * Reads the file as JSON, parses it, and performs a deep copy with optional transformations. If
+   * the file is JSONC, comments are stripped before parsing.
    *
-   * @returns A promise that resolves to a Web Streams API ReadableStream
+   * This method is unique in that it allows you to deeply clone and transform JSON data as it is
+   * read from disk, supporting advanced options such as recursive file inclusion, RegExp detection,
+   * and custom transformation hooks.
+   *
+   * @param [options] - Options for the deep copy operation:
+   *   @param [options.replace=Dict] - If set, replaces keys with values throughout `a`.
+   *   @param [options.pre='{'] - Prefix string for detecting replacement strings and URLs
+   *   in string values.
+   *   @param [options.post='}'] - Suffix string for detecting replacement strings and URLs
+   *   in string values.
+   *   @param [options.includeUrl=false] - Recursively loads and merges JSON from URLs or
+   *   file paths found in string values.
+   *   @param [options.detectRegExp=false] - If true, detects and reconstructs RegExp
+   *   objects from plain objects using asRegExp.
+   *   @param [opts.stripJsonComments=false] - If true, strip JSON comments (jsonc)
+   * @returns {Promise<unknown>} A promise that resolves with the deeply copied and transformed JSON
+   * content.
+   *
    * @example
-   * ```typescript
-   * const webStream = await file.readableStream();
-   * const reader = webStream.getReader();
-   * const { value, done } = await reader.read();
-   * ```
+   * // Recursively load and merge referenced files
+   * const data = await file.deepReadJson({ includeUrl: true });
+   *
+   * @deprecated Use readJson() with deepCopy option instead.
    */
-  public async readableStream(): Promise<ReadableStream<Uint8Array>> {
-    const file = await this.open({ read: true });
-    const nodeStream = file.createReadStream();
-    return Readable.toWeb(nodeStream) as ReadableStream<Uint8Array>;
+  readJsonEx<T = unknown>(opts: FS.FsDeepJsonDeserializeOpts = {}): Promise<T> {
+    return this.readJson<T>({
+      deepCopy: true,
+      includeUrl: opts.includeUrl,
+      stripComments: opts.stripComments,
+    });
   }
 
   /**
-   * Creates a Web Streams API WritableStream for writing to the file.
-   * This returns a modern web-compatible stream that works with fetch(), Response.body,
-   * and other Web APIs. Use this for modern JavaScript/TypeScript applications.
-   *
-   * @returns A promise that resolves to a Web Streams API WritableStream
-   * @example
-   * ```typescript
-   * const webStream = await file.writableStream();
-   * const writer = webStream.getWriter();
-   * await writer.write(new TextEncoder().encode('Hello World'));
-   * await writer.close();
-   * ```
+   * @param value
+   * @param options
+   * @param space
+   * @param opts
+   * @returns
+   * @deprecated use writeJson() instead.
    */
-  public writableStream(): WritableStream<Uint8Array> {
-    const nodeStream = fs.createWriteStream(this.path);
-    return Writable.toWeb(nodeStream) as WritableStream<Uint8Array>;
+  writeJsonEx(
+    value: unknown,
+    options: DeepCopyOpts | null = null,
+    space?: string | number,
+    writeOpts?: Util.SafeWriteOptions,
+  ): Promise<this> {
+    // Always use jsonSerialize for writeJsonEx to maintain backward compatibility
+    const opts: Util.WriteJsonOptions = {
+      deepCopy: options || true, // Use true for default deep copy behavior
+      space: space,
+      safe: writeOpts?.safe,
+      backupStrategy: writeOpts?.backupStrategy,
+    };
+    return this.#writeJsonWithDeepCopy(value, opts);
   }
 
   /**
-   * Creates a Node.js readable stream for reading the file.
-   * This returns a Node.js stream compatible with libraries like PDFKit, Express, etc.
-   * Use this when working with Node.js libraries that expect Node.js streams.
-   *
-   * @returns A promise that resolves to a Node.js Readable stream
-   * @example
-   * ```typescript
-   * const nodeStream = await file.nodeReadableStream();
-   * nodeStream.pipe(someWritableStream);
-   * ```
+   * Returns a temporary file path by appending a tilde (~).
+   * @returns {Promise<FilePath>} A promise that resolves to the temporary file path.
+   * @deprecated
    */
-  public async nodeReadableStream(): Promise<NodeJS.ReadableStream> {
-    const file = await this.open({ read: true });
-    return file.createReadStream();
+  getUniquePath(): Promise<FS.FilePath> {
+    return Promise.resolve((this.path + '~') as FS.FilePath);
   }
 
   /**
-   * Creates a Node.js writable stream for writing to the file.
-   * This returns a Node.js stream compatible with libraries like PDFKit, Express, etc.
-   * Use this when working with Node.js libraries that expect Node.js streams.
-   * PDFKit specifically requires this type of stream for proper PDF generation.
-   *
-   * @returns A Node.js Writable stream (synchronous, no Promise needed)
-   * @example
-   * ```typescript
-   * const nodeStream = file.nodeWritableStream();
-   * pdfDoc.pipe(nodeStream); // PDFKit example
-   * nodeStream.write('Hello World');
-   * nodeStream.end();
-   * ```
+   * Returns a unique file path by appending a number if the file already exists.
+   * @returns {Promise<FilePath>} A promise that resolves to a unique file path.
+   * @deprecated
    */
-  public nodeWritableStream(): NodeJS.WritableStream {
-    return fs.createWriteStream(this.path);
-  }
-
-  public async pipeFrom(source: ReadableStream<Uint8Array>): Promise<void> {
-    const destination = await this.writableStream();
-    await source.pipeTo(destination);
-  }
-
-  public async pipeTo(destination: WritableStream<Uint8Array>): Promise<void> {
-    const source = await this.readableStream();
-    await source.pipeTo(destination);
-  }
-
-  public async writer(): Promise<FileSpecWriter> {
-    const stream = await this.writableStream();
-    return new FileSpecWriter(stream);
+  getUniqueFile(): Promise<FS.FilePath> {
+    return new Promise<FS.FilePath>((resolve) => {
+      let count = 0;
+      const sep = '-';
+      const prefix = 'copy';
+      const check = async (newFs: FileSpec) => {
+        const exists = await newFs.exists();
+        if (exists) {
+          const newFsDest = new FileSpec(this.dirname, this.basename + sep + prefix + _.pad(++count, 2) + this.extname);
+          check(newFsDest);
+        } else {
+          resolve(newFs.path);
+        }
+      };
+      check(this);
+    });
   }
 }

@@ -86,7 +86,7 @@ import type { TypedFSSpec } from './types.ts';
  *
  * ## Key Capabilities
  *
- * - Navigate and manipulate folder paths with `home()`, `cwd()`, `fromMeta()`, `add()`
+ * - Navigate and manipulate folder paths with `home()`, `cwd()`, `fromFileUrl()`, `add()`
  * - Create directories atomically with `ensureDir()` and `mkdir()`
  * - Read contents with `readDir()`, `getFiles()`, `getFolders()`, `walk()`
  * - Safe copy and backup operations with `safeCopy()`
@@ -155,6 +155,10 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
     this._f = Util.resolvePathArgs(...args) as FS.FolderPath; // Cast to FolderPath
   }
 
+  // ============================================================================
+  // STATIC FACTORY METHODS
+  // ============================================================================
+
   static from(...args: FS.PathSegment[]): FolderSpec {
     return new FolderSpec(...args);
   }
@@ -164,37 +168,12 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
   }
 
   /**
-   * Returnt the parent folder for a file
+   * Return the parent folder for a file
    * @param f
    * @returns
    */
   static fromFileSpec(f: FileSpec): FolderSpec {
     return FolderSpec.fromPath(f.dirname);
-  }
-
-  /**
-   * Creates a new FolderSpec from a file URL, typically from `import.meta.url`.
-   * This allows for creating paths relative to the current module.
-   *
-   * This is the **recommended way** to create paths relative to your source code.
-   * It works identically in Deno, Node.js, and Bun, handling the subtle differences
-   * in how each runtime resolves `import.meta.url`.
-   *
-   * @param metaUrl - The `import.meta.url` of the calling module.
-   * @param paths - Additional path segments to join.
-   * @returns {FolderSpec} A new FolderSpec instance.
-   *
-   * @example
-   * // Assuming this code is in /path/to/your/project/src/app.ts
-   * const dataFolder = FolderSpec.fromMeta(import.meta.url, '../data');
-   * // dataFolder.path will be /path/to/your/project/data
-   *
-   * @category Factory Methods
-   */
-  public static fromMeta(metaUrl: string, ...paths: string[]): FolderSpec {
-    const dir = path.dirname(Util.fileURLToPath(metaUrl));
-    const fullPath = path.join(dir, ...paths);
-    return new FolderSpec(fullPath);
   }
 
   /**
@@ -217,32 +196,83 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
   }
 
   /**
-   * Return the FolderSpec for the folder that contains this file.
+   * Creates a new FolderSpec for the user's home directory, optionally with
+   * additional path segments appended.
+   *
+   * @param args - Additional path segments to append to the home directory.
+   * @returns {FileSpec} A new FileSpec instance.
+   *
+   * @example
+   * const bashrc = FolderSpec.home('.config/epdoc');
+   *
+   * @category Factory Methods
    */
-  parentFolder(): FolderSpec {
-    return new FolderSpec(this.dirname);
-  }
-
-  get folderName(): FS.FolderName {
-    return this.name as FS.FolderName;
+  static home(...args: string[]): FolderSpec {
+    const fullPath = Util.resolvePath(Util.getHomeDir(), ...args);
+    return new FolderSpec(fullPath);
   }
 
   /**
-   * Changes the current working directory to this folder's path.
+   * Creates a new FolderSpec for a directory in the user's config directory.
+   * Follows XDG Base Directory Specification:
+   * - Checks XDG_CONFIG_HOME environment variable first
+   * - Falls back to ~/.config on macOS and Linux
+   * - Falls back to %APPDATA% on Windows (via home directory resolution)
    *
-   * @warning This affects the entire process. Use with caution in multi-request
-   *   applications (e.g., HTTP servers).
-   *
-   * @returns {this} This FolderSpec instance for method chaining.
-   * @throws {FSError} If the directory doesn't exist or lacks permissions.
+   * @param args - Path segments to append to the config directory.
+   * @returns {FolderSpec} A new FolderSpec instance.
    *
    * @example
-   * FolderSpec.cwd().add('build').chdir();
-   * // process.cwd() is now the build directory
+   * const appConfig = FolderSpec.config('myapp');  // e.g. ~/.config/myapp
+   * const appData = FolderSpec.config('myapp', 'data');  // e.g. ~/.config/myapp/data
+   *
+   * @category Factory Methods
    */
-  chdir(): this {
-    Util.setCwd(this._f);
-    return this;
+  public static config(...args: string[]): FolderSpec {
+    // Check for XDG_CONFIG_HOME first (standard Linux/Debian)
+    const xdg = Util.getEnv('XDG_CONFIG_HOME');
+    if (xdg) {
+      const fullPath = Util.resolvePath(xdg, ...args);
+      return new FolderSpec(fullPath);
+    }
+
+    // Fallback for macOS and standard Linux home
+    return FolderSpec.home('.config', ...args);
+  }
+  /**
+   * Creates a new FolderSpec from a file:// URL string.
+   *
+   * When called with just a URL, the URL is converted directly to a path.
+   * When called with additional path segments, the URL's directory is extracted
+   * and the segments are joined to create a path relative to that directory.
+   *
+   * This is especially useful with `import.meta.url` to create paths relative
+   * to the current module's location.
+   *
+   * @param url - A file URL string (e.g., `import.meta.url` or "file:///path/to/folder")
+   * @param paths - Optional path segments to join relative to the URL's directory.
+   *   When omitted, the URL itself is used as the folder path.
+   * @returns {FolderSpec} A new FolderSpec instance.
+   *
+   * @example
+   * // Get the current module's directory
+   * const currentDir = FileSpec.fromFileUrl(import.meta.url).parentFolder();
+   *
+   * @example
+   * // Create a path relative to the current module's directory
+   * const dataFolder = FolderSpec.fromFileUrl(import.meta.url, '../data');
+   *
+   * @category Factory Methods
+   */
+  public static fromFileUrl(url: FS.FileUrl, ...paths: string[]): FolderSpec {
+    if (paths.length === 0) {
+      // No additional paths: use the URL directly as the folder path
+      return new FolderSpec(Util.fileURLToPath(url));
+    }
+    // With additional paths: extract directory and join paths relative to it
+    const dir = path.dirname(Util.fileURLToPath(url));
+    const fullPath = path.join(dir, ...paths);
+    return new FolderSpec(fullPath);
   }
 
   /**
@@ -295,75 +325,9 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
     }
   }
 
-  /**
-   * Creates a shallow copy of this FolderSpec instance.
-   *
-   * Copies the path and cached file info, but **does not** copy the actual
-   * directory on disk. Use `copyTo()` or `safeCopy()` for filesystem operations.
-   *
-   * @returns {FolderSpec} A new FolderSpec with the same path and cached state
-   * @see {@link safeCopy} to copy the actual directory contents
-   * @see {@link copyParamsTo} for internal use
-   */
-  copy(): FolderSpec {
-    const result = new FolderSpec(this);
-    this.copyParamsTo(result);
-    return result;
-  }
-
-  /**
-   * Copies internal state (cached folder contents) to another FolderSpec.
-   *
-   * Primarily for internal use. Preserves the results of previous `list()`
-   * operations when creating copies.
-   *
-   * @param target - The FolderSpec to receive the copied state
-   * @returns {FSSpecBase} The target instance for chaining
-   * @protected
-   */
-  override copyParamsTo(target: FSSpecBase): FSSpecBase {
-    super.copyParamsTo(target);
-    if (target instanceof FolderSpec) {
-      target._haveReadFolderContents = this._haveReadFolderContents;
-      target._folders = this._folders.map((item) => {
-        return item.copy();
-      });
-      target._files = this._files.map((item) => {
-        return item.copy();
-      });
-      target._symlinks = this._symlinks.map((item) => {
-        return item.copy();
-      });
-    }
-    return target;
-  }
-
-  /**
-   * Creates a new FolderSpec from a file:// URL string.
-   *
-   * @param url - The file URL string (e.g., "file:///path/to/folder")
-   * @returns {FolderSpec} A new FolderSpec instance
-   *
-   * @example
-   * const folder = FolderSpec.fromFileUrl('file:///home/user/documents');
-   * console.log(folder.path); // '/home/user/documents'
-   */
-  public static fromFileUrl(url: string): FolderSpec {
-    return new FolderSpec(Util.fileURLToPath(url));
-  }
-
-  /**
-   * Returns the file:// URL for this folder path.
-   *
-   * @returns {string} The file URL string (e.g., "file:///path/to/folder")
-   *
-   * @example
-   * const folder = new FolderSpec('/home/user/documents');
-   * console.log(folder.toFileUrl()); // 'file:///home/user/documents'
-   */
-  public toFileUrl(): string {
-    return Util.pathToFileURL(this._f).href;
-  }
+  // ============================================================================
+  // PATH PROPERTIES & INSPECTION
+  // ============================================================================
 
   /**
    * The absolute, normalized path of this folder.
@@ -374,6 +338,17 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
    */
   override get path(): FS.FolderPath {
     return this._f as FS.FolderPath;
+  }
+
+  get folderName(): FS.FolderName {
+    return this.name as FS.FolderName;
+  }
+
+  /**
+   * Return the FolderSpec for the folder that contains this file.
+   */
+  parentFolder(): FolderSpec {
+    return new FolderSpec(this.dirname);
   }
 
   /**
@@ -422,6 +397,53 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
     return this._folders.map((fs) => {
       return fs.folderName;
     });
+  }
+
+  // ============================================================================
+  // PATH MANIPULATION
+  // ============================================================================
+
+  /**
+   * Creates a shallow clone of this FolderSpec instance.
+   *
+   * Copies the path and cached file info, but **does not** copy the actual
+   * directory on disk. Use `copyTo()` or `safeCopy()` for filesystem operations.
+   *
+   * @returns {FolderSpec} A new FolderSpec with the same path and cached state
+   * @see {@link safeCopy} to copy the actual directory contents
+   * @see {@link copyParamsTo} for internal use
+   */
+  clone(): FolderSpec {
+    const result = new FolderSpec(this);
+    this.copyParamsTo(result);
+    return result;
+  }
+
+  /**
+   * Copies internal state (cached folder contents) to another FolderSpec.
+   *
+   * Primarily for internal use. Preserves the results of previous `list()`
+   * operations when creating copies.
+   *
+   * @param target - The FolderSpec to receive the copied state
+   * @returns {FSSpecBase} The target instance for chaining
+   * @protected
+   */
+  override copyParamsTo(target: FSSpecBase): FSSpecBase {
+    super.copyParamsTo(target);
+    if (target instanceof FolderSpec) {
+      target._haveReadFolderContents = this._haveReadFolderContents;
+      target._folders = this._folders.map((item) => {
+        return item.clone();
+      });
+      target._files = this._files.map((item) => {
+        return item.clone();
+      });
+      target._symlinks = this._symlinks.map((item) => {
+        return item.clone();
+      });
+    }
+    return target;
   }
 
   /**
@@ -516,38 +538,22 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
     return (relPath === '' ? 0 : relPath.split('/').length) as Integer;
   }
 
-  static home(...args: string[]): FolderSpec {
-    const fullPath = Util.resolvePath(Util.getHomeDir(), ...args);
-    return new FolderSpec(fullPath);
-  }
-
   /**
-   * Creates a new FolderSpec for a directory in the user's config directory.
-   * Follows XDG Base Directory Specification:
-   * - Checks XDG_CONFIG_HOME environment variable first
-   * - Falls back to ~/.config on macOS and Linux
-   * - Falls back to %APPDATA% on Windows (via home directory resolution)
+   * Returns the file:// URL for this folder path.
    *
-   * @param args - Path segments to append to the config directory.
-   * @returns {FolderSpec} A new FolderSpec instance.
+   * @returns {string} The file URL string (e.g., "file:///path/to/folder")
    *
    * @example
-   * const appConfig = FolderSpec.config('myapp');  // e.g. ~/.config/myapp
-   * const appData = FolderSpec.config('myapp', 'data');  // e.g. ~/.config/myapp/data
-   *
-   * @category Factory Methods
+   * const folder = new FolderSpec('/home/user/documents');
+   * console.log(folder.toFileUrl()); // 'file:///home/user/documents'
    */
-  public static config(...args: string[]): FolderSpec {
-    // Check for XDG_CONFIG_HOME first (standard Linux/Debian)
-    const xdg = Util.getEnv('XDG_CONFIG_HOME');
-    if (xdg) {
-      const fullPath = Util.resolvePath(xdg, ...args);
-      return new FolderSpec(fullPath);
-    }
-
-    // Fallback for macOS and standard Linux home
-    return FolderSpec.home('.config', ...args);
+  public toFileUrl(): string {
+    return Util.pathToFileURL(this._f).href;
   }
+
+  // ============================================================================
+  // DIRECTORY OPERATIONS
+  // ============================================================================
 
   /**
    * Ensures that a directory exists at this path.
@@ -644,34 +650,6 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
   }
 
   /**
-   * Recursively walks through the directory tree and returns all matching entries.
-   *
-   * @param opts - Options for the walk:
-   *   - maxDepth?: number - Maximum directory depth to traverse
-   *   - includeFiles?: boolean - Whether to include files (default: true)
-   *   - includeDirs?: boolean - Whether to include directories (default: true)
-   *   - match?: RegExp[] - Array of patterns to match against
-   *   - skip?: RegExp[] - Array of patterns to skip
-   * @returns {Promise<FSSpecBase[]>} Array of BaseSpec objects for matched entries
-   *
-   * @example
-   * // Find all files ending in 2 digits (e.g. metadata-01.json)
-   * const folder = new FolderSpec("./data");
-   * const results = await folder.walk({n
-   *   includeFiles: true,
-   *   includeDirs: false,
-   *   match: [/\-\d{2}\..*$/]
-   * });
-   * // Results: [
-   * //   FileSpec { path: "data/metadata-01.json" },
-   * //   FileSpec { path: "data/chapter-42.md" }
-   * // ]
-   */
-  async walk(opts: WalkOptions): Promise<(FileSpec | FolderSpec | SymlinkSpec | FSSpec)[]> {
-    return await Array.fromAsync(walk(this, opts));
-  }
-
-  /**
    * Retrieves the list of files and folders within this folder, optionally matching
    * a specified pattern and limiting the depth of the search.
    *
@@ -752,6 +730,38 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
   }
 
   /**
+   * Recursively walks through the directory tree and returns all matching entries.
+   *
+   * @param opts - Options for the walk:
+   *   - maxDepth?: number - Maximum directory depth to traverse
+   *   - includeFiles?: boolean - Whether to include files (default: true)
+   *   - includeDirs?: boolean - Whether to include directories (default: true)
+   *   - match?: RegExp[] - Array of patterns to match against
+   *   - skip?: RegExp[] - Array of patterns to skip
+   * @returns {Promise<FSSpecBase[]>} Array of BaseSpec objects for matched entries
+   *
+   * @example
+   * // Find all files ending in 2 digits (e.g. metadata-01.json)
+   * const folder = new FolderSpec("./data");
+   * const results = await folder.walk({n
+   *   includeFiles: true,
+   *   includeDirs: false,
+   *   match: [/\-\d{2}\..*$/]
+   * });
+   * // Results: [
+   * //   FileSpec { path: "data/metadata-01.json" },
+   * //   FileSpec { path: "data/chapter-42.md" }
+   * // ]
+   */
+  async walk(opts: WalkOptions): Promise<(FileSpec | FolderSpec | SymlinkSpec | FSSpec)[]> {
+    return await Array.fromAsync(walk(this, opts));
+  }
+
+  // ============================================================================
+  // SORTING
+  // ============================================================================
+
+  /**
    * Sorts the children (files and folders) of this FSItem.
    * @param [opts={}] - Sorting options.
    * @returns {void}
@@ -767,10 +777,6 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
       this._folders = this._folders.reverse();
       this._files = this._files.reverse();
     }
-  }
-
-  safeCopy(destFile: FS.FilePath | FileSpec | FolderSpec | FSSpec, opts: Util.SafeCopyOpts = {}): Promise<void> {
-    return Util.safeCopy(this, destFile, opts);
   }
 
   /**
@@ -794,6 +800,14 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
       });
   }
 
+  // ============================================================================
+  // FILE OPERATIONS (COPY, MOVE)
+  // ============================================================================
+
+  safeCopy(destFile: FS.FilePath | FileSpec | FolderSpec | FSSpec, opts: Util.SafeCopyOpts = {}): Promise<void> {
+    return Util.safeCopy(this, destFile, opts);
+  }
+
   /**
    * Moves this file or folder to the location `dest`.
    * @param dest - The new path for the file.
@@ -812,6 +826,10 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
       throw this.asError(err, 'moveTo');
     }
   }
+
+  // ============================================================================
+  // COMPARISON
+  // ============================================================================
 
   /**
    * Shallow comparison of the files in two folders to see if they are
@@ -889,11 +907,19 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
     return result;
   }
 
+  // ============================================================================
+  // PERMISSIONS
+  // ============================================================================
+
   /**
    * Changes the owner of the folder.
    * @param uid - User ID
    * @param gid - Group ID (optional)
    * @param recursive - Apply recursively to all contents
+   *
+   * @remarks For bulk operations on large directory trees, shell scripts using
+   * `find` with batched `-exec ... {} +` are significantly more efficient than
+   * JavaScript/TypeScript iteration.
    */
   async chown(uid: FS.UID, gid?: FS.GID, recursive = false): Promise<void> {
     await nfs.chown(this._f, uid, gid ?? -1);
@@ -909,6 +935,10 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
    * Changes the group of the folder.
    * @param gid - Group ID
    * @param recursive - Apply recursively to all contents
+   *
+   * @remarks For bulk operations on large directory trees, shell scripts using
+   * `find` with batched `-exec ... {} +` are significantly more efficient than
+   * JavaScript/TypeScript iteration.
    */
   async chgrp(gid: FS.GID, recursive = false): Promise<void> {
     await nfs.chown(this._f, -1, gid);
@@ -924,6 +954,10 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
    * Changes the permissions of the folder.
    * @param mode - File mode (permissions)
    * @param recursive - Apply recursively to all contents
+   *
+   * @remarks For bulk operations on large directory trees, shell scripts using
+   * `find` with batched `-exec ... {} +` are significantly more efficient than
+   * JavaScript/TypeScript iteration.
    */
   async chmod(mode: FS.Mode, recursive = false): Promise<void> {
     await nfs.chmod(this._f, mode);
@@ -933,5 +967,27 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
         await entry.chmod(mode);
       }
     }
+  }
+
+  // ============================================================================
+  // UTILITY
+  // ============================================================================
+
+  /**
+   * Changes the current working directory to this folder's path.
+   *
+   * @warning This affects the entire process. Use with caution in multi-request
+   *   applications (e.g., HTTP servers).
+   *
+   * @returns {this} This FolderSpec instance for method chaining.
+   * @throws {FSError} If the directory doesn't exist or lacks permissions.
+   *
+   * @example
+   * FolderSpec.cwd().add('build').chdir();
+   * // process.cwd() is now the build directory
+   */
+  chdir(): this {
+    Util.setCwd(this._f);
+    return this;
   }
 }

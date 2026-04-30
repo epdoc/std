@@ -18,27 +18,9 @@ export abstract class FSSpecBase {
   protected _info: FileInfo | undefined;
   protected _dirEntry: FSEntry | undefined;
 
-  /**
-   * Clears the cached `FileInfo` object. This forces a re-read from the
-   * filesystem on the next call to a method that relies on file stats (e.g.,
-   * `exists()`, `isFile()`).
-   */
-  clearInfo(): void {
-    this._info = undefined;
-  }
-
-  /**
-   * Copies internal parameters (like cached `FileInfo`) from this instance to
-   * another `FSSpecBase` instance. This is useful when creating a more specific
-   * type (e.g., `FileSpec`) from a general one without re-fetching stats.
-   * @param target - The target `FSSpecBase` instance to receive the parameters.
-   * @returns The `target` instance with the parameters copied.
-   */
-  copyParamsTo(target: FSSpecBase): FSSpecBase {
-    target._info = this._info;
-    target._dirEntry = this._dirEntry;
-    return target;
-  }
+  // ============================================================================
+  // PROPERTIES & STATE MANAGEMENT
+  // ============================================================================
 
   /**
    * Gets the full, resolved path of the file system item.
@@ -64,6 +46,28 @@ export abstract class FSSpecBase {
    */
   get name(): FS.Name {
     return path.basename(this._f) as FS.Name;
+  }
+
+  /**
+   * Clears the cached `FileInfo` object. This forces a re-read from the
+   * filesystem on the next call to a method that relies on file stats (e.g.,
+   * `exists()`, `isFile()`).
+   */
+  clearInfo(): void {
+    this._info = undefined;
+  }
+
+  /**
+   * Copies internal parameters (like cached `FileInfo`) from this instance to
+   * another `FSSpecBase` instance. This is useful when creating a more specific
+   * type (e.g., `FileSpec`) from a general one without re-fetching stats.
+   * @param target - The target `FSSpecBase` instance to receive the parameters.
+   * @returns The `target` instance with the parameters copied.
+   */
+  copyParamsTo(target: FSSpecBase): FSSpecBase {
+    target._info = this._info;
+    target._dirEntry = this._dirEntry;
+    return target;
   }
 
   /**
@@ -96,6 +100,10 @@ export abstract class FSSpecBase {
     assert(this._info, 'File stats have not been read');
     return this._info;
   }
+
+  // ============================================================================
+  // FILESYSTEM QUERIES
+  // ============================================================================
 
   /**
    * Asynchronously retrieves the stats for this file or folder.
@@ -220,6 +228,10 @@ export abstract class FSSpecBase {
     return info?.modifiedAt;
   }
 
+  // ============================================================================
+  // FILESYSTEM OPERATIONS
+  // ============================================================================
+
   /**
    * Removes this file or folder.
    * @param options - Options for the remove operation.
@@ -282,6 +294,10 @@ export abstract class FSSpecBase {
     }
   }
 
+  // ============================================================================
+  // UTILITY METHODS
+  // ============================================================================
+
   /**
    * Compares the path of this instance with another `FSSpecBase` instance.
    * @param val - The FS item to compare against.
@@ -290,6 +306,10 @@ export abstract class FSSpecBase {
   equalPaths(val: FSSpecBase): boolean {
     return this.path === val.path;
   }
+
+  // ============================================================================
+  // ERROR HANDLING
+  // ============================================================================
 
   /**
    * Wraps a caught error in an appropriate `FSError` subclass, enriching it
@@ -379,6 +399,10 @@ export abstract class FSSpecBase {
     // Fallback to the generic FSError
     return new Err.Main(base, opts);
   }
+
+  // ============================================================================
+  // ABSTRACT METHODS
+  // ============================================================================
 
   /**
    * Changes the owner of the file system item.

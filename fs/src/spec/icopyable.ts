@@ -5,8 +5,8 @@ import type { FolderSpec } from './folderspec.ts';
 import type { FSSpec } from './fsspec.ts';
 import type { SymlinkSpec } from './symspec.ts';
 
-export interface ICopyableSpec {
-  copy(): SymlinkSpec | FileSpec | FolderSpec | FSSpec;
+export interface IClonableSpec {
+  clone(): SymlinkSpec | FileSpec | FolderSpec | FSSpec;
 }
 
 export interface IRootableSpec {
@@ -14,6 +14,6 @@ export interface IRootableSpec {
 }
 
 export interface ISafeCopyableSpec {
-  copy(): SymlinkSpec | FileSpec | FolderSpec | FSSpec;
+  clone(): SymlinkSpec | FileSpec | FolderSpec | FSSpec;
   safeCopy(destFile: FS.Path | FSSpec | FileSpec | FolderSpec, opts: SafeCopyOpts): Promise<void>;
 }

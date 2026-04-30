@@ -16,6 +16,12 @@ export type FolderPath = Brand<string, 'FolderPath'>;
 export type Path = FilePath | FolderPath;
 
 /**
+ * Represents a file:// URL string.
+ * @example "file:///home/user/documents/file.txt"
+ */
+export type FileUrl = Brand<string, 'FileUrl'>;
+
+/**
  * Enforces that the string must look like a relative path
  * (starting with a dot or a standard character, not a slash).
  */

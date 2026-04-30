@@ -55,14 +55,14 @@ describe('FileSpec', () => {
 
   describe('Path Manipulation', () => {
     test('setExt() changes file extension', () => {
-      const file = testFile.copy();
+      const file = testFile.clone();
       file.setExt('.md');
       expect(file.extname).toBe('.md');
       expect(file.path).toBe(path.join(testDir.path, 'test.md'));
     });
 
     test('setBasename() changes file basename', () => {
-      const file = testFile.copy();
+      const file = testFile.clone();
       file.setBasename('newtest');
       expect(file.basename).toBe('newtest');
       expect(file.path).toBe(path.join(testDir.path, 'newtest.txt'));

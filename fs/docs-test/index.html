@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>. - documentation</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="doc-current-file" content="">
+    <link rel="stylesheet" href="..&#x2F;styles.css">
+    <link rel="stylesheet" href="..&#x2F;page.css">
+    <link id="ddocResetStylesheet" rel="stylesheet" href="..&#x2F;reset.css">
+    <link href="../comrak.css" rel="stylesheet" />
+    <link href="../prism.css" rel="stylesheet" />
+    <script src="../prism.js"></script>
+    <script src="..&#x2F;script.js" defer></script>
+    <script src="..&#x2F;darkmode_toggle.js"></script>
+    <script src="..&#x2F;search_index.js" defer></script>
+    <script src="..&#x2F;fuse.js" defer></script>
+    <script src="..&#x2F;search.js" defer></script>
+  </head>
+  <body>
+    <div class="ddoc">
+      <div>
+        <nav id="topnav">
+          <div class="h-full">
+            <div class="flex items-center">
+              <ul class="breadcrumbs">
+                <li>
+                  <a href="..&#x2F;" class="contextLink">index</a>
+                </li><span class="text-black dark:text-white"><svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      clip-rule="evenodd"
+                      d="M5.76748 11.8159C5.5378 11.577 5.54525 11.1972 5.78411 10.9675L8.93431 8L5.78411 5.0325C5.54525 4.80282 5.5378 4.423 5.76748 4.18413C5.99715 3.94527 6.37698 3.93782 6.61584 4.1675L10.2158 7.5675C10.3335 7.68062 10.4 7.83679 10.4 8C10.4 8.16321 10.3335 8.31938 10.2158 8.4325L6.61584 11.8325C6.37698 12.0622 5.99715 12.0547 5.76748 11.8159Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </span>.
+              </ul>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button id="theme-toggle" type="button" aria-label="Toggle dark mode" style="display: none">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path
+                    d="M12 1.992a10 10 0 1 0 9.236 13.838c.341 -.82 -.476 -1.644 -1.298 -1.31a6.5 6.5 0 0 1 -6.864 -10.787l.077 -.08c.551 -.63 .113 -1.653 -.758 -1.653h-.266l-.068 -.006l-.06 -.002z"
+                  />
+                </svg>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  class="hidden"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path
+                    d="M12 19a1 1 0 0 1 .993 .883l.007 .117v1a1 1 0 0 1 -1.993 .117l-.007 -.117v-1a1 1 0 0 1 1 -1z"
+                  />
+                  <path
+                    d="M18.313 16.91l.094 .083l.7 .7a1 1 0 0 1 -1.32 1.497l-.094 -.083l-.7 -.7a1 1 0 0 1 1.218 -1.567l.102 .07z"
+                  />
+                  <path
+                    d="M7.007 16.993a1 1 0 0 1 .083 1.32l-.083 .094l-.7 .7a1 1 0 0 1 -1.497 -1.32l.083 -.094l.7 -.7a1 1 0 0 1 1.414 0z"
+                  />
+                  <path
+                    d="M4 11a1 1 0 0 1 .117 1.993l-.117 .007h-1a1 1 0 0 1 -.117 -1.993l.117 -.007h1z"
+                  />
+                  <path
+                    d="M21 11a1 1 0 0 1 .117 1.993l-.117 .007h-1a1 1 0 0 1 -.117 -1.993l.117 -.007h1z"
+                  />
+                  <path
+                    d="M6.213 4.81l.094 .083l.7 .7a1 1 0 0 1 -1.32 1.497l-.094 -.083l-.7 -.7a1 1 0 0 1 1.217 -1.567l.102 .07z"
+                  />
+                  <path
+                    d="M19.107 4.893a1 1 0 0 1 .083 1.32l-.083 .094l-.7 .7a1 1 0 0 1 -1.497 -1.32l.083 -.094l.7 -.7a1 1 0 0 1 1.414 0z"
+                  />
+                  <path
+                    d="M12 2a1 1 0 0 1 .993 .883l.007 .117v1a1 1 0 0 1 -1.993 .117l-.007 -.117v-1a1 1 0 0 1 1 -1z"
+                  />
+                  <path
+                    d="M12 7a5 5 0 1 1 -4.995 5.217l-.005 -.217l.005 -.217a5 5 0 0 1 4.995 -4.783z"
+                  />
+                </svg>
+              </button>
+
+              <input
+                type="text"
+                id="searchbar"
+                style="display: none"
+                class="py-2 px-2.5 mx-1 rounded text-sm border border-gray-300 bg-transparent dark:bg-gray-800 dark:border-gray-700"
+              />
+            </div>
+          </div>
+        </nav>
+        <div id="searchResults"></div>
+        <div id="content">
+          <main>
+            <section>
+              <div class="space-y-2 flex-1">
+                <div class="space-y-7" id="module_doc">
+                  <section class="section" id="__classes">
+                    <div>
+                      <h2 class="anchorable mb-1">
+                        <a href="#__classes" class="anchor" aria-label="Anchor" tabIndex="-1"><svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 14 14"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <g clip-path="url(#clip0_1081_1237)">
+                              <path
+                                fill-rule="evenodd"
+                                clip-rule="evenodd"
+                                d="M6.80328 2.8656C6.68736 2.99 6.62425 3.15454 6.62725 3.32456C6.63025 3.49457 6.69913 3.65678 6.81936 3.77702C6.9396 3.89725 7.10181 3.96613 7.27182 3.96913C7.44184 3.97213 7.60638 3.90902 7.73078 3.7931L8.82453 2.69935C8.98712 2.53676 9.18015 2.40778 9.39259 2.31978C9.60503 2.23179 9.83272 2.1865 10.0627 2.1865C10.2926 2.1865 10.5203 2.23179 10.7327 2.31978C10.9452 2.40778 11.1382 2.53676 11.3008 2.69935C11.4634 2.86194 11.5923 3.05497 11.6803 3.2674C11.7683 3.47984 11.8136 3.70753 11.8136 3.93747C11.8136 4.16741 11.7683 4.3951 11.6803 4.60754C11.5923 4.81998 11.4634 5.013 11.3008 5.1756L9.11328 7.3631C8.95075 7.52581 8.75775 7.65488 8.5453 7.74295C8.33285 7.83102 8.10513 7.87635 7.87516 7.87635C7.64518 7.87635 7.41746 7.83102 7.20501 7.74295C6.99256 7.65488 6.79956 7.52581 6.63703 7.3631C6.51263 7.24718 6.34809 7.18407 6.17807 7.18707C6.00806 7.19007 5.84585 7.25894 5.72561 7.37918C5.60538 7.49942 5.5365 7.66163 5.5335 7.83164C5.5305 8.00165 5.59361 8.1662 5.70953 8.2906C5.99391 8.57501 6.33154 8.80062 6.70312 8.95455C7.0747 9.10847 7.47296 9.18769 7.87516 9.18769C8.27736 9.18769 8.67562 9.10847 9.0472 8.95455C9.41878 8.80062 9.7564 8.57501 10.0408 8.2906L12.2283 6.1031C12.8026 5.52874 13.1253 4.74974 13.1253 3.93747C13.1253 3.12521 12.8026 2.34621 12.2283 1.77185C11.6539 1.19749 10.8749 0.874817 10.0627 0.874817C9.25039 0.874817 8.47139 1.19749 7.89703 1.77185L6.80328 2.8656ZM2.69953 11.3006C2.53682 11.1381 2.40774 10.9451 2.31968 10.7326C2.23161 10.5202 2.18628 10.2924 2.18628 10.0625C2.18628 9.8325 2.23161 9.60477 2.31968 9.39233C2.40774 9.17988 2.53682 8.98688 2.69953 8.82435L4.88703 6.63685C5.04956 6.47414 5.24256 6.34506 5.45501 6.25699C5.66746 6.16893 5.89518 6.1236 6.12516 6.1236C6.35513 6.1236 6.58285 6.16893 6.7953 6.25699C7.00775 6.34506 7.20075 6.47414 7.36328 6.63685C7.48768 6.75277 7.65223 6.81588 7.82224 6.81288C7.99225 6.80988 8.15446 6.741 8.2747 6.62077C8.39494 6.50053 8.46381 6.33832 8.46681 6.1683C8.46981 5.99829 8.4067 5.83375 8.29078 5.70935C8.0064 5.42494 7.66878 5.19933 7.2972 5.0454C6.92562 4.89148 6.52736 4.81225 6.12516 4.81225C5.72296 4.81225 5.3247 4.89148 4.95312 5.0454C4.58154 5.19933 4.24391 5.42494 3.95953 5.70935L1.77203 7.89685C1.19767 8.47121 0.875 9.25021 0.875 10.0625C0.875 10.8747 1.19767 11.6537 1.77203 12.2281C2.34639 12.8025 3.12539 13.1251 3.93766 13.1251C4.74992 13.1251 5.52892 12.8025 6.10328 12.2281L7.19703 11.1343C7.31295 11.0099 7.37606 10.8454 7.37306 10.6754C7.37006 10.5054 7.30119 10.3432 7.18095 10.2229C7.06071 10.1027 6.8985 10.0338 6.72849 10.0308C6.55848 10.0278 6.39393 10.0909 6.26953 10.2068L5.17578 11.3006C5.01325 11.4633 4.82025 11.5924 4.6078 11.6805C4.39535 11.7685 4.16763 11.8138 3.93766 11.8138C3.70768 11.8138 3.47996 11.7685 3.26751 11.6805C3.05506 11.5924 2.86206 11.4633 2.69953 11.3006Z"
+                                fill="currentColor"
+                              />
+                            </g>
+                            <defs>
+                              <clipPath id="clip0_1081_1237">
+                                <rect width="14" height="14" fill="white" />
+                              </clipPath>
+                            </defs>
+                          </svg>
+                        </a>
+                        Classes
+                      </h2>
+                    </div>
+                    <div class="namespaceSection">
+                      <div id="namespace_filespec" class="namespaceItem">
+                        <div class="docNodeKindIcon">
+                          <div class="text-Class bg-Class/15 dark:text-ClassDark dark:bg-ClassDark/15" title="Class">
+                            c
+                          </div>
+                        </div>
+                        <div class="namespaceItemContent">
+                          <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html" title="FileSpec">
+                            <span>FileSpec</span><span>(<span><span><span>...args</span><span>: <span class="td-ref"
+                                    >FS.PathSegment</span>[]</span></span></span>)</span></a><div
+                            class="namespaceItemContentDoc"
+                          >
+                            <div class="markdown_summary">
+                              <p>Class representing a file system entry when it is known to be a file.</p>
+                            </div>
+                          </div>
+                          <ul class="namespaceItemContentSubItems">
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_add_0">
+                                <span>add</span><span>(<span><span><span>...args</span><span>: <span class="td-kw"
+                                        >string</span>[]</span></span></span>)<span>: <span class="td-ref"
+                                    >FileSpec</span></span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>Appends additional path segments to the current file system path.</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_backup_0">
+                                <span>backup</span><span>(<span><span>opts<span class="td-op">?</span><span>: <span
+                                          class="td-ref"
+                                        >Util.FileConflictStrategy</span></span></span></span>)<span>: <span
+                                      class="td-ref"
+                                    >Promise</span>&lt;<span><span class="td-ref">FileSpec</span><span class="td-op">
+                                        |
+                                      </span><span class="td-kw">undefined</span></span>&gt;</span></span></a><div
+                                class="namespaceItemContentDoc"
+                              >
+                                <div class="markdown_summary">
+                                  <p>
+                                    Backs up the current file by moving it to a new path, determined by the chosen
+                                    strategy. This is useful for preserving a file before overwriting it. The <code
+                                    >moveTo</code> operation is called with <code>overwrite: true</code>, ensuring the
+                                    backup file is created.
+                                  </p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#accessor_basename">
+                                <span>basename</span><span>()<span>: <span class="td-ref"
+                                    >FS.FileBasename</span></span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>
+                                    Returns the file's base file name, minus it's extension. For example, for
+                                    '/path/to/file.name.html', this method will return 'file.name'. Unlike node:path
+                                    <a href="https://nodejs.org/api/path.html#pathbasenamepath-suffix">basename</a>
+                                    method, this does NOT include the extension.
+                                  </p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_checksum_0">
+                                <span>checksum</span><span>()<span>: <span class="td-ref">Promise</span>&lt;<span
+                                      class="td-kw"
+                                    >string</span>&gt;</span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>For files, calculate the checksum of this file using SHA1</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_chgrp_0">
+                                <span>chgrp</span><span>(<span><span>gid<span>: <span class="td-ref"
+                                        >FS.GID</span></span></span></span>)<span>: <span class="td-ref"
+                                    >Promise</span>&lt;<span class="td-kw">void</span>&gt;</span></span></a><div
+                                class="namespaceItemContentDoc"
+                              >
+                                <div class="markdown_summary">
+                                  <p>Changes the group of the file.</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_chmod_0">
+                                <span>chmod</span><span>(<span><span>mode<span>: <span class="td-ref"
+                                        >FS.Mode</span></span></span></span>)<span>: <span class="td-ref"
+                                    >Promise</span>&lt;<span class="td-kw">void</span>&gt;</span></span></a><div
+                                class="namespaceItemContentDoc"
+                              >
+                                <div class="markdown_summary">
+                                  <p>Changes the permissions of the file.</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_chown_0">
+                                <span>chown</span><span>(<div class="ml-4">
+                                    <div><span>uid<span>: <span class="td-ref">FS.UID</span></span></span>,</div>
+                                    <div>
+                                      <span>gid<span class="td-op">?</span><span>: <span class="td-ref"
+                                          >FS.GID</span></span></span>
+                                    </div>
+                                  </div>)<span>: <span class="td-ref">Promise</span>&lt;<span class="td-kw"
+                                    >void</span>&gt;</span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>Changes the owner of the file.</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_close_0">
+                                <span>close</span><span>()<span>: <span class="td-kw">void</span></span></span></a>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_config_0">
+                                <span>config</span><span>(<span><span><span>...args</span><span>: <span class="td-kw"
+                                        >string</span>[]</span></span></span>)<span>: <span class="td-ref"
+                                    >FileSpec</span></span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>
+                                    Creates a new FileSpec for a file in the user's config directory. Follows XDG Base
+                                    Directory Specification:
+                                  </p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_copy_0">
+                                <span>copy</span><span>()<span>: <span class="td-ref"
+                                    >FileSpec</span></span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>Return a copy of this object. Does not copy the file.</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_copyparamsto_0">
+                                <span>copyParamsTo</span><span>(<span><span>target<span>: <span class="td-ref"
+                                        >FSSpecBase</span></span></span></span>)<span>: <span class="td-ref"
+                                    >FSSpecBase</span></span></span></a>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_cwd_0">
+                                <span>cwd</span><span>(<span><span><span>...args</span><span>: <span class="td-kw"
+                                        >string</span>[]</span></span></span>)<span>: <span class="td-ref"
+                                    >FileSpec</span></span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>
+                                    Creates a new FileSpec for the current working directory, optionally with additional
+                                    path segments appended.
+                                  </p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_depth_0">
+                                <span>depth</span><span>(<span><span>ancestor<span>: <span class="td-ref"
+                                        >FolderSpec</span></span></span></span>)<span>: <span class="td-ref"
+                                    >Integer</span></span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>Returns the depth of this file relative to an ancestor folder.</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_digest_0">
+                                <span>digest</span><span>(<span><span>type<span class="td-op">?</span><span>: <span
+                                          class="td-ref"
+                                        >FS.DigestAlgorithmValues</span></span></span></span>)<span>: <span
+                                      class="td-ref"
+                                    >Promise</span>&lt;<span class="td-kw">string</span>&gt;</span></span></a><div
+                                class="namespaceItemContentDoc"
+                              >
+                                <div class="markdown_summary">
+                                  <p>Generates a digest (hash) of the file's contents using the specified algorithm.</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_ensureparentdir_0">
+                                <span>ensureParentDir</span><span>()<span>: <span class="td-ref">Promise</span>&lt;<span
+                                      class="td-kw"
+                                    >void</span>&gt;</span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>Ensures that the parent folder to this file exists.</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_equalto_0">
+                                <span>equalTo</span><span>(<div class="ml-4">
+                                    <div>
+                                      <span>arg<span>: <span><span class="td-ref">FS.FilePath</span><span class="td-op">
+                                              |
+                                            </span><span class="td-ref">FileSpec</span><span class="td-op">
+                                              |
+                                            </span><span class="td-ref">FSSpec</span></span></span></span>,
+                                    </div>
+                                    <div>
+                                      <span>opts<span class="td-op">?</span><span>: <span class="td-ref"
+                                          >FS.EqualOptions</span></span></span>
+                                    </div>
+                                  </div>)<span>: <span class="td-ref">Promise</span>&lt;<span class="td-kw"
+                                    >boolean</span>&gt;</span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>Compares this file to another file to determine if they are equal.</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#accessor_ext">
+                                <span>ext</span><span>()<span>: <span class="td-ref">FS.FileExt</span></span></span></a>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#accessor_extname">
+                                <span>extname</span><span>()<span>: <span class="td-kw"
+                                    >string</span></span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>
+                                    Returns the extension with the dot included. For example, '/path/to/file.name.html'
+                                    will return '.html'. If the file has no extension, or if the filename starts with a
+                                    dot and has no other dots (like a .gitignore file), it returns an empty string.
+                                  </p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#accessor_filename">
+                                <span>filename</span><span>()<span>: <span class="td-ref"
+                                    >FS.FileName</span></span></span></a>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_findavailableindexfilename_0">
+                                <span>findAvailableIndexFilename</span><span>(<div class="ml-4">
+                                    <div>
+                                      <span>_limit<span class="td-op">?</span><span>: <span class="td-ref"
+                                          >Integer</span></span></span>,
+                                    </div>
+                                    <div>
+                                      <span>sep<span class="td-op">?</span><span>: <span class="td-kw"
+                                          >string</span></span></span>,
+                                    </div>
+                                    <div>
+                                      <span>prefix<span class="td-op">?</span><span>: <span class="td-kw"
+                                          >string</span></span></span>,
+                                    </div>
+                                    <div>
+                                      <span>suffix<span class="td-op">?</span><span>: <span class="td-kw"
+                                          >string</span></span></span>
+                                    </div>
+                                  </div>)<span>: <span class="td-ref">Promise</span>&lt;<span><span class="td-ref"
+                                      >FS.FilePath</span><span class="td-op"> | </span><span class="td-kw"
+                                      >undefined</span></span>&gt;</span></span></a><div
+                                class="namespaceItemContentDoc"
+                              >
+                                <div class="markdown_summary">
+                                  <p>
+                                    Finds the next available indexed filename. For example, for <code
+                                    >filename.ext</code>, tries <code>filename-01.ext</code>, <code
+                                    >filename-02.ext</code>, etc until it finds a filename that is not used.
+                                  </p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_fromfileurl_0">
+                                <span>fromFileUrl</span><span>(<span><span>url<span>: <span class="td-kw"
+                                        >string</span></span></span></span>)<span>: <span class="td-ref"
+                                    >FileSpec</span></span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>Creates a new FileSpec from a file:// URL string.</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_frommeta_0">
+                                <span>fromMeta</span><span>(<div class="ml-4">
+                                    <div><span>metaUrl<span>: <span class="td-kw">string</span></span></span>,</div>
+                                    <div>
+                                      <span><span>...paths</span><span>: <span class="td-kw"
+                                          >string</span>[]</span></span>
+                                    </div>
+                                  </div>)<span>: <span class="td-ref">FileSpec</span></span></span></a><div
+                                class="namespaceItemContentDoc"
+                              >
+                                <div class="markdown_summary">
+                                  <p>
+                                    Creates a new FileSpec from a file URL, typically from <code>import.meta.url</code>.
+                                    This allows for creating paths relative to the current module.
+                                  </p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_getbytes_0">
+                                <span>getBytes</span><span>(<span><span>length<span class="td-op">?</span><span>: <span
+                                          class="td-kw"
+                                        >number</span></span></span></span>)<span>: <span class="td-ref"
+                                    >Promise</span>&lt;<span class="td-ref">FSBytes</span>&gt;</span></span></a><div
+                                class="namespaceItemContentDoc"
+                              >
+                                <div class="markdown_summary">
+                                  <p>
+                                    Asynchronously reads a specified number of bytes from the file and returns them as
+                                    an FSBytes instance. In order to determine what type of file this is, at least 24
+                                    bytes must be read.
+                                  </p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_getpdfdate_0">
+                                <span>getPdfDate</span><span>()<span>: <span class="td-ref">Promise</span>&lt;<span
+                                    ><span class="td-ref">DateTime</span><span class="td-op"> | </span><span
+                                        class="td-kw"
+                                      >undefined</span></span>&gt;</span></span></a><div
+                                class="namespaceItemContentDoc"
+                              >
+                                <div class="markdown_summary">
+                                  <p>
+                                    For PDF files, gets the Creation Date of this file by reading its metadata using
+                                    PDFMetadataReader.
+                                  </p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_getuniquefile_0">
+                                <span>getUniqueFile</span><span>()<span>: <span class="td-ref">Promise</span>&lt;<span
+                                      class="td-ref"
+                                    >FS.FilePath</span>&gt;</span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>Returns a unique file path by appending a number if the file already exists.</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_getuniquepath_0">
+                                <span>getUniquePath</span><span>()<span>: <span class="td-ref">Promise</span>&lt;<span
+                                      class="td-ref"
+                                    >FS.FilePath</span>&gt;</span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>Returns a temporary file path by appending a tilde (~).</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_home_0">
+                                <span>home</span><span>(<span><span><span>...args</span><span>: <span class="td-kw"
+                                        >string</span>[]</span></span></span>)<span>: <span class="td-ref"
+                                    >FileSpec</span></span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>
+                                    Creates a new FileSpec for the user's home directory, optionally with additional
+                                    path segments appended.
+                                  </p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_isbasename_0">
+                                <span>isBasename</span><span>(<span><span>name<span>: <span class="td-kw"
+                                        >string</span></span></span></span>)<span>: <span class="td-kw"
+                                    >boolean</span></span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>Test for equality with the basename (no extension) of this file.</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_isexttype_0">
+                                <span>isExtType</span><span>(<span><span><span>...type</span><span>: (<span><span
+                                            class="td-ref"
+                                          >RegExp</span><span class="td-op"> | </span><span class="td-kw"
+                                          >string</span></span>)[]</span></span></span>)<span>: <span class="td-kw"
+                                    >boolean</span></span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>
+                                    Looks at the extension of the filename to determine if it is one of the listed
+                                    types.
+                                  </p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_isjson_0">
+                                <span>isJson</span><span>()<span>: <span class="td-kw"
+                                    >boolean</span></span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>Tests the extension to see if this is a JSON file.</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_isjsonc_0">
+                                <span>isJsonc</span><span>()<span>: <span class="td-kw"
+                                    >boolean</span></span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>Tests the extension to see if this is a JSONC file.</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_ispdf_0">
+                                <span>isPdf</span><span>(<span><span>_testContents<span class="td-op">?</span><span>:
+                                        <span class="td-kw">boolean</span></span></span></span>)<span>: <span
+                                      class="td-kw"
+                                    >boolean</span></span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>Tests the extension to see if this is a PDF file.</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_istxt_0">
+                                <span>isTxt</span><span>()<span>: <span class="td-kw"
+                                    >boolean</span></span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>Tests the extension to see if this is a text file.</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_isxml_0">
+                                <span>isXml</span><span>()<span>: <span class="td-kw"
+                                    >boolean</span></span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>Tests the extension to see if this is an XML file.</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_maketemp_0">
+                                <span>makeTemp</span><span>(<span><span>opts<span class="td-op">?</span><span>: {
+                                        prefix<span class="td-op">?</span><span>: <span class="td-kw"
+                                          >string</span></span>; suffix<span class="td-op">?</span><span>: <span
+                                            class="td-kw"
+                                          >string</span></span>; dir<span class="td-op">?</span><span>: <span
+                                            class="td-kw"
+                                          >string</span></span>; }</span></span></span>)<span>: <span class="td-ref"
+                                    >Promise</span>&lt;<span class="td-ref">FileSpec</span>&gt;</span></span></a><div
+                                class="namespaceItemContentDoc"
+                              >
+                                <div class="markdown_summary">
+                                  <p>
+                                    Creates a new temporary file in the default directory for temporary files, unless
+                                    <code>dir</code> is specified.
+                                  </p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_moveto_0">
+                                <span>moveTo</span><span>(<div class="ml-4">
+                                    <div>
+                                      <span>dest<span>: <span><span class="td-ref">FolderSpec</span><span class="td-op">
+                                              |
+                                            </span><span class="td-ref">FileSpec</span></span></span></span>,
+                                    </div>
+                                    <div>
+                                      <span>options<span class="td-op">?</span><span>: <span class="td-ref"
+                                          >FS.MoveOptions</span></span></span>
+                                    </div>
+                                  </div>)<span>: <span class="td-ref">Promise</span>&lt;<span class="td-ref"
+                                    >FileSpec</span>&gt;</span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>Moves this file to a new location.</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_nodereadablestream_0">
+                                <span>nodeReadableStream</span><span>()<span>: <span class="td-ref"
+                                    >Promise</span>&lt;<span class="td-ref"
+                                    >NodeJS.ReadableStream</span>&gt;</span></span></a><div
+                                class="namespaceItemContentDoc"
+                              >
+                                <div class="markdown_summary">
+                                  <p>
+                                    Creates a Node.js readable stream for reading the file. This returns a Node.js
+                                    stream compatible with libraries like PDFKit, Express, etc. Use this when working
+                                    with Node.js libraries that expect Node.js streams.
+                                  </p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_nodewritablestream_0">
+                                <span>nodeWritableStream</span><span>()<span>: <span class="td-ref"
+                                    >NodeJS.WritableStream</span></span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>
+                                    Creates a Node.js writable stream for writing to the file. This returns a Node.js
+                                    stream compatible with libraries like PDFKit, Express, etc. Use this when working
+                                    with Node.js libraries that expect Node.js streams. PDFKit specifically requires
+                                    this type of stream for proper PDF generation.
+                                  </p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_open_0">
+                                <span>open</span><span>(<span><span>opts<span>: { read<span class="td-op">?</span><span
+                                        >: <span class="td-kw">boolean</span></span>; write<span class="td-op"
+                                        >?</span><span>: <span class="td-kw">boolean</span></span>; create<span
+                                          class="td-op"
+                                        >?</span><span>: <span class="td-kw">boolean</span></span>;
+                                        }</span></span></span>)<span>: <span class="td-ref">Promise</span>&lt;<span
+                                      class="td-ref"
+                                    >nfs.FileHandle</span>&gt;</span></span></a>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_parentfolder_0">
+                                <span>parentFolder</span><span>()<span>: <span class="td-ref"
+                                    >FolderSpec</span></span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>Return the FolderSpec for the folder that contains this file.</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#accessor_path">
+                                <span>path</span><span>()<span>: <span class="td-ref"
+                                    >FS.FilePath</span></span></span></a>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_pipefrom_0">
+                                <span>pipeFrom</span><span>(<span><span>source<span>: <span class="td-ref"
+                                        >ReadableStream</span>&lt;<span class="td-ref"
+                                        >Uint8Array</span>&gt;</span></span></span>)<span>: <span class="td-ref"
+                                    >Promise</span>&lt;<span class="td-kw">void</span>&gt;</span></span></a>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_pipeto_0">
+                                <span>pipeTo</span><span>(<span><span>destination<span>: <span class="td-ref"
+                                        >WritableStream</span>&lt;<span class="td-ref"
+                                        >Uint8Array</span>&gt;</span></span></span>)<span>: <span class="td-ref"
+                                    >Promise</span>&lt;<span class="td-kw">void</span>&gt;</span></span></a>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_readasbytes_0">
+                                <span>readAsBytes</span><span>(<span><span>encoding<span class="td-op">?</span><span>:
+                                        <span class="td-str">"base64"</span></span></span></span>)<span>: <span
+                                      class="td-ref"
+                                    >Promise</span>&lt;<span class="td-ref">Uint8Array</span>&gt;</span></span></a><div
+                                class="namespaceItemContentDoc"
+                              >
+                                <div class="markdown_summary">
+                                  <p>
+                                    Reads the entire file as a Uint8Array. Can optionally decode base64-encoded content.
+                                  </p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_readaslines_0">
+                                <span>readAsLines</span><span>(<span><span>continuation<span class="td-op">?</span><span
+                                      >: <span class="td-kw">string</span></span></span></span>)<span>: <span
+                                      class="td-ref"
+                                    >Promise</span>&lt;<span class="td-kw">string</span>[]&gt;</span></span></a><div
+                                class="namespaceItemContentDoc"
+                              >
+                                <div class="markdown_summary">
+                                  <p>Reads the file as a string and splits it into lines.</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_readasstring_0">
+                                <span>readAsString</span><span>(<span><span>encoding<span class="td-op">?</span><span>:
+                                        <span class="td-str">"base64"</span></span></span></span>)<span>: <span
+                                      class="td-ref"
+                                    >Promise</span>&lt;<span class="td-kw">string</span>&gt;</span></span></a><div
+                                class="namespaceItemContentDoc"
+                              >
+                                <div class="markdown_summary">
+                                  <p>
+                                    Reads the entire file as a string. Can optionally decode base64-encoded content.
+                                  </p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_readbytes_0">
+                                <span>readBytes</span><span>(<div class="ml-4">
+                                    <div><span>buffer<span>: <span class="td-ref">Uint8Array</span></span></span>,</div>
+                                    <div>
+                                      <span>position<span class="td-op">?</span><span>: <span class="td-ref"
+                                          >Integer</span></span></span>,
+                                    </div>
+                                    <div>
+                                      <span>close<span class="td-op">?</span><span>: <span class="td-kw"
+                                          >boolean</span></span></span>
+                                    </div>
+                                  </div>)<span>: <span class="td-ref">Promise</span>&lt;<span><span class="td-kw"
+                                      >number</span><span class="td-op"> | </span><span class="td-kw"
+                                      >null</span></span>&gt;</span></span></a>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_readjson_0">
+                                <span>readJson</span><span><span>&lt;<span><span class="td-tp">T</span><span><span>
+                                          =
+                                        </span><span class="td-kw">unknown</span></span></span>&gt;</span>(<span><span
+                                    >options<span class="td-op">?</span><span>: <span class="td-ref"
+                                        >Util.ReadJsonOptions</span></span></span></span>)<span>: <span class="td-ref"
+                                    >Promise</span>&lt;<span class="td-ref">T</span>&gt;</span></span></a><div
+                                class="namespaceItemContentDoc"
+                              >
+                                <div class="markdown_summary">
+                                  <p>
+                                    Reads the file as JSON and parses it, optionally stripping comments for JSONC files.
+                                    Supports both standard JSON and JSON-with-comments (JSONC) formats.
+                                  </p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_readjsonex_0">
+                                <span>readJsonEx</span><span><span>&lt;<span><span class="td-tp">T</span><span><span>
+                                          =
+                                        </span><span class="td-kw">unknown</span></span></span>&gt;</span>(<span><span
+                                    >opts<span class="td-op">?</span><span>: <span class="td-ref"
+                                        >FS.FsDeepJsonDeserializeOpts</span></span></span></span>)<span>: <span
+                                      class="td-ref"
+                                    >Promise</span>&lt;<span class="td-ref">T</span>&gt;</span></span></a><div
+                                class="namespaceItemContentDoc"
+                              >
+                                <div class="markdown_summary">
+                                  <p>
+                                    Reads the file as JSON, parses it, and performs a deep copy with optional
+                                    transformations. If the file is JSONC, comments are stripped before parsing.
+                                  </p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_readtoml_0">
+                                <span>readToml</span><span><span>&lt;<span><span class="td-tp">T</span><span><span>
+                                          =
+                                        </span><span class="td-kw">unknown</span></span></span>&gt;</span>()<span>:
+                                    <span class="td-ref">Promise</span>&lt;<span class="td-ref"
+                                    >T</span>&gt;</span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>
+                                    Reads the file as TOML and parses it. The <code>@std/toml</code> dependency is
+                                    loaded dynamically only when this method is called.
+                                  </p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_readyaml_0">
+                                <span>readYaml</span><span><span>&lt;<span><span class="td-tp">T</span><span><span>
+                                          =
+                                        </span><span class="td-kw">unknown</span></span></span>&gt;</span>()<span>:
+                                    <span class="td-ref">Promise</span>&lt;<span class="td-ref"
+                                    >T</span>&gt;</span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>
+                                    Reads the file as YAML and parses it. The <code>@std/yaml</code> dependency is
+                                    loaded dynamically only when this method is called.
+                                  </p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_readablestream_0">
+                                <span>readableStream</span><span>()<span>: <span class="td-ref">Promise</span>&lt;<span
+                                      class="td-ref"
+                                    >ReadableStream</span>&lt;<span class="td-ref"
+                                    >Uint8Array</span>&gt;&gt;</span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>
+                                    Creates a Web Streams API ReadableStream for reading from the file. This returns a
+                                    modern web-compatible stream that works with fetch(), Response.body, and other Web
+                                    APIs. Use this for modern JavaScript/TypeScript applications.
+                                  </p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_relativeto_0">
+                                <span>relativeTo</span><span>(<span><span>target<span>: <span><span class="td-ref"
+                                          >FolderSpec</span><span class="td-op"> | </span><span class="td-ref"
+                                          >FileSpec</span></span></span></span></span>)<span>: <span class="td-kw"
+                                    >string</span></span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>Returns the relative path from this file to a target folder or file.</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_safecopy_0">
+                                <span>safeCopy</span><span>(<div class="ml-4">
+                                    <div>
+                                      <span>destFile<span>: <span><span class="td-ref">FS.FilePath</span><span
+                                              class="td-op"
+                                            >
+                                              |
+                                            </span><span class="td-ref">FileSpec</span><span class="td-op">
+                                              |
+                                            </span><span class="td-ref">FolderSpec</span><span class="td-op">
+                                              |
+                                            </span><span class="td-ref">FSSpec</span></span></span></span>,
+                                    </div>
+                                    <div>
+                                      <span>opts<span class="td-op">?</span><span>: <span class="td-ref"
+                                          >Util.SafeCopyOpts</span></span></span>
+                                    </div>
+                                  </div>)<span>: <span class="td-ref">Promise</span>&lt;<span class="td-kw"
+                                    >void</span>&gt;</span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>
+                                    Safely copies the file to a new destination, with built-in handling for name
+                                    conflicts to prevent accidental data loss.
+                                  </p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_setbasename_0">
+                                <span>setBasename</span><span>(<span><span>val<span>: <span class="td-kw"
+                                        >string</span></span></span></span>)<span>: <span class="td-kw"
+                                    >this</span></span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>Set or change the basename of this file. <code>This</code> must be a file.</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_setext_0">
+                                <span>setExt</span><span>(<span><span>ext<span>: <span class="td-kw"
+                                        >string</span></span></span></span>)<span>: <span class="td-kw"
+                                    >this</span></span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>Set or change the extension of this file. <code>This</code> must be a file.</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_size_0">
+                                <span>size</span><span>(<span><span>force<span class="td-op">?</span><span>: <span
+                                          class="td-kw"
+                                        >boolean</span></span></span></span>)<span>: <span class="td-ref"
+                                    >Promise</span>&lt;<span><span class="td-ref">Integer</span><span class="td-op">
+                                        |
+                                      </span><span class="td-kw">undefined</span></span>&gt;</span></span></a>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_tofileurl_0">
+                                <span>toFileUrl</span><span>()<span>: <span class="td-kw"
+                                    >string</span></span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>Returns the file:// URL for this file path.</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_writablestream_0">
+                                <span>writableStream</span><span>()<span>: <span class="td-ref"
+                                    >WritableStream</span>&lt;<span class="td-ref"
+                                    >Uint8Array</span>&gt;</span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>
+                                    Creates a Web Streams API WritableStream for writing to the file. This returns a
+                                    modern web-compatible stream that works with fetch(), Response.body, and other Web
+                                    APIs. Use this for modern JavaScript/TypeScript applications.
+                                  </p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_write_0">
+                                <span>write</span><span>(<div class="ml-4">
+                                    <div>
+                                      <span>data<span>: <span><span class="td-kw">string</span><span class="td-op">
+                                              |
+                                            </span><span class="td-kw">string</span>[]<span class="td-op">
+                                              |
+                                            </span><span class="td-ref">Uint8Array</span></span></span></span>,
+                                    </div>
+                                    <div>
+                                      <span>opts<span class="td-op">?</span><span>: <span class="td-ref"
+                                          >Util.SafeWriteOptions</span></span></span>
+                                    </div>
+                                  </div>)<span>: <span class="td-ref">Promise</span>&lt;<span class="td-kw"
+                                    >this</span>&gt;</span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>Writes data to the file.</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_writebase64_0">
+                                <span>writeBase64</span><span>(<div class="ml-4">
+                                    <div>
+                                      <span>data<span>: <span><span class="td-kw">string</span><span class="td-op">
+                                              |
+                                            </span><span class="td-ref">Uint8Array</span><span class="td-op">
+                                              |
+                                            </span><span class="td-ref">ArrayBuffer</span></span></span></span>,
+                                    </div>
+                                    <div>
+                                      <span>opts<span class="td-op">?</span><span>: <span class="td-ref"
+                                          >Util.SafeWriteOptions</span></span></span>
+                                    </div>
+                                  </div>)<span>: <span class="td-ref">Promise</span>&lt;<span class="td-kw"
+                                    >this</span>&gt;</span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>Encodes input as base64 and writes to the file.</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_writejson_0">
+                                <span>writeJson</span><span>(<div class="ml-4">
+                                    <div><span>data<span>: <span class="td-kw">unknown</span></span></span>,</div>
+                                    <div>
+                                      <span>writeOpts<span class="td-op">?</span><span>: <span class="td-ref"
+                                          >Util.WriteJsonOptions</span></span></span>
+                                    </div>
+                                  </div>)<span>: <span class="td-ref">Promise</span>&lt;<span class="td-kw"
+                                    >this</span>&gt;</span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>Writes JSON data to the file with flexible parameter handling.</p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_writejsonex_0">
+                                <span>writeJsonEx</span><span>(<div class="ml-4">
+                                    <div><span>value<span>: <span class="td-kw">unknown</span></span></span>,</div>
+                                    <div>
+                                      <span>options<span class="td-op">?</span><span>: <span><span class="td-ref"
+                                            >DeepCopyOpts</span><span class="td-op"> | </span><span class="td-kw"
+                                            >null</span></span></span></span>,
+                                    </div>
+                                    <div>
+                                      <span>space<span class="td-op">?</span><span>: <span><span class="td-kw"
+                                            >string</span><span class="td-op"> | </span><span class="td-kw"
+                                            >number</span></span></span></span>,
+                                    </div>
+                                    <div>
+                                      <span>writeOpts<span class="td-op">?</span><span>: <span class="td-ref"
+                                          >Util.SafeWriteOptions</span></span></span>
+                                    </div>
+                                  </div>)<span>: <span class="td-ref">Promise</span>&lt;<span class="td-kw"
+                                    >this</span>&gt;</span></span></a>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_writetoml_0">
+                                <span>writeToml</span><span>(<div class="ml-4">
+                                    <div>
+                                      <span>data<span>: <span class="td-ref">Dict</span>&lt;<span class="td-kw"
+                                          >unknown</span>&gt;</span></span>,
+                                    </div>
+                                    <div>
+                                      <span>opts<span class="td-op">?</span><span>: { toml<span class="td-op"
+                                          >?</span><span>: <span class="td-ref">Parameters</span>&lt;<span
+                                              class="td-ref"
+                                            >@std/toml</span>&gt;[<span class="td-lit">1</span>]</span>; write<span
+                                            class="td-op"
+                                          >?</span><span>: <span class="td-ref">Util.SafeWriteOptions</span></span>;
+                                          }</span></span>
+                                    </div>
+                                  </div>)<span>: <span class="td-ref">Promise</span>&lt;<span class="td-kw"
+                                    >this</span>&gt;</span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>
+                                    Writes data to the file in TOML format. This method uses a high-durability write
+                                    strategy: it opens a file handle, writes the encoded TOML string, and explicitly
+                                    calls <code>sync()</code> to ensure the data is flushed to the physical storage
+                                    device before closing. The <code>@std/toml</code> dependency is loaded dynamically
+                                    only when this method is called.
+                                  </p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_writeyaml_0">
+                                <span>writeYaml</span><span>(<div class="ml-4">
+                                    <div><span>data<span>: <span class="td-kw">unknown</span></span></span>,</div>
+                                    <div>
+                                      <span>opts<span class="td-op">?</span><span>: { yaml<span class="td-op"
+                                          >?</span><span>: <span class="td-ref">Parameters</span>&lt;<span
+                                              class="td-ref"
+                                            >@std/yaml</span>&gt;[<span class="td-lit">1</span>]</span>; write<span
+                                            class="td-op"
+                                          >?</span><span>: <span class="td-ref">Util.SafeWriteOptions</span></span>;
+                                          }</span></span>
+                                    </div>
+                                  </div>)<span>: <span class="td-ref">Promise</span>&lt;<span class="td-kw"
+                                    >this</span>&gt;</span></span></a><div class="namespaceItemContentDoc">
+                                <div class="markdown_summary">
+                                  <p>
+                                    Writes data to the file in YAML format. This method uses a high-durability write
+                                    strategy: it opens a file handle, writes the encoded YAML string, and explicitly
+                                    calls <code>sync()</code> to ensure the data is flushed to the physical storage
+                                    device before closing. The <code>@std/yaml</code> dependency is loaded dynamically
+                                    only when this method is called.
+                                  </p>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html#method_writer_0">
+                                <span>writer</span><span>()<span>: <span class="td-ref">Promise</span>&lt;<span
+                                      class="td-ref"
+                                    >FileSpecWriter</span>&gt;</span></span></a>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                </div>
+              </div>
+            </section>
+          </main>
+          <div class="toc">
+            <div>
+              <div class="usageContent">
+                <h3>Usage</h3>
+                <div class="markdown">
+                  <pre
+                    class="highlight"
+                  ><code class="language-typescript">import { FileSpec } from &quot;.&quot;;
+</code><button class="copyButton" data-copy="import { FileSpec } from &quot;.&quot;;
+"><svg
+  class="copy"
+  width="15"
+  height="15"
+  viewBox="0 0 15 15"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <rect x="2" y="2" width="7" height="7" fill="none" />
+  <rect x="6" y="6" width="7" height="7" fill="none" />
+  <path
+    d="M1.55566 2.7C1.55566 2.03726 2.09292 1.5 2.75566 1.5H8.75566C9.41841 1.5 9.95566 2.03726 9.95566 2.7V5.1H12.3557C13.0184 5.1 13.5557 5.63726 13.5557 6.3V12.3C13.5557 12.9627 13.0184 13.5 12.3557 13.5H6.35566C5.69292 13.5 5.15566 12.9627 5.15566 12.3V9.9H2.75566C2.09292 9.9 1.55566 9.36274 1.55566 8.7V2.7ZM6.35566 9.9V12.3H12.3557V6.3H9.95566V8.7C9.95566 9.36274 9.41841 9.9 8.75566 9.9H6.35566ZM8.75566 8.7V2.7H2.75566V8.7H8.75566Z"
+    fill="currentColor"
+  />
+</svg>
+<svg
+  class="check"
+  width="15"
+  height="15"
+  viewBox="0 0 24 24"
+  stroke-width="2"
+  stroke="currentColor"
+  fill="none"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+  <path d="M5 12l5 5l10 -10" />
+</svg>
+</button><code></code></pre>
+                </div>
+              </div>
+              <nav class="topSymbols">
+                <h3>Symbols</h3>
+                <ul>
+                  <li>
+                    <a href="..&#x2F;.&#x2F;.&#x2F;~&#x2F;FileSpec.html" title="FileSpec"><div class="docNodeKindIcon">
+                        <div class="text-Class bg-Class/15 dark:text-ClassDark dark:bg-ClassDark/15" title="Class">
+                          c
+                        </div>
+                      </div>
+                      <span class="hover:bg-Class/15 hover:bg-ClassDark/15">
+                        FileSpec
+                      </span>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+              <nav class="documentNavigation">
+                <h3>Document Navigation</h3>
+                <ul>
+                  <li><a href="#__classes" title="Classes">Classes</a></li>
+                  <li><ul><li><a href="#namespace_filespec" title="FileSpec">FileSpec</a></li></ul></li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
