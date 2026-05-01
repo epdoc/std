@@ -519,8 +519,8 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
    *
    * @category Path Manipulation
    */
-  public toFileUrl(): string {
-    return Util.pathToFileURL(this._f).href;
+  public toFileUrl(): FS.FileUrl {
+    return Util.pathToFileURL(this._f).href as FS.FileUrl;
   }
 
   // ============================================================================

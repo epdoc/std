@@ -547,8 +547,8 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
    * const folder = new FolderSpec('/home/user/documents');
    * console.log(folder.toFileUrl()); // 'file:///home/user/documents'
    */
-  public toFileUrl(): string {
-    return Util.pathToFileURL(this._f).href;
+  public toFileUrl(): FS.FileUrl {
+    return Util.pathToFileURL(this._f).href as FS.FileUrl;
   }
 
   // ============================================================================
