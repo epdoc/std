@@ -1,6 +1,6 @@
 import { _ } from '@epdoc/type';
 import type { Stats } from 'node:fs';
-import type { FileBasename, FileExt, FileName, FilePath, FolderName, FolderPath } from './types.ts';
+import type { FileBasename, FileExt, FileName, FilePath, FileUrl, FolderName, FolderPath } from './types.ts';
 import { fileConflictStrategyType } from './util/consts.ts';
 import type { FileConflictStrategyType } from './util/types.ts';
 
@@ -62,6 +62,16 @@ export function isFileExt(val: unknown): val is FileExt {
 }
 export function isFolderName(val: unknown): val is FolderName {
   return _.isNonEmptyString(val);
+}
+
+export function isFileUrl(val: unknown): val is FileUrl {
+  if (!_.isNonEmptyString(val)) return false;
+  try {
+    const url = new URL(val);
+    return url.protocol === 'file:';
+  } catch {
+    return false;
+  }
 }
 
 /**
