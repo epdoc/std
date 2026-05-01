@@ -498,7 +498,7 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
    * const relative = folder.relativeTo(root);
    * // Returns: "src"
    */
-  relativeTo(target: FolderSpec): string {
+  relativeTo(target: FolderSpec): FS.RelativeFolderPath {
     const relativePath = path.relative(target.path, this._f);
     // Check if path.relative failed (returns original path when on different drives)
     if (relativePath === this._f) {
@@ -508,7 +508,7 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
       );
     }
     // Normalize to forward slashes for cross-platform consistency
-    return relativePath.replace(/\\/g, '/');
+    return relativePath.replace(/\\/g, '/') as FS.RelativeFolderPath;
   }
 
   /**

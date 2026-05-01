@@ -430,7 +430,7 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
    *
    * @category Path Manipulation
    */
-  relativeTo(target: FolderSpec | FileSpec): string {
+  relativeTo(target: FolderSpec | FileSpec): FS.RelativeFilePath {
     // When target is a FileSpec, use its directory; when FolderSpec, use the folder path
     const targetPath = target instanceof FileSpec ? target.dirname : target.path;
     // Compute the relative path FROM the target TO this file
@@ -443,7 +443,7 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
       );
     }
     // Normalize to forward slashes for cross-platform consistency
-    return relativePath.replace(/\\/g, '/');
+    return relativePath.replace(/\\/g, '/') as FS.RelativeFilePath;
   }
 
   /**
