@@ -1,6 +1,16 @@
 import { _ } from '@epdoc/type';
 import type { Stats } from 'node:fs';
-import type { FileBasename, FileExt, FileName, FilePath, FileUrl, FolderName, FolderPath } from './types.ts';
+import { isAbsolute, sep } from 'node:path';
+import type {
+  FileBasename,
+  FileExt,
+  FileName,
+  FilePath,
+  FileUrl,
+  FolderName,
+  FolderPath,
+  RelativePath,
+} from './types.ts';
 import { fileConflictStrategyType } from './util/consts.ts';
 import type { FileConflictStrategyType } from './util/types.ts';
 
@@ -72,6 +82,34 @@ export function isFileUrl(val: unknown): val is FileUrl {
   } catch {
     return false;
   }
+}
+
+/**
+ * Checks if a string is likely a relative path.
+ * @param val - The string to check.
+ * @param strict - If true, requires the path to start with ./ or ../
+ */
+export function isRelativePath(val: string, strict: boolean = false): val is RelativePath {
+  const trimmed = val.trim();
+  if (!trimmed) return false;
+
+  // 1. If it's a file:// URL, it's not a relative path
+  if (trimmed.startsWith('file://')) return false;
+
+  // 2. If it's absolute (starts with / or C:\), it's not relative
+  if (isAbsolute(trimmed)) return false;
+
+  // 2. Strict check: Must start with ./ or ../ (standardizing separators)
+  const startsWithDot = trimmed.startsWith(`./`) ||
+    trimmed.startsWith(`../`) ||
+    trimmed.startsWith(`.\\`) ||
+    trimmed.startsWith(`..\\`);
+
+  if (strict) return startsWithDot;
+
+  // 3. Loose check: If not strict, it's relative if it contains
+  // a path separator, or is just '.' or '..'
+  return startsWithDot || trimmed.includes(sep) || trimmed === '.' || trimmed === '..';
 }
 
 /**
