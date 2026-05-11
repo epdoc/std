@@ -50,16 +50,20 @@ export async function safeCopy(
     throw new Err.NotFound('Source file not found', { path: fsSrc.path });
   }
 
-  if (src instanceof FileSpec) {
+  if (fsSrc instanceof FileSpec) {
     if (!(fsDest instanceof FolderSpec || fsDest instanceof FileSpec)) {
       throw new Err.InvalidData('Destination must be a FileSpec or FolderSpec');
     }
-    await safeCopyFile(src, fsDest, options);
-  } else if (src instanceof FolderSpec) {
+    await safeCopyFile(fsSrc, fsDest, options);
+  } else if (fsSrc instanceof FolderSpec) {
     if (!(fsDest instanceof FolderSpec)) {
-      throw new Err.InvalidData('Destination must be a FolderSpec', { path: fsSrc.path });
+      throw new Err.InvalidData('Destination must be a FolderSpec when source is a folder', { path: fsSrc.path });
     }
-    await safeCopyFolder(src, fsDest, options);
+    await safeCopyFolder(fsSrc, fsDest, options);
+  } else {
+    // This branch is unreachable at runtime — resolveType only returns FileSpec,
+    // FolderSpec, or SymlinkSpec, and SymlinkSpec is rejected above.
+    throw new Err.InvalidData('Unsupported source type', { path: (fsSrc as { path: Path }).path });
   }
 }
 
@@ -147,15 +151,11 @@ export async function safeCopyFile(
       await src.remove();
     }
   } else if (fsDest instanceof FolderSpec) {
-    // Ensure parent directory exists
-    const parent = new FolderSpec(fsDest.dirname);
-    await parent.ensureDir();
-    await src.copyTo(fsDest.path);
-
-    // If moving, remove the source file
-    if (options.move) {
-      await src.remove();
-    }
+    // Resolve the concrete destination FileSpec and reuse the FileSpec branch.
+    // This ensures the destination folder exists and all conflict strategies apply.
+    await fsDest.ensureDir();
+    const destFile = new FileSpec(fsDest, src.filename);
+    await safeCopyFile(src, destFile, options);
   } else {
     throw new Err.InvalidData('Destination must be a FileSpec or FolderSpec');
   }
@@ -194,17 +194,19 @@ export async function safeCopyFolder(
     } else if (await entry.isFile()) {
       const srcFile = new FileSpec(entry.path);
       try {
-        await safeCopyFile(srcFile, new FileSpec(destEntryPath), options);
+        // Pass move:false — source cleanup is handled once by the outer src.remove() below.
+        await safeCopyFile(srcFile, new FileSpec(destEntryPath), { ...options, move: false });
       } catch (err) {
         // propagate as project errors
         throw (err instanceof Err.Main) ? err : new Err.Main(String(err), { path: destEntryPath as Path });
       }
     }
+    // Note: symlinks are walked but intentionally not copied (followSymlinks: false).
   }
 
-  // If moving, remove the source folder
+  // If moving, remove the entire source folder tree after all contents have been copied.
   if (options.move) {
-    await src.remove();
+    await src.remove({ recursive: true });
   }
 }
 

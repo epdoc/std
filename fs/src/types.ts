@@ -19,7 +19,7 @@ export type Path = FilePath | FolderPath;
  * Represents a file:// URL string (this can be a to a file or a folder)
  * @example "file:///home/user/documents/file.txt"
  */
-export type FileUrl = Brand<string, 'FileUrl'>;
+export type FileUrl = Brand<`file://${string}`, 'FileUrl'>;
 
 /**
  * Enforces that the string must look like a relative path

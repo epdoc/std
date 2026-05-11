@@ -345,7 +345,7 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
   }
 
   /**
-   * Return the FolderSpec for the folder that contains this file.
+   * Return the FolderSpec for the folder that contains this folder.
    */
   parentFolder(): FolderSpec {
     return new FolderSpec(this.dirname);
