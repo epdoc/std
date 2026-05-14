@@ -4,4 +4,5 @@ export interface FSErrorOptions {
   cause?: string;
   code?: string | number;
   path?: Path;
+  silent?: boolean;
 }

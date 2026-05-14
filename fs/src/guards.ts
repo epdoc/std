@@ -96,10 +96,19 @@ export function isRelativePath(val: string, strict: boolean = false): val is Rel
   // 1. If it's a file:// URL, it's not a relative path
   if (trimmed.startsWith('file://')) return false;
 
-  // 2. If it's absolute (starts with / or C:\), it's not relative
+  // 2. If it looks like a URL with a scheme (e.g., jsr:, npm:, https:), it's not a relative path
+  // A URL scheme appears before any path separator and ends with a colon
+  const firstSlash = trimmed.indexOf('/');
+  const firstSep = firstSlash >= 0 ? firstSlash : trimmed.indexOf('\\');
+  const colonIndex = trimmed.indexOf(':');
+  if (colonIndex >= 0 && (firstSep === -1 || colonIndex < firstSep)) {
+    return false;
+  }
+
+  // 3. If it's absolute (starts with / or C:\), it's not relative
   if (isAbsolute(trimmed)) return false;
 
-  // 2. Strict check: Must start with ./ or ../ (standardizing separators)
+  // 4. Strict check: Must start with ./ or ../ (standardizing separators)
   const startsWithDot = trimmed.startsWith(`./`) ||
     trimmed.startsWith(`../`) ||
     trimmed.startsWith(`.\\`) ||
@@ -107,7 +116,7 @@ export function isRelativePath(val: string, strict: boolean = false): val is Rel
 
   if (strict) return startsWithDot;
 
-  // 3. Loose check: If not strict, it's relative if it contains
+  // 5. Loose check: If not strict, it's relative if it contains
   // a path separator, or is just '.' or '..'
   return startsWithDot || trimmed.includes(sep) || trimmed === '.' || trimmed === '..';
 }

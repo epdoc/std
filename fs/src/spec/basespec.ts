@@ -400,6 +400,12 @@ export abstract class FSSpecBase {
     return new Err.Main(base, opts);
   }
 
+  asSilentError(error: unknown, cause?: string): Err.Main {
+    const err = this.asError(error, cause);
+    err.silent = true;
+    return err;
+  }
+
   // ============================================================================
   // ABSTRACT METHODS
   // ============================================================================

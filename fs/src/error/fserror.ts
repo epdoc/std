@@ -4,6 +4,7 @@ import type { FSErrorOptions } from './types.ts';
 export class FSError extends Error implements IError {
   code: string | number | undefined;
   path: string | undefined;
+  silent: boolean = false;
 
   constructor(err: string | Error | unknown, opts: FSErrorOptions = {}) {
     // Normalize message
@@ -26,6 +27,7 @@ export class FSError extends Error implements IError {
 
     if (opts.code !== undefined) this.code = opts.code;
     this.path = opts.path;
+    if (opts.silent === true) this.silent = true;
 
     // maintain proper name for instanceof checks
     this.name = this.constructor.name;
