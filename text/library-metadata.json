@@ -1,0 +1,71 @@
+{
+  "identity": {
+    "name": "@epdoc/text",
+    "purpose": "Standalone string manipulation utilities and template substitution (msub)",
+    "type": "utility",
+    "complexity": "moderate"
+  },
+  "quickStart": {
+    "pattern": "Import text utilities or msub for string manipulation and substitution",
+    "code": "import { wrap, pluralize, msub } from '@epdoc/text';\n\nconst lines = wrap('Hello, World!', 10);\nconst text = msub.replace('Hello, ${name}!', { name: 'World' });"
+  },
+  "exports": [
+    {
+      "name": "wrap",
+      "role": "helper",
+      "description": "Wrap text into lines of a maximum width",
+      "whenToUse": "Formatting paragraphs for fixed-width output"
+    },
+    {
+      "name": "pluralize",
+      "role": "helper",
+      "description": "Return plural or singular form based on a count",
+      "whenToUse": "Generating human-readable counts and labels"
+    },
+    {
+      "name": "padLeft",
+      "role": "helper",
+      "description": "Left-pad a string to a target length",
+      "whenToUse": "Aligning text in columns or fixed-width fields"
+    },
+    {
+      "name": "msub.replace",
+      "role": "helper",
+      "description": "Replace ${key} placeholders in a string using the singleton",
+      "whenToUse": "Simple template substitution without custom configuration"
+    },
+    {
+      "name": "msub.create",
+      "role": "helper",
+      "description": "Create an isolated, configurable MSub instance",
+      "whenToUse": "When you need custom delimiters separate from the global singleton"
+    },
+    {
+      "name": "createTable",
+      "role": "helper",
+      "description": "Format an array of strings into aligned columns",
+      "whenToUse": "Displaying lists in a compact tabular layout"
+    }
+  ],
+  "patterns": [
+    {
+      "name": "Text utilities",
+      "when": "Padding, wrapping, pluralizing, or encoding strings",
+      "code": "import { wrap, pluralize, padLeft } from '@epdoc/text';\nconst lines = wrap('long text', 40);\nconst word = pluralize('item', 3);"
+    },
+    {
+      "name": "Simple substitution",
+      "when": "Replacing ${key} placeholders using the global singleton",
+      "code": "import { msub } from '@epdoc/text';\nconst out = msub.replace('Hello, ${name}!', { name: 'World' });"
+    },
+    {
+      "name": "Custom substitution instance",
+      "when": "Needing different delimiters or isolated configuration",
+      "code": "import { msub } from '@epdoc/text';\nconst engine = msub.create({ open: '{{', close: '}}' });\nconst out = engine.replace('Hello, {{name}}!', { name: 'World' });"
+    }
+  ],
+  "relationships": {
+    "dependsOn": ["@epdoc/type"],
+    "usedBy": []
+  }
+}

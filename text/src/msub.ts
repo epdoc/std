@@ -9,16 +9,15 @@
 import { isDate, isFunction, isNumber, isObject, isString } from '@epdoc/type';
 
 /**
- * Options for initializing the MSub instance.
- * @typedef {Object} InitOptions
- * @property {string} [open='${'] - The opening brace for placeholders.
- * @property {string} [close='}'] - The closing brace for placeholders. If not
- * specified, the closing brace will be the mirror of brace characters within
- * the opening brace.
- * @property {boolean} [uppercase=false] - xxx Whether to convert keys to camelCase.
- * @property {unknown} [format] - Custom format for values.
+ * Options for configuring the MSub instance.
+ * @property {string} [open='${'] - The opening delimiter for placeholders.
+ * @property {string} [close='}'] - The closing delimiter for placeholders. If not
+ * specified, the closing delimiter will be the mirror of brace characters within
+ * the opening delimiter.
+ * @property {boolean} [uppercase=false] - Whether to convert uppercase snake_case keys to camelCase.
+ * @property {unknown} [format] - Custom format callback for values.
  */
-export type InitOptions = {
+export type ConfigureOptions = {
   open?: string;
   close?: string;
   uppercase?: boolean;
@@ -27,38 +26,32 @@ export type InitOptions = {
 
 /**
  * Allowed types for substitution parameters.
- * @typedef {unknown} SubParam
  */
 export type SubParam = unknown;
 
 /**
  * Allowed types for parameters in the replace method.
- * @typedef {SubParam | SubParam[] | { [key: string]: SubParam }} Param
  */
 export type Param = SubParam | SubParam[] | { [key: string]: SubParam };
 
 /**
  * Callback function for formatting values.
- * @callback FormatCallback
- * @param {unknown} val - The value to format.
- * @param {string} format - The format string.
  */
 export type FormatCallback = (val: unknown, format: string) => string;
 
 /**
  * Interface for MSub implementation.
- * @interface IMSub
  */
 interface IMSub {
   /**
-   * Initializes the MSub instance with options.
-   * @param {InitOptions} [options] - Initialization options.
+   * Configures the MSub instance with options.
+   * @param {ConfigureOptions} [options] - Configuration options.
    * @returns {this} The instance of MSub.
    * @example
    * const msub = new MSubImpl();
-   * msub.init({ open: '{{', close: '}}', uppercase: true });
+   * msub.configure({ open: '{{', close: '}}', uppercase: true });
    */
-  init(options?: InitOptions): this;
+  configure(options?: ConfigureOptions): this;
 
   /**
    * Replaces placeholders in a string with provided arguments.
@@ -101,11 +94,11 @@ class MSubImpl implements IMSub {
   constructor() {}
 
   /**
-   * Initializes the MSub instance with options.
-   * @param {InitOptions} [options] - Initialization options.
+   * Configures the MSub instance with options.
+   * @param {ConfigureOptions} [options] - Configuration options.
    * @returns {this} The instance of MSub.
    */
-  init(options?: InitOptions): this {
+  configure(options?: ConfigureOptions): this {
     if (options) {
       this.open = options.open ? options.open : '${';
       if (options.close) {
@@ -269,18 +262,18 @@ export type MSub = MSubImpl;
 // export const msub: MSub = __msub as MSub;
 
 /**
- * Initializes a default singleton MSub instance with options.
- * @param {InitOptions} [options] - Initialization options.
- * @returns {this} The instance of MSub.
+ * Configures the default singleton MSub instance with options.
+ * @param {ConfigureOptions} [options] - Configuration options.
+ * @returns {MSub} The configured singleton MSub instance.
  * @example
  * ```ts
- * import * as msub  from '@epdoc/string'
+ * import * as msub from '@epdoc/string';
  *
- * msub.init({ open: '{{', close: '}}', uppercase: true });
+ * msub.configure({ open: '{{', close: '}}', uppercase: true });
  * ```
  */
-export const init = (options?: InitOptions): MSub => {
-  return __msub.init(options);
+export const configure = (options?: ConfigureOptions): MSub => {
+  return __msub.configure(options);
 };
 
 /**
@@ -291,25 +284,25 @@ export const init = (options?: InitOptions): MSub => {
  * @returns {string} The formatted string.
  * @example
  * ```ts
- * import * as msub  from '@epdoc/string'
+ * import * as msub from '@epdoc/string';
  *
  * const result = msub.replace('Hello, ${name}!', { name: 'World' });
  * console.log(result); // "Hello, World!"
- * ``
+ * ```
  */
 export const replace = (s: string, ...args: Param[]): string => {
   return __msub.replace(s, ...args);
 };
 
 /**
- * Creates a new MSub instance and initializes it with options.
- * @param {InitOptions} [options] - Initialization options.
- * @returns {MSub} The initialized MSub instance.
+ * Creates a new MSub instance and configures it with options.
+ * @param {ConfigureOptions} [options] - Configuration options.
+ * @returns {MSub} A new, independently configured MSub instance.
  * @example
- * const msubInstance = createMSub({ open: '{{', close: '}}' });
+ * const msubInstance = msub.create({ open: '{{', close: '}}' });
  */
-export function createMSub(options?: InitOptions): MSub {
-  return new MSubImpl().init(options);
+export function create(options?: ConfigureOptions): MSub {
+  return new MSubImpl().configure(options);
 }
 
 // declare global {

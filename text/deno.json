@@ -1,8 +1,10 @@
 {
-  "name": "@epdoc/string",
-  "version": "0.1.29",
+  "name": "@epdoc/text",
+  "version": "1.0.0",
   "exports": {
-    ".": "./src/mod.ts"
+    ".": "./src/mod.ts",
+    "./msub": "./src/msub.ts",
+    "./text": "./src/text.ts"
   },
   "publish": {
     "include": [

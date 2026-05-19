@@ -39,7 +39,7 @@
     "./duration",
     "./progress",
     "./response",
-    "./string",
+    "./text",
     "./daterange",
     "./table",
     "./fs"
