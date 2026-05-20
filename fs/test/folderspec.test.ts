@@ -3,6 +3,7 @@ import { FileSpec, FolderSpec } from '$mod';
 import { expect } from '@std/expect';
 import { afterAll, beforeAll, describe, test } from '@std/testing/bdd';
 import * as fs from 'node:fs/promises';
+import nodeOs from 'node:os';
 import * as path from 'node:path';
 
 describe('FolderSpec', () => {
@@ -67,6 +68,28 @@ describe('FolderSpec', () => {
       const otherRoot = new FolderSpec('/completely/different/path');
       const folder = new FolderSpec(subDir);
       expect(folder.depth(otherRoot)).toBe(-1);
+    });
+
+    test('homeRelativePath() returns tilde path for folder in home directory', () => {
+      const homeDir = new FolderSpec(Deno.env.get('HOME') || nodeOs.homedir());
+      const folder = new FolderSpec(homeDir, 'projects', 'myapp');
+      const homeRelPath = folder.homeRelativePath;
+      expect(homeRelPath).toMatch(/^~\//);
+      expect(homeRelPath).toContain('projects/myapp');
+    });
+
+    test('homeRelativePath() returns absolute path for folder outside home directory', () => {
+      const folder = new FolderSpec('/var', 'log');
+      const homeRelPath = folder.homeRelativePath;
+      expect(homeRelPath).toBe('/var/log');
+      expect(homeRelPath).not.toMatch(/^~/);
+    });
+
+    test('toFileUrl() returns valid file URL', () => {
+      const folder = new FolderSpec(testDir);
+      const fileUrl = folder.toFileUrl();
+      expect(fileUrl).toMatch(/^file:\/\/\//);
+      expect(fileUrl).toContain('folderspec_test_');
     });
   });
 

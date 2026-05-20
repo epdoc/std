@@ -508,21 +508,6 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
     return this;
   }
 
-  /**
-   * Returns the file:// URL for this file path.
-   *
-   * @returns {string} The file URL string (e.g., "file:///path/to/file.ts")
-   *
-   * @example
-   * const file = new FileSpec('/home/user/documents/file.txt');
-   * console.log(file.toFileUrl()); // 'file:///home/user/documents/file.txt'
-   *
-   * @category Path Manipulation
-   */
-  public toFileUrl(): FS.FileUrl {
-    return Util.pathToFileURL(this._f).href as FS.FileUrl;
-  }
-
   // ============================================================================
   // FILE METADATA
   // ============================================================================

@@ -1,18 +1,19 @@
 import * as Err from '$error';
 import * as util from '$util';
+import * as Util from '$util';
+import type { DateTime } from '@epdoc/datetime';
 import { _ } from '@epdoc/type';
 import { assert } from '@std/assert';
 import * as fs from 'node:fs';
 import path from 'node:path';
 import type * as FS from '../types.ts';
 import type { CopyOptions, FileInfo, FSEntry, Path, RemoveOptions } from '../types.ts';
-import type { DateTime } from '@epdoc/datetime';
 
 /**
  * Abstract class representing a file system item, which may be of unknown type,
  * a file, folder, or symlink.
  */
-export abstract class FSSpecBase {
+export abstract class FSSpecBase implements FS.IPath {
   // @ts-ignore this does get initialized
   protected _f: Path;
   protected _info: FileInfo | undefined;
@@ -26,7 +27,7 @@ export abstract class FSSpecBase {
    * Gets the full, resolved path of the file system item.
    * @returns The file system path.
    */
-  get path(): Path {
+  get path(): FS.Path {
     return this._f;
   }
 
@@ -46,6 +47,45 @@ export abstract class FSSpecBase {
    */
   get name(): FS.Name {
     return path.basename(this._f) as FS.Name;
+  }
+
+  /**
+   * Returns a path relative to the user's home directory, prefixed with `~/`.
+   * If the path is not within the home directory, the absolute path is returned.
+   *
+   * @returns {FS.HomeRelativePath} A path string relative to home, or the absolute path.
+   *
+   * @example
+   * // Assuming home is /Users/jpravetz
+   * const folder = new FolderSpec('/Users/jpravetz/dev/project');
+   * console.log(folder.homeRelativePath); // '~/dev/project'
+   *
+   * const otherFolder = new FolderSpec('/var/log/myapp');
+   * console.log(otherFolder.homeRelativePath); // '/var/log/myapp'
+   */
+  get homeRelativePath(): FS.Path {
+    const homeDir = Util.getHomeDir();
+    const relativePath = path.relative(homeDir, this._f);
+
+    if (relativePath.length > 0 && !relativePath.startsWith('..')) {
+      // It's within the home directory
+      return ('~/' + relativePath.replace(/\\/g, '/')) as FS.FolderPath;
+    }
+    // Not within home, or is home itself, return the absolute path
+    return this.path.replace(/\\/g, '/') as FS.FolderPath;
+  }
+
+  /**
+   * Returns the file:// URL for this folder path.
+   *
+   * @returns {string} The file URL string (e.g., "file:///path/to/folder")
+   *
+   * @example
+   * const folder = new FolderSpec('/home/user/documents');
+   * console.log(folder.toFileUrl()); // 'file:///home/user/documents'
+   */
+  public toFileUrl(): FS.FileUrl {
+    return Util.pathToFileURL(this._f).href as FS.FileUrl;
   }
 
   /**

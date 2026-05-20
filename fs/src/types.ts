@@ -66,6 +66,11 @@ export type FolderName = Brand<string, 'FolderName'>;
 export type Name = FileName | FolderName;
 
 export type PathSegment = FSSpecBase | Path | RelativePath | string;
+
+export interface IPath {
+  path: Path;
+}
+
 /**
  * Represents a user ID.
  */

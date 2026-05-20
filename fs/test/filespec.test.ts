@@ -106,6 +106,28 @@ describe('FileSpec', () => {
       const file = new FileSpec(testDir, 'file.txt');
       expect(file.depth(otherRoot)).toBe(-1);
     });
+
+    test('homeRelativePath() returns tilde path for file in home directory', () => {
+      const homeDir = new FolderSpec(os.homedir());
+      const file = new FileSpec(homeDir, 'config', 'settings.json');
+      const homeRelPath = file.homeRelativePath;
+      expect(homeRelPath).toMatch(/^~\//);
+      expect(homeRelPath).toContain('config/settings.json');
+    });
+
+    test('homeRelativePath() returns absolute path for file outside home directory', () => {
+      const file = new FileSpec('/var', 'log', 'test.log');
+      const homeRelPath = file.homeRelativePath;
+      expect(homeRelPath).toBe('/var/log/test.log');
+      expect(homeRelPath).not.toMatch(/^~/);
+    });
+
+    test('toFileUrl() returns valid file URL', () => {
+      const file = new FileSpec(testDir, 'test.txt');
+      const fileUrl = file.toFileUrl();
+      expect(fileUrl).toMatch(/^file:\/\/\//);
+      expect(fileUrl).toContain('test.txt');
+    });
   });
 
   describe('File Operations', () => {

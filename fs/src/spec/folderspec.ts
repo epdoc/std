@@ -538,19 +538,6 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
     return (relPath === '' ? 0 : relPath.split('/').length) as Integer;
   }
 
-  /**
-   * Returns the file:// URL for this folder path.
-   *
-   * @returns {string} The file URL string (e.g., "file:///path/to/folder")
-   *
-   * @example
-   * const folder = new FolderSpec('/home/user/documents');
-   * console.log(folder.toFileUrl()); // 'file:///home/user/documents'
-   */
-  public toFileUrl(): FS.FileUrl {
-    return Util.pathToFileURL(this._f).href as FS.FileUrl;
-  }
-
   // ============================================================================
   // DIRECTORY OPERATIONS
   // ============================================================================
