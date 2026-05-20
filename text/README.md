@@ -112,16 +112,16 @@ different parts of your code, use `msub.create` to create isolated instances.
 #### Format Function
 
 ```ts
-import { dateEx } from '@epdoc/datetime';
+import { DateTime } from '@epdoc/datetime';
 import { msub } from '@epdoc/text';
 import { expect } from 'jsr:@std/expect';
 
 const d = new Date('2024-11-15T00:00:00.000Z');
 const fmt1 = (_d: Date, _f: string) => {
-  return dateEx(_d).tz(360).toISOLocalString();
+  return DateTime.fromDate(_d).tz(360).toISOLocalString();
 };
 const fmt2 = (d: Date, f: string) => {
-  return dateEx(d).tz(0).format(f);
+  return DateTime.fromDate(d).tz(0).format(f);
 };
 
 const r0 = msub.configure({ format: fmt1 }).replace('The date is ${a:toISOString}', { a: d });
