@@ -143,7 +143,8 @@ export { defineColors, table } from './simple.ts';
 export type * from './simple-types.ts';
 
 // Original API (backward compatible)
-export { formatters } from './formatters.ts';
+export { BOOL_PRESETS, formatters } from './formatters.ts';
+export type { BoolFormatterOptions, BoolPresetName } from './formatters.ts';
 export { TableRenderer, TableRenderer as Renderer } from './render.ts';
 export * from './terminal.ts';
 export type * from './types.ts';

@@ -221,6 +221,48 @@ formatter: formatters.bytes();
 formatter: formatters.bytes({ decimals: 1, separator: '' });
 ```
 
+### Boolean
+
+Renders booleans as styled characters with configurable presets:
+
+```ts
+import { formatters } from '@epdoc/table';
+
+// Default: "✓" (green) / "✗" (red)
+formatter: formatters.bool();
+
+// Preset: "●" / "‧" (green/red)
+formatter: formatters.bool('circleDot');
+
+// Preset: "yes" / "no" (green/red)
+formatter: formatters.bool('yesno');
+
+// Custom characters without colors
+formatter: formatters.bool({ trueChar: 'ON', falseChar: 'OFF', trueColor: undefined, falseColor: undefined });
+```
+
+**Available presets:**
+| Preset | True | False |
+|--------|------|-------|
+| `check` | ✓ | ✗ |
+| `checkBold` | ✔ | ✖ |
+| `circle` | ● | ○ |
+| `circleDot` | ● | ‧ |
+| `yesno` | yes | no |
+| `truefalse` | true | false |
+
+Reuse a single instance across columns:
+
+```ts
+const boolFmt = formatters.bool('circleDot');
+
+TableRenderer.create<Row>()
+  .column('isActive', { header: 'Active', formatter: boolFmt })
+  .column('isOnline', { header: 'Online', formatter: boolFmt })
+  .data(rows)
+  .print();
+```
+
 ### Uptime
 
 Formats seconds into human-readable duration:
@@ -373,6 +415,8 @@ const table = new TableRenderer({
 - `ColorType` - Flexible color specification (StyleFn | number | ColorSpec)
 - `StyleFn` - ANSI styling function
 - `ColorSpec` - Foreground and background color specification
+- `BoolFormatterOptions` - Configuration for boolean formatter (trueChar, falseChar, trueColor, falseColor)
+- `BoolPresetName` - Preset name from `BOOL_PRESETS`
 
 ### Classes
 
@@ -384,7 +428,81 @@ const table = new TableRenderer({
 
 ### Namespaces
 
-- `formatters` - Built-in formatter factories (percent, bytes, uptime)
+- `formatters` - Built-in formatter factories (percent, bytes, uptime, bool)
+
+## VSCode Snippets
+
+Copy this into `.vscode/table.code-snippets` for quick table scaffolding:
+
+```json
+{
+  "Table: fluent API (basic)": {
+    "prefix": "table.fluent",
+    "body": [
+      "import { TableRenderer } from '@epdoc/table';",
+      "",
+      "TableRenderer.create<${1:RowType}>()",
+      "  .column('${2:key}', { header: '${3:Header}' })",
+      "  .data(data)",
+      "  .headerStyle({ bg: 0x1e1e1e })",
+      "  .borders()",
+      "  .print();"
+    ],
+    "description": "Full table using fluent API with styling"
+  },
+  "Table: with formatters": {
+    "prefix": "table.formatters",
+    "body": [
+      "import { formatters, TableRenderer } from '@epdoc/table';",
+      "",
+      "const boolFmt = formatters.bool('${3:circleDot}');",
+      "",
+      "TableRenderer.create<${1:RowType}>()",
+      "  .column('${4:name}', { header: '${5:Name}' })",
+      "  .column('${6:value}', { header: '${7:Value}', formatter: formatters.${8:percent}() })",
+      "  .column('${9:active}', { header: '${10:Active}', formatter: boolFmt })",
+      "  .data(data)",
+      "  .padding(2)",
+      "  .headerStyle({ bg: 0x1e1e1e })",
+      "  .borders()",
+      "  .print();"
+    ],
+    "description": "Table with boolean and numeric formatters"
+  },
+  "Table: simple API (one-liner)": {
+    "prefix": "table.simple",
+    "body": [
+      "import { table } from '@epdoc/table';",
+      "",
+      "table(data)",
+      "  .column('${1:key}', { header: '${2:Header}' })",
+      "  .column('${3:boolKey}', { format: 'boolean' })",
+      "  .print();"
+    ],
+    "description": "Quick one-liner table with simple API"
+  },
+  "Table: declarative columns": {
+    "prefix": "table.columns",
+    "body": [
+      "import { TableRenderer, buildColumns } from '@epdoc/table';",
+      "import type { ColumnRegistry } from '@epdoc/table';",
+      "",
+      "const columns: ColumnRegistry<${1:RowType}> = {",
+      "  ${2:id}: { header: '${3:ID}', align: 'right' },",
+      "  ${4:name}: { header: '${5:Name}' },",
+      "};",
+      "",
+      "const table = new TableRenderer({",
+      "  columns: buildColumns(['${2:id}', '${4:name}'], columns),",
+      "  data: data,",
+      "  headerStyle: { bg: 0x1e1e1e },",
+      "});",
+      "table.print();"
+    ],
+    "description": "Table using declarative ColumnRegistry and buildColumns()"
+  }
+}
+```
 
 ## License
 

@@ -25,8 +25,8 @@
     {
       "name": "formatters",
       "role": "helper",
-      "description": "Built-in formatter factories (percent, bytes, uptime)",
-      "whenToUse": "When formatting numeric values in tables"
+      "description": "Built-in formatter factories (percent, bytes, uptime, bool)",
+      "whenToUse": "When formatting numeric or boolean values in tables"
     },
     {
       "name": "Column / ColumnRegistry",
@@ -39,6 +39,18 @@
       "role": "type",
       "description": "Flexible color specification types",
       "whenToUse": "When applying custom styling to cells or headers"
+    },
+    {
+      "name": "BoolFormatterOptions / BoolPresetName",
+      "role": "type",
+      "description": "Configuration types for boolean formatter with preset support",
+      "whenToUse": "When customizing boolean display characters or colors"
+    },
+    {
+      "name": "BOOL_PRESETS",
+      "role": "const",
+      "description": "Predefined boolean display styles (check, checkBold, circle, circleDot, yesno, truefalse)",
+      "whenToUse": "When selecting a preset boolean style"
     }
   ],
   "patterns": [
@@ -61,6 +73,11 @@
       "name": "Full Borders",
       "when": "Drawing complete table borders with corners and junctions",
       "code": "const table = new TableRenderer({\n  columns,\n  data,\n  borders: { enabled: true, style: 'light', color: 0x888888 }\n});"
+    },
+    {
+      "name": "Boolean Formatting",
+      "when": "Displaying boolean values with styled characters (✓/✗, ●/‧, yes/no)",
+      "code": "import { formatters } from '@epdoc/table';\n\nconst boolFmt = formatters.bool('circleDot');\n\nTableRenderer.create<MyRow>()\n  .column('isActive', { header: 'Active', formatter: boolFmt })\n  .column('isOnline', { header: 'Online', formatter: boolFmt })\n  .data(rows)\n  .print();"
     }
   ],
   "relationships": {

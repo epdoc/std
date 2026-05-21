@@ -31,6 +31,7 @@ import type {
   StdColorName,
   TableBuilder,
 } from './simple-types.ts';
+import type { BoolPresetName } from './formatters.ts';
 import type { BorderStyle, Column } from './types.ts';
 
 // Default colors for the simple API
@@ -157,6 +158,7 @@ function createFormatter(
   decimals?: number,
   separator?: string,
   datetime?: DatetimeOptions,
+  boolPreset?: BoolPresetName,
 ): (value: unknown) => string {
   switch (format) {
     case 'bytes': {
@@ -183,6 +185,10 @@ function createFormatter(
         // Return with ANSI color codes
         return rgb24(checkmark, isTrue ? green : red);
       };
+    }
+
+    case 'boolean': {
+      return builtinFormatters.bool(boolPreset);
     }
 
     case 'datetime': {
@@ -352,6 +358,7 @@ class TableBuilderImpl<T> implements TableBuilder<T> {
           config.decimals,
           config.separator,
           config.datetime,
+          config.boolPreset,
         );
         column.formatter = formatter as (value: unknown, row: T) => string;
       }

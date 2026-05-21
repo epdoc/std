@@ -1,4 +1,5 @@
 import type { Color } from '@epdoc/colors';
+import type { BoolPresetName } from './formatters.ts';
 
 /**
  * Named colors from @std/fmt/colors that can be used in the simple API.
@@ -30,7 +31,7 @@ export type SimpleColor = StdColorName | Color.Spec;
 /**
  * Format types available in the simple API.
  */
-export type SimpleFormat = 'bytes' | 'percent' | 'uptime' | 'checkmark' | 'datetime' | 'number' | 'string';
+export type SimpleFormat = 'bytes' | 'percent' | 'uptime' | 'checkmark' | 'boolean' | 'datetime' | 'number' | 'string';
 
 /**
  * Options for datetime formatting.
@@ -63,6 +64,7 @@ export interface SimpleColumnOptions<T> {
    * - 'percent': Percentage with % sign
    * - 'uptime': Duration in days/hours/minutes
    * - 'checkmark': Boolean to ✔/✘ with green/red colors
+   * - 'boolean': Boolean with preset or custom chars (use boolPreset)
    * - 'datetime': Date/time with pattern support
    * - 'number': Number formatting
    * - 'string': Default string conversion
@@ -74,6 +76,8 @@ export interface SimpleColumnOptions<T> {
   separator?: string;
   /** Datetime-specific options when format is 'datetime' */
   datetime?: DatetimeOptions;
+  /** Preset name for 'boolean' format. Default: 'check' */
+  boolPreset?: BoolPresetName;
 }
 
 /**

@@ -1,6 +1,6 @@
 import { assertEquals } from '@std/assert';
 import { describe, it } from '@std/testing/bdd';
-import { formatters } from '../src/formatters.ts';
+import { BOOL_PRESETS, formatters } from '../src/formatters.ts';
 
 describe('formatters.percent', () => {
   it('should format basic percentage with default 2 decimals and space separator', () => {
@@ -249,5 +249,94 @@ describe('formatters.uptime', () => {
   it('should support combining separator and units', () => {
     const fmt = formatters.uptime({ separator: ' ', units: 2 });
     assertEquals(fmt(3661), '1 h 01 m'); // 1h 1m 1s, but only 2 units
+  });
+});
+
+describe('formatters.bool', () => {
+  it('should default to check preset with colored output', () => {
+    const fmt = formatters.bool();
+    assertEquals(fmt(true), '\x1b[38;2;81;214;124m✓\x1b[39m');
+    assertEquals(fmt(false), '\x1b[38;2;239;88;103m✗\x1b[39m');
+  });
+
+  it('should support check preset name', () => {
+    const fmt = formatters.bool('check');
+    assertEquals(fmt(true), '\x1b[38;2;81;214;124m✓\x1b[39m');
+    assertEquals(fmt(false), '\x1b[38;2;239;88;103m✗\x1b[39m');
+  });
+
+  it('should support checkBold preset', () => {
+    const fmt = formatters.bool('checkBold');
+    assertEquals(fmt(true), '\x1b[38;2;81;214;124m✔\x1b[39m');
+    assertEquals(fmt(false), '\x1b[38;2;239;88;103m✖\x1b[39m');
+  });
+
+  it('should support circle preset', () => {
+    const fmt = formatters.bool('circle');
+    assertEquals(fmt(true), '\x1b[38;2;81;214;124m●\x1b[39m');
+    assertEquals(fmt(false), '\x1b[38;2;239;88;103m○\x1b[39m');
+  });
+
+  it('should support circleDot preset', () => {
+    const fmt = formatters.bool('circleDot');
+    assertEquals(fmt(true), '\x1b[38;2;81;214;124m●\x1b[39m');
+    assertEquals(fmt(false), '\x1b[38;2;239;88;103m‧\x1b[39m');
+  });
+
+  it('should support yesno preset', () => {
+    const fmt = formatters.bool('yesno');
+    assertEquals(fmt(true), '\x1b[38;2;81;214;124myes\x1b[39m');
+    assertEquals(fmt(false), '\x1b[38;2;239;88;103mno\x1b[39m');
+  });
+
+  it('should support truefalse preset', () => {
+    const fmt = formatters.bool('truefalse');
+    assertEquals(fmt(true), '\x1b[38;2;81;214;124mtrue\x1b[39m');
+    assertEquals(fmt(false), '\x1b[38;2;239;88;103mfalse\x1b[39m');
+  });
+
+  it('should support custom characters', () => {
+    const fmt = formatters.bool({ trueChar: '✅', falseChar: '❌' });
+    assertEquals(fmt(true), '\x1b[38;2;81;214;124m✅\x1b[39m');
+    assertEquals(fmt(false), '\x1b[38;2;239;88;103m❌\x1b[39m');
+  });
+
+  it('should support custom colors', () => {
+    const fmt = formatters.bool({ trueChar: 'yes', falseChar: 'no', trueColor: 0x00ff00, falseColor: 0xff0000 });
+    assertEquals(fmt(true), '\x1b[38;2;0;255;0myes\x1b[39m');
+    assertEquals(fmt(false), '\x1b[38;2;255;0;0mno\x1b[39m');
+  });
+
+  it('should output plain text when colors are set to undefined', () => {
+    const fmt = formatters.bool({ trueChar: 'Y', falseChar: 'N', trueColor: undefined, falseColor: undefined });
+    assertEquals(fmt(true), 'Y');
+    assertEquals(fmt(false), 'N');
+  });
+
+  it('should treat truthy values as true', () => {
+    const fmt = formatters.bool({ trueChar: 'T', falseChar: 'F', trueColor: undefined, falseColor: undefined });
+    assertEquals(fmt(1), 'T');
+    assertEquals(fmt('hello'), 'T');
+    assertEquals(fmt({}), 'T');
+    assertEquals(fmt([]), 'T');
+  });
+
+  it('should treat falsy values as false', () => {
+    const fmt = formatters.bool({ trueChar: 'T', falseChar: 'F', trueColor: undefined, falseColor: undefined });
+    assertEquals(fmt(0), 'F');
+    assertEquals(fmt(''), 'F');
+    assertEquals(fmt(null), 'F');
+    assertEquals(fmt(undefined), 'F');
+  });
+
+  it('should handle NaN as falsy', () => {
+    const fmt = formatters.bool({ trueChar: 'T', falseChar: 'F', trueColor: undefined, falseColor: undefined });
+    assertEquals(fmt(NaN), 'F');
+  });
+
+  it('should override preset with custom options', () => {
+    const fmt = formatters.bool({ ...BOOL_PRESETS.circleDot, trueChar: '✅' });
+    assertEquals(fmt(true), '\x1b[38;2;81;214;124m✅\x1b[39m');
+    assertEquals(fmt(false), '\x1b[38;2;239;88;103m‧\x1b[39m');
   });
 });

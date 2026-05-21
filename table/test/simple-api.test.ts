@@ -209,6 +209,33 @@ describe('Simple API', () => {
       assertStringIncludes(result, '✔');
       assertStringIncludes(result, '✘');
     });
+
+    it('should format boolean with default preset', () => {
+      const result = table(servers)
+        .column('isOnline', { format: 'boolean' })
+        .toString();
+
+      assertStringIncludes(result, '✓');
+      assertStringIncludes(result, '✗');
+    });
+
+    it('should format boolean with circleDot preset', () => {
+      const result = table(servers)
+        .column('isOnline', { format: 'boolean', boolPreset: 'circleDot' })
+        .toString();
+
+      assertStringIncludes(result, '●');
+      assertStringIncludes(result, '‧');
+    });
+
+    it('should format boolean with yesno preset', () => {
+      const result = table(servers)
+        .column('isOnline', { format: 'boolean', boolPreset: 'yesno' })
+        .toString();
+
+      assertStringIncludes(result, 'yes');
+      assertStringIncludes(result, 'no');
+    });
   });
 
   describe('Datetime formatting', () => {
