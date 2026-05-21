@@ -1,4 +1,4 @@
-import { Color } from '../src/mod.ts';
+import * as Color from '../src/mod.ts';
 
 Deno.test('Palette Demo', () => {
   console.log('\n--- Color Palette Demo ---');

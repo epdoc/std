@@ -1,6 +1,6 @@
-import { Color } from '../src/mod.ts';
 import { assertEquals, assertStrictEquals } from '@std/assert';
 import { bgRgb24, rgb24 } from '@std/fmt/colors';
+import * as Color from '../src/mod.ts';
 
 Deno.test('Color module tests', async (t) => {
   await t.step('toStyleFn with StyleFn', () => {
