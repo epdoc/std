@@ -45,16 +45,25 @@ export interface BoolFormatterOptions {
 }
 
 /**
- * Preset boolean style configurations.
- * Each entry defines true/false display characters and default colors.
+ * Predefined boolean display styles for table columns.
+ * Each preset specifies distinct characters for true/false values along with their colors.
+ * All presets use different characters to ensure compatibility with no-color mode rendering.
  */
 export const BOOL_PRESETS = {
-  check: { trueChar: '✓', falseChar: '✗', trueColor: 0x51d67c, falseColor: 0xef5867 },
-  checkBold: { trueChar: '✔', falseChar: '✖', trueColor: 0x51d67c, falseColor: 0xef5867 },
-  circle: { trueChar: '●', falseChar: '○', trueColor: 0x51d67c, falseColor: 0xef5867 },
-  circleDot: { trueChar: '●', falseChar: '‧', trueColor: 0x51d67c, falseColor: 0xef5867 },
-  yesno: { trueChar: 'yes', falseChar: 'no', trueColor: 0x51d67c, falseColor: 0xef5867 },
-  truefalse: { trueChar: 'true', falseChar: 'false', trueColor: 0x51d67c, falseColor: 0xef5867 },
+  check: { trueChar: '✓', falseChar: '✗', trueColor: 0x51d67c, falseColor: 0xef5867 } as BoolFormatterOptions,
+  checkBold: { trueChar: '✔', falseChar: '✖', trueColor: 0x51d67c, falseColor: 0xef5867 } as BoolFormatterOptions,
+  circle: { trueChar: '●', falseChar: '○', trueColor: 0x51d67c, falseColor: 0xef5867 } as BoolFormatterOptions,
+  circleDot: { trueChar: '●', falseChar: '‧', trueColor: 0x51d67c, falseColor: 0xef5867 } as BoolFormatterOptions,
+  yesno: { trueChar: 'yes', falseChar: 'no', trueColor: 0x51d67c, falseColor: 0xef5867 } as BoolFormatterOptions,
+  truefalse: {
+    trueChar: 'true',
+    falseChar: 'false',
+    trueColor: 0x51d67c,
+    falseColor: 0xef5867,
+  } as BoolFormatterOptions,
+  square: { trueChar: '■', falseChar: '□', trueColor: 0x51d67c, falseColor: 0xef5867 } as BoolFormatterOptions,
+  arrow: { trueChar: '▲', falseChar: '▼', trueColor: 0x51d67c, falseColor: 0xef5867 } as BoolFormatterOptions,
+  toggle: { trueChar: 'ON', falseChar: 'OFF', trueColor: 0x51d67c, falseColor: 0xef5867 } as BoolFormatterOptions,
 } as const;
 
 /**
