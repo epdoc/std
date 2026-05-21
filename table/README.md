@@ -242,13 +242,14 @@ formatter: formatters.bool({ trueChar: 'ON', falseChar: 'OFF', trueColor: undefi
 ```
 
 **Available presets:**
-| Preset | True | False |
-|--------|------|-------|
-| `check` | ✓ | ✗ |
-| `checkBold` | ✔ | ✖ |
-| `circle` | ● | ○ |
-| `circleDot` | ● | ‧ |
-| `yesno` | yes | no |
+
+| Preset      | True | False |
+| ----------- | ---- | ----- |
+| `check`     | ✓    | ✗     |
+| `checkBold` | ✔    | ✖     |
+| `circle`    | ●    | ○     |
+| `circleDot` | ●    | ‧     |
+| `yesno`     | yes  | no    |
 | `truefalse` | true | false |
 
 Reuse a single instance across columns:
