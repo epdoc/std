@@ -1,4 +1,4 @@
-import { Color } from '@epdoc/colors';
+import * as Color from '@epdoc/colors';
 import type { Integer } from '@epdoc/type';
 import { padVisual, stripAnsi, visibleTruncate } from './terminal.ts';
 import type * as Table from './types.ts';

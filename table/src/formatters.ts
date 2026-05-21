@@ -1,3 +1,4 @@
+import { palette } from '@epdoc/colors';
 import { Duration } from '@epdoc/duration';
 import type { Integer } from '@epdoc/type';
 import { rgb24 } from '@std/fmt/colors';
@@ -50,11 +51,43 @@ export interface BoolFormatterOptions {
  * All presets use different characters to ensure compatibility with no-color mode rendering.
  */
 export const BOOL_PRESETS = {
-  check: { trueChar: '✓', falseChar: '✗', trueColor: 0x51d67c, falseColor: 0xef5867 } as BoolFormatterOptions,
-  checkBold: { trueChar: '✔', falseChar: '✖', trueColor: 0x51d67c, falseColor: 0xef5867 } as BoolFormatterOptions,
-  circle: { trueChar: '●', falseChar: '○', trueColor: 0x51d67c, falseColor: 0xef5867 } as BoolFormatterOptions,
-  circleDot: { trueChar: '●', falseChar: '‧', trueColor: 0x51d67c, falseColor: 0xef5867 } as BoolFormatterOptions,
-  yesno: { trueChar: 'yes', falseChar: 'no', trueColor: 0x51d67c, falseColor: 0xef5867 } as BoolFormatterOptions,
+  check: { trueChar: '✓', falseChar: '✗', trueColor: palette.green, falseColor: palette.red } as BoolFormatterOptions,
+  checkBold: {
+    trueChar: '✔',
+    falseChar: '✖',
+    trueColor: palette.green,
+    falseColor: palette.red,
+  } as BoolFormatterOptions,
+  circle: {
+    trueChar: '●',
+    falseChar: '○',
+    trueColor: palette.green,
+    falseColor: palette.slate,
+  } as BoolFormatterOptions,
+  circleRed: {
+    trueChar: '●',
+    falseChar: '●',
+    trueColor: palette.green,
+    falseColor: palette.red,
+  } as BoolFormatterOptions,
+  circleOpenRed: {
+    trueChar: '●',
+    falseChar: '○',
+    trueColor: palette.green,
+    falseColor: palette.red,
+  } as BoolFormatterOptions,
+  circleDot: {
+    trueChar: '●',
+    falseChar: '‧',
+    trueColor: palette.green,
+    falseColor: palette.slate,
+  } as BoolFormatterOptions,
+  yesno: {
+    trueChar: 'yes',
+    falseChar: 'no',
+    trueColor: palette.green,
+    falseColor: palette.red,
+  } as BoolFormatterOptions,
   truefalse: {
     trueChar: 'true',
     falseChar: 'false',

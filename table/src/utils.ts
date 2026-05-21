@@ -1,4 +1,4 @@
-import { Color } from '@epdoc/colors';
+import * as Color from '@epdoc/colors';
 import { bgRgb24 } from '@std/fmt/colors';
 import * as Terminal from './terminal.ts';
 import type * as Table from './types.ts';

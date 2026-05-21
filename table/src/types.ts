@@ -1,4 +1,4 @@
-import type { Color } from '@epdoc/colors';
+import * as Color from '@epdoc/colors';
 
 // ── Column definition ──────────────────────────────────────────────────────
 

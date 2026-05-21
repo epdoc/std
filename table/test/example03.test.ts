@@ -20,44 +20,26 @@ describe('Example 03: Formatters', () => {
       cpu: number;
       memory: number;
       uptime: number;
-      running: boolean;
+      run: boolean;
       mod: boolean;
       app: boolean;
     };
 
     const processes: ProcessInfo[] = [
-      { pid: 1234, name: 'nginx', cpu: 0.023, memory: 52428800, uptime: 2700090, running: true, mod: false, app: true },
+      { pid: 1234, name: 'nginx', cpu: 0.023, memory: 52428800, uptime: 2700090, run: true, mod: false, app: true },
       {
         pid: 5678,
         name: 'postgres',
         cpu: 0.156,
         memory: 1073741824,
         uptime: 2700090,
-        running: true,
+        run: true,
         mod: true,
         app: false,
       },
-      {
-        pid: 9012,
-        name: 'redis',
-        cpu: 0.089,
-        memory: 268435456,
-        uptime: 86400,
-        running: false,
-        mod: false,
-        app: false,
-      },
-      { pid: 3456, name: 'node', cpu: 0.445, memory: 536870912, uptime: 3600, running: true, mod: false, app: true },
-      {
-        pid: 7890,
-        name: 'python',
-        cpu: 0.012,
-        memory: 134217728,
-        uptime: 7200,
-        running: false,
-        mod: false,
-        app: false,
-      },
+      { pid: 9012, name: 'redis', cpu: 0.089, memory: 268435456, uptime: 86400, run: false, mod: false, app: false },
+      { pid: 3456, name: 'node', cpu: 0.445, memory: 536870912, uptime: 3600, run: true, mod: false, app: true },
+      { pid: 7890, name: 'python', cpu: 0.012, memory: 134217728, uptime: 7200, run: false, mod: false, app: false },
     ];
 
     const cyan = 0x58d1eb;
@@ -80,15 +62,15 @@ describe('Example 03: Formatters', () => {
         align: 'right',
         formatter: formatters.uptime(),
       },
-      running: {
-        header: 'Running',
+      run: {
+        header: 'Run',
         align: 'center',
         formatter: formatters.bool('check'),
       },
       mod: {
         header: 'Mod',
         align: 'center',
-        formatter: formatters.bool('circle'),
+        formatter: formatters.bool('circleRed'),
       },
       app: {
         header: 'App',
@@ -98,7 +80,7 @@ describe('Example 03: Formatters', () => {
     };
 
     const table = new TableRenderer({
-      columns: buildColumns(['pid', 'name', 'cpu', 'memory', 'uptime', 'running', 'mod', 'app'], columns),
+      columns: buildColumns(['pid', 'name', 'cpu', 'memory', 'uptime', 'run', 'mod', 'app'], columns),
       data: processes,
       headerStyle: (s: string) => bold(rgb24(s, cyan)),
       padding: 3,
