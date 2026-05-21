@@ -1,4 +1,4 @@
-import type { Color } from '@epdoc/colors';
+import type * as Color from '@epdoc/colors';
 import type { BoolPresetName } from './formatters.ts';
 
 /**

@@ -262,31 +262,31 @@ describe('formatters.bool', () => {
   it('should support check preset name', () => {
     const fmt = formatters.bool('check');
     assertEquals(fmt(true), '\x1b[38;2;81;214;124m✓\x1b[39m');
-    assertEquals(fmt(false), '\x1b[38;2;239;88;103m✗\x1b[39m');
+    assertEquals(fmt(false), '\x1b[38;2;239;68;68m✗\x1b[39m');
   });
 
   it('should support checkBold preset', () => {
     const fmt = formatters.bool('checkBold');
     assertEquals(fmt(true), '\x1b[38;2;81;214;124m✔\x1b[39m');
-    assertEquals(fmt(false), '\x1b[38;2;239;88;103m✖\x1b[39m');
+    assertEquals(fmt(false), '\x1b[38;2;239;68;68m✖\x1b[39m');
   });
 
   it('should support circle preset', () => {
     const fmt = formatters.bool('circle');
     assertEquals(fmt(true), '\x1b[38;2;81;214;124m●\x1b[39m');
-    assertEquals(fmt(false), '\x1b[38;2;239;88;103m○\x1b[39m');
+    assertEquals(fmt(false), '\x1b[38;2;100;116;139m○\x1b[39m');
   });
 
   it('should support circleDot preset', () => {
     const fmt = formatters.bool('circleDot');
     assertEquals(fmt(true), '\x1b[38;2;81;214;124m●\x1b[39m');
-    assertEquals(fmt(false), '\x1b[38;2;239;88;103m‧\x1b[39m');
+    assertEquals(fmt(false), '\x1b[38;2;100;116;139m‧\x1b[39m');
   });
 
   it('should support yesno preset', () => {
     const fmt = formatters.bool('yesno');
     assertEquals(fmt(true), '\x1b[38;2;81;214;124myes\x1b[39m');
-    assertEquals(fmt(false), '\x1b[38;2;239;88;103mno\x1b[39m');
+    assertEquals(fmt(false), '\x1b[38;2;239;68;68mno\x1b[39m');
   });
 
   it('should support truefalse preset', () => {
@@ -337,6 +337,6 @@ describe('formatters.bool', () => {
   it('should override preset with custom options', () => {
     const fmt = formatters.bool({ ...BOOL_PRESETS.circleDot, trueChar: '✅' });
     assertEquals(fmt(true), '\x1b[38;2;81;214;124m✅\x1b[39m');
-    assertEquals(fmt(false), '\x1b[38;2;239;88;103m‧\x1b[39m');
+    assertEquals(fmt(false), '\x1b[38;2;100;116;139m‧\x1b[39m');
   });
 });

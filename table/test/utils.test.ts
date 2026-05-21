@@ -1,4 +1,4 @@
-import type { Color } from '@epdoc/colors';
+import type * as Color from '@epdoc/colors';
 import { assertEquals } from '@std/assert';
 import { bgRgb24, rgb24 } from '@std/fmt/colors';
 import { describe, it } from '@std/testing/bdd';

@@ -1,3 +1,4 @@
+import * as Color from '@epdoc/colors';
 import { DateTime } from '@epdoc/datetime';
 import {
   black,
@@ -19,7 +20,7 @@ import {
   white,
   yellow,
 } from '@std/fmt/colors';
-import { Color } from '@epdoc/colors';
+import type { BoolPresetName } from './formatters.ts';
 import { formatters as builtinFormatters } from './formatters.ts';
 import { TableRenderer } from './render.ts';
 import type {
@@ -31,7 +32,6 @@ import type {
   StdColorName,
   TableBuilder,
 } from './simple-types.ts';
-import type { BoolPresetName } from './formatters.ts';
 import type { BorderStyle, Column } from './types.ts';
 
 // Default colors for the simple API

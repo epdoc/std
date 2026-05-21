@@ -4,7 +4,7 @@
  * Demonstrates how to add colors, header styling, and zebra striping.
  */
 
-import type { Color } from '@epdoc/colors';
+import type * as Color from '@epdoc/colors';
 import { bgRgb24, bold, rgb24 } from '@std/fmt/colors';
 import { describe, it } from '@std/testing/bdd';
 import { TableRenderer } from '../src/render.ts';
