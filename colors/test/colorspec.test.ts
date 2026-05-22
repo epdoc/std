@@ -1,5 +1,5 @@
 import { assertEquals, assertStrictEquals } from '@std/assert';
-import { bgRgb24, rgb24 } from '@std/fmt/colors';
+import { bgRgb24, bold, dim, rgb24 } from '@std/fmt/colors';
 import * as Color from '../src/mod.ts';
 
 Deno.test('Color module tests', async (t) => {
@@ -37,6 +37,36 @@ Deno.test('Color module tests', async (t) => {
     // Wait, let's look at the implementation.
     // It does fg then bg, so bg wraps fg wraps text.
     const expected = bgRgb24(rgb24('test', 0xffffff), 0x000000);
+    assertEquals(fn('test'), expected);
+  });
+
+  await t.step('toStyleFn with Def (bold only)', () => {
+    const fn = Color.toStyleFn({ bold: true });
+    const expected = bold('test');
+    assertEquals(fn('test'), expected);
+  });
+
+  await t.step('toStyleFn with Def (dim only)', () => {
+    const fn = Color.toStyleFn({ dim: true });
+    const expected = dim('test');
+    assertEquals(fn('test'), expected);
+  });
+
+  await t.step('toStyleFn with Def (fg + bold)', () => {
+    const fn = Color.toStyleFn({ fg: 0x51d67c, bold: true });
+    const expected = bold(rgb24('test', 0x51d67c));
+    assertEquals(fn('test'), expected);
+  });
+
+  await t.step('toStyleFn with Def (bg + dim)', () => {
+    const fn = Color.toStyleFn({ bg: 0x1a1a2e, dim: true });
+    const expected = dim(bgRgb24('test', 0x1a1a2e));
+    assertEquals(fn('test'), expected);
+  });
+
+  await t.step('toStyleFn with Def (fg + bg + bold)', () => {
+    const fn = Color.toStyleFn({ fg: 0xffffff, bg: 0x1a1a2e, bold: true });
+    const expected = bold(bgRgb24(rgb24('test', 0xffffff), 0x1a1a2e));
     assertEquals(fn('test'), expected);
   });
 

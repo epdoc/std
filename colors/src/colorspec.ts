@@ -1,4 +1,4 @@
-import { bgRgb24, rgb24 } from '@std/fmt/colors';
+import { bgRgb24, bold, dim, rgb24 } from '@std/fmt/colors';
 
 /**
  * A function that wraps text with ANSI styling. Compatible with all functions
@@ -15,19 +15,22 @@ import { bgRgb24, rgb24 } from '@std/fmt/colors';
 export type StyleFn = (text: string) => string;
 
 /**
- * A color specification that can define foreground and/or background colors.
- * Used when you need explicit control over both text and background colors.
+ * A color specification that can define foreground and/or background colors,
+ * with optional bold or dim weight.
  *
  * @example
  * ```ts
  * // Background only
- * const bgRed: ColorSpec = { bg: 0xff0000 };
+ * const bgRed: Def = { bg: 0xff0000 };
  *
  * // Foreground only
- * const fgGreen: ColorSpec = { fg: 0x00ff00 };
+ * const fgGreen: Def = { fg: 0x00ff00 };
  *
  * // Both foreground and background
- * const whiteOnRed: ColorSpec = { fg: 0xffffff, bg: 0xff0000 };
+ * const whiteOnRed: Def = { fg: 0xffffff, bg: 0xff0000 };
+ *
+ * // Bold foreground
+ * const boldGreen: Def = { fg: 0x51d67c, bold: true };
  * ```
  */
 export type Def = {
@@ -35,14 +38,18 @@ export type Def = {
   fg?: number;
   /** Background color as a hex number (e.g., 0x1a1a2e) */
   bg?: number;
+  /** Apply bold (bright) weight to the text */
+  bold?: boolean;
+  /** Apply dim (reduced intensity) to the text */
+  dim?: boolean;
 };
 
 /**
- * Flexible color/style specification accepted throughout the table API.
+ * Flexible color/style specification.
  *
  * - **`StyleFn`** — Full control with custom ANSI styling (bold, italic, etc.)
  * - **`number`** — Shorthand for foreground color (most common case)
- * - **`ColorSpec`** — Explicit foreground and/or background colors
+ * - **`Def`** — Explicit foreground and/or background colors with bold/dim weight
  *
  * @example
  * ```ts
@@ -54,11 +61,11 @@ export type Def = {
  * // Background color
  * const bgBlue: Spec = { bg: 0x0000ff };
  *
- * // Both foreground and background
- * const whiteOnBlack: Spec = { fg: 0xffffff, bg: 0x000000 };
+ * // Bold foreground
+ * const boldGreen: Spec = { fg: 0x51d67c, bold: true };
  *
  * // Full control with StyleFn
- * const styledText: Spec = (s) => bold(rgb24(s, 0x58d1eb));
+ * const styledText: Spec = (s) => bold(italic(rgb24(s, 0x58d1eb)));
  * ```
  */
 export type Spec = StyleFn | number | Def;
@@ -68,7 +75,7 @@ export type Spec = StyleFn | number | Def;
  *
  * - `StyleFn` — returned as-is
  * - `number` — wrapped as `rgb24(text, n)` (foreground shorthand)
- * - `Def` — applies `fg` via `rgb24` and/or `bg` via `bgRgb24`
+ * - `Def` — applies `fg`/`bg` via `rgb24`/`bgRgb24`, then applies `bold`/`dim` if set
  *
  * @example
  * ```ts
@@ -76,6 +83,7 @@ export type Spec = StyleFn | number | Def;
  *
  * const fn = Color.toStyleFn(Color.palette.cyan);  // number → fg fn
  * const fn2 = Color.toStyleFn({ fg: 0xffffff, bg: 0x1a1a2e });
+ * const fn3 = Color.toStyleFn({ fg: 0x51d67c, bold: true });
  * ```
  */
 export function toStyleFn(spec: Spec): StyleFn {
@@ -85,6 +93,8 @@ export function toStyleFn(spec: Spec): StyleFn {
     let r = s;
     if (spec.fg !== undefined) r = rgb24(r, spec.fg);
     if (spec.bg !== undefined) r = bgRgb24(r, spec.bg);
+    if (spec.bold) r = bold(r);
+    if (spec.dim) r = dim(r);
     return r;
   };
 }
@@ -95,10 +105,13 @@ export function toStyleFn(spec: Spec): StyleFn {
  *
  * @example
  * ```ts
- * import { Color } from '@epdoc/colors';
+ * import { apply, palette } from '@epdoc/colors';
+ * import { underline } from '@std/fmt/colors';
  *
- * const styled = Color.apply('hello', Color.palette.gold);
- * const styled2 = Color.apply('world', { fg: 0xffffff, bg: 0x1a1a2e });
+ * const styled = apply('hello', palette.gold);
+ * const styled2 = apply('world', { fg: 0xffffff, bg: 0x1a1a2e });
+ * const styled3 = apply('bold!', { fg: 0x51d67c, bold: true });
+ * const styled4 = underline(apply('hello', palette.cyan));
  * ```
  */
 export function apply(text: string, spec: Spec): string {
