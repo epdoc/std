@@ -1,8 +1,12 @@
 {
-  "name": "@epdoc/table",
-  "version": "0.1.25",
+  "name": "@epdoc/fmt",
+  "version": "1.0.0",
   "exports": {
-    ".": "./src/mod.ts"
+    ".": "./src/mod.ts",
+    "./bool": "./src/bool.ts",
+    "./percent": "./src/percent.ts",
+    "./bytes": "./src/bytes.ts",
+    "./uptime": "./src/uptime.ts"
   },
   "publish": {
     "include": [
@@ -14,19 +18,15 @@
   },
   "tasks": {
     "fmt": "deno fmt src test *.json",
-    "lint": "deno lint",
+    "lint": "deno lint *.json src test",
     "check": "deno check *.json src test",
-    "test": "deno test -SERW",
-    "docs": "deno doc --json src/mod.ts > library-docs.json",
+    "test": "deno test -A ./test/*.test.ts",
+    "docs": "deno doc --json ./src/mod.ts > library-docs.json",
     "ok": "deno fmt && deno task lint && deno task check && deno task test && deno task docs"
   },
   "imports": {
-    "@epdoc/colors": "jsr:@epdoc/colors@^1.0.1",
-    "@epdoc/datetime": "jsr:@epdoc/datetime@^4.0.1",
-    "@epdoc/duration": "jsr:@epdoc/duration@^0.3.12",
-    "@epdoc/text": "jsr:@epdoc/text@^1.0.0",
     "@epdoc/type": "jsr:@epdoc/type@^1.2.13",
-    "@std/assert": "jsr:@std/assert@^1.0.19",
+    "@std/expect": "jsr:@std/expect@^1.0.19",
     "@std/fmt": "jsr:@std/fmt@^1.0.10",
     "@std/testing": "jsr:@std/testing@^1.0.18"
   }
