@@ -1,0 +1,60 @@
+{
+  "identity": {
+    "name": "@epdoc/fmt",
+    "purpose": "Factory functions for formatting common data types for display",
+    "type": "utility",
+    "complexity": "simple"
+  },
+  "quickStart": {
+    "pattern": "Import a formatter factory, call with value to format",
+    "code": "import { bool, bytes, percent, uptime } from '@epdoc/fmt';\nconst fmt = bytes();\nfmt(1048576); // \"1.0 MiB\""
+  },
+  "exports": [
+    {
+      "name": "bool",
+      "role": "main_entry",
+      "description": "Boolean formatter with preset styles and colors",
+      "whenToUse": "Display true/false values with checkmarks, circles, or text"
+    },
+    {
+      "name": "bytes",
+      "role": "main_entry",
+      "description": "Byte size formatter (B, KiB, MiB, GiB, etc.)",
+      "whenToUse": "Display memory or disk sizes in human-readable binary units"
+    },
+    {
+      "name": "percent",
+      "role": "main_entry",
+      "description": "Ratio to percentage formatter",
+      "whenToUse": "Display ratios or decimals as percentages (0.5 → 50.00%)"
+    },
+    {
+      "name": "uptime",
+      "role": "main_entry",
+      "description": "Duration formatter for seconds elapsed",
+      "whenToUse": "Display elapsed times (uptime, age) in compact narrow format"
+    },
+    {
+      "name": "BOOL_PRESETS",
+      "role": "helper",
+      "description": "Predefined boolean display styles",
+      "whenToUse": "Access preset configurations for the bool formatter"
+    }
+  ],
+  "patterns": [
+    {
+      "name": "Table column formatter",
+      "when": "Formatting table columns",
+      "code": "formatter: bytes({ decimals: 1 })"
+    },
+    {
+      "name": "Custom colors",
+      "when": "Matching unit colors to table theme",
+      "code": "percent({ decimals: 2, unitColor: 0x888888 })"
+    }
+  ],
+  "relationships": {
+    "dependsOn": ["@epdoc/colors", "@epdoc/duration", "@epdoc/type"],
+    "usedBy": ["@epdoc/table"]
+  }
+}

@@ -7,7 +7,7 @@
   "tasks": {
     "fmt": "dtask run fmt",
     "lint": "deno lint",
-    "check": "deno check type datetime duration daterange fs string response",
+    "check": "deno check colors fmt type datetime duration daterange fs string response text table terminal",
     "test": "deno test -A",
     "docs": "deno task --cwd datetime docs && deno task --cwd type docs && deno task --cwd duration docs && deno task --cwd daterange docs && deno task --cwd fs docs && deno task --cwd string docs && deno task --cwd response docs",
     "ok": "deno fmt && deno task lint && deno task check && deno task test",
