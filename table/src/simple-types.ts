@@ -1,5 +1,5 @@
 import type * as Color from '@epdoc/colors';
-import type { BoolPresetName } from './formatters.ts';
+import type { BoolPresetName } from '@epdoc/fmt';
 
 /**
  * Named colors from @std/fmt/colors that can be used in the simple API.

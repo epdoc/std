@@ -11,8 +11,10 @@ styling. It is designed for rendering aligned, styled tables in CLI applications
 
 This package depends on:
 
-- `@epdoc/duration` — For duration formatting in the `formatters.uptime` utility
+- `@epdoc/datetime` — For datetime formatting in the simple API
+- `@epdoc/fmt` — For built-in formatters (percent, bytes, uptime, bool)
 - `@epdoc/type` — For the `Integer` branded type (transitive dependency via `@epdoc/duration`)
+- `@epdoc/colors` — For color utilities and palette
 - `@std/fmt` — For ANSI color utilities (`rgb24`, `bgRgb24`, etc.)
 
 ## Development Guidelines
@@ -35,12 +37,14 @@ See `test/example*.test.ts` files for usage patterns:
 
 ```
 src/
-  mod.ts       - Public exports
-  types.ts     - TypeScript types (Column, Options, ColorType, etc.)
-  render.ts    - TableRenderer class (constructor + fluent APIs)
-  formatters.ts - Built-in formatters (percent, bytes, uptime, bool)
-  utils.ts     - buildColumns() and utilities
-  terminal.ts  - ANSI-aware string utilities
+  mod.ts        - Public exports
+  types.ts      - TypeScript types (Column, Options, ColorType, etc.)
+  render.ts     - TableRenderer class (constructor + fluent APIs)
+  formatters.ts - Re-exports formatters from @epdoc/fmt for backward compat
+  utils.ts      - buildColumns() and utilities
+  terminal.ts   - ANSI-aware string utilities
+  simple.ts     - Simple table() API (NEW in v1.0)
+  simple-types.ts - Types for the simple API
 ```
 
 ### Testing

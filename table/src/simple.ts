@@ -20,8 +20,8 @@ import {
   white,
   yellow,
 } from '@std/fmt/colors';
-import type { BoolPresetName } from './formatters.ts';
-import { formatters as builtinFormatters } from './formatters.ts';
+import type { BoolPresetName } from '@epdoc/fmt';
+import { bool, bytes, percent, uptime } from '@epdoc/fmt';
 import { TableRenderer } from './render.ts';
 import type {
   DatetimeOptions,
@@ -163,17 +163,17 @@ function createFormatter(
   switch (format) {
     case 'bytes': {
       const opts = decimals !== undefined ? { decimals, separator } : { separator };
-      return builtinFormatters.bytes(opts as { decimals?: number; separator?: string });
+      return bytes(opts as { decimals?: number; separator?: string });
     }
 
     case 'percent': {
       const opts = decimals !== undefined ? { decimals, separator } : { separator };
-      return builtinFormatters.percent(opts as { decimals?: number; separator?: string });
+      return percent(opts as { decimals?: number; separator?: string });
     }
 
     case 'uptime': {
       const opts = { separator, units: 3 };
-      return builtinFormatters.uptime(opts);
+      return uptime(opts);
     }
 
     case 'checkmark': {
@@ -188,7 +188,7 @@ function createFormatter(
     }
 
     case 'boolean': {
-      return builtinFormatters.bool(boolPreset);
+      return bool(boolPreset);
     }
 
     case 'datetime': {
