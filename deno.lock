@@ -1,7 +1,7 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@epdoc/colors@1": "1.0.0",
+    "jsr:@epdoc/colors@^1.0.1": "1.0.1",
     "jsr:@epdoc/datetime@^4.0.1": "4.0.1",
     "jsr:@epdoc/duration@~0.3.12": "0.3.12",
     "jsr:@epdoc/type@1.0.3": "1.0.3",
@@ -28,8 +28,8 @@
     "npm:moment@2.30.1": "2.30.1"
   },
   "jsr": {
-    "@epdoc/colors@1.0.0": {
-      "integrity": "55344cca809b12810040963e4c6b00428c94c55d79baba09c67e29fcfd948dc2",
+    "@epdoc/colors@1.0.1": {
+      "integrity": "15b07840a2cad74bf9f6892f387de1e9fb28b7b672b6edc491badc6980698e6b",
       "dependencies": [
         "jsr:@std/fmt@^1.0.10"
       ]
@@ -315,7 +315,7 @@
       },
       "table": {
         "dependencies": [
-          "jsr:@epdoc/colors@1",
+          "jsr:@epdoc/colors@^1.0.1",
           "jsr:@epdoc/datetime@^4.0.1",
           "jsr:@epdoc/duration@~0.3.12",
           "jsr:@epdoc/type@^1.2.13",
