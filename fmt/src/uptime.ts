@@ -2,12 +2,32 @@ import { Duration } from '@epdoc/duration';
 import { rgb24 } from '@std/fmt/colors';
 import type { Integer } from '@epdoc/type';
 
+/**
+ * Options for configuring the uptime/duration formatter.
+ */
 export interface UptimeOptions {
+  /** Separator between value and unit (default: '') */
   separator?: string;
+  /** Optional hex color for unit suffixes (e.g., 0x888888) */
   unitColor?: number;
+  /** Number of time units to display (default: 3) */
   units?: Integer;
 }
 
+/**
+ * Factory function that creates an uptime/duration formatter.
+ * Formats seconds elapsed into compact narrow format using @epdoc/duration.
+ *
+ * @param options - Formatting options
+ * @returns A formatter function: `(seconds: unknown) => string`
+ *
+ * @example
+ * ```ts
+ * uptime()(3661);                    // "1h01m01s"
+ * uptime({ separator: ' ' })(3661);  // "1 h 01 m 01 s"
+ * uptime({ units: 2 })(2700090);     // "31d06h"
+ * ```
+ */
 export function uptime(options?: UptimeOptions): (seconds: unknown) => string {
   const opts: UptimeOptions = { separator: '', units: 3, ...options };
   const separator = opts.separator ?? '';
