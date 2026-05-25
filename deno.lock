@@ -4,9 +4,7 @@
     "jsr:@epdoc/colors@^1.0.1": "1.0.1",
     "jsr:@epdoc/datetime@^4.0.1": "4.0.1",
     "jsr:@epdoc/duration@~0.3.12": "0.3.12",
-    "jsr:@epdoc/fmt@1": "1.0.0",
-    "jsr:@epdoc/fs@^1.4.7": "1.4.7",
-    "jsr:@epdoc/terminal@^0.0.12": "0.0.12",
+    "jsr:@epdoc/fmt@^1.0.1": "1.0.1",
     "jsr:@epdoc/type@1.0.3": "1.0.3",
     "jsr:@epdoc/type@^1.2.13": "1.2.13",
     "jsr:@std/assert@^1.0.19": "1.0.19",
@@ -20,7 +18,6 @@
     "jsr:@std/expect@^1.0.19": "1.0.19",
     "jsr:@std/fmt@*": "1.0.8",
     "jsr:@std/fmt@^1.0.10": "1.0.10",
-    "jsr:@std/fmt@^1.0.9": "1.0.10",
     "jsr:@std/fs@^1.0.23": "1.0.23",
     "jsr:@std/internal@^1.0.12": "1.0.13",
     "jsr:@std/internal@^1.0.13": "1.0.13",
@@ -53,28 +50,10 @@
     "@epdoc/duration@0.3.12": {
       "integrity": "47a57367edaf4ebd6035c879af17f5c018885ffaaf924dfe6d5f658578692d17"
     },
-    "@epdoc/fmt@1.0.0": {
-      "integrity": "427d1bb3ffdc9203e42dbda849a8ea3f2bd15c26c582f94e48a58ac564aff7f9",
+    "@epdoc/fmt@1.0.1": {
+      "integrity": "b26ce0f808453b9dd2e996423a39646a7e5aee47e87092c9e5742fff8107ce13",
       "dependencies": [
         "jsr:@std/fmt@^1.0.10"
-      ]
-    },
-    "@epdoc/fs@1.4.7": {
-      "integrity": "4250a22db91711a836b04a09777a5532177ef8ae4e018081f62842ff578f2efc",
-      "dependencies": [
-        "jsr:@std/assert",
-        "jsr:@std/bytes@^1.0.6",
-        "jsr:@std/encoding@^1.0.10",
-        "jsr:@std/path",
-        "jsr:@std/toml",
-        "jsr:@std/yaml"
-      ]
-    },
-    "@epdoc/terminal@0.0.12": {
-      "integrity": "b67307f5efed7ada7a94e138fa1aef314a107cd24c4d0ed32779290c1236e04a",
-      "dependencies": [
-        "jsr:@std/fmt@^1.0.9",
-        "jsr:@std/path"
       ]
     },
     "@epdoc/type@1.0.3": {
@@ -356,7 +335,7 @@
           "jsr:@epdoc/colors@^1.0.1",
           "jsr:@epdoc/datetime@^4.0.1",
           "jsr:@epdoc/duration@~0.3.12",
-          "jsr:@epdoc/fmt@1",
+          "jsr:@epdoc/fmt@^1.0.1",
           "jsr:@epdoc/type@^1.2.13",
           "jsr:@std/assert@^1.0.19",
           "jsr:@std/fmt@^1.0.10",
