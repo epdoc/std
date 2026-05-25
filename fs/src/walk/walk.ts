@@ -1,5 +1,5 @@
 import * as Spec from '$spec';
-import { include } from './filter.ts';
+import { include, shouldExclude } from './filter.ts';
 import type { WalkOptions } from './types.ts';
 
 /**
@@ -25,8 +25,19 @@ export async function* walk(
     canonicalize = true,
     exts = undefined,
     match = undefined,
+    exclude = undefined,
     skip = undefined,
   } = options ?? {};
+
+  // Error if both skip and exclude are provided
+  if (skip !== undefined && exclude !== undefined) {
+    throw new Error(
+      'Cannot use both `skip` and `exclude` options. `skip` is deprecated, please use `exclude` instead.',
+    );
+  }
+
+  // Use skip as exclude if exclude is not provided (backward compatibility)
+  const effectiveExclude = exclude ?? skip;
 
   if (maxDepth < 0) {
     return;
@@ -39,11 +50,16 @@ export async function* walk(
   }
   privateVisited.add(currentCanonicalRoot);
 
+  // Check if this directory should be excluded (pruned)
+  if (shouldExclude(fsRoot.path, effectiveExclude)) {
+    return;
+  }
+
   if (exts) {
     exts = exts.map((ext) => ext.startsWith('.') ? ext : `.${ext}`);
   }
 
-  if (includeDirs && include(fsRoot.path, exts, match, skip)) {
+  if (includeDirs && include(fsRoot.path, exts, match, effectiveExclude, undefined)) {
     yield fsRoot;
   }
 
@@ -56,7 +72,7 @@ export async function* walk(
   for (const dirent of dirents) {
     if (dirent instanceof Spec.SymlinkSpec) {
       if (!followSymlinks) {
-        if (includeSymlinks && include(dirent.path, exts, match, skip)) {
+        if (includeSymlinks && include(dirent.path, exts, match, effectiveExclude, undefined)) {
           yield dirent;
         }
         continue;
@@ -69,6 +85,11 @@ export async function* walk(
         continue;
       }
       privateVisited.add(canonicalRealPath); // Mark as visited
+
+      // Check if the symlink target should be excluded
+      if (shouldExclude(realPath, effectiveExclude)) {
+        continue;
+      }
 
       const fsRealEnt = await new Spec.FSSpec(realPath).resolvedType();
 
@@ -83,21 +104,26 @@ export async function* walk(
         };
         if (exts !== undefined) opts.exts = exts;
         if (match !== undefined) opts.match = match;
-        if (skip !== undefined) opts.skip = skip;
+        if (effectiveExclude !== undefined) opts.exclude = effectiveExclude;
 
         yield* walk(fsRealEnt, opts, privateVisited);
       } else if (fsRealEnt instanceof Spec.FileSpec) {
-        if (includeFiles && include(fsRealEnt.path, exts, match, skip)) {
+        if (includeFiles && include(fsRealEnt.path, exts, match, effectiveExclude, undefined)) {
           yield fsRealEnt;
         }
       } else if (fsRealEnt instanceof Spec.SymlinkSpec) {
         // This case should ideally not happen if realpath resolves to a non-symlink
         // but if it does, we yield it if includeSymlinks is true
-        if (includeSymlinks && include(fsRealEnt.path, exts, match, skip)) {
+        if (includeSymlinks && include(fsRealEnt.path, exts, match, effectiveExclude, undefined)) {
           yield fsRealEnt;
         }
       }
     } else if (dirent instanceof Spec.FolderSpec) {
+      // Check if this subdirectory should be excluded before descending
+      if (shouldExclude(dirent.path, effectiveExclude)) {
+        continue;
+      }
+
       const opts: WalkOptions = {
         maxDepth: maxDepth - 1,
         includeFiles,
@@ -108,11 +134,11 @@ export async function* walk(
       };
       if (exts !== undefined) opts.exts = exts;
       if (match !== undefined) opts.match = match;
-      if (skip !== undefined) opts.skip = skip;
+      if (effectiveExclude !== undefined) opts.exclude = effectiveExclude;
 
       yield* walk(dirent, opts, privateVisited);
     } else if (dirent instanceof Spec.FileSpec) {
-      if (includeFiles && include(dirent.path, exts, match, skip)) {
+      if (includeFiles && include(dirent.path, exts, match, effectiveExclude, undefined)) {
         const canonicalPath = canonicalize ? await dirent.realPath() : dirent.path;
         if (!privateVisited.has(canonicalPath)) {
           privateVisited.add(canonicalPath);

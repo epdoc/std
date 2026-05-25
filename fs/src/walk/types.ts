@@ -39,11 +39,19 @@ export interface WalkOptions {
    */
   exts?: string[];
   /**
-   * An array of regular expressions. Only entries whose paths match at least one of these patterns will be returned.
+   * An array of regular expressions. Only files whose paths match at least one of these patterns will be returned.
    */
   match?: RegExp[];
   /**
+   * An array of regular expressions. Paths matching any of these patterns will be excluded.
+   * If a directory matches, it will not be descended into. If a file matches, it will not be yielded.
+   * This is more efficient than the deprecated `skip` option as it prevents unnecessary directory traversal.
+   */
+  exclude?: RegExp[];
+  /**
    * An array of regular expressions. Entries whose paths match any of these patterns will be skipped.
+   * @deprecated Use `exclude` instead, which is more efficient as it prevents descending into excluded directories.
+   * @throws Error if both `skip` and `exclude` are provided.
    */
   skip?: RegExp[];
 }
