@@ -5,6 +5,7 @@
     "jsr:@epdoc/datetime@^4.0.1": "4.0.1",
     "jsr:@epdoc/duration@~0.3.12": "0.3.12",
     "jsr:@epdoc/fmt@^1.0.1": "1.0.1",
+    "jsr:@epdoc/fs@^1.5.0": "1.5.0",
     "jsr:@epdoc/type@1.0.3": "1.0.3",
     "jsr:@epdoc/type@^1.2.13": "1.2.13",
     "jsr:@std/assert@^1.0.19": "1.0.19",
@@ -54,6 +55,17 @@
       "integrity": "b26ce0f808453b9dd2e996423a39646a7e5aee47e87092c9e5742fff8107ce13",
       "dependencies": [
         "jsr:@std/fmt@^1.0.10"
+      ]
+    },
+    "@epdoc/fs@1.5.0": {
+      "integrity": "eccfa6011025c1716ade5363322513f7ed45fc4282e8ccfb295fbbc2cdd22e78",
+      "dependencies": [
+        "jsr:@std/assert",
+        "jsr:@std/bytes@^1.0.6",
+        "jsr:@std/encoding@^1.0.10",
+        "jsr:@std/path",
+        "jsr:@std/toml",
+        "jsr:@std/yaml"
       ]
     },
     "@epdoc/type@1.0.3": {
@@ -323,7 +335,7 @@
       },
       "response": {
         "dependencies": [
-          "jsr:@epdoc/fs@^1.4.7",
+          "jsr:@epdoc/fs@^1.5.0",
           "jsr:@epdoc/type@^1.2.13",
           "jsr:@std/assert@^1.0.19",
           "jsr:@std/expect@^1.0.19",
