@@ -116,6 +116,14 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
     return FileSpec.home('.config', ...args);
   }
 
+  static from(...args: FS.PathSegment[]): FileSpec {
+    return new FileSpec(...args);
+  }
+
+  static fromPath(f: FS.FilePath): FileSpec {
+    return new FileSpec(f);
+  }
+
   /**
    * Creates a new FileSpec from a file:// URL string.
    *

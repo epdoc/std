@@ -44,8 +44,15 @@ export function resolvePathArgs(...args: FS.PathSegment[]): FS.Path {
       }
     } else if (typeof item === 'string') {
       // If it's an absolute path but NOT the first argument, that's usually a bug
-      if (!isFirst && path.isAbsolute(item)) {
-        throw new Error(`Absolute path "${item}" found at index ${i}. Only the first argument can be absolute.`);
+      if (!isFirst) {
+        if (path.isAbsolute(item)) {
+          throw new Error(`Absolute path "${item}" found at index ${i}. Only the first argument can be absolute.`);
+        }
+        if (item.startsWith('~/')) {
+          throw new Error(
+            `Home relative path "${item}" found at index ${i}. Only the first argument can be home relative.`,
+          );
+        }
       }
       parts.push(item);
     } else {

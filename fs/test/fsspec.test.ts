@@ -1,8 +1,8 @@
-import * as FS from '@epdoc/fs/fs';
 import { expect } from '@std/expect';
 import { afterAll, beforeAll, describe, test } from '@std/testing/bdd';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
+import * as FS from '../src/fs.ts';
 
 describe('FSSpec', () => {
   let testDir: string;
