@@ -1,6 +1,6 @@
-import { DateTime, type IANATZ, type ISOTZ, type TzMinutes, util } from '@epdoc/datetime';
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
+import { DateTime, type IANATZ, type ISOTZ, type TzMinutes, util } from '../src/mod.ts';
 
 // TODO: remove skip when deno date is fixed
 
