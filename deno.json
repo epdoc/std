@@ -34,15 +34,15 @@
   "workspace": [
     "./type",
     "./colors",
+    "./duration",
     "./fmt",
     "./terminal",
     "./datetime",
-    "./duration",
     "./progress",
+    "./fs",
     "./response",
     "./text",
     "./daterange",
-    "./table",
-    "./fs"
+    "./table"
   ]
 }
