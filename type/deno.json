@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/type",
-  "version": "1.2.14",
+  "version": "1.2.15",
   "exports": {
     ".": "./src/mod.ts"
   },
@@ -23,6 +23,6 @@
   "imports": {
     "@std/encoding": "jsr:@std/encoding@^1.0.10",
     "@std/expect": "jsr:@std/expect@^1.0.19",
-    "@std/testing": "jsr:@std/testing@^1.0.18"
+    "@std/testing": "jsr:@std/testing@^1.0.19"
   }
 }
