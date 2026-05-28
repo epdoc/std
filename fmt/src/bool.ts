@@ -74,7 +74,11 @@ export const BOOL_PRESETS = {
 /**
  * Inferred preset name type from {@link BOOL_PRESETS}.
  */
-export type BoolPresetName = keyof typeof BOOL_PRESETS;
+export type BoolPreset = keyof typeof BOOL_PRESETS;
+
+export const BoolPreset: { [K in keyof typeof BOOL_PRESETS]: K } = Object.fromEntries(
+  Object.keys(BOOL_PRESETS).map((k) => [k, k]),
+) as { [K in keyof typeof BOOL_PRESETS]: K };
 
 /**
  * Factory function that creates a boolean formatter.
@@ -95,7 +99,7 @@ export type BoolPresetName = keyof typeof BOOL_PRESETS;
  * formatter: formatters.bool({ trueChar: 'YES', falseChar: 'no', trueColor: 0x00ff00 })
  * ```
  */
-export function bool(options?: BoolPresetName | BoolFormatterOptions): (value: unknown) => string {
+export function bool(options?: BoolPreset | BoolFormatterOptions): (value: unknown) => string {
   // 1. Resolve configuration immediately during initialization
   let config: BoolFormatterOptions;
 
