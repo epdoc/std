@@ -1,6 +1,6 @@
-import { pad } from '@epdoc/type';
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
+import { pad } from '../src/mod.ts';
 
 describe('pad', () => {
   describe('numbers (default pad: "0")', () => {

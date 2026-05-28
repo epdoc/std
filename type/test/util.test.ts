@@ -1,4 +1,6 @@
-import type { DigitChar, ExactlyOne, IError, LetterChar, LowerCaseChar, UpperCaseChar } from '@epdoc/type';
+import { expect } from '@std/expect';
+import { describe, it } from '@std/testing/bdd';
+import type { DigitChar, ExactlyOne, IError, LetterChar, LowerCaseChar, UpperCaseChar } from '../src/mod.ts';
 import {
   asBoolean,
   asDate,
@@ -37,9 +39,7 @@ import {
   msubLite,
   pad,
   underscoreCapitalize,
-} from '@epdoc/type';
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+} from '../src/mod.ts';
 
 describe('util', () => {
   describe('number', () => {
