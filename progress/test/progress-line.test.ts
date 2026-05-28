@@ -2,6 +2,13 @@ import { expect } from '@std/expect';
 import { describe, test } from '@std/testing/bdd';
 import * as Progress from '../src/mod.ts';
 
+/**
+ * Test delay constant for async operations.
+ * Increase this value during manual debugging to observe visual output.
+ * Default is 10ms for fast test execution.
+ */
+const TEST_DELAY_MS = 10;
+
 describe('Progress.Line', () => {
   describe('constructor', () => {
     test('should create instance with default spinner options', () => {
@@ -87,30 +94,30 @@ describe('Progress.Line', () => {
     test('should start and stop', async () => {
       const progress = new Progress.Line({ type: 'spinner', index: 'braille' });
       progress.start('Testing...');
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS * 2));
       progress.stop();
     });
 
     test('should start and stop with color', async () => {
       const progress = new Progress.Line({ type: 'spinner', index: 'brailleCircle', color: 'cyan' });
       progress.start('Loading...');
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS * 2));
       progress.stop('Done!');
     });
 
     test('should start and stop with hex color', async () => {
       const progress = new Progress.Line({ type: 'spinner', index: 'brailleDots', color: 0x50C878 });
       progress.start('Processing...');
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS * 2));
       progress.stop();
     });
 
     test('should update message while running', async () => {
       const progress = new Progress.Line({ type: 'spinner', index: 'braille', color: 'yellow' });
       progress.start('Step 1...');
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS));
       progress.update('Step 2...');
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS));
       progress.stop('Complete!');
     });
   });
@@ -119,30 +126,30 @@ describe('Progress.Line', () => {
     test('should start and stop with bouncing ball', async () => {
       const progress = new Progress.Line({ type: 'bounce', index: 'ball', color: 'cyan' });
       progress.start('Bouncing...');
-      await new Promise((resolve) => setTimeout(resolve, 400));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS * 4));
       progress.stop('Done!');
     });
 
     test('should start and stop with sliding blocks', async () => {
       const progress = new Progress.Line({ type: 'bounce', index: 'comet', color: 'purple' });
       progress.start('Thinking...');
-      await new Promise((resolve) => setTimeout(resolve, 400));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS * 4));
       progress.stop('Complete!');
     });
 
     test('should start and stop with hex color', async () => {
       const progress = new Progress.Line({ type: 'bounce', index: 'ball', color: 0xA040D0 });
       progress.start('Working...');
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS * 2));
       progress.stop();
     });
 
     test('should update message while bouncing', async () => {
       const progress = new Progress.Line({ type: 'bounce', index: 'comet', color: 'magenta' });
       progress.start('Phase 1...');
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS * 2));
       progress.update('Phase 2...');
-      await new Promise((resolve) => setTimeout(resolve, 200));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS * 2));
       progress.stop('All phases done!');
     });
   });
@@ -151,9 +158,9 @@ describe('Progress.Line', () => {
     test('should display progress bar', async () => {
       const progress = new Progress.Line({ type: 'horizontal', total: 20, width: 10 });
       progress.start('Downloading...');
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS));
       progress.update('Downloading...', 10);
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS));
       progress.stop('Download complete!');
     });
 
@@ -161,11 +168,11 @@ describe('Progress.Line', () => {
       const progress = new Progress.Line({ type: 'horizontal', total: 10, width: 20, color: 'green' });
       progress.start('Processing...');
       progress.update('Processing...', 2.5);
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS));
       progress.update('Processing...', 5);
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS));
       progress.update('Processing...', 10);
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS));
       progress.stop('Processing complete!');
     });
 
@@ -174,7 +181,7 @@ describe('Progress.Line', () => {
       progress.start('Fine-grained progress...');
       for (let i = 0; i <= 40; i += 4) {
         progress.update(`Progress: ${i}/40`, i);
-        await new Promise((resolve) => setTimeout(resolve, 30));
+        await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS / 3));
       }
       progress.stop('Complete!');
     });
@@ -183,12 +190,12 @@ describe('Progress.Line', () => {
       const progress = new Progress.Line({ type: 'horizontal', total: 10, width: 10, color: 'blue' });
       progress.start('Testing edges...');
       progress.update('Starting...', 0);
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS / 2));
       progress.update('Complete...', 10);
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS / 2));
       // Progress exceeds total — should clamp without visual artifacts
       progress.update('Overcomplete...', 15);
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS / 2));
       progress.stop('Done!');
     });
 
@@ -204,7 +211,7 @@ describe('Progress.Line', () => {
       progress.start('Volume...');
       for (let i = 0; i <= 8; i++) {
         progress.update(`Level: ${i}/8`, i);
-        await new Promise((resolve) => setTimeout(resolve, 50));
+        await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS / 2));
       }
       progress.stop('Done!');
     });
@@ -214,7 +221,7 @@ describe('Progress.Line', () => {
       progress.start('Fill level...');
       for (let i = 0; i <= 100; i += 25) {
         progress.update(`Level: ${i}%`, i);
-        await new Promise((resolve) => setTimeout(resolve, 50));
+        await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS / 2));
       }
       progress.stop('Full!');
     });
@@ -223,7 +230,7 @@ describe('Progress.Line', () => {
       const progress = new Progress.Line({ type: 'vertical', total: 10, color: 0xD070D0 });
       progress.start('Testing vertical clamp...');
       progress.update('Over max...', 15);
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS / 2));
       progress.stop('Done!');
     });
 
@@ -248,18 +255,18 @@ describe('Progress.Line', () => {
     test('should restart when start is called while active', async () => {
       const progress = new Progress.Line({ type: 'spinner', index: 'braille' });
       progress.start('First message...');
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS));
       progress.start('Second message...');
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS));
       progress.stop();
     });
 
     test('should show final message on stop', async () => {
       const progress = new Progress.Line({ type: 'horizontal', total: 10, width: 10 });
       progress.start('Processing...');
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS));
       progress.update('Almost done...', 9);
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS));
       progress.stop('Complete!');
     });
 
@@ -267,29 +274,29 @@ describe('Progress.Line', () => {
       // Spinner mode
       const spinner = new Progress.Line({ type: 'spinner', index: 'braille', color: 'cyan' });
       spinner.start('First task...');
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS));
       spinner.stop('First done!');
 
       // Bounce mode
       const bouncer = new Progress.Line({ type: 'bounce', index: 'comet', color: 'purple' });
       bouncer.start('Second task...');
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS));
       bouncer.stop('Second done!');
 
       // Horizontal bar mode
       const bar = new Progress.Line({ type: 'horizontal', total: 5, width: 10, color: 'green' });
       bar.start('Third task...');
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS));
       bar.update('Third task...', 3);
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS));
       bar.stop('Third done!');
 
       // Vertical fill mode
       const fill = new Progress.Line({ type: 'vertical', total: 10, color: 'orange' });
       fill.start('Fourth task...');
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS));
       fill.update('Fourth task...', 7);
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS));
       fill.stop('Fourth done!');
     });
   });
@@ -313,7 +320,7 @@ describe('Progress.Line', () => {
     test('should fall back to default for unrecognized color names', async () => {
       const progress = new Progress.Line({ type: 'spinner', index: 'braille', color: 'nonexistent' });
       progress.start('Testing fallback...');
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, TEST_DELAY_MS));
       progress.stop();
     });
 

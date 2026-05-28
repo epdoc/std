@@ -80,7 +80,7 @@ function resolveColor(color: Progress.Color | undefined): number {
  * ```
  */
 export class ProgressLine {
-  #intervalId?: number;
+  #intervalId?: NodeJS.Timeout;
   #frameIndex = 0;
   #currentMessage = '';
   #isActive = false;
