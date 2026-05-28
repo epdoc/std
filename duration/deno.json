@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/duration",
-  "version": "0.3.12",
+  "version": "0.3.13",
   "description": "Duration formatting",
   "exports": {
     ".": "./src/mod.ts"
@@ -26,6 +26,6 @@
   "imports": {
     "@epdoc/type": "jsr:@epdoc/type@^1.2.13",
     "@std/expect": "jsr:@std/expect@^1.0.19",
-    "@std/testing": "jsr:@std/testing@^1.0.18"
+    "@std/testing": "jsr:@std/testing@^1.0.19"
   }
 }
