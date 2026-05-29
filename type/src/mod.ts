@@ -63,5 +63,6 @@
 export * from './combiner.ts';
 export * as _ from './combiner.ts';
 export * from './dictutil.ts';
+export type * from './semver.ts';
 export { default as stripJsonComments } from './strip-comments.ts';
 export * from './types.ts';
