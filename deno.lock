@@ -2,6 +2,7 @@
   "version": "5",
   "specifiers": {
     "jsr:@deno/graph@*": "0.108.2",
+    "jsr:@epdoc/colors@^1.0.1": "1.0.1",
     "jsr:@epdoc/datetime@^4.0.2": "4.0.3",
     "jsr:@epdoc/datetime@^4.0.3": "4.0.3",
     "jsr:@epdoc/duration@~0.3.14": "0.3.14",
@@ -35,6 +36,12 @@
   "jsr": {
     "@deno/graph@0.108.2": {
       "integrity": "b273a0d33dc42cbed5bead5a0593c10c2ebcd9b02939c648647ed238db5438a6"
+    },
+    "@epdoc/colors@1.0.1": {
+      "integrity": "15b07840a2cad74bf9f6892f387de1e9fb28b7b672b6edc491badc6980698e6b",
+      "dependencies": [
+        "jsr:@std/fmt@^1.0.10"
+      ]
     },
     "@epdoc/datetime@2.0.0-beta.4": {
       "integrity": "432b2b266ba6c32de75b6ea72152d9443bd96ca30257311a36a2777b13061d7a"
