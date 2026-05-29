@@ -59,6 +59,7 @@
 import * as Util from '$util';
 import { walk, type WalkOptions } from '$walk';
 import { _, type Dict, type Integer } from '@epdoc/type';
+import { expandGlob } from '@std/fs';
 import { type Dirent, promises as nfs } from 'node:fs';
 import path from 'node:path';
 import type * as FS from '../types.ts';
@@ -742,6 +743,49 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
    */
   async walk(opts: WalkOptions): Promise<(FileSpec | FolderSpec | SymlinkSpec | FSSpec)[]> {
     return await Array.fromAsync(walk(this, opts));
+  }
+
+  /**
+   * Expands one or more glob patterns and returns matching files and folders within this directory.
+   *
+   * Supports multiple glob patterns, where patterns starting with `!` act as excludes.
+   * Globs are resolved relative to this folder's path.
+   *
+   * @param globs - An array of glob patterns to match. Patterns starting with `!` will exclude matches.
+   * @param opts - Options for glob expansion, supporting Deno's `ExpandGlobOptions`.
+   * @returns {Promise<(FileSpec | FolderSpec)[]>} A promise that resolves to an array of matching `FileSpec` and `FolderSpec` instances.
+   *
+   * @example
+   * ```ts
+   * const srcFolder = new FolderSpec('/project/src');
+   * // Find all .ts files, excluding test files
+   * const files = await srcFolder.expandGlob(['**\\/*.ts', '!**\\/*.test.ts']);
+   * ```
+   */
+  async expandGlob(globs: string[], opts: FS.ExpandGlobOptions = {}): Promise<(FileSpec | FolderSpec)[]> {
+    const includeGlobs = globs.filter((g) => !g.startsWith('!'));
+    const excludeGlobs = globs.filter((g) => g.startsWith('!')).map((g) => g.slice(1));
+
+    const result: (FileSpec | FolderSpec)[] = [];
+
+    for (const glob of includeGlobs) {
+      const entries = expandGlob(glob, {
+        ...opts,
+        root: this.path,
+        exclude: excludeGlobs,
+      });
+
+      for await (const entry of entries) {
+        if (entry.isFile) {
+          const file = new FileSpec(entry.path as FS.FilePath);
+          result.push(file);
+        } else if (entry.isDirectory && opts.includeDirs !== false) {
+          const folder = new FolderSpec(entry.path as FS.FolderPath);
+          result.push(folder);
+        }
+      }
+    }
+    return result;
   }
 
   // ============================================================================

@@ -178,6 +178,33 @@ describe('FolderSpec', () => {
     });
   });
 
+  describe('expandGlob', () => {
+    test('expands basic globs', async () => {
+      const folder = new FolderSpec(testDir);
+      const results = await folder.expandGlob(['**/*.txt']);
+      expect(results.length).toBe(2);
+      const paths = results.map((r) => r.name).sort();
+      expect(paths).toEqual(['file1.txt', 'nested.txt']);
+    });
+
+    test('respects exclude globs (! prefix)', async () => {
+      const folder = new FolderSpec(testDir);
+      const results = await folder.expandGlob(['**/*.txt', '!**/nested.txt']);
+      expect(results.length).toBe(1);
+      expect(results[0].name).toBe('file1.txt');
+    });
+
+    test('respects includeDirs option', async () => {
+      const folder = new FolderSpec(testDir);
+      // match everything in root
+      const withDirs = await folder.expandGlob(['*']);
+      expect(withDirs.some((r) => r instanceof FolderSpec)).toBe(true);
+
+      const withoutDirs = await folder.expandGlob(['*'], { includeDirs: false });
+      expect(withoutDirs.some((r) => r instanceof FolderSpec)).toBe(false);
+    });
+  });
+
   describe('cwd', () => {
     test('FolderSpec.cwd() returns a FolderSpec for the current working directory', () => {
       const cwdSpec = FolderSpec.cwd();
