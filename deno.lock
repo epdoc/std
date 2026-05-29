@@ -5,6 +5,7 @@
     "jsr:@epdoc/colors@^1.0.1": "1.0.1",
     "jsr:@epdoc/datetime@^4.0.3": "4.0.3",
     "jsr:@epdoc/fmt@^1.0.4": "1.0.4",
+    "jsr:@epdoc/terminal@^0.0.13": "0.0.13",
     "jsr:@epdoc/type@1.0.3": "1.0.3",
     "jsr:@std/assert@^1.0.19": "1.0.19",
     "jsr:@std/bytes@^1.0.5": "1.0.5",
@@ -61,6 +62,13 @@
       "integrity": "98f8bd7505a8bfe13b58f1537c372e8c402b7e45b3143e55e34b220a171ae4f2",
       "dependencies": [
         "jsr:@std/fmt@^1.0.10"
+      ]
+    },
+    "@epdoc/terminal@0.0.13": {
+      "integrity": "ae9efcf30bd471e8012124e0dba641eead2972242c706757c89e2197db7ea8a8",
+      "dependencies": [
+        "jsr:@std/fmt@^1.0.10",
+        "jsr:@std/path@^1.1.5"
       ]
     },
     "@epdoc/type@1.0.3": {
