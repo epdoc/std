@@ -4,7 +4,6 @@
     "jsr:@deno/graph@*": "0.108.2",
     "jsr:@epdoc/colors@^1.0.1": "1.0.1",
     "jsr:@epdoc/datetime@^4.0.3": "4.0.3",
-    "jsr:@epdoc/duration@~0.3.14": "0.3.14",
     "jsr:@epdoc/fmt@^1.0.4": "1.0.4",
     "jsr:@epdoc/type@1.0.3": "1.0.3",
     "jsr:@std/assert@^1.0.19": "1.0.19",
@@ -57,9 +56,6 @@
     },
     "@epdoc/datetime@4.0.3": {
       "integrity": "bbd150870e6d0f3ea7f5de9c4eec18badbea8b04267e45d3e6943d546de8c350"
-    },
-    "@epdoc/duration@0.3.14": {
-      "integrity": "0518e5f518de638e6f3f684941029d2cbe34874120d3fef8accb7d878394f07c"
     },
     "@epdoc/fmt@1.0.4": {
       "integrity": "98f8bd7505a8bfe13b58f1537c372e8c402b7e45b3143e55e34b220a171ae4f2",
