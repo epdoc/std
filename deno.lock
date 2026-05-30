@@ -2,7 +2,8 @@
   "version": "5",
   "specifiers": {
     "jsr:@deno/graph@*": "0.108.2",
-    "jsr:@epdoc/datetime@^4.1.0": "4.1.0",
+    "jsr:@epdoc/datetime@^4.1.0": "4.1.1",
+    "jsr:@epdoc/datetime@^4.1.1": "4.1.1",
     "jsr:@epdoc/duration@~0.3.16": "0.3.16",
     "jsr:@epdoc/type@1.0.3": "1.0.3",
     "jsr:@epdoc/type@^1.2.17": "1.2.17",
@@ -53,6 +54,9 @@
     },
     "@epdoc/datetime@4.1.0": {
       "integrity": "5348a046efd3fddcfb407de541b91d1e3228d3a309df1dbd1d3b7ee71128e8d0"
+    },
+    "@epdoc/datetime@4.1.1": {
+      "integrity": "03cb2db7c5fbc929e21b4fccb81652f299a2b236e991bf37e2a54e48498c4b86"
     },
     "@epdoc/duration@0.3.16": {
       "integrity": "036f2328a7e7e376a1b8df685695815bf11c32004d081728b6699a1fd453a539"
@@ -273,7 +277,7 @@
       },
       "daterange": {
         "dependencies": [
-          "jsr:@epdoc/datetime@^4.1.0",
+          "jsr:@epdoc/datetime@^4.1.1",
           "jsr:@epdoc/type@^1.2.17",
           "jsr:@std/expect@^1.0.19",
           "jsr:@std/testing@^1.0.19"
