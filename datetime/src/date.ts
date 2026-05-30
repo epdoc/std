@@ -1,6 +1,6 @@
 import type { CompareResult } from '@epdoc/type';
 import { _ } from '@epdoc/type';
-import type { GoogleSheetsDate, IANATZ, ISOTZ, ISOTzDate, JulianDay, TzAny, TzMinutes } from './types.ts';
+import type { GoogleSheetsDate, IANATZ, ISODateOffset, ISOTZ, JulianDay, TzAny, TzMinutes } from './types.ts';
 import { INSTANT_MAX, INSTANT_MIN } from './types.ts';
 import * as util from './utils.ts';
 
@@ -1288,7 +1288,7 @@ export class DateTime {
    * console.log(d.toISOString({ fractionalSecondDigits: 0 })); // "2024-03-15T06:30:00-04:00"
    * ```
    */
-  public toISOLocalString(showMs: boolean = true): ISOTzDate {
+  public toISOLocalString(showMs: boolean = true): ISODateOffset {
     // 1. Ensure we have a ZonedDateTime to get an accurate offset-aware string
     const zdt = this._value instanceof Temporal.ZonedDateTime
       ? this._value
@@ -1303,7 +1303,7 @@ export class DateTime {
       offset: 'auto', // 'auto' uses 'Z' for UTC, '+HH:MM' otherwise
     });
 
-    return result as ISOTzDate;
+    return result as ISODateOffset;
   }
 
   /**

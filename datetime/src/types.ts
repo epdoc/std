@@ -1,6 +1,86 @@
 export type { Brand } from '@epdoc/type';
 import type { Brand, Integer } from '@epdoc/type';
 
+// ==========================================
+// 1. Strict Template Literal Building Blocks
+// ==========================================
+
+/** A 4-digit year in template literal format: `${number}${number}${number}${number}` */
+export type ISOYear = `${number}${number}${number}${number}`;
+
+/** A 2-digit month in template literal format: `${number}${number}` */
+export type ISOMonth = `${number}${number}`;
+
+/** A 2-digit day in template literal format: `${number}${number}` */
+export type ISODay = `${number}${number}`;
+
+/** A 2-digit hour in template literal format: `${number}${number}` */
+export type ISOHour = `${number}${number}`;
+
+/** A 2-digit minute in template literal format: `${number}${number}` */
+export type ISOMinute = `${number}${number}`;
+
+/** A 2-digit second in template literal format: `${number}${number}` */
+export type ISOSecond = `${number}${number}`;
+
+/**
+ * Fractional seconds with 1-9 digit precision.
+ * Temporal supports millisecond to nanosecond precision (3-9 digits).
+ * Matches patterns like "123", "123456", "123456789".
+ */
+export type ISOFractionalSeconds = `${number}${number}${number}${string}` | `${number}${number}${number}`;
+
+/**
+ * Strict ISO 8601 timezone offset without the 'Z' suffix.
+ * Pattern: `${'+' | '-'}${number}${number}:${number}${number}`
+ * @example "+05:00", "-06:00"
+ */
+export type StrictOffset = `${'+' | '-'}${number}${number}:${number}${number}`;
+
+/**
+ * Strict ISO 8601 timezone offset including 'Z' for UTC.
+ * @example "Z", "+05:00", "-06:00"
+ */
+export type StrictISOTZ = 'Z' | StrictOffset;
+
+/**
+ * ISO 8601 date-only format: YYYY-MM-DD
+ * @example "2024-03-15"
+ */
+export type ISO8601DateOnly = `${ISOYear}-${ISOMonth}-${ISODay}`;
+
+/**
+ * ISO 8601 time-only format with optional fractional seconds.
+ * @example "10:30:00", "10:30:00.123", "10:30:00.123456"
+ */
+export type ISOTimeOnly =
+  | `${ISOHour}:${ISOMinute}:${ISOSecond}`
+  | `${ISOHour}:${ISOMinute}:${ISOSecond}.${ISOFractionalSeconds}`;
+
+// ==========================================
+// 2. Temporal-Aligned String Patterns
+// ==========================================
+
+/**
+ * ISO 8601 instant pattern (UTC with 'Z' suffix).
+ * Matches Temporal.Instant.toString() output.
+ * @example "2024-03-15T10:30:00Z", "2024-03-15T10:30:00.123Z"
+ */
+export type PatternInstant = `${ISO8601DateOnly}T${ISOTimeOnly}Z`;
+
+/**
+ * ISO 8601 pattern with numeric timezone offset.
+ * @example "2024-03-15T10:30:00+05:00", "2024-03-15T10:30:00.123-06:00"
+ */
+export type PatternOffset = `${ISO8601DateOnly}T${ISOTimeOnly}${StrictOffset}`;
+
+/**
+ * ISO 8601 zoned date-time pattern with IANA timezone name.
+ * Matches Temporal.ZonedDateTime.toString() output.
+ * @example "2024-03-15T10:30:00+05:00[Asia/Kolkata]", "2024-03-15T10:30:00Z[Europe/London]"
+ */
+export type PatternZoned = `${ISO8601DateOnly}T${ISOTimeOnly}${StrictISOTZ}[${string}]`;
+
 export type TzAny = 'local' | 'utc' | TzMinutes | ISOTZ | IANATZ;
 /**
  * Represents a timezone offset in minutes from UTC.
@@ -12,29 +92,43 @@ export type TzAny = 'local' | 'utc' | TzMinutes | ISOTZ | IANATZ;
 export type TzMinutes = Brand<Integer, 'TzMinutes'>;
 
 /**
- * A string representing a date in ISO 8601 format using UTC
- * @example "2024-01-01T12:00:00Z"
+ * The ultimate generic ISO 8601 Date/Time string.
+ * Encompasses all valid variations of full timestamp formats.
  */
-export type ISODate = Brand<string, 'ISODate'>;
+export type ISODate = ISODateInstant | ISODateOffset;
+export type ISODateAny = ISODateInstant | ISODateOffset | ISODateZoned;
 
 /**
- * A string representing a date in ISO 8601 format using the local timezone
+ * Matches Temporal.Instant.toString()
+ * Always pinned to UTC with a trailing 'Z'.
+ * @example "2026-05-30T15:30:00Z"
+ */
+export type ISODateInstant = Brand<PatternInstant, 'ISODateInstant'>;
+
+/**
+ * Matches a date-time with a numeric offset, but no named timezone location.
  * @example "2024-01-01T12:00:00-06:00"
  */
-export type ISOTzDate = ISODate & { readonly __tz: true };
+export type ISODateOffset = Brand<PatternOffset, 'ISODateOffset'> & { readonly __tz: true };
+
+/**
+ * Matches Temporal.ZonedDateTime.toString()
+ * Includes the exact IANA geographic timezone in brackets.
+ * @example "2026-05-30T09:30:00-06:00[America/Chicago]"
+ * @example "2026-05-30T15:30:00Z[Europe/London]"
+ */
+export type ISODateZoned = Brand<PatternZoned, 'ISODateZoned'>;
 
 /**
  * A string representing a timezone offset in ISO 8601 format.
  * @example "-06:00", "+01:00", "Z"
  */
-export type ISOTZ = Brand<string, 'ISOTZ'>;
-
+export type ISOTZ = Brand<StrictISOTZ, 'ISOTZ'>;
 /**
  * A string representing a timezone offset in GMT format.
  * @example "GMT-05:00", "GMT+01:00"
  */
-export type GMTTZ = Brand<string, 'GMTTZ'>;
-
+export type GMTTZ = Brand<`GMT${StrictISOTZ}`, 'GMTTZ'>;
 /**
  * A string representing a timezone offset in the format found in PDF file
  * date strings.

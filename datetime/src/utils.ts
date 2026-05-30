@@ -1,8 +1,23 @@
 import { _ } from '@epdoc/type';
-import type { DateParseOptions, GMTTZ, GoogleSheetsDate, IANATZ, ISODate, ISOTZ, PDFTZ, TzMinutes } from './types.ts';
+import type {
+  DateParseOptions,
+  GMTTZ,
+  GoogleSheetsDate,
+  IANATZ,
+  ISODate,
+  ISODateInstant,
+  ISODateOffset,
+  ISODateZoned,
+  ISOTZ,
+  PDFTZ,
+  TzMinutes,
+} from './types.ts';
 
 const REG = {
   isoDate: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|([+-]\d{2}:\d{2}))?$/,
+  isoDateInstant: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/,
+  isoDateOffset: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?[+-]\d{2}:\d{2}$/,
+  isoDateZoned: /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})\[[^\]]+\]$/,
   isoTz: /^(Z|((\+|\-)(\d\d):(\d\d)))$/,
   gmtTz: /GMT([+-])(\d{1,2}):?(\d{2})?/,
   pdfTz: /Z|((\+|\-)(\d\d)(\d\d)?)$/,
@@ -17,6 +32,39 @@ const REG = {
  */
 export function isISODate(s: unknown): s is ISODate {
   return _.isString(s) && REG.isoDate.test(s);
+}
+
+/**
+ * Checks if a value is a valid ISO 8601 instant string (UTC with 'Z' suffix).
+ * Valid formats include: "2024-03-15T10:30:00Z", "2024-03-15T10:30:00.123Z"
+ * This matches Temporal.Instant.toString() output.
+ * @param s - The value to check
+ * @returns True if the value is a valid ISO instant string
+ */
+export function isISODateInstant(s: unknown): s is ISODateInstant {
+  return _.isString(s) && REG.isoDateInstant.test(s);
+}
+
+/**
+ * Checks if a value is a valid ISO 8601 date-time with offset (no timezone name).
+ * Valid formats include: "2024-03-15T10:30:00+05:00", "2024-03-15T10:30:00.123-06:00"
+ * This represents a date-time with a numeric offset but no IANA timezone location.
+ * @param s - The value to check
+ * @returns True if the value is a valid ISO date-time with offset
+ */
+export function isISODateOffset(s: unknown): s is ISODateOffset {
+  return _.isString(s) && REG.isoDateOffset.test(s);
+}
+
+/**
+ * Checks if a value is a valid ISO 8601 zoned date-time string.
+ * Valid formats include: "2024-03-15T10:30:00+05:00[Asia/Kolkata]", "2024-03-15T10:30:00Z[Europe/London]"
+ * This matches Temporal.ZonedDateTime.toString() output with timezone name in brackets.
+ * @param s - The value to check
+ * @returns True if the value is a valid ISO zoned date-time string
+ */
+export function isISODateZoned(s: unknown): s is ISODateZoned {
+  return _.isString(s) && REG.isoDateZoned.test(s);
 }
 
 /**
