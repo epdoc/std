@@ -4,7 +4,7 @@
  * This module exports the type definitions for the @epdoc/daterange package.
  */
 
-import { DateTime, type ISODate } from '@epdoc/datetime';
+import { DateTime, type ISODateInstant } from '@epdoc/datetime';
 import { _ } from '@epdoc/type';
 
 /**
@@ -47,9 +47,9 @@ export type DateRangeDef = {
  */
 export type DateRangeJSON = {
   /** ISO 8601 formatted instant string for the start of the range */
-  after?: ISODate;
+  after?: ISODateInstant;
   /** ISO 8601 formatted instant string for the end of the range */
-  before?: ISODate;
+  before?: ISODateInstant;
 };
 
 /**

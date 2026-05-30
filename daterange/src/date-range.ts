@@ -4,7 +4,7 @@
  * Provides the DateRange class for representing and manipulating a single date
  * range using DateTime objects.
  */
-import { DateTime } from '@epdoc/datetime';
+import { DateTime, type ISODateInstant } from '@epdoc/datetime';
 import { parseRelativeTime } from './relative-time.ts';
 import { type DateRangeDef, type DateRangeJSON, isDateRangeDef } from './types.ts';
 
@@ -144,8 +144,8 @@ export class DateRange {
    */
   toJSON(): DateRangeJSON {
     const result: DateRangeJSON = {};
-    if (!this.after.isNearMin()) result.after = this.after.toISOString() as import('@epdoc/datetime').ISODate;
-    if (!this.before.isNearMax()) result.before = this.before.toISOString() as import('@epdoc/datetime').ISODate;
+    if (!this.after.isNearMin()) result.after = this.after.toISOString() as ISODateInstant;
+    if (!this.before.isNearMax()) result.before = this.before.toISOString() as ISODateInstant;
     return result;
   }
 

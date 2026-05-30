@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import { DateTime, type ISODate } from '@epdoc/datetime';
+import { DateTime, type ISODateInstant } from '@epdoc/datetime';
 import { expect } from '@std/expect';
 import { describe, test } from '@std/testing/bdd';
 import {
@@ -496,7 +496,7 @@ describe('daterange', () => {
     });
 
     test('should handle invalid date strings gracefully', () => {
-      const dr = DateRanges.fromJSON([{ after: 'invalid date' as unknown as ISODate }]);
+      const dr = DateRanges.fromJSON([{ after: 'invalid date' as unknown as ISODateInstant }]);
       expect(dr).toBeDefined();
       expect(dr.ranges.length).toBe(0);
     });
