@@ -1,6 +1,16 @@
 import type { CompareResult } from '@epdoc/type';
 import { _ } from '@epdoc/type';
-import type { GoogleSheetsDate, IANATZ, ISODateOffset, ISOTZ, JulianDay, TzAny, TzMinutes } from './types.ts';
+import type {
+  GoogleSheetsDate,
+  IANATZ,
+  ISODate,
+  ISODateInstant,
+  ISODateOffset,
+  ISOTZ,
+  JulianDay,
+  TzAny,
+  TzMinutes,
+} from './types.ts';
 import { INSTANT_MAX, INSTANT_MIN } from './types.ts';
 import * as util from './utils.ts';
 
@@ -1251,11 +1261,11 @@ export class DateTime {
    * console.log(d2.toISOString({ fractionalSecondDigits: 3 })); // "2024-03-15T05:30:00.000-05:00"
    * ```
    */
-  public toISOString(options?: { fractionalSecondDigits?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 'auto' }): string {
+  public toISOString(options?: { fractionalSecondDigits?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 'auto' }): ISODate {
     if (this._value instanceof Temporal.Instant) {
-      return this._value.toString(options);
+      return this._value.toString(options) as ISODateInstant;
     } else if (this._value instanceof Temporal.ZonedDateTime) {
-      return this._value.toString({ timeZoneName: 'never', ...options });
+      return this._value.toString({ timeZoneName: 'never', ...options }) as ISODateOffset;
     } else if (this._value instanceof Temporal.PlainDateTime) {
       throw new Error('Cannot convert PlainDateTime to ISO string: use withTz() to set a timezone first');
     }
