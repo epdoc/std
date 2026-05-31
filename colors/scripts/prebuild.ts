@@ -1,6 +1,5 @@
 import { palette } from '../src/colorspec.ts';
 
-// 1. Define the output path relative to this script
 const outputPath = new URL('../src/colors.gen.ts', import.meta.url);
 
 const lines: string[] = [
@@ -10,16 +9,24 @@ const lines: string[] = [
   '',
 ];
 
-// 2. Safely iterate over the palette keys using for...of
 for (const name of Object.keys(palette)) {
   lines.push(`export const ${name} = (s: string): string => rgb24(s, palette.${name});`);
 }
 
+const newContent = lines.join('\n') + '\n';
+
 try {
-  // 3. Write the file to the src/ directory
-  await Deno.writeTextFile(outputPath, lines.join('\n') + '\n');
-  console.log(`Successfully generated: src/colors.gen.ts`);
+  // 1. Read the existing file if it exists
+  const existingContent = await Deno.readTextFile(outputPath).catch(() => null);
+
+  // 2. Only write if the content has actually changed
+  if (existingContent === newContent) {
+    console.log(`src/colors.gen.ts is up to date (no changes).`);
+  } else {
+    await Deno.writeTextFile(outputPath, newContent);
+    console.log(`Successfully generated: src/colors.gen.ts`);
+  }
 } catch (error) {
-  console.error('Failed to write generated color file:', error);
+  console.error('Failed to process color file generation:', error);
   Deno.exit(1);
 }
