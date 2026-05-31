@@ -435,7 +435,9 @@ describe('date-util', () => {
       const d = DateTime.from('2024-03-15T10:30:00.000Z');
       const result = d.toISOString();
       // Temporal may return either Z or +00:00 for UTC
-      expect(result === '2024-03-15T10:30:00Z' || result === '2024-03-15T10:30:00+00:00').toBe(true);
+      expect(result === '2024-03-15T10:30:00Z' || result === '2024-03-15T10:30:00+00:00').toBe(
+        true,
+      );
     });
 
     it('should return string with offset for ZonedDateTime', () => {

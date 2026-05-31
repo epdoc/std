@@ -1261,7 +1261,21 @@ export class DateTime {
    * console.log(d2.toISOString({ fractionalSecondDigits: 3 })); // "2024-03-15T05:30:00.000-05:00"
    * ```
    */
-  public toISOString(options?: { fractionalSecondDigits?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 'auto' }): ISODate {
+  public toISOString(options?: { fractionalSecondDigits?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 'auto' }): string {
+    return this.toISODate(options) as string;
+  }
+
+  /**
+   * Differs from toISOString only in the Typescript return type.
+   *
+   * @param options - Optional configuration for the output format
+   * @param options.fractionalSecondDigits - Number of fractional second digits (0-9) to show.
+   *   Use 0 to hide fractional seconds, 3 to show milliseconds, or 'auto' (default) to show
+   *   nonzero fractional seconds only. Matches Temporal's toString() behavior.
+   * @returns ISO 8601 formatted string
+   * @throws Error if the internal value is a PlainDateTime
+   */
+  public toISODate(options?: { fractionalSecondDigits?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 'auto' }): ISODate {
     if (this._value instanceof Temporal.Instant) {
       return this._value.toString(options) as ISODateInstant;
     } else if (this._value instanceof Temporal.ZonedDateTime) {
