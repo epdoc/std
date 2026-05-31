@@ -9,4 +9,5 @@
 /**
  * The core namespace containing color types, the palette, and utility functions.
  */
+export * from './colors.gen.ts';
 export * from './colorspec.ts';

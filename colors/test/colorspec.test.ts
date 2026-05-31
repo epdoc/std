@@ -82,4 +82,16 @@ Deno.test('Color module tests', async (t) => {
     assertEquals(Color.palette.cyan, 0x58d1eb);
     assertEquals(Color.palette.sand, 0xe8c99a);
   });
+
+  await t.step('generated color functions apply correctly', () => {
+    assertEquals(Color.red('test'), rgb24('test', Color.palette.red));
+    assertEquals(Color.blue('test'), rgb24('test', Color.palette.blue));
+    assertEquals(Color.green('test'), rgb24('test', Color.palette.green));
+  });
+
+  await t.step('palette has more expected colors', () => {
+    assertEquals(Color.palette.red, 0xef4444);
+    assertEquals(Color.palette.blue, 0x60a5fa);
+    assertEquals(Color.palette.green, 0x51d67c);
+  });
 });

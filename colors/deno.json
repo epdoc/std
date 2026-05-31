@@ -1,8 +1,10 @@
 {
   "name": "@epdoc/colors",
-  "version": "1.0.1",
+  "version": "1.1.1",
   "exports": {
-    ".": "./src/mod.ts"
+    ".": "./src/mod.ts",
+    "./colors": "./src/colors.gen.ts",
+    "./palette": "./src/colorspec.ts"
   },
   "publish": {
     "include": [
@@ -13,12 +15,13 @@
     ]
   },
   "tasks": {
-    "fmt": "deno fmt src test *.json",
+    "prebuild": "deno run -A ./scripts/prebuild.ts",
+    "fmt": "deno task prebuild && deno fmt src test scripts *.json",
     "lint": "deno lint",
     "check": "deno check *.json src test",
     "test": "deno test -SERW",
     "docs": "deno doc --json src/mod.ts > library-docs.json",
-    "ok": "deno fmt && deno task lint && deno task check && deno task test && deno task docs"
+    "ok": "deno task fmt && deno task lint && deno task check && deno task test && deno task docs"
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@^1.0.19",
