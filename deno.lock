@@ -2,8 +2,10 @@
   "version": "5",
   "specifiers": {
     "jsr:@deno/graph@*": "0.108.2",
+    "jsr:@epdoc/colors@^1.1.1": "1.1.1",
     "jsr:@epdoc/datetime@^4.1.4": "4.1.4",
     "jsr:@epdoc/duration@~0.3.16": "0.3.16",
+    "jsr:@epdoc/fmt@^1.0.7": "1.0.7",
     "jsr:@epdoc/fs@^1.5.5": "1.5.5",
     "jsr:@epdoc/type@1.0.3": "1.0.3",
     "jsr:@epdoc/type@^1.2.17": "1.2.17",
@@ -34,6 +36,12 @@
     "@deno/graph@0.108.2": {
       "integrity": "b273a0d33dc42cbed5bead5a0593c10c2ebcd9b02939c648647ed238db5438a6"
     },
+    "@epdoc/colors@1.1.1": {
+      "integrity": "cd7a750780f84703f02fb60f1389aaf10833c2ed99013632e9739693cecc409f",
+      "dependencies": [
+        "jsr:@std/fmt@^1.0.10"
+      ]
+    },
     "@epdoc/datetime@2.0.0-beta.4": {
       "integrity": "432b2b266ba6c32de75b6ea72152d9443bd96ca30257311a36a2777b13061d7a"
     },
@@ -60,6 +68,12 @@
     },
     "@epdoc/duration@0.3.16": {
       "integrity": "036f2328a7e7e376a1b8df685695815bf11c32004d081728b6699a1fd453a539"
+    },
+    "@epdoc/fmt@1.0.7": {
+      "integrity": "07456829263797a29595ae19598c2ea8689f97e2eb8b264ecdc99a1892d77907",
+      "dependencies": [
+        "jsr:@std/fmt@^1.0.10"
+      ]
     },
     "@epdoc/fs@1.5.5": {
       "integrity": "d1b8012ac09a1f3934a6fe2c98239c25e0dc05afa882b7c240ebfabc8479cee1",
@@ -354,9 +368,9 @@
       },
       "table": {
         "dependencies": [
-          "jsr:@epdoc/colors@^1.0.1",
-          "jsr:@epdoc/datetime@^4.1.0",
-          "jsr:@epdoc/fmt@^1.0.5",
+          "jsr:@epdoc/colors@^1.1.1",
+          "jsr:@epdoc/datetime@^4.1.4",
+          "jsr:@epdoc/fmt@^1.0.7",
           "jsr:@epdoc/type@^1.2.17",
           "jsr:@std/assert@^1.0.19",
           "jsr:@std/fmt@^1.0.10",
