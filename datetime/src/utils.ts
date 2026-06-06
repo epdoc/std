@@ -244,7 +244,7 @@ export function stringToDate(s: string, opts?: DateParseOptions): Date | undefin
 
   let date: Date;
   if (options.tz !== undefined) {
-    // Logic from date.ts's DateEx constructor (implicitly from its usage with Date.UTC when tz is present)
+    // Logic from date.ts's DateTime constructor (implicitly from its usage with Date.UTC when tz is present)
     // If opts.tz is defined, it's the offset in minutes.
     // A positive tz means ahead of GMT (e.g., +60 for GMT+1), negative for behind.
     // Date.UTC expects components as UTC.

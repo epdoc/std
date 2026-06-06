@@ -10,6 +10,7 @@
     "jsr:@epdoc/type@1.0.3": "1.0.3",
     "jsr:@epdoc/type@^1.2.17": "1.2.17",
     "jsr:@std/assert@^1.0.19": "1.0.19",
+    "jsr:@std/async@^1.4.0": "1.4.0",
     "jsr:@std/bytes@^1.0.5": "1.0.5",
     "jsr:@std/bytes@^1.0.6": "1.0.6",
     "jsr:@std/cli@*": "1.0.20",
@@ -102,6 +103,9 @@
         "jsr:@std/internal@^1.0.12"
       ]
     },
+    "@std/async@1.4.0": {
+      "integrity": "4d70b008634f571cff9b554090d628c76141c32613aae0ff283fd5fa23d0c379"
+    },
     "@std/bytes@1.0.5": {
       "integrity": "4465dd739d7963d964c809202ebea6d5c6b8e3829ef25c6a224290fbb8a1021e"
     },
@@ -172,6 +176,7 @@
       "integrity": "f4236172365b216728dc3cc8b5e80a9f4c33083d1e4ede7613d5b25b4014898e",
       "dependencies": [
         "jsr:@std/assert",
+        "jsr:@std/async",
         "jsr:@std/data-structures",
         "jsr:@std/fs",
         "jsr:@std/internal@^1.0.14",
@@ -312,8 +317,7 @@
       "datetime": {
         "dependencies": [
           "jsr:@epdoc/type@^1.2.17",
-          "jsr:@std/expect@^1.0.19",
-          "jsr:@std/testing@^1.0.19"
+          "jsr:@std/assert@^1.0.19"
         ]
       },
       "duration": {

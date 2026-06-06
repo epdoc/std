@@ -2043,4 +2043,68 @@ export class DateTime {
     // Delegate to withTz('utc').format()
     return this.withTz('utc').format(format);
   }
+
+  // Core Date Properties
+  // Core Date Properties
+  get year(): number {
+    return this._value instanceof Temporal.Instant ? this._value.toZonedDateTimeISO('UTC').year : this._value.year;
+  }
+
+  get month(): number {
+    return this._value instanceof Temporal.Instant ? this._value.toZonedDateTimeISO('UTC').month : this._value.month;
+  }
+
+  get day(): number {
+    return this._value instanceof Temporal.Instant ? this._value.toZonedDateTimeISO('UTC').day : this._value.day;
+  }
+
+  // Core Time Properties
+  get hour(): number {
+    return this._value instanceof Temporal.Instant ? this._value.toZonedDateTimeISO('UTC').hour : this._value.hour;
+  }
+
+  get minute(): number {
+    return this._value instanceof Temporal.Instant ? this._value.toZonedDateTimeISO('UTC').minute : this._value.minute;
+  }
+
+  get second(): number {
+    return this._value instanceof Temporal.Instant ? this._value.toZonedDateTimeISO('UTC').second : this._value.second;
+  }
+
+  get millisecond(): number {
+    return this._value instanceof Temporal.Instant
+      ? this._value.toZonedDateTimeISO('UTC').millisecond
+      : this._value.millisecond;
+  }
+
+  // Helpful Calendar Metadata
+  get monthCode(): string {
+    return this._value instanceof Temporal.Instant
+      ? this._value.toZonedDateTimeISO('UTC').monthCode
+      : this._value.monthCode;
+  }
+
+  get dayOfWeek(): number {
+    return this._value instanceof Temporal.Instant
+      ? this._value.toZonedDateTimeISO('UTC').dayOfWeek
+      : this._value.dayOfWeek;
+  }
+
+  get daysInMonth(): number {
+    return this._value instanceof Temporal.Instant
+      ? this._value.toZonedDateTimeISO('UTC').daysInMonth
+      : this._value.daysInMonth;
+  }
+
+  get daysInYear(): number {
+    return this._value instanceof Temporal.Instant
+      ? this._value.toZonedDateTimeISO('UTC').daysInYear
+      : this._value.daysInYear;
+  }
+
+  get inLeapYear(): boolean {
+    return this._value instanceof Temporal.Instant
+      ? this._value.toZonedDateTimeISO('UTC').inLeapYear
+      : this._value.inLeapYear;
+  }
 }

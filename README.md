@@ -7,17 +7,17 @@ programming tasks.
 
 This repository is organized into several workspaces, each focusing on a specific domain:
 
-| Workspace                            | Description                                                 |
-| ------------------------------------ | ----------------------------------------------------------- |
-| [`colors`](./colors/README.md)       | Standardized terminal color palette and utilities.          |
-| [`daterange`](./daterange/README.md) | Utilities for creating and managing date ranges.            |
-| [`datetime`](./datetime/README.md)   | Tools for working with dates and times.                     |
-| [`duration`](./duration/README.md)   | Functions for handling time durations and formatting.       |
+| Workspace                            | Description                                                                |
+| ------------------------------------ | -------------------------------------------------------------------------- |
+| [`colors`](./colors/README.md)       | Standardized terminal color palette and utilities.                         |
+| [`daterange`](./daterange/README.md) | Utilities for creating and managing date ranges.                           |
+| [`datetime`](./datetime/README.md)   | Tools for working with dates and times.                                    |
+| [`duration`](./duration/README.md)   | Functions for handling time durations and formatting.                      |
 | [`fmt`](./fmt/README.md)             | Formatting functions for common data types (bool, bytes, percent, uptime). |
-| [`fs`](./fs/README.md)               | A library for advanced filesystem operations.               |
-| [`response`](./response/README.md)   | Helpers for creating consistent and safe API responses.     |
-| [`string`](./string/README.md)       | A collection of advanced string manipulation utilities.     |
-| [`type`](./type/README.md)           | A set of type guards and utilities for runtime type safety. |
+| [`fs`](./fs/README.md)               | A library for advanced filesystem operations.                              |
+| [`response`](./response/README.md)   | Helpers for creating consistent and safe API responses.                    |
+| [`string`](./string/README.md)       | A collection of advanced string manipulation utilities.                    |
+| [`type`](./type/README.md)           | A set of type guards and utilities for runtime type safety.                |
 
 ## Usage
 
