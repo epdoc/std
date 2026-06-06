@@ -1,10 +1,14 @@
 # Claude Code Project Guide - @epdoc/std
 
-**On startup, always read [AGENTS.md](./AGENTS.md)** — it contains the authoritative project architecture, package descriptions, cross-dependencies, development commands, and references to skills/conventions that govern this repository.
+**On startup, always read [AGENTS.md](./AGENTS.md)** — it contains the authoritative project architecture, package
+descriptions, cross-dependencies, development commands, and references to skills/conventions that govern this
+repository.
 
 ## Allowed Read Paths
 
-Claude has permanent read access to all files under `~/.config/opencode/`. This directory contains shared skills, commands, and configuration files referenced by AGENTS.md. Read these files on demand when a skill or command is referenced (e.g., the `git`, `jsdoc`, `epdoc-std`, `deno-guidelines`, or `deno-library-docs` skills).
+Claude has permanent read access to all files under `~/.config/opencode/`. This directory contains shared skills,
+commands, and configuration files referenced by AGENTS.md. Read these files on demand when a skill or command is
+referenced (e.g., the `git`, `jsdoc`, `epdoc-std`, `deno-guidelines`, or `deno-library-docs` skills).
 
 ## Project Overview
 
