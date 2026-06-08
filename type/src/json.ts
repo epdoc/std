@@ -1,7 +1,7 @@
 import { decodeAscii85, encodeAscii85 } from '@std/encoding/ascii85';
 import { deepCopySetDefaultOpts, processStringWithReplacements } from './deeputils.ts';
 import stripJsonComments from './strip-comments.ts';
-import type { DeepCopyOpts, Dict, JsonDeserializeOpts, StripJsonCommentsOpts } from './types.ts';
+import type { DeepCopyOpts, Dict, IAutoTemporal, JsonDeserializeOpts, StripJsonCommentsOpts } from './types.ts';
 import { asTemporal, hasValue, isArray, isDict, isMap, isRegExp, isSet, isString, isTemporal } from './utils.ts';
 
 /**
@@ -52,8 +52,13 @@ function createSerializerReplacer(opts: DeepCopyOpts) {
 
 /**
  * Creates a JSON.parse reviver function.
+ * @param opts.autoTemporal
+ * @param opts.replace
+ * @param opts.pre
+ * @param opts.post
+ * @param opts.msubFn
  */
-function createDeserializerReviver(opts: DeepCopyOpts) {
+function createDeserializerReviver(opts: DeepCopyOpts & IAutoTemporal) {
   return (_key: string, val: unknown): unknown => {
     if (isDict(val) && '__filter' in val) {
       const filter = val.__filter;

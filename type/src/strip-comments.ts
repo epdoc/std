@@ -1,4 +1,5 @@
-import type { Integer, StripJsonCommentsOpts } from './types.ts';
+import { _, type IStripComments, type IStripJsonComments } from '@epdoc/type';
+import type { Integer } from './types.ts';
 
 // Use readonly for constant regex to prevent reassignment
 const REG = {
@@ -26,6 +27,19 @@ const isEscaped = (jsonString: string, quotePosition: Integer): boolean => {
   return backslashCount % 2 === 1;
 };
 
+export function normalizedStripComments(options: IStripComments): IStripJsonComments | undefined {
+  if (options.stripComments === true) {
+    return { whitespace: true, trailingCommas: false };
+  }
+  if (_.isDict(options.stripComments)) {
+    const result = _.pick(options.stripComments, ['whitespace', 'trailingCommas']);
+    if (Object.keys(result).length) {
+      return result as IStripJsonComments;
+    }
+  }
+  return undefined;
+}
+
 /**
  * Removes comments from a JSON string.
  *
@@ -34,13 +48,15 @@ const isEscaped = (jsonString: string, quotePosition: Integer): boolean => {
  * @returns The JSON string without comments.
  * @throws {TypeError} If the `jsonString` argument is not a string.
  */
-export default function stripJsonComments(jsonString: string, options: StripJsonCommentsOpts = {}): string {
+export default function stripJsonComments(jsonString: string, options: IStripComments = {}): string {
   if (typeof jsonString !== 'string') {
     throw new TypeError(`Expected argument \`jsonString\` to be a \`string\`, got \`${typeof jsonString}\``);
   }
 
-  const { whitespace = true, trailingCommas = false } = options;
-  const strip = getStripper(whitespace);
+  const opts = normalizedStripComments(options);
+  if (!opts) throw new Error('Invalid JSON stripComments property');
+
+  const strip = getStripper(!!opts.whitespace);
 
   let isInsideString = false;
   let isInsideComment: CommentState = false;
@@ -90,7 +106,7 @@ export default function stripJsonComments(jsonString: string, options: StripJson
       offset = index + 2;
       index++;
       continue;
-    } else if (trailingCommas && !isInsideComment) {
+    } else if (!!opts.trailingCommas && !isInsideComment) {
       if (commaIndex !== -1) {
         if (currentCharacter === '}' || currentCharacter === ']') {
           buffer += jsonString.slice(offset, index);

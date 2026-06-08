@@ -251,33 +251,50 @@ export type DeepCopyFn = (a: unknown, opts: DeepCopyOpts) => unknown;
  */
 export type MSubFn = (s: string, replace: Record<string, unknown>, pre?: string, post?: string) => string;
 
-export type DeepCopyCommonOpts = {
+export type DeserializerReviverOptions = DeepCopyOpts & IAutoTemporal;
+
+/**
+ * When true, ISO 8601 date-time strings encountered during deserialization
+ * will be converted to the appropriate Temporal type (ZonedDateTime,
+ * PlainDateTime, or Instant) via {@link asTemporal}, rather than left as
+ * plain strings.
+ * @default false
+ */
+export interface IAutoTemporal {
+  autoTemporal?: boolean;
+}
+export interface IStripComments {
+  stripComments?: boolean | IStripJsonComments;
+}
+
+export interface IDetectRegExp {
   detectRegExp?: boolean;
+}
+export interface IIncludeUrl {
+  includeUrl?: boolean;
+}
+
+export type DeepCopyRegExp = { detectRegExp?: boolean };
+
+export type DeepCopyCommonOpts = {
   pre?: string;
   post?: string;
 };
 
 export type DeepCopyOpts =
-  & DeepCopyCommonOpts
+  & {
+    pre?: string;
+    post?: string;
+  }
   & (
     | { replace?: never; msubFn?: never } // No replacements
     | { replace: Record<string, string>; msubFn?: never } // Simple string replacements
     | { replace: Record<string, unknown>; msubFn: MSubFn } // Complex replacements with function
   );
 
-export type JsonDeserializeOpts = DeepCopyOpts & {
-  stripComments?: StripJsonCommentsOpts;
-  /**
-   * When true, ISO 8601 date-time strings encountered during deserialization
-   * will be converted to the appropriate Temporal type (ZonedDateTime,
-   * PlainDateTime, or Instant) via {@link asTemporal}, rather than left as
-   * plain strings.
-   * @default false
-   */
-  autoTemporal?: boolean;
-};
+export type JsonDeserializeOpts = DeepCopyOpts & IStripComments & IAutoTemporal;
 
-export type StripJsonCommentsOpts = {
+export interface IStripJsonComments {
   /**
    * If true, whitespace characters in comments will be replaced with a single space.
    * If false, comments will be removed without replacing them with spaces.
@@ -290,4 +307,4 @@ export type StripJsonCommentsOpts = {
    * Defaults to false.
    */
   trailingCommas?: boolean;
-};
+}
