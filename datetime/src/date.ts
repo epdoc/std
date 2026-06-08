@@ -1,5 +1,5 @@
 import type { CompareResult } from '@epdoc/type';
-import { _ } from '@epdoc/type';
+import { _, asTemporal } from '@epdoc/type';
 import type {
   GoogleSheetsDate,
   IANATZ,
@@ -269,26 +269,11 @@ export class DateTime {
    * ```
    */
   static fromString(isoString: string): DateTime {
-    try {
-      // Logic fix: Detect if the string has a timezone offset/ID
-      // 'Z', '+05:00', or '[America/New_York]'
-      const hasTimezone = /Z|[+-]\d{2}:?\d{2}|\[.*\]$/.test(isoString);
-
-      if (hasTimezone) {
-        // Temporal natively handles Z and offsets (+05:00)
-        return new DateTime(Temporal.ZonedDateTime.from(isoString));
-      } else {
-        // No timezone: treat as PlainDateTime (wall-clock time without timezone)
-        return new DateTime(Temporal.PlainDateTime.from(isoString));
-      }
-    } catch {
-      // Fallback for non-ISO strings like "July 4, 1776"
-      const d = new Date(isoString);
-      if (!isNaN(d.getTime())) {
-        return new DateTime(Temporal.Instant.fromEpochMilliseconds(d.getTime()));
-      }
+    const val = asTemporal(isoString);
+    if (!val) {
       throw new Error(`Invalid date string: "${isoString}"`);
     }
+    return new DateTime(val);
   }
 
   /**

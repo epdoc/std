@@ -331,7 +331,7 @@
       },
       "datetime": {
         "dependencies": [
-          "jsr:@epdoc/type@^1.2.17",
+          "jsr:@epdoc/type@^1.2.18",
           "jsr:@std/assert@^1.0.19"
         ]
       },
