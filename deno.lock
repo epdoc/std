@@ -370,7 +370,7 @@
       "progress": {
         "dependencies": [
           "jsr:@epdoc/terminal@^0.0.13",
-          "jsr:@epdoc/type@^1.2.17",
+          "jsr:@epdoc/type@^1.2.18",
           "jsr:@std/expect@^1.0.19",
           "jsr:@std/fmt@^1.0.10",
           "jsr:@std/testing@^1.0.19"
