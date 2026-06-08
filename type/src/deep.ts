@@ -44,6 +44,9 @@ export function deepCopy(a: unknown, options?: DeepCopyOpts): unknown {
     case typeof a === 'bigint':
     case a instanceof Date:
     case a instanceof RegExp:
+    case a instanceof Temporal.Instant:
+    case a instanceof Temporal.ZonedDateTime:
+    case a instanceof Temporal.PlainDateTime:
       return a;
 
     // String with optional replacements

@@ -144,8 +144,9 @@ describe('json', () => {
 
     it('should deserialize ISO date string as string', () => {
       const json = '{"now":"2020-01-01T00:00:00.000Z"}';
-      const obj = _.jsonDeserialize(json);
-      expect(obj).toEqual({ now: new Date('2020-01-01T00:00:00.000Z') });
+      const result = _.jsonDeserialize(json) as Record<string, unknown>;
+      expect(typeof result.now).toBe('string');
+      expect(result.now).toBe('2020-01-01T00:00:00.000Z');
     });
 
     it('should deserialize array with nulls', () => {
@@ -197,12 +198,12 @@ describe('json', () => {
       expect(restored.flags).toBe('gi');
     });
 
-    it('serializes and deserializes Date', () => {
+    it('serializes Date as ISO string (no auto-restore to Date)', () => {
       const date = new Date('2022-01-01T12:00:00.000Z');
       const json = _.jsonSerialize(date);
-      const restored = _.jsonDeserialize<Date>(json);
-      expect(restored instanceof Date).toBe(true);
-      expect(restored.getTime()).toBe(date.getTime());
+      const restored = _.jsonDeserialize(json);
+      expect(typeof restored).toBe('string');
+      expect(restored).toBe('2022-01-01T12:00:00.000Z');
     });
 
     it('serializes and deserializes nested structures with special types', () => {
@@ -214,11 +215,11 @@ describe('json', () => {
         re: /foo/i,
       };
       const json = _.jsonSerialize(obj);
-      const restored = _.jsonDeserialize<typeof obj>(json);
+      const restored = _.jsonDeserialize(json) as typeof obj;
       expect(restored.arr[2] instanceof Uint8Array).toBe(true);
       expect(restored.set instanceof Set).toBe(true);
       expect(restored.map instanceof Map).toBe(true);
-      expect(restored.date instanceof Date).toBe(true);
+      expect(typeof restored.date).toBe('string');
       expect(restored.re instanceof RegExp).toBe(true);
     });
 
@@ -268,6 +269,68 @@ describe('json', () => {
       expect(() => _.jsonSerialize(obj)).toThrow();
     });
   });
+  describe('temporal serialization', () => {
+    it('serializes and deserializes Temporal.Instant', () => {
+      const obj = { time: Temporal.Instant.from('2024-01-15T12:30:45.123Z') };
+      const json = _.jsonSerialize(obj);
+      const result = _.jsonDeserialize(json) as { time: unknown };
+      expect(result.time).toBeInstanceOf(Temporal.Instant);
+      expect((result.time as Temporal.Instant).epochMilliseconds).toBe(obj.time.epochMilliseconds);
+    });
+
+    it('serializes and deserializes Temporal.ZonedDateTime', () => {
+      const obj = { time: Temporal.ZonedDateTime.from('2024-01-15T12:30:45-05:00[America/New_York]') };
+      const json = _.jsonSerialize(obj);
+      const result = _.jsonDeserialize(json) as { time: unknown };
+      expect(result.time).toBeInstanceOf(Temporal.ZonedDateTime);
+      expect((result.time as Temporal.ZonedDateTime).epochMilliseconds).toBe(obj.time.epochMilliseconds);
+    });
+
+    it('serializes and deserializes Temporal.PlainDateTime', () => {
+      const obj = { time: Temporal.PlainDateTime.from('2024-01-15T12:30:45.123') };
+      const json = _.jsonSerialize(obj);
+      const result = _.jsonDeserialize(json) as { time: unknown };
+      expect(result.time).toBeInstanceOf(Temporal.PlainDateTime);
+    });
+
+    it('autoTemporal converts ISO strings to Temporal types', () => {
+      const json = '{"time":"2024-01-15T12:30:45Z"}';
+      const result = _.jsonDeserialize(json, { autoTemporal: true }) as { time: unknown };
+      expect(result.time).toBeInstanceOf(Temporal.ZonedDateTime);
+    });
+
+    it('without autoTemporal, ISO strings remain strings', () => {
+      const json = '{"time":"2024-01-15T12:30:45Z"}';
+      const result = _.jsonDeserialize(json) as { time: unknown };
+      expect(typeof result.time).toBe('string');
+    });
+
+    it('serializes and deserializes Temporal values in arrays', () => {
+      const obj = {
+        times: [
+          Temporal.Instant.from('2024-01-15T12:30:45Z'),
+          Temporal.ZonedDateTime.from('2024-01-15T12:30:45-05:00[America/New_York]'),
+        ],
+      };
+      const json = _.jsonSerialize(obj);
+      const result = _.jsonDeserialize(json) as { times: unknown[] };
+      expect(Array.isArray(result.times)).toBe(true);
+      expect(result.times[0]).toBeInstanceOf(Temporal.Instant);
+      expect(result.times[1]).toBeInstanceOf(Temporal.ZonedDateTime);
+    });
+
+    it('serializes and deserializes Temporal values in nested objects', () => {
+      const obj = {
+        meta: {
+          created: Temporal.Instant.from('2024-01-15T12:30:45Z'),
+        },
+      };
+      const json = _.jsonSerialize(obj);
+      const result = _.jsonDeserialize(json) as { meta: { created: unknown } };
+      expect(result.meta.created).toBeInstanceOf(Temporal.Instant);
+    });
+  });
+
   describe('stripJsonComments', () => {
     it('removes single-line comments', () => {
       const jsonc = `

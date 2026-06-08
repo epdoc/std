@@ -670,10 +670,179 @@ export function asRegExp(val: unknown): RegExp | undefined {
 }
 
 /**
- * Converts arguments into an Error object. If there is more than one argument
- * then the arguments are concatenated into a single error.
- * @param args - The arguments to convert.
- * @returns The resulting Error object.
+ * Union of the Temporal types supported by this library.
+ * These are the three types used internally by {@link DateTime} in @epdoc/datetime.
+ */
+export type TemporalVal = Temporal.Instant | Temporal.ZonedDateTime | Temporal.PlainDateTime;
+
+const _hasTemporal = typeof Temporal !== 'undefined';
+
+/**
+ * Checks if a value is a {@link Temporal.Instant}.
+ * @param val - The value to check
+ * @returns True if the value is a Temporal.Instant
+ */
+export function isTemporalInstant(val: unknown): val is Temporal.Instant {
+  return _hasTemporal && val instanceof Temporal.Instant;
+}
+
+/**
+ * Checks if a value is a {@link Temporal.ZonedDateTime}.
+ * @param val - The value to check
+ * @returns True if the value is a Temporal.ZonedDateTime
+ */
+export function isTemporalZonedDateTime(val: unknown): val is Temporal.ZonedDateTime {
+  return _hasTemporal && val instanceof Temporal.ZonedDateTime;
+}
+
+/**
+ * Checks if a value is a {@link Temporal.PlainDateTime}.
+ * @param val - The value to check
+ * @returns True if the value is a Temporal.PlainDateTime
+ */
+export function isTemporalPlainDateTime(val: unknown): val is Temporal.PlainDateTime {
+  return _hasTemporal && val instanceof Temporal.PlainDateTime;
+}
+
+/**
+ * Checks if a value is any of the supported Temporal types.
+ * @param val - The value to check
+ * @returns True if the value is a Temporal.Instant, Temporal.ZonedDateTime, or Temporal.PlainDateTime
+ */
+export function isTemporal(val: unknown): val is TemporalVal {
+  return isTemporalInstant(val) || isTemporalZonedDateTime(val) || isTemporalPlainDateTime(val);
+}
+
+/**
+ * Normalizes various date/time representations into their most appropriate
+ * Temporal type.
+ *
+ * ### Conversion Matrix
+ * | Input | Result |
+ * |-------|--------|
+ * | `string` with timezone (Z, offset, bracket) | `Temporal.ZonedDateTime` |
+ * | `string` without timezone | `Temporal.PlainDateTime` |
+ * | `string` (non-ISO, e.g. "July 4, 1776") | `Temporal.Instant` (legacy fallback) |
+ * | `number` (epoch ms) | `Temporal.Instant` |
+ * | `Date` | `Temporal.Instant` |
+ * | Property bag `{ year, month, day }` | `Temporal.PlainDateTime` |
+ * | Already a Temporal type | Returned as-is |
+ * | `null` / `undefined` | `undefined` |
+ *
+ * @param input - The value to convert
+ * @returns The corresponding Temporal type, or `undefined` if conversion fails
+ *
+ * @example
+ * ```typescript
+ * asTemporal('2024-01-15T12:30:45Z');              // Temporal.ZonedDateTime
+ * asTemporal('2024-01-15T12:30:45');                // Temporal.PlainDateTime
+ * asTemporal('July 4, 1776');                        // Temporal.Instant
+ * asTemporal(1705321845000);                          // Temporal.Instant
+ * asTemporal(new Date());                             // Temporal.Instant
+ * asTemporal({ year: 2024, month: 1, day: 15 });     // Temporal.PlainDateTime
+ * asTemporal('invalid');                              // undefined
+ * ```
+ */
+export function asTemporal(input: unknown): TemporalVal | undefined {
+  if (!_hasTemporal || input === null || input === undefined) return undefined;
+
+  // Already a supported Temporal type
+  if (isTemporal(input)) return input;
+
+  // Date → Instant
+  if (input instanceof Date) {
+    return !isNaN(input.getTime()) ? Temporal.Instant.fromEpochMilliseconds(input.getTime()) : undefined;
+  }
+
+  // Number → Instant (epoch milliseconds)
+  if (typeof input === 'number') {
+    return Temporal.Instant.fromEpochMilliseconds(input);
+  }
+
+  // String → parse with timezone awareness
+  if (typeof input === 'string') {
+    return parseTemporalString(input);
+  }
+
+  // Property bag → PlainDateTime
+  if (typeof input === 'object' && input !== null && !Array.isArray(input)) {
+    try {
+      return Temporal.PlainDateTime.from(input as Temporal.PlainDateTimeLike);
+    } catch {
+      return undefined;
+    }
+  }
+
+  return undefined;
+}
+
+/**
+ * Parses a string into the most appropriate Temporal type.
+ *
+ * Handles ISO 8601 with timezone (Z, offset, bracket → ZonedDateTime),
+ * ISO 8601 without timezone (→ PlainDateTime), and non-ISO strings
+ * via legacy Date parsing (→ Instant).
+ *
+ * @param s - The string to parse
+ * @returns A Temporal type, or `undefined` if parsing fails
+ * @internal
+ */
+export function parseTemporalString(s: string): TemporalVal | undefined {
+  const sanitized = s.trim();
+  try {
+    // 1. Bracket IANA timezone annotation → ZonedDateTime natively
+    const bracketMatch = sanitized.match(/\[([\w/_-]+)\]$/);
+    if (bracketMatch) {
+      return Temporal.ZonedDateTime.from(sanitized);
+    }
+
+    // 2. 'Z' or numeric offset → Instant + apply timezone
+    const offsetMatch = sanitized.match(/(Z|[+-]\d{2}:?\d{2})$/);
+    if (offsetMatch) {
+      const rawTz = offsetMatch[1];
+      let tzId: string;
+      if (rawTz === 'Z') {
+        tzId = 'UTC';
+      } else if (/^[+-]\d{4}$/.test(rawTz)) {
+        tzId = rawTz.slice(0, 3) + ':' + rawTz.slice(3);
+      } else {
+        tzId = rawTz;
+      }
+      const instant = Temporal.Instant.from(sanitized);
+      return instant.toZonedDateTimeISO(tzId);
+    }
+
+    // 3. No timezone info: treat as wall-clock time
+    return Temporal.PlainDateTime.from(sanitized);
+  } catch {
+    const d = new Date(sanitized);
+    if (!isNaN(d.getTime())) {
+      return Temporal.Instant.fromEpochMilliseconds(d.getTime());
+    }
+    return undefined;
+  }
+}
+
+/**
+ * Converts arguments into an IError object. String and Error arguments are
+ * concatenated into the error message. If a plain object (Dict) is among the
+ * arguments, its properties are copied onto the resulting IError.
+ *
+ * @param args - Variadic arguments. Strings are joined into the message,
+ *   Errors contribute their message, and a plain object is treated as
+ *   options (copied onto the returned IError).
+ * @returns The resulting IError, with any options (e.g. `code`, `silent`)
+ *   applied.
+ *
+ * @example
+ * ```ts
+ * asError('Something failed');            // → message "Something failed"
+ * asError('Step 1', 'Cannot proceed');    // → message "Step 1 Cannot proceed"
+ * asError(new Error('original'), { code: 101, silent: true });
+ * // → message "original", code 101, silent: true
+ * asError(new Error('root'), 'while processing', new Error('nested'));
+ * // → message "root while processing nested"
+ * ```
  */
 export function asError(...args: unknown[]): IError {
   let err: Error | undefined;
@@ -714,6 +883,9 @@ export function asError(...args: unknown[]): IError {
  */
 export interface IError extends Error {
   code?: string | number;
+  /** Setting silent to true implies that logging of the error has already been done and no stack
+   * trace should be output */
+  silent?: boolean;
 }
 
 function newError(msg: string, opts: Dict = {}): IError {

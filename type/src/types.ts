@@ -267,6 +267,14 @@ export type DeepCopyOpts =
 
 export type JsonDeserializeOpts = DeepCopyOpts & {
   stripComments?: StripJsonCommentsOpts;
+  /**
+   * When true, ISO 8601 date-time strings encountered during deserialization
+   * will be converted to the appropriate Temporal type (ZonedDateTime,
+   * PlainDateTime, or Instant) via {@link asTemporal}, rather than left as
+   * plain strings.
+   * @default false
+   */
+  autoTemporal?: boolean;
 };
 
 export type StripJsonCommentsOpts = {

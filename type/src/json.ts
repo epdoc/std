@@ -1,9 +1,32 @@
 import { decodeAscii85, encodeAscii85 } from '@std/encoding/ascii85';
-import { REGEX } from './consts.ts';
 import { deepCopySetDefaultOpts, processStringWithReplacements } from './deeputils.ts';
 import stripJsonComments from './strip-comments.ts';
 import type { DeepCopyOpts, Dict, JsonDeserializeOpts, StripJsonCommentsOpts } from './types.ts';
-import { hasValue, isArray, isDict, isMap, isRegExp, isSet, isString } from './utils.ts';
+import { asTemporal, hasValue, isArray, isDict, isMap, isRegExp, isSet, isString, isTemporal } from './utils.ts';
+
+/**
+ * Pre-processes a value tree to wrap Temporal instances in `__filter` wrappers
+ * before JSON.stringify. This is necessary because Temporal objects have a
+ * `toJSON()` method that converts them to strings, which would prevent the
+ * serializer replacer from seeing them as Temporal instances.
+ */
+function replaceTemporals(val: unknown): unknown {
+  if (isTemporal(val)) {
+    const name = val.constructor.name;
+    return { __filter: name, data: val.toString() };
+  }
+  if (Array.isArray(val)) {
+    return val.map(replaceTemporals);
+  }
+  if (isDict(val)) {
+    const result: Record<string, unknown> = {};
+    for (const key of Object.keys(val)) {
+      result[key] = replaceTemporals(val[key]);
+    }
+    return result;
+  }
+  return val;
+}
 
 /**
  * Creates a JSON.stringify replacer function.
@@ -33,7 +56,20 @@ function createSerializerReplacer(opts: DeepCopyOpts) {
 function createDeserializerReviver(opts: DeepCopyOpts) {
   return (_key: string, val: unknown): unknown => {
     if (isDict(val) && '__filter' in val) {
-      if (val.__filter === 'RegExp' && isString((val as Dict).regex)) {
+      const filter = val.__filter;
+      if (filter === 'Instant' || filter === 'ZonedDateTime' || filter === 'PlainDateTime') {
+        if (isString(val.data)) {
+          try {
+            if (filter === 'Instant') return Temporal.Instant.from(val.data);
+            if (filter === 'ZonedDateTime') return Temporal.ZonedDateTime.from(val.data);
+            return Temporal.PlainDateTime.from(val.data);
+          } catch {
+            return undefined;
+          }
+        }
+        return undefined;
+      }
+      if (filter === 'RegExp' && isString((val as Dict).regex)) {
         try {
           return new RegExp((val as Dict).regex as string, ((val as Dict).flags as string) || '');
         } catch {
@@ -63,8 +99,9 @@ function createDeserializerReviver(opts: DeepCopyOpts) {
       if (opts.replace) {
         s = processStringWithReplacements(s, opts);
       }
-      if (REGEX.isISODate.test(s)) {
-        return new Date(s);
+      if ((opts as JsonDeserializeOpts).autoTemporal) {
+        const parsed = asTemporal(s);
+        if (parsed) return parsed;
       }
       return s;
     }
@@ -110,22 +147,24 @@ export function jsonSerialize(
   space?: string | number,
 ): string {
   const opts = deepCopySetDefaultOpts(options ?? undefined);
-  return JSON.stringify(value, createSerializerReplacer(opts), space);
+  const processed = replaceTemporals(value);
+  return JSON.stringify(processed, createSerializerReplacer(opts), space);
 }
 
 /**
  * Deserializes a JSON string produced by jsonSerialize, restoring special types and handling string replacements.
  *
  * Supports deserialization of:
+ * - Temporal.Instant, Temporal.ZonedDateTime, Temporal.PlainDateTime
  * - Uint8Array (decoded from ASCII85)
  * - Set (restored from array)
  * - Map (restored from entries array)
  * - RegExp (restored with source and flags)
- * - ISO date strings (converted to Date objects)
+ * - ISO date strings (converted to Temporal types when autoTemporal is true)
  * - String replacement using simple or advanced msub
  *
  * @param {string} json - The JSON string to deserialize.
- * @param {JsonDeserializeOpts} [opts] - Deserialization options including string replacement and comment stripping.
+ * @param {JsonDeserializeOpts} [opts] - Deserialization options including string replacement, autoTemporal, and comment stripping.
  * @returns {T} The restored value with original types.
  *
  * @example
@@ -139,6 +178,11 @@ export function jsonSerialize(
  *   '{"timestamp": "${now:yyyy-MM-dd}"}',
  *   { replace: { now: new Date() }, msubFn: (s, r) => replace(s, r) }
  * );
+ *
+ * @example
+ * // Auto-convert ISO strings to Temporal types
+ * const result = jsonDeserialize('{"time": "2024-01-15T12:30:45Z"}', { autoTemporal: true });
+ * // result.time is a Temporal.ZonedDateTime
  */
 
 // json-deserialize.ts

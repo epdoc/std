@@ -230,6 +230,52 @@ describe('deep', () => {
     });
   });
 
+  describe('temporal', () => {
+    it('deepCopy preserves Temporal.Instant as-is', () => {
+      const original = Temporal.Instant.from('2024-01-15T12:30:45Z');
+      const result = deepCopy(original);
+      expect(result).toBe(original);
+      expect(result).toBeInstanceOf(Temporal.Instant);
+    });
+
+    it('deepCopy preserves Temporal.ZonedDateTime as-is', () => {
+      const original = Temporal.ZonedDateTime.from('2024-01-15T12:30:45-05:00[America/New_York]');
+      const result = deepCopy(original);
+      expect(result).toBe(original);
+      expect(result).toBeInstanceOf(Temporal.ZonedDateTime);
+    });
+
+    it('deepCopy preserves Temporal.PlainDateTime as-is', () => {
+      const original = Temporal.PlainDateTime.from('2024-01-15T12:30:45');
+      const result = deepCopy(original);
+      expect(result).toBe(original);
+      expect(result).toBeInstanceOf(Temporal.PlainDateTime);
+    });
+
+    it('deepCopy handles objects containing Temporal values', () => {
+      const obj = {
+        name: 'test',
+        createdAt: Temporal.Instant.from('2024-01-15T12:30:45Z'),
+        updatedAt: Temporal.ZonedDateTime.from('2024-01-15T12:30:45-05:00[America/New_York]'),
+      };
+      const result = deepCopy(obj) as typeof obj;
+      expect(result).not.toBe(obj);
+      expect(result.createdAt).toBe(obj.createdAt);
+      expect(result.updatedAt).toBe(obj.updatedAt);
+    });
+
+    it('deepCopy handles arrays containing Temporal values', () => {
+      const arr = [
+        Temporal.Instant.from('2024-01-15T12:30:45Z'),
+        Temporal.PlainDateTime.from('2024-01-15T12:30:45'),
+      ];
+      const result = deepCopy(arr) as typeof arr;
+      expect(result).not.toBe(arr);
+      expect(result[0]).toBe(arr[0]);
+      expect(result[1]).toBe(arr[1]);
+    });
+  });
+
   describe('object property comparison', () => {
     const date1 = new Date('2023-01-01T00:00:00.000Z');
     const date2 = new Date('2023-01-02T00:00:00.000Z');
