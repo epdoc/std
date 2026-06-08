@@ -1,6 +1,6 @@
 import type { FSSpecBase } from '$spec';
 import type { DateTime } from '@epdoc/datetime';
-import type { Brand, DeepCopyOpts, EmptyDict, Integer, StripJsonCommentsOpts } from '@epdoc/type';
+import type { Brand, DeepCopyOpts, EmptyDict, IDetectRegExp, IIncludeUrl, Integer } from '@epdoc/type';
 import type { DigestAlgorithm } from './consts.ts';
 
 /**
@@ -92,14 +92,7 @@ export type FolderDiff = {
   diff: Name[];
 };
 
-export type FsDeepCopyOpts = DeepCopyOpts & {
-  includeUrl?: unknown;
-};
-
-export type FsDeepJsonDeserializeOpts = DeepCopyOpts & {
-  stripComments?: StripJsonCommentsOpts;
-  includeUrl?: unknown;
-};
+export type FsDeepCopyOpts = DeepCopyOpts & IIncludeUrl & IDetectRegExp;
 
 export type FSSpecCallback = (fs: FSSpecBase) => Promise<unknown>;
 

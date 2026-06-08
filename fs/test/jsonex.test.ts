@@ -26,8 +26,8 @@ describe('JSON Extended Operations', () => {
         value: 123,
         isActive: true,
       };
-      await testFilePath.writeJsonEx(data);
-      const readData = await testFilePath.readJsonEx();
+      await testFilePath.writeJson(data, { deepCopy: true });
+      const readData = await testFilePath.readJson({ deepCopy: true });
       expect(readData).toEqual(data);
     });
   });
@@ -38,8 +38,8 @@ describe('JSON Extended Operations', () => {
         pattern: new RegExp('^test.*$', 'i'),
         another: 'value',
       };
-      await testFilePath.writeJsonEx(data);
-      const readData = await testFilePath.readJsonEx() as any;
+      await testFilePath.writeJson(data, { deepCopy: true });
+      const readData = await testFilePath.readJson({ deepCopy: true }) as any;
 
       expect(readData.another).toEqual(data.another);
       expect(readData.pattern).toBeInstanceOf(RegExp);
@@ -52,8 +52,8 @@ describe('JSON Extended Operations', () => {
         mySet: new Set([1, 2, 3, 'hello']),
         other: 'data',
       };
-      await testFilePath.writeJsonEx(data);
-      const readData = await testFilePath.readJsonEx() as any;
+      await testFilePath.writeJson(data, { deepCopy: true });
+      const readData = await testFilePath.readJson({ deepCopy: true }) as any;
 
       expect(readData.other).toEqual(data.other);
       expect(readData.mySet).toBeInstanceOf(Set);
@@ -65,8 +65,8 @@ describe('JSON Extended Operations', () => {
         myMap: new Map([['key1', 'value1'], ['key2', '123']]),
         info: 'more',
       };
-      await testFilePath.writeJsonEx(data);
-      const readData = await testFilePath.readJsonEx() as any;
+      await testFilePath.writeJson(data, { deepCopy: true });
+      const readData = await testFilePath.readJson({ deepCopy: true }) as any;
 
       expect(readData.info).toEqual(data.info);
       expect(readData.myMap).toBeInstanceOf(Map);
@@ -78,8 +78,8 @@ describe('JSON Extended Operations', () => {
         byteArray: new Uint8Array([10, 20, 30, 40, 50]),
         id: 1,
       };
-      await testFilePath.writeJsonEx(data);
-      const readData = await testFilePath.readJsonEx() as any;
+      await testFilePath.writeJson(data, { deepCopy: true });
+      const readData = await testFilePath.readJson({ deepCopy: true }) as any;
 
       expect(readData.id).toEqual(data.id);
       expect(readData.byteArray).toBeInstanceOf(Uint8Array);
@@ -97,15 +97,20 @@ describe('JSON Extended Operations', () => {
         HOME: testDir,
         USER: 'testuser',
       };
-      await testFilePath.writeJsonEx(data, { replace: replaceMap, pre: '{', post: '}' });
+      await testFilePath.writeJson(data, { deepCopy: { replace: replaceMap, pre: '{', post: '}' } });
 
       // Read without replacement to check raw content
-      const rawReadData = await testFilePath.readJsonEx({}) as any;
+      const rawReadData = await testFilePath.readJson({ deepCopy: true }) as any;
       expect(rawReadData.path).toEqual(`${testDir}/documents/config.json`);
       expect(rawReadData.message).toEqual(`Hello from testuser!`);
 
       // Read with replacement
-      const readDataWithReplace = await testFilePath.readJsonEx({ replace: replaceMap, pre: '{', post: '}' }) as any;
+      const readDataWithReplace = await testFilePath.readJson({
+        deepCopy: true,
+        replace: replaceMap,
+        pre: '{',
+        post: '}',
+      }) as any;
       expect(readDataWithReplace.path).toEqual(`${testDir}/documents/config.json`);
       expect(readDataWithReplace.message).toEqual(`Hello from testuser!`);
     });
@@ -125,8 +130,8 @@ describe('JSON Extended Operations', () => {
       };
 
       const replaceMap = { HOME: testDir };
-      await testFilePath.writeJsonEx(nestedData, { replace: replaceMap, pre: '{', post: '}' });
-      const readData = await testFilePath.readJsonEx({ replace: replaceMap, pre: '{', post: '}' }) as any;
+      await testFilePath.writeJson(nestedData, { deepCopy: { replace: replaceMap, pre: '{', post: '}' } });
+      const readData = await testFilePath.readJson({ deepCopy: true, replace: replaceMap, pre: '{', post: '}' }) as any;
 
       expect(readData.version).toEqual(nestedData.version);
 

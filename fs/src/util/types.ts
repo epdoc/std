@@ -1,4 +1,4 @@
-import type { DeepCopyOpts, Integer, StripJsonCommentsOpts } from '@epdoc/type';
+import type { DeepCopyOpts, IAutoTemporal, IDetectRegExp, IIncludeUrl, Integer, IStripComments } from '@epdoc/type';
 import type { JsonReplacer } from '../spec/types.ts';
 import type { fileConflictStrategyType } from './consts.ts';
 
@@ -120,16 +120,7 @@ export type WriteJsonOptions = SafeWriteOptions & {
   trailing?: string;
 };
 
-export type ReadJsonOptions = {
-  // Deep copy deserialization (uses _.jsonDeserialize vs JSON.parse)
-  deepCopy?: boolean; // defaults to false
-
-  // JSON comment stripping
-  stripComments?: StripJsonCommentsOpts;
-
-  // Only applicable when deepCopy is true
-  includeUrl?: unknown;
-};
+export type ReadJsonOptions = DeepCopyOpts & IStripComments & IAutoTemporal & IIncludeUrl & IDetectRegExp;
 
 export type WriteYamlOptions = {
   yaml?: Parameters<typeof import('@std/yaml').stringify>[1];

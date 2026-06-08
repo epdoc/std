@@ -1,7 +1,7 @@
 import * as Error from '$error';
 import * as Util from '$util';
 import { DateTime } from '@epdoc/datetime';
-import { _, type DeepCopyOpts, type Dict, type Integer, stripJsonComments } from '@epdoc/type';
+import { _, type Dict, type Integer, IStripComments, stripJsonComments } from '@epdoc/type';
 import { assert } from '@std/assert';
 import { decodeBase64, encodeBase64 } from '@std/encoding';
 import crypto from 'node:crypto';
@@ -10,7 +10,7 @@ import path from 'node:path';
 import { Readable, Writable } from 'node:stream';
 import { DigestAlgorithm } from '../consts.ts';
 import { FSBytes } from '../fsbytes.ts';
-import { asFilePath, isFilePath } from '../guards.ts';
+import { asFilePath, hasDeepCopyOpts, isFilePath } from '../guards.ts';
 import type * as FS from '../types.ts';
 import { FSSpecBase } from './basespec.ts';
 import { FileSpecWriter } from './filespecwriter.ts';
@@ -749,29 +749,24 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
    */
   async readJson<T = unknown>(options?: Util.ReadJsonOptions): Promise<T> {
     try {
-      const opts = options || {};
+      const opts: Util.ReadJsonOptions = options || {};
       let text = await this.readAsString();
 
-      // Handle comment stripping first (works with both modes)
-      if (opts.stripComments) {
-        text = stripJsonComments(text, opts.stripComments);
-      }
-
-      if (opts.deepCopy) {
+      if (hasDeepCopyOpts(opts) || opts.autoTemporal === true) {
         // Use _.jsonDeserialize for special type reconstruction
-        const deepCopyOpts = {
-          includeUrl: opts.includeUrl,
-          stripComments: opts.stripComments,
-        };
-        const json = _.jsonDeserialize(text, deepCopyOpts);
+        const json = _.jsonDeserialize(text, opts);
 
         // Apply deep copy processing if includeUrl is enabled
-        if (opts.includeUrl) {
-          return (await this.#deepCopy(json, deepCopyOpts)) as T;
+        if (opts.includeUrl || opts.detectRegExp) {
+          return (await this.#deepCopy(json, opts)) as T;
         }
 
         return json as T;
       } else {
+        // Handle comment stripping first (works with both modes)
+        if (opts.stripComments) {
+          text = stripJsonComments(text, opts.stripComments as IStripComments);
+        }
         // Standard JSON.parse
         return JSON.parse(text) as T;
       }
@@ -1728,7 +1723,7 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
       const p: string[] | null = a.match(urlTest);
       if (_.isNonEmptyArray(p) && isFilePath(p[2])) {
         const fs = new FileSpec(this.dirname, p[2]);
-        return fs.readJsonEx(opts).then((resp) => {
+        return fs.readJson(opts).then((resp) => {
           return Promise.resolve(resp);
         });
       } else {
@@ -1736,7 +1731,7 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
       }
     } else if (_.isObject(a)) {
       // @ts-ignore xxx
-      const re: RegExp = opts && opts.detectRegExp ? asRegExp(a) : undefined;
+      const re: RegExp = opts && opts.detectRegExp ? _.asRegExp(a) : undefined;
       if (re && _.isDict(a)) {
         return Promise.resolve(re);
       } else {
@@ -1791,66 +1786,6 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
    */
   checksum(): Promise<string> {
     return this.digest();
-  }
-
-  /**
-   * Reads the file as JSON, parses it, and performs a deep copy with optional transformations. If
-   * the file is JSONC, comments are stripped before parsing.
-   *
-   * This method is unique in that it allows you to deeply clone and transform JSON data as it is
-   * read from disk, supporting advanced options such as recursive file inclusion, RegExp detection,
-   * and custom transformation hooks.
-   *
-   * @param [options] - Options for the deep copy operation:
-   *   @param [options.replace=Dict] - If set, replaces keys with values throughout `a`.
-   *   @param [options.pre='{'] - Prefix string for detecting replacement strings and URLs
-   *   in string values.
-   *   @param [options.post='}'] - Suffix string for detecting replacement strings and URLs
-   *   in string values.
-   *   @param [options.includeUrl=false] - Recursively loads and merges JSON from URLs or
-   *   file paths found in string values.
-   *   @param [options.detectRegExp=false] - If true, detects and reconstructs RegExp
-   *   objects from plain objects using asRegExp.
-   *   @param [opts.stripJsonComments=false] - If true, strip JSON comments (jsonc)
-   * @returns {Promise<unknown>} A promise that resolves with the deeply copied and transformed JSON
-   * content.
-   *
-   * @example
-   * // Recursively load and merge referenced files
-   * const data = await file.deepReadJson({ includeUrl: true });
-   *
-   * @deprecated Use readJson() with deepCopy option instead.
-   */
-  readJsonEx<T = unknown>(opts: FS.FsDeepJsonDeserializeOpts = {}): Promise<T> {
-    return this.readJson<T>({
-      deepCopy: true,
-      includeUrl: opts.includeUrl,
-      stripComments: opts.stripComments,
-    });
-  }
-
-  /**
-   * @param value
-   * @param options
-   * @param space
-   * @param opts
-   * @returns
-   * @deprecated use writeJson() instead.
-   */
-  writeJsonEx(
-    value: unknown,
-    options: DeepCopyOpts | null = null,
-    space?: string | number,
-    writeOpts?: Util.SafeWriteOptions,
-  ): Promise<this> {
-    // Always use jsonSerialize for writeJsonEx to maintain backward compatibility
-    const opts: Util.WriteJsonOptions = {
-      deepCopy: options || true, // Use true for default deep copy behavior
-      space: space,
-      safe: writeOpts?.safe,
-      backupStrategy: writeOpts?.backupStrategy,
-    };
-    return this.#writeJsonWithDeepCopy(value, opts);
   }
 
   /**
