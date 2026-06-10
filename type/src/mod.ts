@@ -62,8 +62,6 @@
 // Re-export all modules
 export * from './combiner.ts';
 export * as _ from './combiner.ts';
-export * as Deep from './deep/mod.ts';
 export * from './dictutil.ts';
-export * as Json from './json/mod.ts';
 export type * from './semver.ts';
 export * from './types.ts';

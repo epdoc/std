@@ -1,10 +1,8 @@
 {
-  "name": "@epdoc/type",
-  "version": "2.0.0-alpha.1",
+  "name": "@epdoc/transform",
+  "version": "2.0.0-alpha.0",
   "exports": {
-    ".": "./src/mod.ts",
-    "./semver": "./src/semver.ts",
-    "./types": "./src/types.ts"
+    ".": "./src/mod.ts"
   },
   "publish": {
     "include": [
@@ -23,6 +21,7 @@
     "ok": "deno fmt && deno task lint && deno task check && deno task test && deno task docs"
   },
   "imports": {
+    "@epdoc/type": "jsr:@epdoc/type@^1.2.18",
     "@std/encoding": "jsr:@std/encoding@^1.0.10",
     "@std/expect": "jsr:@std/expect@^1.0.19",
     "@std/testing": "jsr:@std/testing@^1.0.19"

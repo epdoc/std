@@ -1,7 +1,7 @@
 import * as Error from '$error';
 import * as Util from '$util';
 import { DateTime } from '@epdoc/datetime';
-import { _, type Dict, type Integer, IStripComments, stripJsonComments } from '@epdoc/type';
+import { _, createDeserializerReviver, type Dict, type Integer, IStripComments, stripJsonComments } from '@epdoc/type';
 import { assert } from '@std/assert';
 import { decodeBase64, encodeBase64 } from '@std/encoding';
 import crypto from 'node:crypto';
@@ -10,7 +10,7 @@ import path from 'node:path';
 import { Readable, Writable } from 'node:stream';
 import { DigestAlgorithm } from '../consts.ts';
 import { FSBytes } from '../fsbytes.ts';
-import { asFilePath, hasDeepCopyOpts, isFilePath } from '../guards.ts';
+import { asFilePath, isFilePath } from '../guards.ts';
 import type * as FS from '../types.ts';
 import { FSSpecBase } from './basespec.ts';
 import { FileSpecWriter } from './filespecwriter.ts';
@@ -749,27 +749,27 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
    */
   async readJson<T = unknown>(options?: Util.ReadJsonOptions): Promise<T> {
     try {
-      const opts: Util.ReadJsonOptions = options || {};
+      const opts: Util.ReadJsonOptions = { pre: '${', post: '}', ...options };
       let text = await this.readAsString();
 
-      if (hasDeepCopyOpts(opts) || opts.autoTemporal === true) {
-        // Use _.jsonDeserialize for special type reconstruction
-        const json = _.jsonDeserialize(text, opts);
-
-        // Apply deep copy processing if includeUrl is enabled
-        if (opts.includeUrl || opts.detectRegExp) {
-          return (await this.#deepCopy(json, opts)) as T;
-        }
-
-        return json as T;
-      } else {
-        // Handle comment stripping first (works with both modes)
-        if (opts.stripComments) {
-          text = stripJsonComments(text, opts.stripComments as IStripComments);
-        }
-        // Standard JSON.parse
-        return JSON.parse(text) as T;
+      if (opts.stripComments) {
+        text = stripJsonComments(text, opts.stripComments as IStripComments);
       }
+
+      let reviver = undefined;
+      if (opts.decode || opts.replace || opts.autoTemporal) {
+        reviver = createDeserializerReviver(opts);
+      }
+
+      // Standard JSON.parse
+      let json = JSON.parse(text, reviver) as T;
+
+      // Apply deep copy processing if includeUrl is enabled
+      if (opts.includeUrl || opts.detectRegExp) {
+        json = await this.#deepCopy(json, opts) as T;
+      }
+
+      return json as T;
     } catch (err) {
       throw this.asError(err, 'readJson');
     }
@@ -1716,7 +1716,7 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
    * // Deep copy with RegExp detection
    * const copy = await file.#deepCopy(obj, { detectRegExp: true });
    */
-  #deepCopy(a: unknown, options?: FS.FsDeepCopyOpts): Promise<unknown> {
+  #deepCopy<T>(a: unknown, options?: FS.FsDeepCopyOpts): Promise<unknown> {
     const opts: FS.FsDeepCopyOpts = _.deepCopySetDefaultOpts(options);
     if (opts.includeUrl && _.isNonEmptyString(a)) {
       const urlTest = new RegExp(`^${opts.pre}(file|http|https):\/\/(.+)${opts.post}$`, 'i');

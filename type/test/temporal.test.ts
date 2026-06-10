@@ -57,9 +57,8 @@ describe('asTemporal', () => {
     expect(val).toBeInstanceOf(Temporal.PlainDateTime);
   });
 
-  it('date-only string without timezone returns PlainDateTime', () => {
-    const val = asTemporal('2024-03-15');
-    expect(val).toBeInstanceOf(Temporal.PlainDateTime);
+  it('date-only string without timezone returns undefined', () => {
+    expect(asTemporal('2024-03-15')).toBe(undefined);
   });
 
   it('date-time string without timezone returns PlainDateTime', () => {
@@ -67,30 +66,24 @@ describe('asTemporal', () => {
     expect(val).toBeInstanceOf(Temporal.PlainDateTime);
   });
 
-  it('whitespace around Z-suffixed string is trimmed', () => {
-    const val = asTemporal('  2024-01-15T12:30:45Z  ');
-    expect(val).toBeInstanceOf(Temporal.ZonedDateTime);
-    expect((val as Temporal.ZonedDateTime).offset).toBe('+00:00');
+  it('whitespace around Z-suffixed string returns undefined', () => {
+    expect(asTemporal('  2024-01-15T12:30:45Z  ')).toBe(undefined);
   });
 
-  it('whitespace around plain string is trimmed', () => {
-    const val = asTemporal('  2024-01-15T12:30:45  ');
-    expect(val).toBeInstanceOf(Temporal.PlainDateTime);
+  it('whitespace around plain string returns undefined', () => {
+    expect(asTemporal('  2024-01-15T12:30:45  ')).toBe(undefined);
   });
 
-  it('legacy Date format "Month Day, Year" returns Instant', () => {
-    const val = asTemporal('July 4, 1776');
-    expect(val).toBeInstanceOf(Temporal.Instant);
+  it('legacy Date format "Month Day, Year" returns undefined', () => {
+    expect(asTemporal('July 4, 1776')).toBe(undefined);
   });
 
-  it('legacy Date format "Month Day Year" returns Instant', () => {
-    const val = asTemporal('July 4 2024');
-    expect(val).toBeInstanceOf(Temporal.Instant);
+  it('legacy Date format "Month Day Year" returns undefined', () => {
+    expect(asTemporal('July 4 2024')).toBe(undefined);
   });
 
-  it('legacy Date format "Mon DD YYYY" returns Instant', () => {
-    const val = asTemporal('Jan 15 2024');
-    expect(val).toBeInstanceOf(Temporal.Instant);
+  it('legacy Date format "Mon DD YYYY" returns undefined', () => {
+    expect(asTemporal('Jan 15 2024')).toBe(undefined);
   });
 
   it('empty string returns undefined', () => {

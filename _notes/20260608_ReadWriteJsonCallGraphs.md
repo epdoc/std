@@ -4,28 +4,23 @@
 
 ```mermaid
 flowchart TB
-    ENTRY["file.readJson(options)"] -->|OPTIONS:\nDeepCopyOpts & IStripComments\n& IAutoTemporal & IIncludeUrl\n& IStripComments| RAS["text = file.readAsString()"]
-    RAS --> HasDeepCopyOpts?{"hasDeepCopyOpts?\n(deepCopy === true OR replace\nOR detectRegExp OR includeUrl)\nOR\nautoTemporal?"}
-    HasDeepCopyOpts? -->|yes\nOPTIONS:\nDeepCopyOpts\n& IAutoTemporal\n& IIncludeUrl\n& IStripComments| STRIP1{"stripComments?"}
+    ENTRY["file.readJson(options)"] -->|OPTIONS:\nDeepCopyOpts & IDecode\n& IAutoTemporal & IIncludeUrl\n& IStripComments| RAS["text = file.readAsString()"]
+    RAS --> HasDeepCopyOpts?{"hasDeepCopyOpts?\n(deepCopy === true OR replace\nOR detectRegExp OR includeUrl)\nOR\nautoTemporal\nOR\ndecode?"}
+    HasDeepCopyOpts? -->|yes\n\nOPTIONS:\nDeepCopyOpts\n& IAutoTemporal\n& IIncludeUrl\n& IStripComments| SJC1["if stripComments:\ntext = stripJsonComments(text)\n{ whitespace, trailingCommas }"]
 
-    subgraph jsonDeserialize["exported function jsonDeserialize(text,options)"]
-        STRIP1 -->|yes\nstripComments| SJC1["text = stripJsonComments(text)\n{ whitespace, trailingCommas }"]
-        SJC1 -->|DeepCopyOpts & IAutoTemporal| CreateDeserializerReviver
-        STRIP1 -->|no\nDeepCopyOpts & IAutoTemporal| CreateDeserializerReviver[Create Deserializer Reviver\n\nSupported filters:\nRegExp, ASCII85Decoce,\nSet, Map,\nInstant, ZonedDateTime, PlainDateTime\n\nApplies DeepCopyOpts\nreplacements to all strings\n-- replace, msub --\n\nApplies autoTemporal to ISODates]
+    subgraph jsonDeserialize["jsonDeserialize(text,options)"]
+        SJC1 -->|DeepCopyOpts & IAutoTemporal| CreateDeserializerReviver[Create JSON Parse 'Reviver'\nwhich does all of these things:\n\nIf decode:\nRegExp, ASCII85Decoce,\nSet, Map,\nInstant, ZonedDateTime, PlainDateTime\n\nif replace:\nreplacements to all strings\n-- replace, msub --\n\nif autoTemporal:\nISODates -> Temporal]
         CreateDeserializerReviver -->|Reviver| PARSE1["JSON.parse(text,reviver)"]
     end
 
-    PARSE1 -->|JSON| IncludeUrl{includeUrl?}
-    IncludeUrl -->|yes\n\nOPTIONS:\nincludeUrl\ndetectRegExp| DeepCopy["deepCopy\n\n#INCLUDE of other JSON files\n\nConverts {pattern|regex,flags}\nto RegEx"]
-    IncludeUrl -->|no| JsonParse["JsonParse(text)"]
-    DeepCopy --> JsonParse
-    JsonParse --> Result
+    PARSE1 -->|JSON| IncludeUrl{"includeUrl\nOR\ndetectRegExp?"}
+    IncludeUrl -->|yes\n\nOPTIONS:\nincludeUrl\ndetectRegExp| DeepCopy["deepCopy(JSON)\n(Recursive value analyzer)\n\n#INCLUDE of other JSON files\n\nConverts {pattern|regex,flags}\nto RegEx"]
+    IncludeUrl -->|no| Result
+    DeepCopy --> Result
 
-    HasDeepCopyOpts? -->|no\nIStripComments| STRIP2{"stripComments?"}
-    STRIP2 -->|yes\nstripComments| SJC2["text = stripJsonComments(text)\n{ whitespace, trailingCommas }"]
-    SJC2 --> PARSE2
-    STRIP2 -->|no\nstripComments| PARSE2["JSON.parse(text)"]
-    PARSE2 --> Result
+    HasDeepCopyOpts? -->|no\nIStripComments| SJC2["if stripComments:\ntext = stripJsonComments(text)\n{ whitespace, trailingCommas }"]
+    SJC2 --> JsonParse
+    JsonParse --> Result
 ```
 
 ### readJson Options

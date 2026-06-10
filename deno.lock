@@ -9,6 +9,7 @@
     "jsr:@epdoc/fmt@^1.0.8": "1.0.8",
     "jsr:@epdoc/fs@^1.5.6": "1.5.6",
     "jsr:@epdoc/terminal@^0.0.13": "0.0.13",
+    "jsr:@epdoc/type@*": "1.2.18",
     "jsr:@epdoc/type@1.0.3": "1.0.3",
     "jsr:@epdoc/type@^1.2.17": "1.2.17",
     "jsr:@epdoc/type@^1.2.18": "1.2.18",
@@ -85,6 +86,7 @@
     "@epdoc/fs@1.5.6": {
       "integrity": "82a478a3ee2be81daf628039c1f108c181b009917ad771361ff5bc87f172112e",
       "dependencies": [
+        "jsr:@epdoc/type@^1.2.17",
         "jsr:@std/assert",
         "jsr:@std/bytes@^1.0.6",
         "jsr:@std/encoding@^1.0.10",
@@ -411,6 +413,14 @@
       "text": {
         "dependencies": [
           "jsr:@epdoc/type@^1.2.17",
+          "jsr:@std/expect@^1.0.19",
+          "jsr:@std/testing@^1.0.19"
+        ]
+      },
+      "transform": {
+        "dependencies": [
+          "jsr:@epdoc/type@^1.2.18",
+          "jsr:@std/encoding@^1.0.10",
           "jsr:@std/expect@^1.0.19",
           "jsr:@std/testing@^1.0.19"
         ]

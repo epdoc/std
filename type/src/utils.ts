@@ -757,28 +757,36 @@ const ISO_DATE_PREFIX = /^\d{4}-\d{2}-\d{2}/;
  * @internal
  */
 export function parseTemporalString(s: string): TemporalDateTime | undefined {
-  // Fast fail: If it doesn't start like YYYY-MM-DD, skip immediately
+  // Fast-fail 1: must start with ISO 8601 date prefix
   if (!ISO_DATE_PREFIX.test(s)) return undefined;
 
+  // Fast-fail 2: must contain time component (T) - we only handle datetimes
+  if (!s.includes('T')) return undefined;
+
   try {
-    // Contains brackets? Must be ZonedDateTime
-    if (s.includes('[')) {
+    // 1. Bracket IANA timezone → ZonedDateTime
+    if (/\[[\w/_-]+\]$/.test(s)) {
       return Temporal.ZonedDateTime.from(s);
     }
 
-    // Contains 'T'? It has a time component
-    if (s.includes('T')) {
-      // Ends with Z? Must be an absolute UTC Instant
-      if (s.endsWith('Z')) {
-        return Temporal.Instant.from(s);
+    // 2. 'Z' or numeric offset (hh:mm or hhmm) → Instant + toZonedDateTimeISO
+    const offsetMatch = s.match(/(Z|[+-]\d{2}:?\d{2})$/);
+    if (offsetMatch) {
+      const rawTz = offsetMatch[1];
+      let tzId: string;
+      if (rawTz === 'Z') {
+        tzId = 'UTC';
+      } else if (/^[+-]\d{4}$/.test(rawTz)) {
+        tzId = rawTz.slice(0, 3) + ':' + rawTz.slice(3);
+      } else {
+        tzId = rawTz;
       }
-      // Has 'T' but no 'Z' or brackets? Must be PlainDateTime
-      return Temporal.PlainDateTime.from(s);
+      return Temporal.Instant.from(s).toZonedDateTimeISO(tzId);
     }
 
-    return undefined;
+    // 3. Has T but no timezone → PlainDateTime
+    return Temporal.PlainDateTime.from(s);
   } catch {
-    // Fallback: Valid format prefix but invalid date value (e.g., "2026-99-99")
     return undefined;
   }
 }

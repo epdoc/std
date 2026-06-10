@@ -75,20 +75,20 @@ export function deepCopy(a: unknown, opts: Deep.CopyOpts & Json.IAutoRegExp = {}
       try {
         const re = _.asRegExp(a);
         if (re instanceof RegExp) return re;
-      } catch (_e) { // keep going }
+      } catch (_e) { // keep going
       }
-
-      // Explicitly cast to Dict here to wipe out the RegExpDef union trace
-      const dictA = a as Dict;
-      const result: Dict = {};
-      for (const key in dictA) {
-        if (Object.prototype.hasOwnProperty.call(dictA, key)) {
-          // TypeScript now knows `a` is a Dict, so `a[key]` is completely safe!
-          result[key] = deepCopy(dictA[key], opts);
-        }
-      }
-      return result;
     }
+
+    // Explicitly cast to Dict here to wipe out the RegExpDef union trace
+    const dictA = a as Dict;
+    const result: Dict = {};
+    for (const key in dictA) {
+      if (Object.prototype.hasOwnProperty.call(dictA, key)) {
+        // TypeScript now knows `a` is a Dict, so `a[key]` is completely safe!
+        result[key] = deepCopy(dictA[key], opts);
+      }
+    }
+    return result;
   }
 
   // Functions and other types
