@@ -1,5 +1,6 @@
-import { _, type IStripComments, type IStripJsonComments } from '@epdoc/type';
-import type { Integer } from './types.ts';
+import type { Integer } from '../types.ts';
+import { isDict, pick } from '../utils.ts';
+import type * as Json from './types.ts';
 
 // Use readonly for constant regex to prevent reassignment
 const REG = {
@@ -27,17 +28,17 @@ const isEscaped = (jsonString: string, quotePosition: Integer): boolean => {
   return backslashCount % 2 === 1;
 };
 
-export function normalizedStripComments(options: IStripComments): IStripJsonComments | undefined {
-  if (options.stripComments === true) {
+function normalizedStripComments(options?: boolean | Json.StripCommentsOpts): Json.StripCommentsOpts {
+  if (options === true) {
     return { whitespace: true, trailingCommas: false };
   }
-  if (_.isDict(options.stripComments)) {
-    const result = _.pick(options.stripComments, ['whitespace', 'trailingCommas']);
+  if (isDict(options)) {
+    const result = pick(options, ['whitespace', 'trailingCommas']);
     if (Object.keys(result).length) {
-      return result as IStripJsonComments;
+      return result as Json.StripCommentsOpts;
     }
   }
-  return undefined;
+  return { whitespace: true, trailingCommas: false };
 }
 
 /**
@@ -48,7 +49,7 @@ export function normalizedStripComments(options: IStripComments): IStripJsonComm
  * @returns The JSON string without comments.
  * @throws {TypeError} If the `jsonString` argument is not a string.
  */
-export default function stripJsonComments(jsonString: string, options: IStripComments = {}): string {
+export function stripComments(jsonString: string, options?: boolean | Json.StripCommentsOpts): string {
   if (typeof jsonString !== 'string') {
     throw new TypeError(`Expected argument \`jsonString\` to be a \`string\`, got \`${typeof jsonString}\``);
   }

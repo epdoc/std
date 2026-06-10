@@ -58,7 +58,7 @@ export type Brand<T, B> = T & { [__brand]: B };
  *
  * @template T - The base object type from which to derive the properties.
  * @template K - The subset of keys from T to enforce the "exactly one" rule upon. Defaults to all keys
-   of T.
+ *  of T.
  *
  * @example
  * // Define a base type for different kinds of messages
@@ -240,71 +240,3 @@ export type AsFloatOpts = {
   def?: number;
   commaAsDecimal?: boolean;
 };
-
-/**
- * Function type for deep copying an object.
- */
-export type DeepCopyFn = (a: unknown, opts: DeepCopyOpts) => unknown;
-
-/**
- * Options for deep copying an object.
- */
-export type MSubFn = (s: string, replace: Record<string, unknown>, pre?: string, post?: string) => string;
-
-export type DeserializerReviverOptions = DeepCopyOpts & IAutoTemporal;
-
-/**
- * When true, ISO 8601 date-time strings encountered during deserialization
- * will be converted to the appropriate Temporal type (ZonedDateTime,
- * PlainDateTime, or Instant) via {@link asTemporal}, rather than left as
- * plain strings.
- * @default false
- */
-export interface IAutoTemporal {
-  autoTemporal?: boolean;
-}
-export interface IStripComments {
-  stripComments?: boolean | IStripJsonComments;
-}
-
-export interface IDetectRegExp {
-  detectRegExp?: boolean;
-}
-export interface IIncludeUrl {
-  includeUrl?: boolean;
-}
-
-export type DeepCopyRegExp = { detectRegExp?: boolean };
-
-export type DeepCopyCommonOpts = {
-  pre?: string;
-  post?: string;
-};
-
-export type DeepCopyOpts =
-  & {
-    pre?: string;
-    post?: string;
-  }
-  & (
-    | { replace?: never; msubFn?: never } // No replacements
-    | { replace: Record<string, string>; msubFn?: never } // Simple string replacements
-    | { replace: Record<string, unknown>; msubFn: MSubFn } // Complex replacements with function
-  );
-
-export type JsonDeserializeOpts = DeepCopyOpts & IStripComments & IAutoTemporal;
-
-export interface IStripJsonComments {
-  /**
-   * If true, whitespace characters in comments will be replaced with a single space.
-   * If false, comments will be removed without replacing them with spaces.
-   * Defaults to true.
-   */
-  whitespace?: boolean;
-
-  /**
-   * If true, trailing commas in arrays and objects will be removed.
-   * Defaults to false.
-   */
-  trailingCommas?: boolean;
-}

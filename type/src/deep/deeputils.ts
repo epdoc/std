@@ -1,14 +1,14 @@
-import { REGEX } from './consts.ts';
-import type { DeepCopyCommonOpts, DeepCopyOpts, MSubFn } from './types.ts';
-import { isNonEmptyString, isRecordStringString } from './utils.ts';
+import { REGEX } from '../consts.ts';
+import { isNonEmptyString, isRecordStringString } from '../utils.ts';
+import type * as Deep from './types.ts';
 
 /**
  * Type guard for the "simple replacements" case of DeepCopyOpts.
  * Uses isRecordStringString for runtime validation.
  */
 export function hasSimpleReplacements(
-  opts: DeepCopyOpts,
-): opts is DeepCopyCommonOpts & { replace: Record<string, string>; msubFn?: never } {
+  opts: Deep.CopyOpts,
+): opts is Deep.CopyCommonOpts & { replace: Record<string, string>; msubFn?: never } {
   return opts.replace !== undefined &&
     isRecordStringString(opts.replace) &&
     opts.msubFn === undefined;
@@ -18,8 +18,8 @@ export function hasSimpleReplacements(
  * Type guard for the "complex replacements" case of DeepCopyOpts.
  */
 export function hasComplexReplacements(
-  opts: DeepCopyOpts,
-): opts is DeepCopyCommonOpts & { replace: Record<string, unknown>; msubFn: MSubFn } {
+  opts: Deep.CopyOpts,
+): opts is Deep.CopyCommonOpts & { replace: Record<string, unknown>; msubFn: Deep.MSubFn } {
   return opts.replace !== undefined &&
     opts.msubFn !== undefined;
 }
@@ -28,10 +28,11 @@ export function hasComplexReplacements(
  * Core string processing that both serialize and deserialize use.
  * This is where isRecordStringString is actually used.
  */
-export function processStringWithReplacements(str: string, opts: DeepCopyOpts): string {
-  if (!opts.replace) {
+export function processStringWithReplacements(str: string, options: Deep.CopyOpts): string {
+  if (!options.replace) {
     return str;
   }
+  const opts: Deep.CopyOpts = { pre: '${', post: '}', ...options };
 
   if (opts.msubFn) {
     // Complex case: use custom handler
@@ -91,24 +92,4 @@ export function msubLite(
 
 function escapeString(s: string): string {
   return s.replace(REGEX.escMatch, '\\$&');
-}
-
-/**
- * Sets default options for deep copying operations.
- * Ensures required properties have sensible defaults.
- *
- * @param opts - The options to set defaults for.
- * @returns The options with defaults applied.
- */
-export function deepCopySetDefaultOpts<T extends DeepCopyOpts = DeepCopyOpts>(opts?: T): T {
-  if (!opts) {
-    opts = {} as T;
-  }
-  if (!opts.pre) {
-    opts.pre = '${';
-  }
-  if (!opts.post) {
-    opts.post = '}';
-  }
-  return opts;
 }

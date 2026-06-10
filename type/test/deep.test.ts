@@ -1,7 +1,7 @@
 import { expect } from '@std/expect';
 import { describe, it } from '@std/testing/bdd';
 import type { Dict } from '../src/mod.ts';
-import { compareValues, deepCopy, deepEquals, isArray, isDict, omit, pick } from '../src/mod.ts';
+import { compareValues, Deep, deepEquals, isArray, isDict, omit, pick } from '../src/mod.ts';
 
 describe('deep', () => {
   // describe('misc', () => {
@@ -87,7 +87,7 @@ describe('deep', () => {
     // };
     it('deepCopy handles arrays of primitives and objects', () => {
       const arr: Array<number | { a: number }> = [1, 2, { a: 3 }];
-      const copy = deepCopy(arr) as typeof arr;
+      const copy = Deep.copy(arr) as typeof arr;
       expect(copy).not.toBe(arr);
       expect(copy).toEqual(arr);
       // Only mutate if the element is an object with property 'a'
@@ -110,7 +110,7 @@ describe('deep', () => {
         { a: 2 },
         [{ b: 3 }, { b: 4 }],
       ];
-      const copy = deepCopy(arr) as typeof arr;
+      const copy = Deep.copy(arr) as typeof arr;
       expect(copy).not.toBe(arr);
       expect(copy).toEqual(arr);
       // Mutate nested object
@@ -123,7 +123,7 @@ describe('deep', () => {
 
     it('deepCopy handles array of arrays', () => {
       const arr = [[1, 2], [3, 4]];
-      const copy = deepCopy(arr) as typeof arr;
+      const copy = Deep.copy(arr) as typeof arr;
       expect(copy).not.toBe(arr);
       expect(copy).toEqual(arr);
       copy[0][0] = 99;
@@ -134,7 +134,7 @@ describe('deep', () => {
     it('deepCopy handles sparse arrays', () => {
       const arr = [];
       arr[2] = { a: 5 };
-      const copy = deepCopy(arr) as typeof arr;
+      const copy = Deep.copy(arr) as typeof arr;
       expect(copy).not.toBe(arr);
       expect(copy[2]).toEqual({ a: 5 });
       if (copy[2]) (copy[2] as { a: number }).a = 10;
@@ -143,7 +143,7 @@ describe('deep', () => {
 
     it('deepCopy handles arrays with null and undefined', () => {
       const arr = [null, undefined, { a: 1 }];
-      const copy = deepCopy(arr) as typeof arr;
+      const copy = Deep.copy(arr) as typeof arr;
       expect(copy).not.toBe(arr);
       expect(copy).toEqual(arr);
       if (copy[2]) (copy[2] as { a: number }).a = 2;
@@ -233,21 +233,21 @@ describe('deep', () => {
   describe('temporal', () => {
     it('deepCopy preserves Temporal.Instant as-is', () => {
       const original = Temporal.Instant.from('2024-01-15T12:30:45Z');
-      const result = deepCopy(original);
+      const result = Deep.copy(original);
       expect(result).toBe(original);
       expect(result).toBeInstanceOf(Temporal.Instant);
     });
 
     it('deepCopy preserves Temporal.ZonedDateTime as-is', () => {
       const original = Temporal.ZonedDateTime.from('2024-01-15T12:30:45-05:00[America/New_York]');
-      const result = deepCopy(original);
+      const result = Deep.copy(original);
       expect(result).toBe(original);
       expect(result).toBeInstanceOf(Temporal.ZonedDateTime);
     });
 
     it('deepCopy preserves Temporal.PlainDateTime as-is', () => {
       const original = Temporal.PlainDateTime.from('2024-01-15T12:30:45');
-      const result = deepCopy(original);
+      const result = Deep.copy(original);
       expect(result).toBe(original);
       expect(result).toBeInstanceOf(Temporal.PlainDateTime);
     });
@@ -258,7 +258,7 @@ describe('deep', () => {
         createdAt: Temporal.Instant.from('2024-01-15T12:30:45Z'),
         updatedAt: Temporal.ZonedDateTime.from('2024-01-15T12:30:45-05:00[America/New_York]'),
       };
-      const result = deepCopy(obj) as typeof obj;
+      const result = Deep.copy(obj) as typeof obj;
       expect(result).not.toBe(obj);
       expect(result.createdAt).toBe(obj.createdAt);
       expect(result.updatedAt).toBe(obj.updatedAt);
@@ -269,7 +269,7 @@ describe('deep', () => {
         Temporal.Instant.from('2024-01-15T12:30:45Z'),
         Temporal.PlainDateTime.from('2024-01-15T12:30:45'),
       ];
-      const result = deepCopy(arr) as typeof arr;
+      const result = Deep.copy(arr) as typeof arr;
       expect(result).not.toBe(arr);
       expect(result[0]).toBe(arr[0]);
       expect(result[1]).toBe(arr[1]);
