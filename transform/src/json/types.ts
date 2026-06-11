@@ -35,7 +35,22 @@ export interface IStripComments {
   stripComments?: boolean | StripCommentsOpts;
 }
 
-export type DeserializeOpts = Deep.CopyOpts & IStripComments & IAutoTemporal & IDecode & IAutoRegExp;
+export type SerializeOpts =
+  & IReplacer
+  & Deep.CopyOpts
+  & IEncode
+  & IAutoRegExp;
+
+export type DeserializeOpts =
+  | ({ reviver: Reviver } & IStripComments)
+  | (
+    & { reviver?: undefined | false }
+    & Deep.CopyOpts
+    & IStripComments
+    & IAutoTemporal
+    & IDecode
+    & IAutoRegExp
+  );
 
 /**
  * When true, look for __filter key in JSON and decode according to the __filter value
@@ -65,3 +80,18 @@ export type EncodedValue =
   | { __filter: 'Set'; data: unknown[] }
   | { __filter: 'Map'; data: [unknown, unknown][] }
   | { __filter: 'ASCII85Decode' | 'ASCII85Decode'[]; data: string };
+
+export type Replacer = ReplacerFn | ReplacerArray;
+export type ReplacerFn = (this: unknown, key: string, value: unknown) => unknown;
+export type ReplacerArray = Array<number | string> | undefined;
+
+export interface IReplacer {
+  replacer?: Replacer;
+}
+
+// The exact signature matching the native JSON.parse expectation, but type-safe
+export type Reviver = (this: unknown, key: string, value: unknown) => unknown;
+
+export interface IReviver {
+  reviver?: Reviver;
+}

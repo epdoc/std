@@ -1,77 +1,76 @@
-import type { Dict } from '@epdoc/type';
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { _, type Dict } from '@epdoc/type';
+import { assert, assertEquals, assertInstanceOf, assertStringIncludes, assertThrows } from '@std/assert';
 import { Json } from '../src/mod.ts';
 
-describe('json', () => {
-  describe('jsonSerialize', () => {
-    it('should serialize a simple object', () => {
+Deno.test('json', async (t) => {
+  await t.step('jsonSerialize', async (t) => {
+    await t.step('should serialize a simple object', () => {
       const obj = { name: 'Alice', age: 30 };
       const json = Json.serialize(obj);
-      expect(json).toBe('{"name":"Alice","age":30}');
+      assertEquals(json, '{"name":"Alice","age":30}');
     });
 
-    it('should serialize an array', () => {
+    await t.step('should serialize an array', () => {
       const arr = [1, 2, 3];
       const json = Json.serialize(arr);
-      expect(json).toBe('[1,2,3]');
+      assertEquals(json, '[1,2,3]');
     });
 
-    it('should serialize nested objects', () => {
+    await t.step('should serialize nested objects', () => {
       const obj = { a: 1, b: { c: 2 } };
       const json = Json.serialize(obj);
-      expect(json).toBe('{"a":1,"b":{"c":2}}');
+      assertEquals(json, '{"a":1,"b":{"c":2}}');
     });
 
-    it('should serialize null and undefined', () => {
+    await t.step('should serialize null and undefined', () => {
       const obj = { a: null, b: undefined };
       const json = Json.serialize(obj);
-      expect(json).toBe('{"a":null}');
+      assertEquals(json, '{"a":null}');
     });
 
-    it('should serialize boolean and number', () => {
+    await t.step('should serialize boolean and number', () => {
       const obj = { flag: true, count: 42 };
       const json = Json.serialize(obj);
-      expect(json).toBe('{"flag":true,"count":42}');
+      assertEquals(json, '{"flag":true,"count":42}');
     });
 
-    it('should serialize string with special characters', () => {
+    await t.step('should serialize string with special characters', () => {
       const obj = { text: 'Hello\nWorld' };
       const json = Json.serialize(obj);
-      expect(json).toBe('{"text":"Hello\\nWorld"}');
+      assertEquals(json, '{"text":"Hello\\nWorld"}');
     });
 
-    it('should serialize empty object', () => {
+    await t.step('should serialize empty object', () => {
       const obj = {};
       const json = Json.serialize(obj);
-      expect(json).toBe('{}');
+      assertEquals(json, '{}');
     });
 
-    it('should serialize empty array', () => {
+    await t.step('should serialize empty array', () => {
       const arr: unknown[] = [];
       const json = Json.serialize(arr);
-      expect(json).toBe('[]');
+      assertEquals(json, '[]');
     });
 
-    it('should serialize deeply nested structures', () => {
+    await t.step('should serialize deeply nested structures', () => {
       const obj = { a: [{ b: { c: [1, 2, { d: null }] } }] };
       const json = Json.serialize(obj);
-      expect(json).toBe('{"a":[{"b":{"c":[1,2,{"d":null}]}}]}');
+      assertEquals(json, '{"a":[{"b":{"c":[1,2,{"d":null}]}}]}');
     });
 
-    it('should serialize array with undefined and null', () => {
+    await t.step('should serialize array with undefined and null', () => {
       const arr = [1, undefined, null, 4];
       const json = Json.serialize(arr);
-      expect(json).toBe('[1,null,null,4]');
+      assertEquals(json, '[1,null,null,4]');
     });
 
-    it('should serialize Date as ISO string', () => {
+    await t.step('should serialize Date as ISO string', () => {
       const obj = { now: new Date('2020-01-01T00:00:00Z') };
       const json = Json.serialize(obj);
-      expect(json).toBe('{"now":"2020-01-01T00:00:00.000Z"}');
+      assertEquals(json, '{"now":"2020-01-01T00:00:00.000Z"}');
     });
 
-    it('should serialize object with toJSON method', () => {
+    await t.step('should serialize object with toJSON method', () => {
       const obj = {
         a: 1,
         toJSON() {
@@ -79,135 +78,135 @@ describe('json', () => {
         },
       };
       const json = Json.serialize(obj);
-      expect(json).toBe('{"b":2}');
+      assertEquals(json, '{"b":2}');
     });
   });
 
-  describe('jsonDeserialize', () => {
-    it('should deserialize a simple object', () => {
+  await t.step('jsonDeserialize', async (t) => {
+    await t.step('should deserialize a simple object', () => {
       const json = '{"name":"Alice","age":30}';
       const obj = Json.deserialize(json);
-      expect(obj).toEqual({ name: 'Alice', age: 30 });
+      assertEquals(obj, { name: 'Alice', age: 30 });
     });
 
-    it('should deserialize an array', () => {
+    await t.step('should deserialize an array', () => {
       const json = '[1,2,3]';
       const arr = Json.deserialize(json);
-      expect(arr).toEqual([1, 2, 3]);
+      assertEquals(arr, [1, 2, 3]);
     });
 
-    it('should deserialize nested objects', () => {
+    await t.step('should deserialize nested objects', () => {
       const json = '{"a":1,"b":{"c":2}}';
       const obj = Json.deserialize(json);
-      expect(obj).toEqual({ a: 1, b: { c: 2 } });
+      assertEquals(obj, { a: 1, b: { c: 2 } });
     });
 
-    it('should deserialize null', () => {
+    await t.step('should deserialize null', () => {
       const json = 'null';
       const value = Json.deserialize(json);
-      expect(value).toBeNull();
+      assertEquals(value, null);
     });
 
-    it('should deserialize boolean and number', () => {
+    await t.step('should deserialize boolean and number', () => {
       const json = '{"flag":true,"count":42}';
       const obj = Json.deserialize(json);
-      expect(obj).toEqual({ flag: true, count: 42 });
+      assertEquals(obj, { flag: true, count: 42 });
     });
 
-    it('should throw on invalid JSON', () => {
+    await t.step('should throw on invalid JSON', () => {
       const json = '{"a":1,}';
-      expect(() => Json.deserialize(json)).toThrow();
+      assertThrows(() => Json.deserialize(json));
     });
 
-    it('should deserialize empty object', () => {
+    await t.step('should deserialize empty object', () => {
       const json = '{}';
       const obj = Json.deserialize(json);
-      expect(obj).toEqual({});
+      assertEquals(obj, {});
     });
 
-    it('should deserialize empty array', () => {
+    await t.step('should deserialize empty array', () => {
       const json = '[]';
       const arr = Json.deserialize(json);
-      expect(arr).toEqual([]);
+      assertEquals(arr, []);
     });
 
-    it('should deserialize deeply nested structures', () => {
+    await t.step('should deserialize deeply nested structures', () => {
       const json = '{"a":[{"b":{"c":[1,2,{"d":null}]}}]}';
       const obj = Json.deserialize(json);
-      expect(obj).toEqual({ a: [{ b: { c: [1, 2, { d: null }] } }] });
+      assertEquals(obj, { a: [{ b: { c: [1, 2, { d: null }] } }] });
     });
 
-    it('should deserialize string with special characters', () => {
+    await t.step('should deserialize string with special characters', () => {
       const json = '{"text":"Hello\\nWorld"}';
       const obj = Json.deserialize(json);
-      expect(obj).toEqual({ text: 'Hello\nWorld' });
+      assertEquals(obj, { text: 'Hello\nWorld' });
     });
 
-    it('should deserialize ISO date string as string', () => {
+    await t.step('should deserialize ISO date string as string', () => {
       const json = '{"now":"2020-01-01T00:00:00.000Z"}';
       const result = Json.deserialize(json) as Record<string, unknown>;
-      expect(typeof result.now).toBe('string');
-      expect(result.now).toBe('2020-01-01T00:00:00.000Z');
+      assertEquals(typeof result.now, 'string');
+      assertEquals(result.now, '2020-01-01T00:00:00.000Z');
     });
 
-    it('should deserialize array with nulls', () => {
+    await t.step('should deserialize array with nulls', () => {
       const json = '[1,null,null,4]';
       const arr = Json.deserialize(json);
-      expect(arr).toEqual([1, null, null, 4]);
+      assertEquals(arr, [1, null, null, 4]);
     });
   });
-  describe('jsonSerialize/jsonDeserialize advanced', () => {
-    it('serializes and deserializes Uint8Array', () => {
+  await t.step('jsonSerialize/jsonDeserialize advanced', async (t) => {
+    await t.step('serializes and deserializes Uint8Array', () => {
       const arr = new Uint8Array([1, 2, 3]);
       const json = Json.serialize(arr, { encode: true });
       const restored = Json.deserialize<typeof arr>(json, { decode: true });
-      expect(restored).toEqual(arr);
-      expect(restored instanceof Uint8Array).toBe(true);
+      assertEquals(restored, arr);
+      assertInstanceOf(restored, Uint8Array);
     });
 
-    it('serializes and deserializes Set', () => {
+    await t.step('serializes and deserializes Set', () => {
       const set = new Set([1, 2, 3]);
       const json = Json.serialize(set, { encode: true });
       const restored = Json.deserialize<typeof set>(json, { decode: true });
-      expect(restored instanceof Set).toBe(true);
-      expect(Array.from(restored)).toEqual([1, 2, 3]);
+      assertInstanceOf(restored, Set);
+      assertEquals(Array.from(restored), [1, 2, 3]);
     });
 
-    it('serializes and deserializes Map', () => {
+    await t.step('serializes and deserializes Map', () => {
       const map = new Map([['a', 1], ['b', 2]]);
       const json = Json.serialize(map, { encode: true });
       const restored = Json.deserialize<typeof map>(json, { decode: true });
-      expect(restored instanceof Map).toBe(true);
-      expect(Array.from(restored.entries())).toEqual([['a', 1], ['b', 2]]);
+      assertInstanceOf(restored, Map);
+      assertEquals(Array.from(restored.entries()), [['a', 1], ['b', 2]]);
     });
 
-    it('serializes and deserializes RegExp', () => {
+    await t.step('serializes and deserializes RegExp', () => {
       const re = /abc/gi;
       const json = Json.serialize(re, { encode: true });
       const restored = Json.deserialize<typeof re>(json, { decode: true });
-      expect(restored instanceof RegExp).toBe(true);
-      expect(restored.source).toBe('abc');
-      expect(restored.flags).toBe('gi');
+      assertInstanceOf(restored, RegExp);
+      assertEquals(restored.source, 'abc');
+      assertEquals(restored.flags, 'gi');
     });
 
-    it('serializes and deserializes RegExp with detectRegExp', () => {
+    await t.step('serializes and deserializes RegExp with detectRegExp', () => {
       const re = /abc/gi;
       const json = Json.serialize(re, { autoRegExp: true });
       const restored = Json.deserialize<typeof re>(json, { autoRegExp: true });
-      expect(restored instanceof RegExp).toBe(true);
-      expect(restored.source).toBe('abc');
-      expect(restored.flags).toBe('gi');
+      assertInstanceOf(restored, RegExp);
+      assertEquals(restored.source, 'abc');
+      assertEquals(restored.flags, 'gi');
     });
 
-    it('serializes Date as ISO string (no auto-restore to Date)', () => {
+    await t.step('serializes Date as ISO string (no auto-restore to Date)', () => {
       const date = new Date('2022-01-01T12:00:00.000Z');
       const json = Json.serialize(date);
       const restored = Json.deserialize(json);
-      expect(typeof restored).toBe('string');
-      expect(restored).toBe('2022-01-01T12:00:00.000Z');
+      assertEquals(typeof restored, 'string');
+      assertEquals(restored, '2022-01-01T12:00:00.000Z');
     });
 
-    it('serializes and deserializes nested structures with special types', () => {
+    await t.step('serializes and deserializes nested structures with special types', () => {
       const obj = {
         arr: [1, 2, new Uint8Array([3, 4])],
         set: new Set(['a', 'b']),
@@ -217,31 +216,31 @@ describe('json', () => {
       };
       const json = Json.serialize(obj, { encode: true });
       const restored = Json.deserialize(json, { decode: true }) as typeof obj;
-      expect(restored.arr[2] instanceof Uint8Array).toBe(true);
-      expect(restored.set instanceof Set).toBe(true);
-      expect(restored.map instanceof Map).toBe(true);
-      expect(typeof restored.date).toBe('string');
-      expect(restored.re instanceof RegExp).toBe(true);
+      assertInstanceOf(restored.arr[2], Uint8Array);
+      assertInstanceOf(restored.set, Set);
+      assertInstanceOf(restored.map, Map);
+      assertEquals(typeof restored.date, 'string');
+      assertInstanceOf(restored.re, RegExp);
     });
 
-    it('serializes and deserializes with string replacer', () => {
+    await t.step('serializes and deserializes with string replacer', () => {
       const obj = { msg: 'Hello ${name}!', other: 'No replace' };
       const json = Json.serialize(obj, {
         replace: { name: 'World' },
         pre: '${',
         post: '}',
       });
-      expect(json).toContain('Hello World!');
+      assertStringIncludes(json, 'Hello World!');
       const restored = Json.deserialize<typeof obj>(json, {
         replace: { name: 'World' },
         pre: '${',
         post: '}',
       });
-      expect(restored.msg).toBe('Hello World!');
-      expect(restored.other).toBe('No replace');
+      assertEquals(restored.msg, 'Hello World!');
+      assertEquals(restored.other, 'No replace');
     });
 
-    it('applies replacer on deserialization only', () => {
+    await t.step('applies replacer on deserialization only', () => {
       const obj = { msg: 'Hello ${name}!' };
       const json = Json.serialize(obj);
       const restored = Json.deserialize<typeof obj>(json, {
@@ -249,102 +248,104 @@ describe('json', () => {
         pre: '${',
         post: '}',
       });
-      expect(restored.msg).toBe('Hello World!');
+      assertEquals(restored.msg, 'Hello World!');
     });
 
-    it('applies replacer on serialization only', () => {
+    await t.step('applies replacer on serialization only', () => {
       const obj = { msg: 'Hello ${name}!' };
       const json = Json.serialize(obj, {
         replace: { name: 'World' },
         pre: '${',
         post: '}',
       });
-      expect(json).toContain('Hello World!');
+      assertStringIncludes(json, 'Hello World!');
       const restored = Json.deserialize<typeof obj>(json);
-      expect(restored.msg).toBe('Hello World!');
+      assertEquals(restored.msg, 'Hello World!');
     });
 
-    it('serializes and deserializes with custom delimiters', () => {
+    await t.step('serializes and deserializes with custom delimiters', () => {
       const obj = { msg: 'Hi <<user>>!' };
       const json = Json.serialize(obj, {
         replace: { user: 'Bob' },
         pre: '<<',
         post: '>>',
       });
-      expect(json).toContain('Hi Bob!');
+      assertStringIncludes(json, 'Hi Bob!');
       const restored = Json.deserialize<typeof obj>(json, {
         replace: { user: 'Bob' },
         pre: '<<',
         post: '>>',
       });
-      expect(restored.msg).toBe('Hi Bob!');
+      assertEquals(restored.msg, 'Hi Bob!');
     });
 
-    it('does not replace if no match in replacer', () => {
+    await t.step('does not replace if no match in replacer', () => {
       const obj = { msg: 'Hello ${name}!' };
       const json = Json.serialize(obj, { replace: { foo: 'Bar' } });
-      expect(json).toContain('${name}');
+      assertStringIncludes(json, '${name}');
       const restored = Json.deserialize<typeof obj>(json, {
         replace: { foo: 'Bar' },
       });
-      expect(restored.msg).toBe('Hello ${name}!');
+      assertEquals(restored.msg, 'Hello ${name}!');
     });
 
-    it('throws on circular reference', () => {
+    await t.step('throws on circular reference', () => {
       const obj: Dict = { a: 1 };
       obj.self = obj;
-      expect(() => Json.serialize(obj)).toThrow();
+      assertThrows(() => Json.serialize(obj));
     });
   });
-  describe('temporal serialization', () => {
-    it('serializes and deserializes Temporal.Instant', () => {
+  await t.step('temporal serialization', async (t) => {
+    await t.step('serializes and deserializes Temporal.Instant', () => {
       const obj = { time: Temporal.Instant.from('2024-01-15T12:30:45.123Z') };
       const json = Json.serialize(obj);
-      const result = Json.deserialize(json, { decode: true }) as { time: unknown };
-      expect(result.time).toBeInstanceOf(Temporal.Instant);
-      expect((result.time as Temporal.Instant).epochMilliseconds).toBe(
+      const result = Json.deserialize(json, { autoTemporal: true }) as { time: unknown };
+      assertInstanceOf(result.time, Temporal.Instant);
+      assertEquals(
+        (result.time as Temporal.Instant).epochMilliseconds,
         obj.time.epochMilliseconds,
       );
     });
 
-    it('serializes and deserializes Temporal.ZonedDateTime', () => {
+    await t.step('serializes and deserializes Temporal.ZonedDateTime', () => {
       const obj = {
         time: Temporal.ZonedDateTime.from(
           '2024-01-15T12:30:45-05:00[America/New_York]',
         ),
       };
       const json = Json.serialize(obj);
-      const result = Json.deserialize(json, { decode: true }) as { time: unknown };
-      expect(result.time).toBeInstanceOf(Temporal.ZonedDateTime);
-      expect((result.time as Temporal.ZonedDateTime).epochMilliseconds).toBe(
+      const result = Json.deserialize(json, { autoTemporal: true }) as { time: unknown };
+      assertInstanceOf(result.time, Temporal.ZonedDateTime);
+      assertEquals(
+        (result.time as Temporal.ZonedDateTime).epochMilliseconds,
         obj.time.epochMilliseconds,
       );
     });
 
-    it('serializes and deserializes Temporal.PlainDateTime', () => {
+    await t.step('serializes and deserializes Temporal.PlainDateTime', () => {
       const obj = {
         time: Temporal.PlainDateTime.from('2024-01-15T12:30:45.123'),
       };
       const json = Json.serialize(obj);
-      const result = Json.deserialize(json, { decode: true }) as { time: unknown };
-      expect(result.time).toBeInstanceOf(Temporal.PlainDateTime);
+      const result = Json.deserialize(json, { autoTemporal: true }) as { time: unknown };
+      assertInstanceOf(result.time, Temporal.PlainDateTime);
     });
 
-    it('autoTemporal converts ISO strings to Temporal types', () => {
+    await t.step('autoTemporal converts ISO strings to Temporal types', () => {
       const json = '{"time":"2024-01-15T12:30:45Z"}';
       const result = Json.deserialize(json, { autoTemporal: true }) as {
         time: unknown;
       };
-      expect(result.time).toBeInstanceOf(Temporal.ZonedDateTime);
+      assertInstanceOf(result.time, Temporal.Instant);
     });
 
-    it('without autoTemporal, ISO strings remain strings', () => {
+    await t.step('without autoTemporal, ISO strings remain strings', () => {
       const json = '{"time":"2024-01-15T12:30:45Z"}';
       const result = Json.deserialize(json) as { time: unknown };
-      expect(typeof result.time).toBe('string');
+      assertEquals(typeof result.time, 'string');
     });
 
-    it('serializes and deserializes Temporal values in arrays', () => {
+    await t.step('serializes and deserializes Temporal values in arrays', () => {
       const obj = {
         times: [
           Temporal.Instant.from('2024-01-15T12:30:45Z'),
@@ -354,26 +355,54 @@ describe('json', () => {
         ],
       };
       const json = Json.serialize(obj);
-      const result = Json.deserialize(json, { decode: true }) as { times: unknown[] };
-      expect(Array.isArray(result.times)).toBe(true);
-      expect(result.times[0]).toBeInstanceOf(Temporal.Instant);
-      expect(result.times[1]).toBeInstanceOf(Temporal.ZonedDateTime);
+      const result = Json.deserialize(json, { autoTemporal: true }) as { times: unknown[] };
+      assert(Array.isArray(result.times));
+      assertInstanceOf(result.times[0], Temporal.Instant);
+      assertInstanceOf(result.times[1], Temporal.ZonedDateTime);
     });
 
-    it('serializes and deserializes Temporal values in nested objects', () => {
+    await t.step('serializes but do not dserialize Temporal values in arrays', () => {
+      const obj = {
+        times: [
+          Temporal.Instant.from('2024-01-15T12:30:45Z'),
+          Temporal.ZonedDateTime.from(
+            '2024-01-15T12:30:45-05:00[America/New_York]',
+          ),
+        ],
+      };
+      const json = Json.serialize(obj);
+
+      // autoTemporal is not set
+      let result = Json.deserialize<{ times: unknown[] }>(json, {});
+      assert(Array.isArray(result.times));
+      assert(_.isString(result.times[0]));
+      assert(_.isString(result.times[1]));
+      assertEquals(result.times[0], '2024-01-15T12:30:45Z');
+      assertEquals(result.times[1], '2024-01-15T12:30:45-05:00[America/New_York]');
+
+      // decode is true, but autoTemporal needs to be set
+      result = Json.deserialize<{ times: unknown[] }>(json, { decode: true });
+      assert(Array.isArray(result.times));
+      assert(_.isString(result.times[0]));
+      assert(_.isString(result.times[1]));
+      assertEquals(result.times[0], '2024-01-15T12:30:45Z');
+      assertEquals(result.times[1], '2024-01-15T12:30:45-05:00[America/New_York]');
+    });
+
+    await t.step('serializes and deserializes Temporal values in nested objects', () => {
       const obj = {
         meta: {
           created: Temporal.Instant.from('2024-01-15T12:30:45Z'),
         },
       };
       const json = Json.serialize(obj);
-      const result = Json.deserialize(json, { decode: true }) as { meta: { created: unknown } };
-      expect(result.meta.created).toBeInstanceOf(Temporal.Instant);
+      const result = Json.deserialize(json, { autoTemporal: true }) as { meta: { created: unknown } };
+      assertInstanceOf(result.meta.created, Temporal.Instant);
     });
   });
 
-  describe('Json.stripComments', () => {
-    it('removes single-line comments', () => {
+  await t.step('Json.stripComments', async (t) => {
+    await t.step('removes single-line comments', () => {
       const jsonc = `
       {
         // this is a comment
@@ -381,11 +410,11 @@ describe('json', () => {
       }
     `;
       const stripped = Json.stripComments(jsonc);
-      expect(stripped).not.toContain('//');
-      expect(JSON.parse(stripped)).toEqual({ a: 1 });
+      assert(!stripped.includes('//'));
+      assertEquals(JSON.parse(stripped), { a: 1 });
     });
 
-    it('removes multi-line comments', () => {
+    await t.step('removes multi-line comments', () => {
       const jsonc = `
       {
         /* this is a
@@ -394,11 +423,11 @@ describe('json', () => {
       }
     `;
       const stripped = Json.stripComments(jsonc);
-      expect(stripped).not.toContain('/*');
-      expect(JSON.parse(stripped)).toEqual({ b: 2 });
+      assert(!stripped.includes('/*'));
+      assertEquals(JSON.parse(stripped), { b: 2 });
     });
 
-    it('handles comments and trailing commas', () => {
+    await t.step('handles comments and trailing commas', () => {
       const jsonc = `
       {
         "a": 1, // comment
@@ -406,12 +435,11 @@ describe('json', () => {
       }
     `;
       const stripped = Json.stripComments(jsonc);
-      // Remove trailing commas for valid JSON.parse
       const clean = stripped.replace(/,(\s*[}\]])/g, '$1');
-      expect(JSON.parse(clean)).toEqual({ a: 1, b: 2 });
+      assertEquals(JSON.parse(clean), { a: 1, b: 2 });
     });
 
-    it('does not remove comment-like content in strings', () => {
+    await t.step('does not remove comment-like content in strings', () => {
       const jsonc = `
       {
         "str": "// not a comment",
@@ -419,7 +447,7 @@ describe('json', () => {
       }
     `;
       const stripped = Json.stripComments(jsonc);
-      expect(JSON.parse(stripped)).toEqual({
+      assertEquals(JSON.parse(stripped), {
         str: '// not a comment',
         str2: '/* not a comment */',
       });

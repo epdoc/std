@@ -1,32 +1,31 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { assertEquals } from '@std/assert';
 import { msubLite } from '../src/mod.ts';
 
-describe('utils', () => {
-  describe('msubLite', () => {
-    it('replaces simple keys', () => {
-      expect(msubLite('Hello ${name}!', { name: 'World' })).toBe('Hello World!');
+Deno.test('utils', async (t) => {
+  await t.step('msubLite', async (t) => {
+    await t.step('replaces simple keys', () => {
+      assertEquals(msubLite('Hello ${name}!', { name: 'World' }), 'Hello World!');
     });
-    it('leaves unknown keys unchanged', () => {
-      expect(msubLite('Hello ${name}!', {})).toBe('Hello ${name}!');
+    await t.step('leaves unknown keys unchanged', () => {
+      assertEquals(msubLite('Hello ${name}!', {}), 'Hello ${name}!');
     });
-    it('works with custom delimiters', () => {
-      expect(msubLite('Hello <<name>>!', { name: 'World' }, '<<', '>>')).toBe('Hello World!');
+    await t.step('works with custom delimiters', () => {
+      assertEquals(msubLite('Hello <<name>>!', { name: 'World' }, '<<', '>>'), 'Hello World!');
     });
-    it('replaces multiple occurrences', () => {
-      expect(msubLite('${a} and ${a}', { a: 'x' })).toBe('x and x');
+    await t.step('replaces multiple occurrences', () => {
+      assertEquals(msubLite('${a} and ${a}', { a: 'x' }), 'x and x');
     });
-    it('works with adjacent keys', () => {
-      expect(msubLite('${a}${b}', { a: 'x', b: 'y' })).toBe('xy');
+    await t.step('works with adjacent keys', () => {
+      assertEquals(msubLite('${a}${b}', { a: 'x', b: 'y' }), 'xy');
     });
-    it('returns original string if no replacements', () => {
-      expect(msubLite('no keys here', { a: 'x' })).toBe('no keys here');
+    await t.step('returns original string if no replacements', () => {
+      assertEquals(msubLite('no keys here', { a: 'x' }), 'no keys here');
     });
-    it('handles empty string', () => {
-      expect(msubLite('', { a: 'x' })).toBe('');
+    await t.step('handles empty string', () => {
+      assertEquals(msubLite('', { a: 'x' }), '');
     });
-    it('handles missing delimiters gracefully', () => {
-      expect(msubLite('Hello ${name}!', { name: 'World' }, '', '')).toBe('Hello ${name}!');
+    await t.step('handles missing delimiters gracefully', () => {
+      assertEquals(msubLite('Hello ${name}!', { name: 'World' }, '', ''), 'Hello ${name}!');
     });
   });
 });

@@ -152,6 +152,6 @@ export function deserialize<T = unknown>(
   if (opts.stripComments) {
     json = stripComments(json, opts.stripComments);
   }
-
-  return JSON.parse(json, createDeserializerReviver(opts)) as T;
+  const reviver = opts.reviver ? opts.reviver : createDeserializerReviver(opts);
+  return JSON.parse(json, reviver) as T;
 }

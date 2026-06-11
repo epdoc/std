@@ -1,259 +1,258 @@
 import type { Dict } from '@epdoc/type';
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { assert, assertEquals, assertInstanceOf } from '@std/assert';
 import { Json } from '../src/mod.ts';
 
-describe('jsonDeserialize reviver', () => {
-  describe('autoRegExp – basic patterns', () => {
-    it('converts { pattern } to RegExp', () => {
+Deno.test('jsonDeserialize reviver', async (t) => {
+  await t.step('autoRegExp \u2013 basic patterns', async (t) => {
+    await t.step('converts { pattern } to RegExp', () => {
       const result = Json.deserialize<Dict>('{"re":{"pattern":"abc"}}', {
         autoRegExp: true,
       });
-      expect(result.re).toBeInstanceOf(RegExp);
-      expect((result.re as RegExp).source).toBe('abc');
-      expect((result.re as RegExp).flags).toBe('');
+      assertInstanceOf(result.re, RegExp);
+      assertEquals((result.re as RegExp).source, 'abc');
+      assertEquals((result.re as RegExp).flags, '');
     });
 
-    it('converts { pattern, flags } to RegExp', () => {
+    await t.step('converts { pattern, flags } to RegExp', () => {
       const result = Json.deserialize<Dict>(
         '{"re":{"pattern":"abc","flags":"gi"}}',
         { autoRegExp: true },
       );
-      expect(result.re).toBeInstanceOf(RegExp);
-      expect((result.re as RegExp).source).toBe('abc');
-      expect((result.re as RegExp).flags).toBe('gi');
+      assertInstanceOf(result.re, RegExp);
+      assertEquals((result.re as RegExp).source, 'abc');
+      assertEquals((result.re as RegExp).flags, 'gi');
     });
 
-    it('converts { regex } to RegExp', () => {
+    await t.step('converts { regex } to RegExp', () => {
       const result = Json.deserialize<Dict>('{"re":{"regex":"abc"}}', {
         autoRegExp: true,
       });
-      expect(result.re).toBeInstanceOf(RegExp);
-      expect((result.re as RegExp).source).toBe('abc');
-      expect((result.re as RegExp).flags).toBe('');
+      assertInstanceOf(result.re, RegExp);
+      assertEquals((result.re as RegExp).source, 'abc');
+      assertEquals((result.re as RegExp).flags, '');
     });
 
-    it('converts { regex, flags } to RegExp', () => {
+    await t.step('converts { regex, flags } to RegExp', () => {
       const result = Json.deserialize<Dict>('{"re":{"regex":"abc","flags":"m"}}', {
         autoRegExp: true,
       });
-      expect(result.re).toBeInstanceOf(RegExp);
-      expect((result.re as RegExp).source).toBe('abc');
-      expect((result.re as RegExp).flags).toBe('m');
+      assertInstanceOf(result.re, RegExp);
+      assertEquals((result.re as RegExp).source, 'abc');
+      assertEquals((result.re as RegExp).flags, 'm');
     });
 
-    it('converts with no flags given', () => {
+    await t.step('converts with no flags given', () => {
       const result = Json.deserialize<Dict>('{"re":{"pattern":"abc"}}', {
         autoRegExp: true,
       });
-      expect((result.re as RegExp).flags).toBe('');
+      assertEquals((result.re as RegExp).flags, '');
     });
 
-    it('converts with multiple flags', () => {
+    await t.step('converts with multiple flags', () => {
       const result = Json.deserialize<Dict>(
         '{"re":{"pattern":"test","flags":"gimsuy"}}',
         { autoRegExp: true },
       );
-      expect(result.re).toBeInstanceOf(RegExp);
-      expect((result.re as RegExp).source).toBe('test');
+      assertInstanceOf(result.re, RegExp);
+      assertEquals((result.re as RegExp).source, 'test');
     });
   });
 
-  describe('autoRegExp – special regex patterns', () => {
-    it('converts pattern with anchors', () => {
+  await t.step('autoRegExp \u2013 special regex patterns', async (t) => {
+    await t.step('converts pattern with anchors', () => {
       const result = Json.deserialize<Dict>(
         '{"re":{"pattern":"^test$","flags":"m"}}',
         { autoRegExp: true },
       );
-      expect(result.re).toBeInstanceOf(RegExp);
-      expect((result.re as RegExp).test('test')).toBe(true);
-      expect((result.re as RegExp).test('atestb')).toBe(false);
+      assertInstanceOf(result.re, RegExp);
+      assert((result.re as RegExp).test('test'));
+      assertEquals((result.re as RegExp).test('atestb'), false);
     });
 
-    it('converts pattern with quantifiers', () => {
+    await t.step('converts pattern with quantifiers', () => {
       const result = Json.deserialize<Dict>(
         '{"re":{"pattern":"\\\\d+","flags":""}}',
         { autoRegExp: true },
       );
-      expect(result.re).toBeInstanceOf(RegExp);
-      expect((result.re as RegExp).test('123')).toBe(true);
-      expect((result.re as RegExp).test('abc')).toBe(false);
+      assertInstanceOf(result.re, RegExp);
+      assert((result.re as RegExp).test('123'));
+      assertEquals((result.re as RegExp).test('abc'), false);
     });
 
-    it('converts pattern with alternation', () => {
+    await t.step('converts pattern with alternation', () => {
       const result = Json.deserialize<Dict>('{"re":{"pattern":"cat|dog"}}', {
         autoRegExp: true,
       });
-      expect(result.re).toBeInstanceOf(RegExp);
-      expect((result.re as RegExp).test('cat')).toBe(true);
-      expect((result.re as RegExp).test('dog')).toBe(true);
-      expect((result.re as RegExp).test('bird')).toBe(false);
+      assertInstanceOf(result.re, RegExp);
+      assert((result.re as RegExp).test('cat'));
+      assert((result.re as RegExp).test('dog'));
+      assertEquals((result.re as RegExp).test('bird'), false);
     });
 
-    it('converts pattern with character classes', () => {
+    await t.step('converts pattern with character classes', () => {
       const result = Json.deserialize<Dict>('{"re":{"pattern":"[a-z]"}}', {
         autoRegExp: true,
       });
-      expect(result.re).toBeInstanceOf(RegExp);
-      expect((result.re as RegExp).test('m')).toBe(true);
-      expect((result.re as RegExp).test('9')).toBe(false);
+      assertInstanceOf(result.re, RegExp);
+      assert((result.re as RegExp).test('m'));
+      assertEquals((result.re as RegExp).test('9'), false);
     });
   });
 
-  describe('autoRegExp – edge cases', () => {
-    it('converts empty pattern string to empty RegExp', () => {
+  await t.step('autoRegExp \u2013 edge cases', async (t) => {
+    await t.step('converts empty pattern string to empty RegExp', () => {
       const result = Json.deserialize<Dict>('{"re":{"pattern":""}}', {
         autoRegExp: true,
       });
-      expect(result.re).toBeInstanceOf(RegExp);
+      assertInstanceOf(result.re, RegExp);
     });
 
-    it('converts pattern with single dot', () => {
+    await t.step('converts pattern with single dot', () => {
       const result = Json.deserialize<Dict>('{"re":{"pattern":"."}}', {
         autoRegExp: true,
       });
-      expect(result.re).toBeInstanceOf(RegExp);
-      expect((result.re as RegExp).test('x')).toBe(true);
+      assertInstanceOf(result.re, RegExp);
+      assert((result.re as RegExp).test('x'));
     });
   });
 
-  describe('autoRegExp – invalid patterns (returns original value)', () => {
-    it('returns original object for unterminated character class', () => {
+  await t.step('autoRegExp \u2013 invalid patterns (returns original value)', async (t) => {
+    await t.step('returns original object for unterminated character class', () => {
       const result = Json.deserialize<Dict>('{"re":{"pattern":"[invalid"}}', {
         autoRegExp: true,
       });
-      expect(result.re).not.toBeInstanceOf(RegExp);
-      expect(result.re).toEqual({ pattern: '[invalid' });
+      assertEquals(result.re instanceof RegExp, false);
+      assertEquals(result.re, { pattern: '[invalid' });
     });
 
-    it('returns original object for unclosed group', () => {
+    await t.step('returns original object for unclosed group', () => {
       const result = Json.deserialize<Dict>('{"re":{"pattern":"("}}', {
         autoRegExp: true,
       });
-      expect(result.re).not.toBeInstanceOf(RegExp);
-      expect(result.re).toEqual({ pattern: '(' });
+      assertEquals(result.re instanceof RegExp, false);
+      assertEquals(result.re, { pattern: '(' });
     });
 
-    it('returns original object for invalid flags', () => {
+    await t.step('returns original object for invalid flags', () => {
       const result = Json.deserialize<Dict>(
         '{"re":{"pattern":"abc","flags":"zz"}}',
         { autoRegExp: true },
       );
-      expect(result.re).not.toBeInstanceOf(RegExp);
-      expect(result.re).toEqual({ pattern: 'abc', flags: 'zz' });
+      assertEquals(result.re instanceof RegExp, false);
+      assertEquals(result.re, { pattern: 'abc', flags: 'zz' });
     });
   });
 
-  describe('autoRegExp – invalid shapes (not RegExpDef)', () => {
-    it('does not convert object where pattern is a number', () => {
+  await t.step('autoRegExp \u2013 invalid shapes (not RegExpDef)', async (t) => {
+    await t.step('does not convert object where pattern is a number', () => {
       const result = Json.deserialize<Dict>('{"re":{"pattern":123}}', {
         autoRegExp: true,
       });
-      expect(result.re).not.toBeInstanceOf(RegExp);
-      expect(result.re).toEqual({ pattern: 123 });
+      assertEquals(result.re instanceof RegExp, false);
+      assertEquals(result.re, { pattern: 123 });
     });
 
-    it('does not convert object with both pattern and regex keys', () => {
+    await t.step('does not convert object with both pattern and regex keys', () => {
       const result = Json.deserialize<Dict>('{"re":{"pattern":"a","regex":"b"}}', {
         autoRegExp: true,
       });
-      expect(result.re).not.toBeInstanceOf(RegExp);
-      expect(result.re).toEqual({ pattern: 'a', regex: 'b' });
+      assertEquals(result.re instanceof RegExp, false);
+      assertEquals(result.re, { pattern: 'a', regex: 'b' });
     });
 
-    it('does not convert object with extra properties', () => {
+    await t.step('does not convert object with extra properties', () => {
       const result = Json.deserialize<Dict>(
         '{"re":{"pattern":"a","extra":"prop"}}',
         { autoRegExp: true },
       );
-      expect(result.re).not.toBeInstanceOf(RegExp);
-      expect(result.re).toEqual({ pattern: 'a', extra: 'prop' });
+      assertEquals(result.re instanceof RegExp, false);
+      assertEquals(result.re, { pattern: 'a', extra: 'prop' });
     });
 
-    it('does not convert empty object', () => {
+    await t.step('does not convert empty object', () => {
       const result = Json.deserialize<Dict>('{"re":{}}', { autoRegExp: true });
-      expect(result.re).not.toBeInstanceOf(RegExp);
-      expect(result.re).toEqual({});
+      assertEquals(result.re instanceof RegExp, false);
+      assertEquals(result.re, {});
     });
 
-    it('does not convert null', () => {
+    await t.step('does not convert null', () => {
       const result = Json.deserialize<Dict>('{"re":null}', { autoRegExp: true });
-      expect(result.re).toBeNull();
+      assertEquals(result.re, null);
     });
 
-    it('does not convert primitive values', () => {
+    await t.step('does not convert primitive values', () => {
       const result = Json.deserialize<Dict>('{"re":"abc"}', { autoRegExp: true });
-      expect(typeof result.re).toBe('string');
-      expect(result.re).toBe('abc');
+      assertEquals(typeof result.re, 'string');
+      assertEquals(result.re, 'abc');
     });
   });
 
-  describe('autoRegExp – disabled', () => {
-    it('does not convert when autoRegExp is false', () => {
+  await t.step('autoRegExp \u2013 disabled', async (t) => {
+    await t.step('does not convert when autoRegExp is false', () => {
       const result = Json.deserialize<Dict>('{"re":{"pattern":"abc"}}', {
         autoRegExp: false,
       });
-      expect(result.re).not.toBeInstanceOf(RegExp);
-      expect(result.re).toEqual({ pattern: 'abc' });
+      assertEquals(result.re instanceof RegExp, false);
+      assertEquals(result.re, { pattern: 'abc' });
     });
 
-    it('does not convert when autoRegExp is not set (default falsy)', () => {
+    await t.step('does not convert when autoRegExp is not set (default falsy)', () => {
       const result = Json.deserialize<Dict>('{"re":{"pattern":"abc"}}');
-      expect(result.re).not.toBeInstanceOf(RegExp);
-      expect(result.re).toEqual({ pattern: 'abc' });
+      assertEquals(result.re instanceof RegExp, false);
+      assertEquals(result.re, { pattern: 'abc' });
     });
   });
 
-  describe('autoRegExp – nested structures', () => {
-    it('converts RegExpDef nested inside an object', () => {
+  await t.step('autoRegExp \u2013 nested structures', async (t) => {
+    await t.step('converts RegExpDef nested inside an object', () => {
       const result = Json.deserialize<{ outer: Dict }>(
         '{"outer":{"inner":{"pattern":"hello","flags":"i"}}}',
         {
           autoRegExp: true,
         },
       );
-      expect(result.outer.inner).toBeInstanceOf(RegExp);
-      expect((result.outer.inner as RegExp).source).toBe('hello');
-      expect((result.outer.inner as RegExp).flags).toBe('i');
+      assertInstanceOf(result.outer.inner, RegExp);
+      assertEquals((result.outer.inner as RegExp).source, 'hello');
+      assertEquals((result.outer.inner as RegExp).flags, 'i');
     });
 
-    it('converts RegExpDef inside an array', () => {
+    await t.step('converts RegExpDef inside an array', () => {
       const result = Json.deserialize<{ list: unknown[] }>(
         '{"list":[{"pattern":"a"},{"pattern":"b","flags":"i"}]}',
         {
           autoRegExp: true,
         },
       );
-      expect(result.list[0]).toBeInstanceOf(RegExp);
-      expect((result.list[0] as RegExp).source).toBe('a');
-      expect(result.list[1]).toBeInstanceOf(RegExp);
-      expect((result.list[1] as RegExp).source).toBe('b');
-      expect((result.list[1] as RegExp).flags).toBe('i');
+      assertInstanceOf(result.list[0], RegExp);
+      assertEquals((result.list[0] as RegExp).source, 'a');
+      assertInstanceOf(result.list[1], RegExp);
+      assertEquals((result.list[1] as RegExp).source, 'b');
+      assertEquals((result.list[1] as RegExp).flags, 'i');
     });
 
-    it('converts RegExpDef at root level when JSON is a RegExpDef', () => {
+    await t.step('converts RegExpDef at root level when JSON is a RegExpDef', () => {
       const result = Json.deserialize('{"pattern":"abc","flags":"g"}', {
         autoRegExp: true,
       });
-      expect(result).toBeInstanceOf(RegExp);
-      expect((result as RegExp).source).toBe('abc');
-      expect((result as RegExp).flags).toBe('g');
+      assertInstanceOf(result, RegExp);
+      assertEquals((result as RegExp).source, 'abc');
+      assertEquals((result as RegExp).flags, 'g');
     });
   });
 
-  describe('autoRegExp – interaction with other features', () => {
-    it('autoRegExp and autoTemporal both work independently', () => {
+  await t.step('autoRegExp \u2013 interaction with other features', async (t) => {
+    await t.step('autoRegExp and autoTemporal both work independently', () => {
       const json = '{"re":{"pattern":"abc"},"time":"2024-01-15T12:30:45Z"}';
       const result = Json.deserialize<Dict>(json, {
         autoRegExp: true,
         autoTemporal: true,
       });
-      expect(result.re).toBeInstanceOf(RegExp);
-      expect((result.re as RegExp).source).toBe('abc');
-      expect(result.time).toBeInstanceOf(Temporal.ZonedDateTime);
+      assertInstanceOf(result.re, RegExp);
+      assertEquals((result.re as RegExp).source, 'abc');
+      assertInstanceOf(result.time, Temporal.Instant);
     });
 
-    it('autoRegExp and replace both work independently', () => {
+    await t.step('autoRegExp and replace both work independently', () => {
       const json = '{"re":{"pattern":"abc"},"msg":"Hello ${name}"}';
       const result = Json.deserialize<Dict>(json, {
         autoRegExp: true,
@@ -261,69 +260,69 @@ describe('jsonDeserialize reviver', () => {
         pre: '${',
         post: '}',
       });
-      expect(result.re).toBeInstanceOf(RegExp);
-      expect((result.re as RegExp).source).toBe('abc');
-      expect(result.msg).toBe('Hello World');
+      assertInstanceOf(result.re, RegExp);
+      assertEquals((result.re as RegExp).source, 'abc');
+      assertEquals(result.msg, 'Hello World');
     });
 
-    it('__filter RegExp takes precedence over autoRegExp', () => {
+    await t.step('__filter RegExp takes precedence over autoRegExp', () => {
       const json = '{"re":{"__filter":"RegExp","regex":"from-filter","flags":"gi"}}';
       const result = Json.deserialize<Dict>(json, {
         decode: true,
         autoRegExp: true,
       });
-      expect(result.re).toBeInstanceOf(RegExp);
-      expect((result.re as RegExp).source).toBe('from-filter');
-      expect((result.re as RegExp).flags).toBe('gi');
+      assertInstanceOf(result.re, RegExp);
+      assertEquals((result.re as RegExp).source, 'from-filter');
+      assertEquals((result.re as RegExp).flags, 'gi');
     });
 
-    it('autoRegExp does not interact with __filter non-RegExp types', () => {
+    await t.step('autoRegExp does not interact with __filter non-RegExp types', () => {
       const json = '{"map":{"__filter":"Map","data":[["a",1]]}}';
       const result = Json.deserialize<Dict>(json, {
         decode: true,
         autoRegExp: true,
       });
-      expect(result.map).toBeInstanceOf(Map);
+      assertInstanceOf(result.map, Map);
     });
   });
 
-  describe('__filter RegExp edge cases', () => {
-    it('decodes valid __filter RegExp', () => {
+  await t.step('__filter RegExp edge cases', async (t) => {
+    await t.step('decodes valid __filter RegExp', () => {
       const result = Json.deserialize<Dict>(
         '{"re":{"__filter":"RegExp","regex":"abc","flags":"gi"}}',
         {
           decode: true,
         },
       );
-      expect(result.re).toBeInstanceOf(RegExp);
-      expect((result.re as RegExp).source).toBe('abc');
-      expect((result.re as RegExp).flags).toBe('gi');
+      assertInstanceOf(result.re, RegExp);
+      assertEquals((result.re as RegExp).source, 'abc');
+      assertEquals((result.re as RegExp).flags, 'gi');
     });
 
-    it('returns original value for invalid RegExp in __filter', () => {
+    await t.step('returns original value for invalid RegExp in __filter', () => {
       const result = Json.deserialize<Dict>(
         '{"re":{"__filter":"RegExp","regex":"[invalid"}}',
         { decode: true },
       );
-      expect(result.re).not.toBeInstanceOf(RegExp);
-      expect(result.re).toEqual({ __filter: 'RegExp', regex: '[invalid' });
+      assertEquals(result.re instanceof RegExp, false);
+      assertEquals(result.re, { __filter: 'RegExp', regex: '[invalid' });
     });
 
-    it('returns original value for __filter RegExp with missing regex key', () => {
+    await t.step('returns original value for __filter RegExp with missing regex key', () => {
       const result = Json.deserialize<Dict>('{"re":{"__filter":"RegExp"}}', {
         decode: true,
       });
-      expect(result.re).not.toBeInstanceOf(RegExp);
-      expect(result.re).toEqual({ __filter: 'RegExp' });
+      assertEquals(result.re instanceof RegExp, false);
+      assertEquals(result.re, { __filter: 'RegExp' });
     });
 
-    it('does not decode __filter RegExp when decode is false', () => {
+    await t.step('does not decode __filter RegExp when decode is false', () => {
       const result = Json.deserialize<Dict>(
         '{"re":{"__filter":"RegExp","regex":"abc"}}',
         { decode: false },
       );
-      expect(result.re).not.toBeInstanceOf(RegExp);
-      expect(result.re).toEqual({ __filter: 'RegExp', regex: 'abc' });
+      assertEquals(result.re instanceof RegExp, false);
+      assertEquals(result.re, { __filter: 'RegExp', regex: 'abc' });
     });
   });
 });

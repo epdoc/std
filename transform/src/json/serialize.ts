@@ -49,7 +49,7 @@ function encodeFilter(val: unknown): unknown {
  * Creates a JSON.stringify replacer that handles string substitution,
  * optional RegExp serialisation, and optional type encoding.
  */
-function createSerializerReplacer(opts: Deep.CopyOpts & Json.IAutoRegExp & Json.IEncode) {
+function createSerializerReplacer(opts: Deep.CopyOpts & Json.IAutoRegExp & Json.IEncode): Json.ReplacerFn {
   return (_key: string, val: unknown): unknown => {
     if (_.isString(val) && opts.replace) {
       val = Deep.processStringWithReplacements(val, opts);
@@ -99,9 +99,19 @@ function createSerializerReplacer(opts: Deep.CopyOpts & Json.IAutoRegExp & Json.
  */
 export function serialize(
   value: unknown,
-  options: Deep.CopyOpts & Json.IEncode & Json.IAutoRegExp = {},
+  options?: Json.SerializeOpts,
   space?: string | number,
 ): string {
-  const processed = replaceTemporals(value);
-  return JSON.stringify(processed, createSerializerReplacer(options), space);
+  let replacer: Json.Replacer | undefined;
+  if (options) {
+    if (_.isFunction(options.replacer)) {
+      return JSON.stringify(value, options.replacer, space);
+    } else if (_.isArray(options.replacer)) {
+      return JSON.stringify(value, options.replacer, space);
+    } else if (options.replace || options.msubFn || options.encode || options.autoRegExp) {
+      replacer = createSerializerReplacer(options);
+      return JSON.stringify(value, replacer, space);
+    }
+  }
+  return JSON.stringify(value, null, space);
 }
