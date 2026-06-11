@@ -7,36 +7,35 @@
  * or integration tests in a TTY environment.
  */
 
-import { describe, it } from '@std/testing/bdd';
-import { expect } from '@std/expect';
+import { assertEquals } from '@std/assert';
 import { type PromptOptions, promptUser } from '../src/prompt.ts';
 
-describe('prompt module', () => {
-  describe('exports', () => {
-    it('exports promptUser function', () => {
-      expect(typeof promptUser).toBe('function');
+Deno.test('prompt module', async (t) => {
+  await t.step('exports', async (t) => {
+    await t.step('exports promptUser function', () => {
+      assertEquals(typeof promptUser, 'function');
     });
 
-    it('promptUser accepts message and options parameters', () => {
+    await t.step('promptUser accepts message and options parameters', () => {
       // Verify function signature by checking it accepts the expected parameters
       // We don't call it to avoid stdin/stdout interaction in test environment
       // Function.length counts required parameters (opts has a default value)
-      expect(promptUser.length).toBe(1); // only 'message' is required
+      assertEquals(promptUser.length, 1); // only 'message' is required
     });
   });
 
-  describe('PromptOptions interface', () => {
-    it('accepts valid options object', () => {
+  await t.step('PromptOptions interface', async (t) => {
+    await t.step('accepts valid options object', () => {
       const options: PromptOptions = {
         abortKeyword: 'quit',
         bufferSize: 2048,
       };
 
-      expect(options.abortKeyword).toBe('quit');
-      expect(options.bufferSize).toBe(2048);
+      assertEquals(options.abortKeyword, 'quit');
+      assertEquals(options.bufferSize, 2048);
     });
 
-    it('accepts partial options', () => {
+    await t.step('accepts partial options', () => {
       const abortOnly: PromptOptions = {
         abortKeyword: 'exit',
       };
@@ -47,19 +46,19 @@ describe('prompt module', () => {
 
       const empty: PromptOptions = {};
 
-      expect(abortOnly.abortKeyword).toBe('exit');
-      expect(bufferOnly.bufferSize).toBe(512);
-      expect(Object.keys(empty)).toHaveLength(0);
+      assertEquals(abortOnly.abortKeyword, 'exit');
+      assertEquals(bufferOnly.bufferSize, 512);
+      assertEquals(Object.keys(empty).length, 0);
     });
 
-    it('accepts options with default values', () => {
+    await t.step('accepts options with default values', () => {
       // Simulate how options would be used with defaults
       const opts: PromptOptions = {};
       const bufferSize = opts.bufferSize ?? 1024;
       const abortKeyword = opts.abortKeyword;
 
-      expect(bufferSize).toBe(1024);
-      expect(abortKeyword).toBeUndefined();
+      assertEquals(bufferSize, 1024);
+      assertEquals(abortKeyword, undefined);
     });
   });
 });

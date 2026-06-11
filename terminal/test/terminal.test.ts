@@ -5,167 +5,166 @@
  * and other logic that can run in a non-interactive environment.
  */
 
-import { describe, it } from '@std/testing/bdd';
-import { expect } from '@std/expect';
+import { assert, assertEquals, assertStringIncludes } from '@std/assert';
 import { padVisual, stripAnsi, visualLength, visualTruncate } from '../src/screen.ts';
 import { isNextPage, isPreviousPage, isQuit, Keys } from '../src/keys.ts';
 
-describe('screen utilities', () => {
-  describe('stripAnsi', () => {
-    it('removes ANSI color codes', () => {
+Deno.test('screen utilities', async (t) => {
+  await t.step('stripAnsi', async (t) => {
+    await t.step('removes ANSI color codes', () => {
       const colored = '\x1b[31mred\x1b[0m';
-      expect(stripAnsi(colored)).toBe('red');
+      assertEquals(stripAnsi(colored), 'red');
     });
 
-    it('handles multiple ANSI codes', () => {
+    await t.step('handles multiple ANSI codes', () => {
       const text = '\x1b[1m\x1b[31mbold red\x1b[0m';
-      expect(stripAnsi(text)).toBe('bold red');
+      assertEquals(stripAnsi(text), 'bold red');
     });
 
-    it('returns plain text unchanged', () => {
-      expect(stripAnsi('hello')).toBe('hello');
+    await t.step('returns plain text unchanged', () => {
+      assertEquals(stripAnsi('hello'), 'hello');
     });
 
-    it('handles empty string', () => {
-      expect(stripAnsi('')).toBe('');
-    });
-  });
-
-  describe('visualLength', () => {
-    it('counts visible characters only', () => {
-      expect(visualLength('\x1b[31mred\x1b[0m')).toBe(3);
-    });
-
-    it('matches plain string length', () => {
-      expect(visualLength('hello')).toBe(5);
-    });
-
-    it('handles Unicode characters', () => {
-      expect(visualLength('日本語')).toBe(3);
+    await t.step('handles empty string', () => {
+      assertEquals(stripAnsi(''), '');
     });
   });
 
-  describe('visualTruncate', () => {
-    it('truncates to target width with ellipsis', () => {
+  await t.step('visualLength', async (t) => {
+    await t.step('counts visible characters only', () => {
+      assertEquals(visualLength('\x1b[31mred\x1b[0m'), 3);
+    });
+
+    await t.step('matches plain string length', () => {
+      assertEquals(visualLength('hello'), 5);
+    });
+
+    await t.step('handles Unicode characters', () => {
+      assertEquals(visualLength('日本語'), 3);
+    });
+  });
+
+  await t.step('visualTruncate', async (t) => {
+    await t.step('truncates to target width with ellipsis', () => {
       const result = visualTruncate('hello world', 8);
-      expect(stripAnsi(result)).toBe('hello w…');
+      assertEquals(stripAnsi(result), 'hello w…');
     });
 
-    it('preserves ANSI codes when truncating', () => {
+    await t.step('preserves ANSI codes when truncating', () => {
       const colored = '\x1b[31mhello world\x1b[0m';
       const result = visualTruncate(colored, 8);
-      expect(result).toContain('\x1b[31m');
-      expect(visualLength(result)).toBe(8);
+      assertStringIncludes(result, '\x1b[31m');
+      assertEquals(visualLength(result), 8);
     });
 
-    it('returns original if already fits', () => {
-      expect(visualTruncate('hi', 10)).toBe('hi');
+    await t.step('returns original if already fits', () => {
+      assertEquals(visualTruncate('hi', 10), 'hi');
     });
 
-    it('handles exact fit', () => {
-      expect(stripAnsi(visualTruncate('hello', 5))).toBe('hello');
+    await t.step('handles exact fit', () => {
+      assertEquals(stripAnsi(visualTruncate('hello', 5)), 'hello');
     });
   });
 
-  describe('padVisual', () => {
-    it('pads left-aligned (default)', () => {
+  await t.step('padVisual', async (t) => {
+    await t.step('pads left-aligned (default)', () => {
       const result = padVisual('hi', 5);
-      expect(stripAnsi(result)).toBe('hi   ');
+      assertEquals(stripAnsi(result), 'hi   ');
     });
 
-    it('pads right-aligned', () => {
+    await t.step('pads right-aligned', () => {
       const result = padVisual('hi', 5, 'right');
-      expect(stripAnsi(result)).toBe('   hi');
+      assertEquals(stripAnsi(result), '   hi');
     });
 
-    it('pads center-aligned', () => {
+    await t.step('pads center-aligned', () => {
       const result = padVisual('hi', 6, 'center');
-      expect(stripAnsi(result)).toBe('  hi  ');
+      assertEquals(stripAnsi(result), '  hi  ');
     });
 
-    it('handles ANSI codes in padding', () => {
+    await t.step('handles ANSI codes in padding', () => {
       const colored = '\x1b[31mhi\x1b[0m';
       const result = padVisual(colored, 5, 'left');
-      expect(result).toContain('\x1b[31m');
-      expect(visualLength(result)).toBe(5);
+      assertStringIncludes(result, '\x1b[31m');
+      assertEquals(visualLength(result), 5);
     });
 
-    it('returns original if already wide enough', () => {
-      expect(padVisual('hello', 3)).toBe('hello');
+    await t.step('returns original if already wide enough', () => {
+      assertEquals(padVisual('hello', 3), 'hello');
     });
 
-    it('uses custom padding character', () => {
+    await t.step('uses custom padding character', () => {
       const result = padVisual('hi', 5, 'left', '.');
-      expect(result).toBe('hi...');
+      assertEquals(result, 'hi...');
     });
   });
 });
 
-describe('key utilities', () => {
-  describe('isQuit', () => {
-    it('returns true for q', () => {
-      expect(isQuit('q')).toBe(true);
+Deno.test('key utilities', async (t) => {
+  await t.step('isQuit', async (t) => {
+    await t.step('returns true for q', () => {
+      assert(isQuit('q'));
     });
 
-    it('returns true for Q', () => {
-      expect(isQuit('Q')).toBe(true);
+    await t.step('returns true for Q', () => {
+      assert(isQuit('Q'));
     });
 
-    it('returns true for Ctrl+C', () => {
-      expect(isQuit(Keys.CTRL_C)).toBe(true);
+    await t.step('returns true for Ctrl+C', () => {
+      assert(isQuit(Keys.CTRL_C));
     });
 
-    it('returns false for other keys', () => {
-      expect(isQuit('a')).toBe(false);
-      expect(isQuit(Keys.SPACE)).toBe(false);
-    });
-  });
-
-  describe('isNextPage', () => {
-    it('returns true for space', () => {
-      expect(isNextPage(Keys.SPACE)).toBe(true);
-    });
-
-    it('returns true for Page Down', () => {
-      expect(isNextPage(Keys.PAGE_DOWN)).toBe(true);
-    });
-
-    it('returns false for other keys', () => {
-      expect(isNextPage('n')).toBe(false);
-      expect(isNextPage(Keys.PAGE_UP)).toBe(false);
+    await t.step('returns false for other keys', () => {
+      assertEquals(isQuit('a'), false);
+      assertEquals(isQuit(Keys.SPACE), false);
     });
   });
 
-  describe('isPreviousPage', () => {
-    it('returns true for Page Up', () => {
-      expect(isPreviousPage(Keys.PAGE_UP)).toBe(true);
+  await t.step('isNextPage', async (t) => {
+    await t.step('returns true for space', () => {
+      assert(isNextPage(Keys.SPACE));
     });
 
-    it('returns false for other keys', () => {
-      expect(isPreviousPage('p')).toBe(false);
-      expect(isPreviousPage(Keys.PAGE_DOWN)).toBe(false);
+    await t.step('returns true for Page Down', () => {
+      assert(isNextPage(Keys.PAGE_DOWN));
+    });
+
+    await t.step('returns false for other keys', () => {
+      assertEquals(isNextPage('n'), false);
+      assertEquals(isNextPage(Keys.PAGE_UP), false);
     });
   });
 
-  describe('Keys constants', () => {
-    it('has expected arrow keys', () => {
-      expect(Keys.UP).toBe('\x1b[A');
-      expect(Keys.DOWN).toBe('\x1b[B');
-      expect(Keys.LEFT).toBe('\x1b[D');
-      expect(Keys.RIGHT).toBe('\x1b[C');
+  await t.step('isPreviousPage', async (t) => {
+    await t.step('returns true for Page Up', () => {
+      assert(isPreviousPage(Keys.PAGE_UP));
     });
 
-    it('has expected control keys', () => {
-      expect(Keys.CTRL_C).toBe('\x03');
-      expect(Keys.CTRL_D).toBe('\x04');
-      expect(Keys.ESC).toBe('\x1b');
+    await t.step('returns false for other keys', () => {
+      assertEquals(isPreviousPage('p'), false);
+      assertEquals(isPreviousPage(Keys.PAGE_DOWN), false);
+    });
+  });
+
+  await t.step('Keys constants', async (t) => {
+    await t.step('has expected arrow keys', () => {
+      assertEquals(Keys.UP, '\x1b[A');
+      assertEquals(Keys.DOWN, '\x1b[B');
+      assertEquals(Keys.LEFT, '\x1b[D');
+      assertEquals(Keys.RIGHT, '\x1b[C');
     });
 
-    it('has expected special keys', () => {
-      expect(Keys.SPACE).toBe(' ');
-      expect(Keys.ENTER).toBe('\r');
-      expect(Keys.TAB).toBe('\t');
-      expect(Keys.BACKSPACE).toBe('\x08');
+    await t.step('has expected control keys', () => {
+      assertEquals(Keys.CTRL_C, '\x03');
+      assertEquals(Keys.CTRL_D, '\x04');
+      assertEquals(Keys.ESC, '\x1b');
+    });
+
+    await t.step('has expected special keys', () => {
+      assertEquals(Keys.SPACE, ' ');
+      assertEquals(Keys.ENTER, '\r');
+      assertEquals(Keys.TAB, '\t');
+      assertEquals(Keys.BACKSPACE, '\x08');
     });
   });
 });
