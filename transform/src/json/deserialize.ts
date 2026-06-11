@@ -97,7 +97,7 @@ export function createDeserializerReviver(
         s = Deep.processStringWithReplacements(s, opts);
       }
       if (opts.autoTemporal) {
-        const parsed = _.parseTemporalString(s);
+        const parsed = _.parseTemporalString(s, { strict: true });
         if (parsed) return parsed;
       }
       return s;
