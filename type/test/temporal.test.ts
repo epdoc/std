@@ -10,8 +10,7 @@ import {
 Deno.test('asTemporal', async (t) => {
   await t.step('Z-suffixed UTC string returns ZonedDateTime', () => {
     const val = asTemporal('2024-01-15T12:30:45.123Z');
-    assertInstanceOf(val, Temporal.ZonedDateTime);
-    assertEquals((val as Temporal.ZonedDateTime).offset, '+00:00');
+    assertInstanceOf(val, Temporal.Instant);
   });
 
   await t.step('positive offset returns ZonedDateTime', () => {
@@ -157,9 +156,9 @@ Deno.test('asTemporal', async (t) => {
 
   await t.step('correct epoch for Z-suffixed string', () => {
     const val = asTemporal('2024-01-15T12:30:45.123Z');
-    assertInstanceOf(val, Temporal.ZonedDateTime);
+    assertInstanceOf(val, Temporal.Instant);
     const expected = Temporal.Instant.from('2024-01-15T12:30:45.123Z').epochMilliseconds;
-    assertEquals((val as Temporal.ZonedDateTime).epochMilliseconds, expected);
+    assertEquals((val as Temporal.Instant).epochMilliseconds, expected);
   });
 
   await t.step('correct epoch for offset string', () => {

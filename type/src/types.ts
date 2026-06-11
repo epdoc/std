@@ -34,6 +34,13 @@ export type EmptyDict = Record<string, never>;
 export type EmptyObject = Record<PropertyKey, never>;
 
 /**
+ * Represents all values that evaluate to `false` in a JavaScript boolean context.
+ *
+ * Includes: `false`, `""` (empty string), `0` (and `-0`, `0n`), `null`, and `undefined`.
+ */
+export type Falsy = undefined | null | false | 0 | '';
+
+/**
  * Result of a comparison between two Dict objects.
  */
 export type CompareResult = -1 | 0 | 1;

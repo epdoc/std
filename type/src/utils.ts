@@ -773,15 +773,19 @@ export function parseTemporalString(s: string): TemporalDateTime | undefined {
     const offsetMatch = s.match(/(Z|[+-]\d{2}:?\d{2})$/);
     if (offsetMatch) {
       const rawTz = offsetMatch[1];
-      let tzId: string;
+      // If it's just 'Z', Instant handles it perfectly
       if (rawTz === 'Z') {
-        tzId = 'UTC';
-      } else if (/^[+-]\d{4}$/.test(rawTz)) {
+        return Temporal.Instant.from(s);
+      }
+
+      // If it's a numeric offset, format it and append as a bracket annotation
+      let tzId: string;
+      if (/^[+-]\d{4}$/.test(rawTz)) {
         tzId = rawTz.slice(0, 3) + ':' + rawTz.slice(3);
       } else {
         tzId = rawTz;
       }
-      return Temporal.Instant.from(s).toZonedDateTimeISO(tzId);
+      return Temporal.ZonedDateTime.from(`${s}[${tzId}]`);
     }
 
     // 3. Has T but no timezone → PlainDateTime
