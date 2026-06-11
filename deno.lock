@@ -289,7 +289,7 @@
       },
       "duration": {
         "dependencies": [
-          "jsr:@epdoc/type@^1.2.18",
+          "jsr:@epdoc/type@^2.0.0-alpha.2",
           "jsr:@std/assert@^1.0.19"
         ]
       },
