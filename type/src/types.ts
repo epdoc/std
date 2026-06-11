@@ -247,3 +247,7 @@ export type AsFloatOpts = {
   def?: number;
   commaAsDecimal?: boolean;
 };
+
+export interface IStrict {
+  strict?: boolean;
+}

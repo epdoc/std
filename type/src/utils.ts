@@ -1,5 +1,14 @@
 import { REGEX } from './consts.ts';
-import type { AsFloatOpts, CompareResult, Dict, Integer, PosInteger, RegExpDef, WholeNumber } from './types.ts';
+import type {
+  AsFloatOpts,
+  CompareResult,
+  Dict,
+  Integer,
+  IStrict,
+  PosInteger,
+  RegExpDef,
+  WholeNumber,
+} from './types.ts';
 
 /**
  * Checks if the given value is a boolean.
@@ -710,7 +719,7 @@ export function isTemporal(val: unknown): val is TemporalDateTime {
  * asTemporal('invalid');                              // undefined
  * ```
  */
-export function asTemporal(input: unknown): TemporalDateTime | undefined {
+export function asTemporal(input: unknown, opts?: { strict: boolean }): TemporalDateTime | undefined {
   if (!_hasTemporal || input === null || input === undefined) return undefined;
 
   // Already a supported Temporal type
@@ -728,7 +737,7 @@ export function asTemporal(input: unknown): TemporalDateTime | undefined {
 
   // String → parse with timezone awareness
   if (typeof input === 'string') {
-    return parseTemporalString(input);
+    return parseTemporalString(input, opts);
   }
 
   // Property bag → PlainDateTime
@@ -756,14 +765,20 @@ const ISO_DATE_PREFIX = /^\d{4}-\d{2}-\d{2}/;
  * @returns A Temporal type, or `undefined` if parsing fails
  * @internal
  */
-export function parseTemporalString(s: string): TemporalDateTime | undefined {
+export function parseTemporalString(
+  s: string,
+  opts: IStrict = { strict: true },
+): TemporalDateTime | undefined {
   // Fast-fail 1: must start with ISO 8601 date prefix
   if (!ISO_DATE_PREFIX.test(s)) return undefined;
 
-  // Fast-fail 2: must contain time component (T) - we only handle datetimes
-  if (!s.includes('T')) return undefined;
-
   try {
+    // Fast-fail 2: must contain time component (T) - we only handle datetimes
+    if (!s.includes('T')) {
+      if (opts.strict) return undefined;
+      return Temporal.PlainDateTime.from(s);
+    }
+
     // 1. Bracket IANA timezone → ZonedDateTime
     if (/\[[\w/_-]+\]$/.test(s)) {
       return Temporal.ZonedDateTime.from(s);
