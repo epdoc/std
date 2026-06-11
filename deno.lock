@@ -69,9 +69,7 @@
         "jsr:@std/bytes@^1.0.6",
         "jsr:@std/encoding@^1.0.10",
         "jsr:@std/fs",
-        "jsr:@std/path",
-        "jsr:@std/toml",
-        "jsr:@std/yaml"
+        "jsr:@std/path"
       ]
     },
     "@epdoc/terminal@0.0.13": {
@@ -279,8 +277,8 @@
       },
       "daterange": {
         "dependencies": [
-          "jsr:@epdoc/datetime@^4.1.5",
-          "jsr:@epdoc/type@^1.2.17",
+          "jsr:@epdoc/datetime@^4.1.6",
+          "jsr:@epdoc/type@^2.0.0-alpha.2",
           "jsr:@std/assert@^1.0.19"
         ]
       },
