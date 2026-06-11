@@ -161,7 +161,7 @@ Deno.test('FileSpec', async (t) => {
 
       await t.step('writeJson() with trailing option works with deepCopy', async () => {
         const file = new FileSpec(testDir, 'trailing-deep.json');
-        await file.writeJson({ key: 'value' }, { deepCopy: true, trailing: '\n' });
+        await file.writeJson({ key: 'value' }, { trailing: '\n' });
         const content = await file.readAsString();
         assertEquals(content, '{"key":"value"}\n');
       });
@@ -343,7 +343,7 @@ Deno.test('FileSpec read/write helpers', async (t) => {
       const data = { path: '{HOME}/test' };
       const deepCopyOpts = { replace: { HOME: '/users/test' }, pre: '{', post: '}' };
 
-      await f.writeJson(data, { space: 2, deepCopy: deepCopyOpts });
+      await f.writeJson(data, { space: 2, ...deepCopyOpts });
 
       const rawContent = await f.readAsString();
       assertStringIncludes(rawContent, '/users/test');
@@ -359,7 +359,7 @@ Deno.test('FileSpec read/write helpers', async (t) => {
       const data = { env: '{ENV}', version: '1.0' };
       const deepCopyOpts = { replace: { ENV: 'prod' }, pre: '{', post: '}' };
 
-      await f.writeJson(data, { deepCopy: deepCopyOpts, safe: true, backupStrategy: { type: 'renameWithTilde' } });
+      await f.writeJson(data, { ...deepCopyOpts, safe: true, backupStrategy: { type: 'renameWithTilde' } });
 
       const content = await f.readJson();
       assertEquals(content, { env: 'prod', version: '1.0' });
@@ -375,7 +375,7 @@ Deno.test('FileSpec read/write helpers', async (t) => {
       const data = { test: 'value' };
 
       const deepCopyOpts = { detectRegExp: true };
-      await f.writeJson(data, { space: 2, deepCopy: deepCopyOpts, safe: true });
+      await f.writeJson(data, { space: 2, ...deepCopyOpts, safe: true });
 
       const content = await f.readJson();
       assertEquals(content, data);
@@ -448,7 +448,7 @@ Deno.test('FileSpec read/write helpers', async (t) => {
       const data = { path: '{HOME}' };
       const deepCopyOpts = { replace: { HOME: '/test' }, pre: '{', post: '}' };
 
-      await f.writeJson(data, { deepCopy: deepCopyOpts });
+      await f.writeJson(data, deepCopyOpts);
 
       const content = await f.readJson();
       assertEquals(content, { path: '/test' });

@@ -940,29 +940,18 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
    * @category Write Operations
    */
   async writeJson(data: unknown, writeOpts?: WriteJsonOptions): Promise<this>;
-  async writeJson(data: unknown, replacer?: Json.Replacer, space?: string | number): Promise<this>;
+  async writeJson(data: unknown, replacer?: Json.Replacer | null, space?: string | number): Promise<this>;
   async writeJson(
     data: unknown,
-    optsOrReplacer?: WriteJsonOptions | Json.Replacer,
+    arg1?: WriteJsonOptions | Json.Replacer | null,
     space?: string | number,
   ): Promise<this> {
-    let opts: WriteJsonOptions;
-
-    // Determine if using modern options object or legacy parameters
-    if (space !== undefined || !_.isDict(optsOrReplacer)) {
-      // Legacy signature: writeJson(data, replacer, space)
-      opts = {
-        replacer: optsOrReplacer as Json.Replacer,
-        space: space,
-        trailing: '',
-      };
-    } else {
-      // Modern signature: writeJson(data, options)
-      opts = (optsOrReplacer as WriteJsonOptions) || {};
+    const opts: WriteJsonOptions = _.isDict(arg1) ? arg1 : { replacer: arg1 || undefined };
+    if ('replacer' in opts && !opts.replacer) {
+      opts.replacer = undefined;
     }
-
     const trailing = _.isString(opts.trailing) ? opts.trailing : '';
-    const text = Json.serialize(data, opts, space) + trailing;
+    const text = Json.serialize(data, opts, space ?? opts.space) + trailing;
 
     const { backupStrategy, safe } = opts;
     await this.write(text, { backupStrategy, safe });
