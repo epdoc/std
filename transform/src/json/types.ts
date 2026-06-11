@@ -85,8 +85,13 @@ export type Replacer = ReplacerFn | ReplacerArray;
 export type ReplacerFn = (this: unknown, key: string, value: unknown) => unknown;
 export type ReplacerArray = Array<number | string> | undefined;
 
+/**
+ * A replacer function or array of property names passed to `JSON.stringify()`.
+ * Controls which values are included in the JSON output.
+ * If provided, Deep.CopyOpts is ignored.
+ */
 export interface IReplacer {
-  replacer?: Replacer;
+  replacer?: ReplacerFn | ReplacerArray;
 }
 
 // The exact signature matching the native JSON.parse expectation, but type-safe
