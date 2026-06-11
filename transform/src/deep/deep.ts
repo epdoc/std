@@ -1,6 +1,5 @@
+import { _, type Dict } from '@epdoc/type';
 import type * as Json from '../json/types.ts';
-import type { Dict } from '../types.ts';
-import * as _ from '../utils.ts';
 import { processStringWithReplacements } from './deeputils.ts';
 import type * as Deep from './types.ts';
 

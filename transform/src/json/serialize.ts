@@ -1,6 +1,6 @@
+import { _ } from '@epdoc/type';
 import { encodeAscii85 } from '@std/encoding/ascii85';
 import * as Deep from '../deep/mod.ts';
-import * as _ from '../utils.ts';
 import type * as Json from './types.ts';
 
 /**
@@ -36,15 +36,7 @@ function encodeFilter(val: unknown): unknown {
   if (_.isRegExp(val)) {
     return { __filter: 'RegExp', regex: val.source, flags: val.flags };
   }
-  if (val instanceof Temporal.PlainDateTime) {
-    return { __filter: 'Temporal.PlainDateTime', data: val.toJSON() };
-  }
-  if (val instanceof Temporal.Instant) {
-    return { __filter: 'Temporal.Instant', data: val.toJSON() };
-  }
-  if (val instanceof Temporal.ZonedDateTime) {
-    return { __filter: 'Temporal.ZonedDateTime', data: val.toJSON() };
-  }
+  return val;
 }
 
 /**
@@ -100,7 +92,7 @@ function createSerializerReplacer(opts: Deep.CopyOpts & Json.IAutoRegExp & Json.
 
 export function serialize(
   value: unknown,
-  options: Deep.CopyOpts = {},
+  options: Deep.CopyOpts & Json.IEncode & Json.IAutoRegExp = {},
   space?: string | number,
 ): string {
   const processed = replaceTemporals(value);

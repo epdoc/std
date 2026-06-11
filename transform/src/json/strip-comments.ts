@@ -1,5 +1,4 @@
-import type { Integer } from '../types.ts';
-import { isDict, pick } from '../utils.ts';
+import { type Integer, isDict, pick } from '@epdoc/type';
 import type * as Json from './types.ts';
 
 // Use readonly for constant regex to prevent reassignment

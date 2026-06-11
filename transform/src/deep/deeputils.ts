@@ -1,5 +1,5 @@
-import { REGEX } from '../consts.ts';
-import { isNonEmptyString, isRecordStringString } from '../utils.ts';
+import { isRecordStringString } from '@epdoc/type';
+import { msubLite } from '../utils.ts';
 import type * as Deep from './types.ts';
 
 /**

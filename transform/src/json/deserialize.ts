@@ -1,7 +1,6 @@
+import { _, type Dict } from '@epdoc/type';
 import { decodeAscii85 } from '@std/encoding/ascii85';
 import * as Deep from '../deep/mod.ts';
-import type { Dict } from '../types.ts';
-import * as _ from '../utils.ts';
 import { stripComments } from './strip-comments.ts';
 import type * as Json from './types.ts';
 

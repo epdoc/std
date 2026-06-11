@@ -1,3 +1,5 @@
+import { isNonEmptyString, isRecordStringString } from '@epdoc/type';
+
 /**
  * Performs string substitution similar to JavaScript template strings.
  * Replaces all occurrences of `${key}` (or custom delimiters) in `s` with values from `replace`.
@@ -32,5 +34,5 @@ export function msubLite(
 }
 
 function escapeString(s: string): string {
-  return s.replace(REGEX.escMatch, '\\$&');
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
