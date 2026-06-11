@@ -2,20 +2,31 @@
 
 ## Overview
 
-The @epdoc/transform package is a TypeScript utility library that provides utilities for\
-deep copying, JSON serialization/deserialization, and string replacement operations.
+`@epdoc/transform` provides deep copying, JSON serialization/deserialization with special-type preservation, and string
+replacement utilities for TypeScript.
 
 Key features:
 
 - **Deep copying** with optional string replacement and transformation
-- **JSON serialization/deserialization** preserving special types (Set, Map, RegExp, Uint8Array)
-- **String replacement** with simple built-in msub or advanced msub integration
+- **JSON serialization/deserialization** preserving special types (Set, Map, RegExp, Uint8Array, Temporal)
+- **String replacement** — simple built-in msub or advanced with custom `msubFn`
 
 ## Installation
 
 ```bash
 deno add jsr:@epdoc/transform
 ```
+
+## Import Convention
+
+Exports are organised under two namespaces — `Deep` and `Json` — plus a standalone `msubLite` function:
+
+```typescript
+import { Deep, Json, msubLite } from '@epdoc/transform';
+```
+
+`Deep` contains deep-copy utilities.\
+`Json` contains JSON serialization/deserialization with type encoding.
 
 ## Usage
 
@@ -24,115 +35,132 @@ deno add jsr:@epdoc/transform
 #### Simple String Replacement
 
 ```typescript
-import { _ } from '@epdoc/type';
+import { Deep } from '@epdoc/transform';
 
 const config = {
   apiUrl: '${baseUrl}/api',
   version: '${appVersion}',
-  nested: {
-    path: '${baseUrl}/nested',
-  },
 };
 
-const result = _.deepCopy(config, {
+const result = Deep.copy(config, {
   replace: { baseUrl: 'https://api.example.com', appVersion: '1.0.0' },
 });
-// Result: { apiUrl: 'https://api.example.com/api', version: '1.0.0', ... }
+// → { apiUrl: 'https://api.example.com/api', version: '1.0.0' }
 ```
 
-#### Advanced String Replacement with Date Formatting
+#### Advanced String Replacement with Custom msubFn
 
 ```typescript
-import { _, type DeepCopyOpts } from '@epdoc/type';
-import { replace } from '@epdoc/string';
+import { Deep } from '@epdoc/transform';
 
 const config = {
   timestamp: '${now:yyyy-MM-dd HH:mm:ss}',
   user: '${username}',
-  buildDate: '${now:yyyy-MM-dd}',
 };
 
-const options: DeepCopyOpts = {
+function customReplace(str: string, replace: Record<string, unknown>): string {
+  let result = str;
+  for (const [key, value] of Object.entries(replace)) {
+    result = result.replaceAll(`\${${key}}`, String(value));
+  }
+  return result;
+}
+
+const result = Deep.copy(config, {
   replace: { now: new Date(), username: 'john.doe' },
-  msubFn: (s, replacements) => replace(s, replacements),
-};
-
-const result = _.deepCopy(config, options);
-// Result: { timestamp: '2025-12-10 16:30:00', user: 'john.doe', ... }
+  msubFn: (s, replacements) => customReplace(s, replacements),
+});
 ```
 
 ### JSON Serialization with Special Types
 
 ```typescript
-import { jsonDeserialize, jsonSerialize } from '@epdoc/type';
+import { Json } from '@epdoc/transform';
 
 const data = {
   users: new Set(['alice', 'bob']),
   metadata: new Map([['version', '1.0'], ['env', 'prod']]),
   pattern: /^[a-z]+$/i,
   binary: new Uint8Array([1, 2, 3, 4]),
-  config: '${environment}/config.json',
 };
 
-// Serialize with string replacement
-const json = jsonSerialize(data, {
-  replace: { environment: 'production' },
-});
+// Serialize — must opt in with `encode: true` to preserve special types
+const json = Json.serialize(data, { encode: true });
 
-// Deserialize back to original types
-const restored = jsonDeserialize(json);
+// Deserialize — must opt in with `decode: true` to restore special types
+const restored = Json.deserialize(json, { decode: true });
 // restored.users is a Set, restored.metadata is a Map, etc.
+```
+
+### Temporal Types
+
+Temporal types (Instant, ZonedDateTime, PlainDateTime) are handled automatically and do **not** require `encode: true`
+on serialization. They only need `decode: true` on deserialization:
+
+```typescript
+const obj = { time: Temporal.Instant.from('2024-01-15T12:30:45.123Z') };
+const json = Json.serialize(obj); // encode not needed
+const restored = Json.deserialize(json, { decode: true });
+// restored.time instanceof Temporal.Instant → true
+```
+
+### String Substitution (msubLite)
+
+```typescript
+import { msubLite } from '@epdoc/transform';
+
+msubLite('Hello ${name}!', { name: 'World' });
+// → 'Hello World!'
 ```
 
 ## API Reference
 
-### DeepCopyOpts
+### `Deep.copy(value, options?)`
 
-The `DeepCopyOpts` type is a discriminated union that ensures type safety:
+Deep copy with optional string replacement and RegExp detection.
 
-```typescript
-type DeepCopyOpts =
-  | DeepCopyCommonOpts // No replacement
-  | { replace: Record<string, string> } // Simple replacement
-  | { replace: Record<string, unknown>; msubFn: MSubFn }; // Advanced replacement
-```
+| Option        | Type                                                             | Description                                     |
+| ------------- | ---------------------------------------------------------------- | ----------------------------------------------- |
+| `replace`     | `Record<string, string>` or `Record<string, unknown>` + `msubFn` | Substitution placeholders                       |
+| `autoRegExp`  | `boolean`                                                        | Reconstruct `{ regex, flags }` as RegExp        |
+| `pre`, `post` | `string`                                                         | Placeholder delimiters (default: `'${'`, `'}'`) |
 
-- **Simple replacement**: Use `Record<string, string>` for basic string-to-string replacement
-- **Advanced replacement**: Use `Record<string, unknown>` with `msubFn` for date formatting and complex transformations
-- **Common options**: `detectRegExp`, `pre`, `post` available in all variants
+### `Json.serialize(value, options?, space?)`
 
-### Key Functions
+Serialise to JSON with optional type encoding and string replacement.
 
-- `deepCopy(value, options?)` - Deep copy with optional string replacement
-- `jsonSerialize(value, options?, space?)` - Serialize with special type preservation
-- `jsonDeserialize(json, options?)` - Deserialize with type restoration
-- `msub(string, replacements, pre?, post?)` - Simple string replacement
-- Type guards: `isString`, `isNumber`, `isBoolean`, `isDate`, `isArray`, etc.
+| Option       | Type                | Description                                                      |
+| ------------ | ------------------- | ---------------------------------------------------------------- |
+| `encode`     | `boolean`           | Wrap Set, Map, RegExp, Uint8Array in `__filter` (default: false) |
+| `autoRegExp` | `boolean`           | Serialize RegExp as `{ regex, flags }` (default: false)          |
+| `replace`    | see `Deep.CopyOpts` | String substitution                                              |
 
-## Integration with @epdoc/string
+### `Json.deserialize(json, options?)`
 
-For advanced string replacement features like date formatting, install `@epdoc/string`:
+Deserialize JSON, restoring encoded types, Temporal values, and RegExp.
 
-```bash
-deno add jsr:@epdoc/string
-```
+| Option          | Type                             | Description                                                   |
+| --------------- | -------------------------------- | ------------------------------------------------------------- |
+| `decode`        | `boolean`                        | Restore `__filter`-wrapped types (default: false)             |
+| `autoTemporal`  | `boolean`                        | Convert ISO strings to Temporal types (default: false)        |
+| `autoRegExp`    | `boolean`                        | Detect `{ regex, flags }` and rebuild RegExp (default: false) |
+| `stripComments` | `boolean` or `StripCommentsOpts` | Strip JSONC comments before parsing                           |
+| `replace`       | see `Deep.CopyOpts`              | String substitution                                           |
 
-Then use the advanced msub function:
+### `Json.stripComments(json, options?)`
 
-```typescript
-import { replace } from '@epdoc/string';
-import { deepCopy } from '@epdoc/type';
+Removes `//` and `/* */` comments from a JSON(C) string. See
+[sindresorhus/strip-json-comments](https://github.com/sindresorhus/strip-json-comments) for the original algorithm.
 
-deepCopy(config, {
-  replace: { now: new Date(), version: '2.0.0' },
-  msubFn: (s, replacements) => replace(s, replacements),
-});
-```
+### `msubLite(string, replacements, pre?, post?)`
+
+Simple string-for-string placeholder substitution without `eval`. For advanced formatting, supply a custom `msubFn` that
+handles non-string values.
 
 ## License
 
-This library is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
+MIT. See [LICENSE](LICENSE).
 
-The functionality to support stripping comments from JSONC files is ported from\
-[sindresorhus/strip-json-comments](https://github.com/sindresorhus/strip-json-comments/blob/main/readme.md) which is\
-also licensed under the MIT license.
+The JSONC comment-stripping logic is ported from
+[sindresorhus/strip-json-comments](https://github.com/sindresorhus/strip-json-comments/blob/main/readme.md) which is
+also MIT-licensed.

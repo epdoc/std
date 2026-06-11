@@ -30,7 +30,7 @@ Before committing or bumping versions in this repository, load the `/git` skill.
 
 ## Project Architecture
 
-`@epdoc/std` is a **Deno monorepo** containing seven independently published utility packages. The root `deno.json`
+`@epdoc/std` is a **Deno monorepo** containing independently published utility packages. The root `deno.json`
 defines the workspace members. Each package is published to JSR under the `@epdoc` scope.
 
 ```
@@ -42,23 +42,25 @@ defines the workspace members. Each package is published to JSR under the `@epdo
 ├── duration/                  # @epdoc/duration
 ├── fs/                        # @epdoc/fs
 ├── response/                  # @epdoc/response
-├── string/                    # @epdoc/string
+├── text/                      # @epdoc/text
+├── transform/                 # @epdoc/transform
 └── type/                      # @epdoc/type
 ```
 
 ### Package Entry Points
 
-| Package            | Entry Point     |
-| ------------------ | --------------- |
-| `@epdoc/daterange` | `src/mod.ts`    |
-| `@epdoc/datetime`  | `src/mod.ts`    |
-| `@epdoc/duration`  | `src/mod.ts`    |
-| `@epdoc/fs`        | `src/mod.ts`    |
-| `@epdoc/response`  | `mod.ts` (root) |
-| `@epdoc/string`    | `mod.ts` (root) |
-| `@epdoc/type`      | `src/mod.ts`    |
+| Package             | Entry Point     |
+| ------------------- | --------------- |
+| `@epdoc/daterange`  | `src/mod.ts`    |
+| `@epdoc/datetime`   | `src/mod.ts`    |
+| `@epdoc/duration`   | `src/mod.ts`    |
+| `@epdoc/fs`         | `src/mod.ts`    |
+| `@epdoc/response`   | `mod.ts` (root) |
+| `@epdoc/text`       | `mod.ts` (root) |
+| `@epdoc/transform`  | `src/mod.ts`    |
+| `@epdoc/type`       | `src/mod.ts`    |
 
-> Note: `@epdoc/string` and `@epdoc/response` place their entry point at the workspace root (`mod.ts`), not under
+> Note: `@epdoc/text` and `@epdoc/response` place their entry point at the workspace root (`mod.ts`), not under
 > `src/`.
 
 ---

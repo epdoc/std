@@ -4,10 +4,10 @@ import * as Deep from '../deep/mod.ts';
 import type * as Json from './types.ts';
 
 /**
- * Pre-processes a value tree to wrap Temporal instances in `__filter` wrappers
- * before JSON.stringify. This is necessary because Temporal objects have a
- * `toJSON()` method that converts them to strings, which would prevent the
- * serializer replacer from seeing them as Temporal instances.
+ * Wraps Temporal instances with a `__filter` envelope before JSON.stringify
+ * sees them. This is needed because Temporal objects define `toJSON()` which
+ * would convert them to ISO strings, preventing the serializer from detecting
+ * the original type.
  */
 function replaceTemporals(val: unknown): unknown {
   if (_.isTemporal(val)) {
@@ -27,6 +27,12 @@ function replaceTemporals(val: unknown): unknown {
   return val;
 }
 
+/**
+ * Wraps a recognized special type inside a `__filter` envelope so that
+ * `Json.deserialize` with `decode: true` can restore it.
+ *
+ * Handled types: Uint8Array (ASCII85), Set, Map, RegExp.
+ */
 function encodeFilter(val: unknown): unknown {
   if (val instanceof Uint8Array) {
     return { __filter: 'ASCII85Decode', data: encodeAscii85(val) };
@@ -40,7 +46,8 @@ function encodeFilter(val: unknown): unknown {
 }
 
 /**
- * Creates a JSON.stringify replacer function. Note that Temporal already has a toJSON method.
+ * Creates a JSON.stringify replacer that handles string substitution,
+ * optional RegExp serialisation, and optional type encoding.
  */
 function createSerializerReplacer(opts: Deep.CopyOpts & Json.IAutoRegExp & Json.IEncode) {
   return (_key: string, val: unknown): unknown => {
@@ -59,37 +66,37 @@ function createSerializerReplacer(opts: Deep.CopyOpts & Json.IAutoRegExp & Json.
   };
 }
 
-// Main functions
-
 /**
- * Serializes a JavaScript value to a JSON string, preserving special types and handling string replacements.
+ * Serializes a JavaScript value to a JSON string, with optional type encoding
+ * and string replacement.
  *
- * Supports serialization of:
- * - Uint8Array (encoded as ASCII85)
- * - Set (converted to array)
- * - Map (converted to entries array)
- * - RegExp (preserved with source and flags)
- * - String replacement using simple or advanced msub
+ * When `encode: true` is set, special types — Uint8Array (ASCII85), Set, Map,
+ * and RegExp — are wrapped in a `__filter` envelope so they can be faithfully
+ * restored by {@link deserialize} with `decode: true`.
  *
- * @param {unknown} value - The value to serialize.
- * @param {DeepCopyOpts | null} [options] - Serialization options for string replacement.
- * @param {string | number} [space] - JSON.stringify space parameter for formatting.
- * @returns {string} The serialized JSON string.
+ * Temporal types (Instant, ZonedDateTime, PlainDateTime) are handled
+ * automatically via a pre-processing step and do not require `encode: true`.
+ *
+ * @param value - The value to serialize.
+ * @param [options] - Serialization options:
+ *   - `encode` — wrap special types in `__filter` (default: false)
+ *   - `autoRegExp` — serialize RegExp as `{ regex, flags }` (default: false)
+ *   - `replace` — string substitution config (see {@link Deep.CopyOpts})
+ * @param [space] - JSON.stringify formatting parameter.
+ * @returns The serialized JSON string.
  *
  * @example
- * // Simple serialization
- * jsonSerialize({ name: '${user}', data: new Set([1, 2]) }, { replace: { user: 'John' } });
+ * ```ts
+ * Json.serialize({ data: new Set([1, 2]) }, { encode: true });
+ * // → '{"data":{"__filter":"Set","data":[1,2]}}'
+ * ```
  *
  * @example
- * // Advanced serialization with date formatting
- * import { replace } from '@epdoc/string';
- * jsonSerialize(
- *   { timestamp: '${now:yyyy-MM-dd}' },
- *   { replace: { now: new Date() }, msubFn: (s, r) => replace(s, r) }
- * );
+ * ```ts
+ * Json.serialize({ msg: 'Hello ${name}!' }, { replace: { name: 'World' } });
+ * // → '{"msg":"Hello World!"}'
+ * ```
  */
-// json-serialize.ts
-
 export function serialize(
   value: unknown,
   options: Deep.CopyOpts & Json.IEncode & Json.IAutoRegExp = {},

@@ -3,8 +3,8 @@ import { msubLite } from '../utils.ts';
 import type * as Deep from './types.ts';
 
 /**
- * Type guard for the "simple replacements" case of DeepCopyOpts.
- * Uses isRecordStringString for runtime validation.
+ * Type guard that checks whether `opts.replace` contains only string values
+ * and no custom `msubFn` — i.e., simple string-for-string substitution.
  */
 export function hasSimpleReplacements(
   opts: Deep.CopyOpts,
@@ -15,7 +15,8 @@ export function hasSimpleReplacements(
 }
 
 /**
- * Type guard for the "complex replacements" case of DeepCopyOpts.
+ * Type guard that checks whether `opts` includes a custom `msubFn` for
+ * advanced replacement where values are not plain strings.
  */
 export function hasComplexReplacements(
   opts: Deep.CopyOpts,
@@ -25,8 +26,12 @@ export function hasComplexReplacements(
 }
 
 /**
- * Core string processing that both serialize and deserialize use.
- * This is where isRecordStringString is actually used.
+ * Core string processing used by both Json.serialize and Json.deserialize.
+ *
+ * Delegates to the custom `msubFn` when provided, otherwise falls back to
+ * the built-in `msubLite` for simple string replacements. Throws when
+ * the replacement config is invalid — specifically, when `replace` contains
+ * non-string values but no custom handler is supplied.
  */
 export function processStringWithReplacements(str: string, options: Deep.CopyOpts): string {
   if (!options.replace) {

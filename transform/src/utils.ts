@@ -6,7 +6,6 @@ import { isNonEmptyString, isRecordStringString } from '@epdoc/type';
  * Does not use eval, so is safe for user input.
  *
  * This is the simple built-in msub that only handles string values.
- * For advanced features like date formatting, use the msub from @epdoc/string.
  *
  * @param s - The input string.
  * @param replace - The dictionary of string replacements.

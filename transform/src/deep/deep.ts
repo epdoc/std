@@ -4,21 +4,21 @@ import { processStringWithReplacements } from './deeputils.ts';
 import type * as Deep from './types.ts';
 
 /**
- * Performs a deep copy of the provided value, with advanced options for transformation and string replacement.
+ * Performs a deep copy of the provided value, with optional string replacement
+ * and RegExp reconstruction.
  *
- * This function supports:
- * - Deep cloning of objects, arrays, and primitives
- * - String replacement using simple built-in msub or advanced msub with date formatting
- * - Preserving RegExp, Date, Set, Map, and other special objects
- * - Optional RegExp detection and reconstruction
+ * Supports cloning of objects, arrays, primitives, Date, RegExp, Set, Map, and
+ * Temporal types. When a string contains replacement placeholders (e.g. `${key}`),
+ * they are substituted using either the built-in msubLite (for string values)
+ * or a custom msubFn (for advanced formatting like dates).
  *
- * @param {unknown} value - The value to deep copy.
- * @param {DeepCopyOpts} [options] - Options for the deep copy operation:
- *   - For simple string replacement: `{ replace: Record<string, string> }`
- *   - For advanced replacement with dates: `{ replace: Record<string, unknown>, msubFn: MSubFn }`
- *   - `detectRegExp`: If true, detects and reconstructs RegExp objects from plain objects
- *   - `pre`/`post`: Custom delimiters for replacement (default: '${' and '}')
- * @returns {unknown} The deeply copied value, possibly transformed.
+ * @param value - The value to deep copy.
+ * @param [options] - Deep copy and transformation options:
+ *   - `{ replace: Record<string, string> }` — simple string-for-string substitution
+ *   - `{ replace: Record<string, unknown>, msubFn: MSubFn }` — advanced replacement with custom handler
+ *   - `autoRegExp` — if true, detects `{ regex, flags }` shapes and reconstructs RegExp
+ *   - `pre` / `post` — custom delimiters for placeholders (default: `'${'` and `'}'`)
+ * @returns The deeply copied value, possibly with replaced strings.
  *
  * @example
  * // Simple string replacement
@@ -26,10 +26,9 @@ import type * as Deep from './types.ts';
  *
  * @example
  * // Advanced replacement with date formatting
- * import { replace } from '@epdoc/string';
  * deepCopy(obj, {
  *   replace: { now: new Date(), name: 'John' },
- *   msubFn: (s, replacements) => replace(s, replacements)
+ *   msubFn: (s, replacements) => customHandler(s, replacements)
  * });
  */
 export function deepCopy(a: unknown, opts: Deep.CopyOpts & Json.IAutoRegExp = {}): unknown {

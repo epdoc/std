@@ -1,0 +1,97 @@
+{
+  "identity": {
+    "name": "@epdoc/transform",
+    "purpose": "Deep copy, JSON serialization/deserialization and string replacement",
+    "type": "utility",
+    "complexity": "moderate"
+  },
+  "quickStart": {
+    "pattern": "import { Deep, Json } → Deep.copy() / Json.serialize() / Json.deserialize()",
+    "code": "import { Deep, Json } from '@epdoc/transform';\nconst copy = Deep.copy({ msg: 'Hi ${name}!' }, { replace: { name: 'Bob' } });\nconst json = Json.serialize(new Set([1, 2]), { encode: true });\nconst set = Json.deserialize(json, { decode: true });"
+  },
+  "exports": [
+    {
+      "name": "Deep.copy",
+      "role": "main_entry",
+      "description": "Deep copy with optional string replacement"
+    },
+    {
+      "name": "Deep.hasSimpleReplacements",
+      "role": "helper",
+      "description": "Type guard for string-only replacement config"
+    },
+    {
+      "name": "Deep.hasComplexReplacements",
+      "role": "helper",
+      "description": "Type guard for advanced replacement config"
+    },
+    {
+      "name": "Deep.processStringWithReplacements",
+      "role": "helper",
+      "description": "Core string substitution used by serialize/deserialize"
+    },
+    {
+      "name": "Json.serialize",
+      "role": "main_entry",
+      "description": "JSON serialize with special-type encoding",
+      "whenToUse": "When you need to preserve Set/Map/RegExp/Uint8Array in JSON"
+    },
+    {
+      "name": "Json.deserialize",
+      "role": "main_entry",
+      "description": "JSON deserialize with type restoration",
+      "whenToUse": "Restore values serialized with Json.serialize"
+    },
+    {
+      "name": "Json.stripComments",
+      "role": "helper",
+      "description": "Strip comments from JSONC strings"
+    },
+    {
+      "name": "Json.isEncodedValue",
+      "role": "helper",
+      "description": "Type guard for __filter-wrapped values"
+    },
+    {
+      "name": "Json.createDeserializerReviver",
+      "role": "helper",
+      "description": "Build a custom JSON.parse reviver"
+    },
+    {
+      "name": "msubLite",
+      "role": "helper",
+      "description": "Simple string placeholder substitution"
+    }
+  ],
+  "patterns": [
+    {
+      "name": "Basic deep copy",
+      "when": "Clone an object while substituting template vars",
+      "code": "Deep.copy(template, { replace: { name: 'Alice' } })"
+    },
+    {
+      "name": "Advanced deep copy with dates",
+      "when": "Replace placeholders with date-formatted values",
+      "code": "Deep.copy(obj, { replace: { now: new Date() }, msubFn: (s, r) => replace(s, r) })"
+    },
+    {
+      "name": "Serialize/deserialize special types",
+      "when": "Round-trip Set, Map, RegExp, Uint8Array through JSON",
+      "code": "const json = Json.serialize(data, { encode: true });\nconst data2 = Json.deserialize(json, { decode: true });"
+    },
+    {
+      "name": "Serialize/deserialize Temporal",
+      "when": "Round-trip Temporal.Instant/ZonedDateTime/PlainDateTime",
+      "code": "const json = Json.serialize({ t: Temporal.Instant.from('2024-01-15T12:00:00Z') });\nconst obj = Json.deserialize(json, { decode: true });"
+    },
+    {
+      "name": "Auto-detect RegExp in plain objects",
+      "when": "Restore { regex, flags } shapes to RegExp during deep copy or deserialize",
+      "code": "Deep.copy({ re: { regex: '^foo', flags: 'i' } }, { autoRegExp: true })"
+    }
+  ],
+  "relationships": {
+    "dependsOn": ["@epdoc/type", "@std/encoding"],
+    "usedBy": ["@epdoc/fs"]
+  }
+}

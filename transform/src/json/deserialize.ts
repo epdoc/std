@@ -4,6 +4,13 @@ import * as Deep from '../deep/mod.ts';
 import { stripComments } from './strip-comments.ts';
 import type * as Json from './types.ts';
 
+/**
+ * Restores a value that was previously wrapped in a `__filter` envelope by
+ * the serializer (via `encodeFilter` or `replaceTemporals`).
+ *
+ * Supports: Temporal.Instant/ZonedDateTime/PlainDateTime, RegExp, Set, Map,
+ * and ASCII85-decoded Uint8Array.
+ */
 function decodeFilter(val: Json.EncodedValue): unknown {
   const filter = val.__filter;
   if (filter === 'RegExp' && _.isString((val as Dict).regex)) {
@@ -32,7 +39,6 @@ function decodeFilter(val: Json.EncodedValue): unknown {
   } else if (filter === 'Map' && _.isArray(val.data)) {
     return new Map(val.data as Iterable<readonly [unknown, unknown]>);
   }
-  // Future may allow multiple filters
   if ((filter === 'ASCII85Decode' || _.isArray(filter)) && _.hasValue(val.data)) {
     const filters = _.isArray(filter) ? filter : [filter];
     let result: unknown = val.data;
@@ -47,6 +53,10 @@ function decodeFilter(val: Json.EncodedValue): unknown {
   return val;
 }
 
+/**
+ * Checks whether a plain object carries a `__filter` property, indicating it
+ * was produced by the serializer's encode step.
+ */
 export function isEncodedValue(val: unknown): val is Json.EncodedValue {
   return (_.isDict(val) && '__filter' in val);
 }
@@ -54,14 +64,15 @@ export function isEncodedValue(val: unknown): val is Json.EncodedValue {
 type JsonReviver = (key: string, value: unknown) => unknown;
 
 /**
- * Creates a JSON.parse reviver function.
- * @param opts.decode - Looks for __filter (mirrors json serializer)
- * @param opts.autoTemporal - Converts ISODate strings to Temporal, where it can
- * @param opts.autoRegExp - Converts { regex: string, flags?: string } to RegExp, where it can
- * @param opts.replace - does replacement of ${} in strings
- * @param opts.pre - used with opts.replace, defines opening delimiter ('${')
- * @param opts.post - used with opts.replace,defines closing delmiter ('}')
- * @param opts.msubFn - used with opts.replace
+ * Creates a JSON.parse reviver function that can restore `__filter`-wrapped
+ * types, detect RegExp shapes, convert ISO strings to Temporal, and perform
+ * string substitution.
+ *
+ * Options are read from `opts`:
+ * - `decode` — restore `__filter` envelopes (must match `encode: true` on serialization)
+ * - `autoTemporal` — convert ISO 8601 strings to Temporal types
+ * - `autoRegExp` — detect `{ regex, flags }` shapes and rebuild RegExp
+ * - `replace` / `pre` / `post` / `msubFn` — string substitution
  */
 export function createDeserializerReviver(
   opts: Deep.CopyOpts & Json.IAutoTemporal & Json.IDecode & Json.IAutoRegExp,
@@ -96,44 +107,44 @@ export function createDeserializerReviver(
   };
 }
 
-// Main functions
-
 /**
- * Deserializes a JSON string produced by jsonSerialize, restoring special types and handling string replacements.
+ * Deserializes a JSON string, restoring `__filter`-encoded special types
+ * and performing optional string replacement and Temporal conversion.
  *
- * Supports deserialization of:
- * - Temporal.Instant, Temporal.ZonedDateTime, Temporal.PlainDateTime
+ * Supports:
+ * - Temporal.Instant, ZonedDateTime, PlainDateTime (from `__filter`)
  * - Uint8Array (decoded from ASCII85)
- * - Set (restored from array)
- * - Map (restored from entries array)
- * - RegExp (restored with source and flags)
- * - ISO date strings (converted to Temporal types when autoTemporal is true)
- * - String replacement using simple or advanced msub
+ * - Set, Map, RegExp
+ * - ISO string → Temporal conversion (`autoTemporal`)
+ * - String substitution (`replace`)
  *
- * @param {string} json - The JSON string to deserialize.
- * @param {JsonDeserializeOpts} [opts] - Deserialization options including string replacement, autoTemporal, and comment stripping.
- * @returns {T} The restored value with original types.
- *
- * @example
- * // Simple deserialization
- * jsonDeserialize('{"name": "${user}"}', { replace: { user: 'John' } });
- *
- * @example
- * // Advanced deserialization with date formatting
- * import { replace } from '@epdoc/string';
- * jsonDeserialize(
- *   '{"timestamp": "${now:yyyy-MM-dd}"}',
- *   { replace: { now: new Date() }, msubFn: (s, r) => replace(s, r) }
- * );
+ * @param json - The JSON string to parse.
+ * @param [opts] - Deserialisation options:
+ *   - `decode` — restore encoded types (must match `encode: true` on serialization)
+ *   - `autoTemporal` — auto-convert ISO strings to Temporal types
+ *   - `autoRegExp` — detect `{ regex, flags }` shapes and rebuild RegExp
+ *   - `stripComments` — strip JSONC-style comments before parsing
+ *   - `replace` — string substitution config (see {@link Deep.CopyOpts})
+ * @returns The deserialized value with original types restored.
  *
  * @example
- * // Auto-convert ISO strings to Temporal types
- * const result = jsonDeserialize('{"time": "2024-01-15T12:30:45Z"}', { autoTemporal: true });
- * // result.time is a Temporal.ZonedDateTime
+ * ```ts
+ * Json.deserialize('{"__filter":"Set","data":[1,2]}', { decode: true });
+ * // → Set { 1, 2 }
+ * ```
+ *
+ * @example
+ * ```ts
+ * Json.deserialize('{"time":"2024-01-15T12:30:45Z"}', { autoTemporal: true });
+ * // → { time: Temporal.Instant.from('...') }
+ * ```
+ *
+ * @example
+ * ```ts
+ * Json.deserialize('{"msg":"Hello ${name}!"}', { replace: { name: 'World' } });
+ * // → { msg: "Hello World!" }
+ * ```
  */
-
-// json-deserialize.ts
-
 export function deserialize<T = unknown>(
   json: string,
   opts: Json.DeserializeOpts = {},
