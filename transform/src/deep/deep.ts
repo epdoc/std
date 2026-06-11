@@ -31,7 +31,7 @@ import type * as Deep from './types.ts';
  *   msubFn: (s, replacements) => customHandler(s, replacements)
  * });
  */
-export function deepCopy(a: unknown, opts: Deep.CopyOpts & Json.IAutoRegExp = {}): unknown {
+export function deepCopy(a: unknown, opts: Deep.CopyOpts & Json.IAutoRegExp & Json.IIncludeUrl = {}): unknown {
   // Primitives
   if (
     a === undefined ||
