@@ -6,14 +6,13 @@
  */
 
 import { bold, rgb24 } from '@std/fmt/colors';
-import { describe, it } from '@std/testing/bdd';
 import { formatters } from '../src/formatters.ts';
 import { TableRenderer } from '../src/render.ts';
 import type { ColumnRegistry } from '../src/types.ts';
 import { buildColumns } from '../src/utils.ts';
 
-describe('Example 03: Formatters', () => {
-  it('should render a table with formatted values', () => {
+Deno.test('Example 03: Formatters', async (t) => {
+  await t.step('should render a table with formatted values', () => {
     type ProcessInfo = {
       pid: number;
       name: string;

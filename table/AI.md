@@ -1,12 +1,12 @@
-# AI.md for Project root
+# AI.md for @epdoc/table
 
-This file contains instructions for developers and AI agents on how to use or import Project root into other solutions.
+This file contains instructions for developers and AI agents on how to use or import @epdoc/table into other solutions.
 
 **PLEASE REWRITE THIS FILE**
 
 ## Quick Bootstrap
 
-Project root
+unknown module
 
 ## Key Workflows
 

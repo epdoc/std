@@ -6,13 +6,12 @@
 
 import type * as Color from '@epdoc/colors';
 import { bgRgb24, bold, rgb24 } from '@std/fmt/colors';
-import { describe, it } from '@std/testing/bdd';
 import { TableRenderer } from '../src/render.ts';
 import type { ColumnRegistry } from '../src/types.ts';
 import { buildColumns } from '../src/utils.ts';
 
-describe('Example 02: Styled Table', () => {
-  it('should render a table with colors and styling', () => {
+Deno.test('Example 02: Styled Table', async (t) => {
+  await t.step('should render a table with colors and styling', () => {
     type ServerStatus = {
       id: string;
       name: string;

@@ -1,18 +1,17 @@
 import { assertEquals, assertNotEquals, assertStringIncludes } from '@std/assert';
 import { bgRgb24, bold, rgb24 } from '@std/fmt/colors';
-import { describe, it } from '@std/testing/bdd';
 import { formatters } from '../src/formatters.ts';
 import { TableRenderer } from '../src/render.ts';
 import { stripAnsi } from '../src/terminal.ts';
 
-describe('TableRenderer - Constructor API', () => {
+Deno.test('TableRenderer - Constructor API', async (t) => {
   type TestRow = {
     id: number;
     name: string;
     value: number;
   };
 
-  it('should create table with basic configuration', () => {
+  await t.step('should create table with basic configuration', () => {
     const data: TestRow[] = [
       { id: 1, name: 'Alice', value: 100 },
       { id: 2, name: 'Bob', value: 200 },
@@ -31,7 +30,7 @@ describe('TableRenderer - Constructor API', () => {
     assertEquals(lines.length, 4); // header + separator + 2 data rows
   });
 
-  it('should render header correctly', () => {
+  await t.step('should render header correctly', () => {
     const table = new TableRenderer({
       columns: [
         { key: 'id', header: 'ID' },
@@ -45,7 +44,7 @@ describe('TableRenderer - Constructor API', () => {
     assertStringIncludes(header, 'Name');
   });
 
-  it('should render separator matching header width', () => {
+  await t.step('should render separator matching header width', () => {
     const table = new TableRenderer({
       columns: [
         { key: 'id', header: 'ID' },
@@ -61,7 +60,7 @@ describe('TableRenderer - Constructor API', () => {
     assertEquals(separator[0], '-');
   });
 
-  it('should render data rows', () => {
+  await t.step('should render data rows', () => {
     const data: TestRow[] = [
       { id: 1, name: 'Alice', value: 100 },
       { id: 2, name: 'Bob', value: 200 },
@@ -83,7 +82,7 @@ describe('TableRenderer - Constructor API', () => {
     assertStringIncludes(stripAnsi(rows[1]), 'Bob');
   });
 
-  it('should apply header style', () => {
+  await t.step('should apply header style', () => {
     const table = new TableRenderer({
       columns: [{ key: 'id', header: 'ID' }],
       data: [],
@@ -95,7 +94,7 @@ describe('TableRenderer - Constructor API', () => {
     assertStringIncludes(header, '\x1b[1m');
   });
 
-  it('should apply zebra striping with rowStyles', () => {
+  await t.step('should apply zebra striping with rowStyles', () => {
     const data: TestRow[] = [
       { id: 1, name: 'Alice', value: 100 },
       { id: 2, name: 'Bob', value: 200 },
@@ -119,7 +118,7 @@ describe('TableRenderer - Constructor API', () => {
     // Odd row (index 1) should not have the same background
   });
 
-  it('should handle custom padding', () => {
+  await t.step('should handle custom padding', () => {
     const table = new TableRenderer({
       columns: [
         { key: 'id', header: 'ID' },
@@ -137,18 +136,18 @@ describe('TableRenderer - Constructor API', () => {
   });
 });
 
-describe('TableRenderer - Fluent API', () => {
+Deno.test('TableRenderer - Fluent API', async (t) => {
   type TestRow = {
     id: number;
     name: string;
   };
 
-  it('should support create() factory method', () => {
+  await t.step('should support create() factory method', () => {
     const table = TableRenderer.create<TestRow>();
     assertEquals(table instanceof TableRenderer, true);
   });
 
-  it('should support column() method chaining', () => {
+  await t.step('should support column() method chaining', () => {
     const table = TableRenderer.create<TestRow>()
       .column('id', { header: 'ID', align: 'right' })
       .column('name', { header: 'Name', align: 'left' });
@@ -157,7 +156,7 @@ describe('TableRenderer - Fluent API', () => {
     assertEquals(lines.length, 3); // header + separator + 1 row
   });
 
-  it('should support data() method chaining', () => {
+  await t.step('should support data() method chaining', () => {
     const table = TableRenderer.create<TestRow>()
       .column('id', { header: 'ID' })
       .data([
@@ -169,7 +168,7 @@ describe('TableRenderer - Fluent API', () => {
     assertEquals(rows.length, 2);
   });
 
-  it('should support padding() method', () => {
+  await t.step('should support padding() method', () => {
     const table = TableRenderer.create<TestRow>()
       .column('id', { header: 'ID' })
       .column('name', { header: 'Name' })
@@ -180,7 +179,7 @@ describe('TableRenderer - Fluent API', () => {
     assertStringIncludes(stripAnsi(header), 'ID        Name');
   });
 
-  it('should support headerStyle() method', () => {
+  await t.step('should support headerStyle() method', () => {
     const table = TableRenderer.create<TestRow>()
       .column('id', { header: 'ID' })
       .data([])
@@ -190,7 +189,7 @@ describe('TableRenderer - Fluent API', () => {
     assertStringIncludes(header, '\x1b[38;2;');
   });
 
-  it('should support evenRow() method', () => {
+  await t.step('should support evenRow() method', () => {
     const table = TableRenderer.create<TestRow>()
       .column('id', { header: 'ID' })
       .data([{ id: 1, name: 'A' }, { id: 2, name: 'B' }])
@@ -201,7 +200,7 @@ describe('TableRenderer - Fluent API', () => {
     assertStringIncludes(rows[1], '\x1b[');
   });
 
-  it('should support oddRow() method', () => {
+  await t.step('should support oddRow() method', () => {
     const table = TableRenderer.create<TestRow>()
       .column('id', { header: 'ID' })
       .data([{ id: 1, name: 'A' }, { id: 2, name: 'B' }])
@@ -213,14 +212,14 @@ describe('TableRenderer - Fluent API', () => {
   });
 });
 
-describe('TableRenderer - Column Features', () => {
+Deno.test('TableRenderer - Column Features', async (t) => {
   type TestRow = {
     value: number;
     status: string;
     longText: string;
   };
 
-  it('should apply column formatter', () => {
+  await t.step('should apply column formatter', () => {
     const table = new TableRenderer({
       columns: [
         {
@@ -236,7 +235,7 @@ describe('TableRenderer - Column Features', () => {
     assertStringIncludes(stripAnsi(row), '50.00 %');
   });
 
-  it('should apply column color callback', () => {
+  await t.step('should apply column color callback', () => {
     const table = new TableRenderer({
       columns: [
         {
@@ -257,7 +256,7 @@ describe('TableRenderer - Column Features', () => {
     assertStringIncludes(rows[1], '\x1b[38;2;255;0;0m'); // Red
   });
 
-  it('should truncate with maxWidth', () => {
+  await t.step('should truncate with maxWidth', () => {
     const table = new TableRenderer({
       columns: [
         {
@@ -275,7 +274,7 @@ describe('TableRenderer - Column Features', () => {
     assertStringIncludes(cleaned, '…');
   });
 
-  it('should respect fixed width', () => {
+  await t.step('should respect fixed width', () => {
     const table = new TableRenderer({
       columns: [
         {
@@ -293,7 +292,7 @@ describe('TableRenderer - Column Features', () => {
     assertEquals(cleaned.trim().length >= 3, true);
   });
 
-  it('should align text right when specified', () => {
+  await t.step('should align text right when specified', () => {
     const table = new TableRenderer({
       columns: [
         {
@@ -312,7 +311,7 @@ describe('TableRenderer - Column Features', () => {
     assertStringIncludes(cleaned, '42');
   });
 
-  it('should align text center when specified', () => {
+  await t.step('should align text center when specified', () => {
     const table = new TableRenderer({
       columns: [
         {
@@ -332,13 +331,13 @@ describe('TableRenderer - Column Features', () => {
   });
 });
 
-describe('TableRenderer - Output Methods', () => {
+Deno.test('TableRenderer - Output Methods', async (t) => {
   type TestRow = {
     id: number;
     name: string;
   };
 
-  it('should render complete table with render()', () => {
+  await t.step('should render complete table with render()', () => {
     const table = new TableRenderer({
       columns: [
         { key: 'id', header: 'ID' },
@@ -361,7 +360,7 @@ describe('TableRenderer - Output Methods', () => {
     assertStringIncludes(stripAnsi(lines[3]), 'Bob');
   });
 
-  it('should return newline-joined string with toString()', () => {
+  await t.step('should return newline-joined string with toString()', () => {
     const table = new TableRenderer({
       columns: [{ key: 'id', header: 'ID' }],
       data: [{ id: 1, name: '' }],
@@ -373,7 +372,7 @@ describe('TableRenderer - Output Methods', () => {
     assertStringIncludes(stripAnsi(lines[0]), 'ID');
   });
 
-  it('should handle empty data', () => {
+  await t.step('should handle empty data', () => {
     const table = new TableRenderer({
       columns: [
         { key: 'id', header: 'ID' },
@@ -387,12 +386,12 @@ describe('TableRenderer - Output Methods', () => {
   });
 });
 
-describe('TableRenderer - Edge Cases', () => {
+Deno.test('TableRenderer - Edge Cases', async (t) => {
   type TestRow = {
     value: number | null;
   };
 
-  it('should handle null values', () => {
+  await t.step('should handle null values', () => {
     const table = new TableRenderer({
       columns: [{ key: 'value', header: 'Value' }],
       data: [{ value: null }],
@@ -404,7 +403,7 @@ describe('TableRenderer - Edge Cases', () => {
     assertEquals(cleaned, '');
   });
 
-  it('should handle undefined values', () => {
+  await t.step('should handle undefined values', () => {
     const table = new TableRenderer({
       columns: [{ key: 'value', header: 'Value' }],
       data: [{ value: undefined as unknown as number }],
@@ -415,7 +414,7 @@ describe('TableRenderer - Edge Cases', () => {
     assertEquals(cleaned, '');
   });
 
-  it('should handle ANSI codes in data when calculating widths', () => {
+  await t.step('should handle ANSI codes in data when calculating widths', () => {
     const coloredValue = rgb24('Colored', 0xff0000);
     const table = new TableRenderer({
       columns: [{ key: 'value', header: 'Val' }],
@@ -427,7 +426,7 @@ describe('TableRenderer - Edge Cases', () => {
     assertEquals(lines.length, 3);
   });
 
-  it('should handle very long headers', () => {
+  await t.step('should handle very long headers', () => {
     const table = new TableRenderer({
       columns: [{ key: 'value', header: 'This Is A Very Long Header Name' }],
       data: [{ value: 1 }],
@@ -438,10 +437,10 @@ describe('TableRenderer - Edge Cases', () => {
   });
 });
 
-describe('TableRenderer - noColor Option', () => {
+Deno.test('TableRenderer - noColor Option', async (t) => {
   type TestRow = { id: number; status: string };
 
-  it('should strip header style when noColor is true', () => {
+  await t.step('should strip header style when noColor is true', () => {
     const table = new TableRenderer({
       columns: [{ key: 'id', header: 'ID' }],
       data: [{ id: 1, status: 'active' }],
@@ -455,7 +454,7 @@ describe('TableRenderer - noColor Option', () => {
     assertStringIncludes(header, 'ID');
   });
 
-  it('should strip column colors when noColor is true', () => {
+  await t.step('should strip column colors when noColor is true', () => {
     const table = new TableRenderer({
       columns: [
         { key: 'id', header: 'ID' },
@@ -475,7 +474,7 @@ describe('TableRenderer - noColor Option', () => {
     assertStringIncludes(row, 'active');
   });
 
-  it('should strip row styles when noColor is true', () => {
+  await t.step('should strip row styles when noColor is true', () => {
     const table = new TableRenderer({
       columns: [{ key: 'id', header: 'ID' }],
       data: [{ id: 1, status: 'active' }, { id: 2, status: 'inactive' }],
@@ -489,7 +488,7 @@ describe('TableRenderer - noColor Option', () => {
     assertEquals(rows[1], stripAnsi(rows[1]));
   });
 
-  it('should strip all ANSI codes from complete render when noColor is true', () => {
+  await t.step('should strip all ANSI codes from complete render when noColor is true', () => {
     const table = new TableRenderer({
       columns: [
         { key: 'id', header: 'ID' },
@@ -508,7 +507,7 @@ describe('TableRenderer - noColor Option', () => {
     }
   });
 
-  it('should support fluent noColor() method', () => {
+  await t.step('should support fluent noColor() method', () => {
     const table = TableRenderer.create<TestRow>()
       .column('id', { header: 'ID' })
       .column('status', { header: 'Status', color: () => 0xff0000 })
@@ -523,7 +522,7 @@ describe('TableRenderer - noColor Option', () => {
     }
   });
 
-  it('should strip formatter-embedded colors when noColor is true', () => {
+  await t.step('should strip formatter-embedded colors when noColor is true', () => {
     // This tests the safety net - formatters can embed ANSI codes
     const formatterWithColor = (v: unknown): string => {
       return rgb24(String(v), 0xff0000); // Red color
@@ -541,7 +540,7 @@ describe('TableRenderer - noColor Option', () => {
     assertStringIncludes(row, '123');
   });
 
-  it('should preserve colors when noColor is false (default)', () => {
+  await t.step('should preserve colors when noColor is false (default)', () => {
     const table = new TableRenderer({
       columns: [
         { key: 'id', header: 'ID' },
@@ -561,13 +560,13 @@ describe('TableRenderer - noColor Option', () => {
   });
 });
 
-describe('TableRenderer - Divider Customization', () => {
+Deno.test('TableRenderer - Divider Customization', async (t) => {
   type TestRow = {
     id: number;
     name: string;
   };
 
-  it('should use custom divider character via constructor', () => {
+  await t.step('should use custom divider character via constructor', () => {
     const table = new TableRenderer({
       columns: [{ key: 'id', header: 'ID' }],
       data: [{ id: 1, name: 'Alice' }],
@@ -579,7 +578,7 @@ describe('TableRenderer - Divider Customization', () => {
     assertEquals(separator.includes('-'), false);
   });
 
-  it('should use custom divider character via fluent API', () => {
+  await t.step('should use custom divider character via fluent API', () => {
     const table = TableRenderer.create<TestRow>()
       .column('id', { header: 'ID' })
       .data([{ id: 1, name: 'Alice' }])
@@ -589,7 +588,7 @@ describe('TableRenderer - Divider Customization', () => {
     assertStringIncludes(separator, '═');
   });
 
-  it('should apply divider style via constructor', () => {
+  await t.step('should apply divider style via constructor', () => {
     const table = new TableRenderer({
       columns: [{ key: 'id', header: 'ID' }],
       data: [{ id: 1, name: 'Alice' }],
@@ -600,7 +599,7 @@ describe('TableRenderer - Divider Customization', () => {
     assertStringIncludes(separator, '\x1b[38;2;');
   });
 
-  it('should apply divider style via fluent API', () => {
+  await t.step('should apply divider style via fluent API', () => {
     const table = TableRenderer.create<TestRow>()
       .column('id', { header: 'ID' })
       .data([{ id: 1, name: 'Alice' }])
@@ -611,7 +610,7 @@ describe('TableRenderer - Divider Customization', () => {
     assertStringIncludes(separator, '\x1b[');
   });
 
-  it('should keep char param in renderSeparator as override', () => {
+  await t.step('should keep char param in renderSeparator as override', () => {
     const table = TableRenderer.create<TestRow>()
       .column('id', { header: 'ID' })
       .data([{ id: 1, name: 'Alice' }])
@@ -623,7 +622,7 @@ describe('TableRenderer - Divider Customization', () => {
     assertEquals(separator.includes('='), false);
   });
 
-  it('should default to configured dividerChar when no param', () => {
+  await t.step('should default to configured dividerChar when no param', () => {
     const table = TableRenderer.create<TestRow>()
       .column('id', { header: 'ID' })
       .data([{ id: 1, name: 'Alice' }])
@@ -634,13 +633,13 @@ describe('TableRenderer - Divider Customization', () => {
   });
 });
 
-describe('TableRenderer - Top and Bottom Borders', () => {
+Deno.test('TableRenderer - Top and Bottom Borders', async (t) => {
   type TestRow = {
     id: number;
     name: string;
   };
 
-  it('should render top border via constructor', () => {
+  await t.step('should render top border via constructor', () => {
     const table = new TableRenderer({
       columns: [{ key: 'id', header: 'ID' }],
       data: [{ id: 1, name: 'Alice' }],
@@ -654,7 +653,7 @@ describe('TableRenderer - Top and Bottom Borders', () => {
     assertEquals(lines[2][0], '-'); // Separator
   });
 
-  it('should render bottom border via constructor', () => {
+  await t.step('should render bottom border via constructor', () => {
     const table = new TableRenderer({
       columns: [{ key: 'id', header: 'ID' }],
       data: [{ id: 1, name: 'Alice' }],
@@ -666,7 +665,7 @@ describe('TableRenderer - Top and Bottom Borders', () => {
     assertEquals(lines[lines.length - 1][0], '-'); // Bottom border is last
   });
 
-  it('should render both borders via constructor', () => {
+  await t.step('should render both borders via constructor', () => {
     const table = new TableRenderer({
       columns: [{ key: 'id', header: 'ID' }],
       data: [{ id: 1, name: 'Alice' }],
@@ -680,7 +679,7 @@ describe('TableRenderer - Top and Bottom Borders', () => {
     assertEquals(lines[lines.length - 1][0], '-');
   });
 
-  it('should toggle top border via fluent API', () => {
+  await t.step('should toggle top border via fluent API', () => {
     const table = TableRenderer.create<TestRow>()
       .column('id', { header: 'ID' })
       .data([{ id: 1, name: 'Alice' }])
@@ -691,7 +690,7 @@ describe('TableRenderer - Top and Bottom Borders', () => {
     assertEquals(lines[0][0], '-');
   });
 
-  it('should toggle bottom border via fluent API', () => {
+  await t.step('should toggle bottom border via fluent API', () => {
     const table = TableRenderer.create<TestRow>()
       .column('id', { header: 'ID' })
       .data([{ id: 1, name: 'Alice' }])
@@ -702,7 +701,7 @@ describe('TableRenderer - Top and Bottom Borders', () => {
     assertEquals(lines[lines.length - 1][0], '-');
   });
 
-  it('should toggle top border on/off', () => {
+  await t.step('should toggle top border on/off', () => {
     const table = TableRenderer.create<TestRow>()
       .column('id', { header: 'ID' })
       .data([{ id: 1, name: 'Alice' }])
@@ -714,7 +713,7 @@ describe('TableRenderer - Top and Bottom Borders', () => {
     assertStringIncludes(stripAnsi(lines[0]), 'ID'); // First line is header
   });
 
-  it('should set top/bottom border to false explicitly', () => {
+  await t.step('should set top/bottom border to false explicitly', () => {
     const _table = new TableRenderer({
       columns: [{ key: 'id', header: 'ID' }],
       data: [{ id: 1, name: 'Alice' }],
@@ -734,12 +733,12 @@ describe('TableRenderer - Top and Bottom Borders', () => {
   });
 });
 
-describe('TableRenderer - Divider with noColor', () => {
+Deno.test('TableRenderer - Divider with noColor', async (t) => {
   type TestRow = {
     id: number;
   };
 
-  it('should strip divider style when noColor is true', () => {
+  await t.step('should strip divider style when noColor is true', () => {
     const table = new TableRenderer({
       columns: [{ key: 'id', header: 'ID' }],
       data: [{ id: 1 }],
@@ -751,7 +750,7 @@ describe('TableRenderer - Divider with noColor', () => {
     assertEquals(separator, stripAnsi(separator));
   });
 
-  it('should strip all divider colors in complete render when noColor is true', () => {
+  await t.step('should strip all divider colors in complete render when noColor is true', () => {
     const table = new TableRenderer({
       columns: [{ key: 'id', header: 'ID' }],
       data: [{ id: 1 }],
@@ -768,7 +767,7 @@ describe('TableRenderer - Divider with noColor', () => {
     }
   });
 
-  it('should support fluent noColor with divider styling', () => {
+  await t.step('should support fluent noColor with divider styling', () => {
     const table = TableRenderer.create<TestRow>()
       .column('id', { header: 'ID' })
       .data([{ id: 1 }])
@@ -785,13 +784,13 @@ describe('TableRenderer - Divider with noColor', () => {
   });
 });
 
-describe('TableRenderer - Full Divider Configuration', () => {
+Deno.test('TableRenderer - Full Divider Configuration', async (t) => {
   type TestRow = {
     id: number;
     status: string;
   };
 
-  it('should render table with all divider features combined', () => {
+  await t.step('should render table with all divider features combined', () => {
     const table = TableRenderer.create<TestRow>()
       .column('id', { header: 'ID', align: 'right' })
       .column('status', { header: 'STATUS' })

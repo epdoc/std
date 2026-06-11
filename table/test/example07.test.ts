@@ -6,13 +6,12 @@
  */
 
 import { bold, dim, italic, rgb24 } from '@std/fmt/colors';
-import { describe, it } from '@std/testing/bdd';
 import { TableRenderer } from '../src/render.ts';
 import type { ColumnRegistry } from '../src/types.ts';
 import { buildColumns } from '../src/utils.ts';
 
-describe('Example 07: Unit Styling Alternatives', () => {
-  it('should compare different unit styling approaches', () => {
+Deno.test('Example 07: Unit Styling Alternatives', async (t) => {
+  await t.step('should compare different unit styling approaches', () => {
     type Metric = {
       approach: string;
       cpu: string;
@@ -94,7 +93,7 @@ describe('Example 07: Unit Styling Alternatives', () => {
     console.log('');
   });
 
-  it('should show recommended approach: muted color units', () => {
+  await t.step('should show recommended approach: muted color units', () => {
     type SystemMetric = {
       resource: string;
       current: number;
@@ -197,7 +196,7 @@ describe('Example 07: Unit Styling Alternatives', () => {
     console.log('');
   });
 
-  it('should show alternative: space-separated units', () => {
+  await t.step('should show alternative: space-separated units', () => {
     type SystemMetric = {
       resource: string;
       current: number;
