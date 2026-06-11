@@ -1,7 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 import { FileSpec } from '$mod';
-import { deepEquals } from '@epdoc/type';
-import { assertEquals, assertInstanceOf, assert } from '@std/assert';
+import { deepEquals, type Dict } from '@epdoc/type';
+import { assert, assertEquals, assertInstanceOf } from '@std/assert';
 
 async function withJsonFile(
   fn: (testFilePath: FileSpec, testDir: string) => Promise<void>,
@@ -23,19 +23,34 @@ Deno.test('JSON Extended Operations', async (t) => {
         value: 123,
         isActive: true,
       };
-      await f.writeJson(data, { deepCopy: true });
-      const readData = await f.readJson({ deepCopy: true });
+      await f.writeJson(data, { encode: true });
+      const readData = await f.readJson({ decode: true });
       assertEquals(readData, data);
     }));
 
-  await t.step('roundtrips RegExp objects', () =>
+  await t.step('filter roundtrips RegExp objects', () =>
     withJsonFile(async (f) => {
       const data = {
         pattern: new RegExp('^test.*$', 'i'),
         another: 'value',
       };
-      await f.writeJson(data, { deepCopy: true });
-      const readData = await f.readJson({ deepCopy: true }) as any;
+      await f.writeJson(data, { encode: true });
+      const readData = await f.readJson({ decode: true }) as any;
+
+      assertEquals(readData.another, data.another);
+      assertInstanceOf(readData.pattern, RegExp);
+      assertEquals(readData.pattern.source, data.pattern.source);
+      assertEquals(readData.pattern.flags, data.pattern.flags);
+    }));
+
+  await t.step('autoRegExp roundtrips RegExp objects', () =>
+    withJsonFile(async (f) => {
+      const data = {
+        pattern: new RegExp('^test.*$', 'i'),
+        another: 'value',
+      };
+      await f.writeJson(data, { autoRegExp: true });
+      const readData = await f.readJson({ autoRegExp: true }) as any;
 
       assertEquals(readData.another, data.another);
       assertInstanceOf(readData.pattern, RegExp);
@@ -49,8 +64,8 @@ Deno.test('JSON Extended Operations', async (t) => {
         mySet: new Set([1, 2, 3, 'hello']),
         other: 'data',
       };
-      await f.writeJson(data, { deepCopy: true });
-      const readData = await f.readJson({ deepCopy: true }) as any;
+      await f.writeJson(data, { encode: true });
+      const readData = await f.readJson({ decode: true }) as any;
 
       assertEquals(readData.other, data.other);
       assertInstanceOf(readData.mySet, Set);
@@ -63,8 +78,8 @@ Deno.test('JSON Extended Operations', async (t) => {
         myMap: new Map([['key1', 'value1'], ['key2', '123']]),
         info: 'more',
       };
-      await f.writeJson(data, { deepCopy: true });
-      const readData = await f.readJson({ deepCopy: true }) as any;
+      await f.writeJson(data, { encode: true });
+      const readData = await f.readJson({ decode: true }) as any;
 
       assertEquals(readData.info, data.info);
       assertInstanceOf(readData.myMap, Map);
@@ -77,8 +92,8 @@ Deno.test('JSON Extended Operations', async (t) => {
         byteArray: new Uint8Array([10, 20, 30, 40, 50]),
         id: 1,
       };
-      await f.writeJson(data, { deepCopy: true });
-      const readData = await f.readJson({ deepCopy: true }) as any;
+      await f.writeJson(data, { encode: true });
+      const readData = await f.readJson({ decode: true }) as any;
 
       assertEquals(readData.id, data.id);
       assertInstanceOf(readData.byteArray, Uint8Array);
@@ -95,18 +110,15 @@ Deno.test('JSON Extended Operations', async (t) => {
         HOME: testDir,
         USER: 'testuser',
       };
-      await f.writeJson(data, { deepCopy: { replace: replaceMap, pre: '{', post: '}' } });
+      await f.writeJson(data, { replace: replaceMap, pre: '{', post: '}' });
 
-      const rawReadData = await f.readJson({ deepCopy: true }) as any;
+      const rawReadData = await f.readJson() as any;
       assertEquals(rawReadData.path, `${testDir}/documents/config.json`);
       assertEquals(rawReadData.message, `Hello from testuser!`);
 
-      const readDataWithReplace = await f.readJson({
-        deepCopy: true,
-        replace: replaceMap,
-        pre: '{',
-        post: '}',
-      }) as any;
+      await f.writeJson(data);
+
+      const readDataWithReplace = await f.readJson<Dict>({ replace: replaceMap, pre: '{', post: '}' });
       assertEquals(readDataWithReplace.path, `${testDir}/documents/config.json`);
       assertEquals(readDataWithReplace.message, `Hello from testuser!`);
     }));
@@ -125,8 +137,8 @@ Deno.test('JSON Extended Operations', async (t) => {
       };
 
       const replaceMap = { HOME: testDir };
-      await f.writeJson(nestedData, { deepCopy: { replace: replaceMap, pre: '{', post: '}' } });
-      const readData = await f.readJson({ deepCopy: true, replace: replaceMap, pre: '{', post: '}' }) as any;
+      await f.writeJson(nestedData, { encode: true, replace: replaceMap, pre: '{', post: '}' });
+      const readData = await f.readJson({ decode: true, replace: replaceMap, pre: '{', post: '}' }) as any;
 
       assertEquals(readData.version, nestedData.version);
 

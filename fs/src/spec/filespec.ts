@@ -1,7 +1,8 @@
 import * as Error from '$error';
 import * as Util from '$util';
 import { DateTime } from '@epdoc/datetime';
-import { _, createDeserializerReviver, type Dict, type Integer, IStripComments, stripJsonComments } from '@epdoc/type';
+import { Deep, Json } from '@epdoc/transform';
+import { _, type Dict, type Integer } from '@epdoc/type';
 import { assert } from '@std/assert';
 import { decodeBase64, encodeBase64 } from '@std/encoding';
 import crypto from 'node:crypto';
@@ -18,7 +19,7 @@ import { FolderSpec } from './folderspec.ts';
 import { FSSpec } from './fsspec.ts';
 import type { IClonableSpec, IRootableSpec, ISafeCopyableSpec } from './icopyable.ts';
 import { PDFMetadataReader } from './readpdf.ts';
-import type { JsonReplacer } from './types.ts';
+import type { ReadJsonOptions, WriteJsonOptions } from './types.ts';
 
 const REG = {
   pdf: /\.pdf$/i,
@@ -747,28 +748,32 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
    *
    * @category Read Operations
    */
-  async readJson<T = unknown>(options?: Util.ReadJsonOptions): Promise<T> {
+  async readJson<T = unknown>(options?: ReadJsonOptions): Promise<T> {
     try {
-      const opts: Util.ReadJsonOptions = { pre: '${', post: '}', ...options };
       let text = await this.readAsString();
 
-      if (opts.stripComments) {
-        text = stripJsonComments(text, opts.stripComments as IStripComments);
+      if (options && options.stripComments) {
+        text = Json.stripComments(text, options.stripComments);
       }
 
       let reviver = undefined;
-      if (opts.decode || opts.replace || opts.autoTemporal) {
-        reviver = createDeserializerReviver(opts);
+      if (options) {
+        if (options.reviver) {
+          reviver = options.reviver;
+        } else if (
+          options.decode || options.replace || options.autoTemporal || options.autoRegExp || options.msubFn
+        ) {
+          reviver = Json.createDeserializerReviver(options);
+        }
       }
-
       // Standard JSON.parse
       let json = JSON.parse(text, reviver) as T;
 
-      // Apply deep copy processing if includeUrl is enabled
-      if (opts.includeUrl || opts.detectRegExp) {
-        json = await this.#deepCopy(json, opts) as T;
+      // Apply deep copy processing only if includeUrl is enabled
+      if (options && options.includeUrl) {
+        const { includeUrl } = options;
+        json = await Deep.copy(json, { includeUrl }) as T;
       }
-
       return json as T;
     } catch (err) {
       throw this.asError(err, 'readJson');
@@ -934,41 +939,34 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
    *
    * @category Write Operations
    */
-  writeJson(data: unknown, writeOpts?: Util.WriteJsonOptions): Promise<this>;
-  writeJson(data: unknown, replacer?: JsonReplacer, space?: string | number): Promise<this>;
-  writeJson(
+  async writeJson(data: unknown, writeOpts?: WriteJsonOptions): Promise<this>;
+  async writeJson(data: unknown, replacer?: Json.Replacer, space?: string | number): Promise<this>;
+  async writeJson(
     data: unknown,
-    optsOrReplacer?: Util.WriteJsonOptions | JsonReplacer,
+    optsOrReplacer?: WriteJsonOptions | Json.Replacer,
     space?: string | number,
   ): Promise<this> {
-    let opts: Util.WriteJsonOptions;
+    let opts: WriteJsonOptions;
 
     // Determine if using modern options object or legacy parameters
     if (space !== undefined || !_.isDict(optsOrReplacer)) {
       // Legacy signature: writeJson(data, replacer, space)
       opts = {
-        replacer: optsOrReplacer as JsonReplacer,
+        replacer: optsOrReplacer as Json.Replacer,
         space: space,
+        trailing: '',
       };
     } else {
       // Modern signature: writeJson(data, options)
-      opts = (optsOrReplacer as Util.WriteJsonOptions) || {};
+      opts = (optsOrReplacer as WriteJsonOptions) || {};
     }
 
-    // Execute appropriate write strategy
-    if (opts.deepCopy) {
-      return this.#writeJsonWithDeepCopy(data, opts);
-    }
+    const trailing = _.isString(opts.trailing) ? opts.trailing : '';
+    const text = Json.serialize(data, opts, space) + trailing;
 
-    if (opts?.safe || opts?.backupStrategy) {
-      return this.#writeWithOpts(
-        (file) => file.#writeJsonDirect(data, opts),
-        opts,
-      );
-    }
-
-    // Direct write implementation
-    return this.#writeJsonDirect(data, opts);
+    const { backupStrategy, safe } = opts;
+    await this.write(text, { backupStrategy, safe });
+    return this;
   }
 
   /**
@@ -1458,63 +1456,6 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
   }
 
   /**
-   * Direct JSON write implementation without safe write features.
-   * @private
-   */
-  async #writeJsonDirect(data: unknown, opts?: Util.WriteJsonOptions): Promise<this> {
-    const replacerArg = opts?.replacer as unknown as Parameters<typeof JSON.stringify>[1];
-    const text = JSON.stringify(data, replacerArg, opts?.space);
-    const finalText = opts?.trailing ? text + opts.trailing : text;
-    let fileHandle: nfs.FileHandle | undefined;
-    try {
-      fileHandle = await nfs.open(this._f, 'w');
-      await fileHandle.write(new TextEncoder().encode(finalText));
-      await fileHandle.sync(); // Ensure data is flushed to disk
-    } catch (err) {
-      throw this.asError(err, 'writeJson');
-    } finally {
-      if (fileHandle) {
-        await fileHandle.close();
-      }
-    }
-    return this;
-  }
-
-  /**
-   * Private implementation for JSON serialization with deep copy options.
-   * Used by both writeJson and writeJsonEx for consistency.
-   * @private
-   */
-  async #writeJsonWithDeepCopy(
-    data: unknown,
-    opts: Util.WriteJsonOptions,
-  ): Promise<this> {
-    if (opts?.safe || opts?.backupStrategy) {
-      return this.#writeWithOpts(
-        (file) => file.#writeJsonWithDeepCopy(data, { ...opts, safe: false, backupStrategy: undefined }),
-        opts,
-      );
-    }
-
-    const deepCopyOpts = typeof opts.deepCopy === 'object' ? opts.deepCopy : {};
-    const text = _.jsonSerialize(data, deepCopyOpts, opts.space);
-    const finalText = opts?.trailing ? text + opts.trailing : text;
-    let fileHandle: nfs.FileHandle | undefined;
-    try {
-      fileHandle = await nfs.open(this._f, 'w');
-      await fileHandle.write(new TextEncoder().encode(finalText));
-      await fileHandle.sync(); // Ensure data is flushed to disk
-    } catch (err: unknown) {
-      throw this.asError(err, 'writeJsonWithDeepCopy');
-    } finally {
-      if (fileHandle) {
-        await fileHandle.close();
-      }
-    }
-    return this;
-  }
-
-  /**
    * Perform an atomic write: write to a temp file, then move into place.
    * @param writeFn - Function that writes content to the provided FileSpec
    */
@@ -1692,64 +1633,6 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
         throw new Error.AlreadyExists('File exists', { code: 'EEXIST', path: this._f });
       }
       return undefined;
-    }
-  }
-
-  /**
-   * Performs a deep copy of the given data with optional transformations.
-   *
-   * This function is unique in that it supports:
-   *   - Recursively loading and merging JSON from URLs or file paths found in string values.
-   *   - Detecting and reconstructing RegExp objects from plain objects.
-   *   - Custom transformation or replacement of values during the copy.
-   *
-   * @param a - The data to deep copy.
-   * @param [options] - Options for the deep copy operation:
-   *   @param [options.replace=Dict] - If set, replaces keys with values throughout `a`.
-   *   @param [options.pre='{'] - Prefix string for detecting replacement strings and URLs in string values.
-   *   @param [options.post='}'] - Suffix string for detecting replacement strings and URLs in string values.
-   *   @param [options.includeUrl=false] - Recursively loads and merges JSON from URLs or file paths found in string values.
-   *   @param [options.detectRegExp=false] - If true, detects and reconstructs RegExp objects from plain objects using asRegExp.
-   * @returns {Promise<unknown>} A promise that resolves with the deeply copied and transformed data.
-   *
-   * @example
-   * // Deep copy with RegExp detection
-   * const copy = await file.#deepCopy(obj, { detectRegExp: true });
-   */
-  #deepCopy<T>(a: unknown, options?: FS.FsDeepCopyOpts): Promise<unknown> {
-    const opts: FS.FsDeepCopyOpts = _.deepCopySetDefaultOpts(options);
-    if (opts.includeUrl && _.isNonEmptyString(a)) {
-      const urlTest = new RegExp(`^${opts.pre}(file|http|https):\/\/(.+)${opts.post}$`, 'i');
-      const p: string[] | null = a.match(urlTest);
-      if (_.isNonEmptyArray(p) && isFilePath(p[2])) {
-        const fs = new FileSpec(this.dirname, p[2]);
-        return fs.readJson(opts).then((resp) => {
-          return Promise.resolve(resp);
-        });
-      } else {
-        return Promise.resolve(a);
-      }
-    } else if (_.isObject(a)) {
-      // @ts-ignore xxx
-      const re: RegExp = opts && opts.detectRegExp ? _.asRegExp(a) : undefined;
-      if (re && _.isDict(a)) {
-        return Promise.resolve(re);
-      } else {
-        const jobs: unknown[] = [];
-        const result2: Dict = {};
-        Object.keys(a).forEach((key) => {
-          // @ts-ignore fight the type system latter
-          const job = this.#deepCopy(a[key], opts).then((resp) => {
-            result2[key] = resp;
-          });
-          jobs.push(job);
-        });
-        return Promise.all(jobs).then((_resp) => {
-          return Promise.resolve(result2);
-        });
-      }
-    } else {
-      return Promise.resolve(_.deepCopy(a, opts));
     }
   }
 

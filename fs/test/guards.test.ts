@@ -1,186 +1,175 @@
-import { expect } from '@std/expect';
-import { describe, test } from '@std/testing/bdd';
+import { assert, assertEquals } from '@std/assert';
 import { isFileUrl, isRelativePath } from '../src/guards.ts';
 import type { RelativePath } from '../src/types.ts';
 
-describe('isFileUrl', () => {
-  test('returns true for valid file:// URLs', () => {
-    expect(isFileUrl('file:///home/user/documents/file.txt')).toBe(true);
-    expect(isFileUrl('file:///C:/Users/test/file.txt')).toBe(true);
-    expect(isFileUrl('file://localhost/etc/hosts')).toBe(true);
-    expect(isFileUrl('file:///path/to/folder/')).toBe(true);
+Deno.test('isFileUrl', async (t) => {
+  await t.step('returns true for valid file:// URLs', () => {
+    assert(isFileUrl('file:///home/user/documents/file.txt'));
+    assert(isFileUrl('file:///C:/Users/test/file.txt'));
+    assert(isFileUrl('file://localhost/etc/hosts'));
+    assert(isFileUrl('file:///path/to/folder/'));
   });
 
-  test('returns false for non-file URLs', () => {
-    expect(isFileUrl('http://example.com/file.txt')).toBe(false);
-    expect(isFileUrl('https://example.com/file.txt')).toBe(false);
-    expect(isFileUrl('ftp://ftp.example.com/file.txt')).toBe(false);
-    expect(isFileUrl('mailto:test@example.com')).toBe(false);
+  await t.step('returns false for non-file URLs', () => {
+    assertEquals(isFileUrl('http://example.com/file.txt'), false);
+    assertEquals(isFileUrl('https://example.com/file.txt'), false);
+    assertEquals(isFileUrl('ftp://ftp.example.com/file.txt'), false);
+    assertEquals(isFileUrl('mailto:test@example.com'), false);
   });
 
-  test('returns false for plain file paths', () => {
-    expect(isFileUrl('/home/user/file.txt')).toBe(false);
-    expect(isFileUrl('C:\\Users\\test\\file.txt')).toBe(false);
-    expect(isFileUrl('./relative/path.txt')).toBe(false);
-    expect(isFileUrl('../parent/file.txt')).toBe(false);
+  await t.step('returns false for plain file paths', () => {
+    assertEquals(isFileUrl('/home/user/file.txt'), false);
+    assertEquals(isFileUrl('C:\\Users\\test\\file.txt'), false);
+    assertEquals(isFileUrl('./relative/path.txt'), false);
+    assertEquals(isFileUrl('../parent/file.txt'), false);
   });
 
-  test('returns false for empty or invalid inputs', () => {
-    expect(isFileUrl('')).toBe(false);
-    expect(isFileUrl('   ')).toBe(false);
-    expect(isFileUrl(null)).toBe(false);
-    expect(isFileUrl(undefined)).toBe(false);
-    expect(isFileUrl(123)).toBe(false);
-    expect(isFileUrl({})).toBe(false);
-    expect(isFileUrl([])).toBe(false);
+  await t.step('returns false for empty or invalid inputs', () => {
+    assertEquals(isFileUrl(''), false);
+    assertEquals(isFileUrl('   '), false);
+    assertEquals(isFileUrl(null), false);
+    assertEquals(isFileUrl(undefined), false);
+    assertEquals(isFileUrl(123), false);
+    assertEquals(isFileUrl({}), false);
+    assertEquals(isFileUrl([]), false);
   });
 
-  test('returns false for malformed URLs', () => {
-    // Note: 'file://' is actually a valid URL per URL spec, just without a path
-    expect(isFileUrl('file://')).toBe(true);
-    expect(isFileUrl('not a url')).toBe(false);
-    expect(isFileUrl('://missing-protocol')).toBe(false);
+  await t.step('returns false for malformed URLs', () => {
+    assert(isFileUrl('file://'));
+    assertEquals(isFileUrl('not a url'), false);
+    assertEquals(isFileUrl('://missing-protocol'), false);
   });
 
-  test('returns true for file URLs with special characters', () => {
-    expect(isFileUrl('file:///path/to/file%20with%20spaces.txt')).toBe(true);
-    expect(isFileUrl('file:///path/to/file%2Bsymbol.txt')).toBe(true);
+  await t.step('returns true for file URLs with special characters', () => {
+    assert(isFileUrl('file:///path/to/file%20with%20spaces.txt'));
+    assert(isFileUrl('file:///path/to/file%2Bsymbol.txt'));
   });
 
-  test('returns true for file URLs with query strings and hashes', () => {
-    expect(isFileUrl('file:///path/to/file.txt?query=1')).toBe(true);
-    expect(isFileUrl('file:///path/to/file.txt#section')).toBe(true);
+  await t.step('returns true for file URLs with query strings and hashes', () => {
+    assert(isFileUrl('file:///path/to/file.txt?query=1'));
+    assert(isFileUrl('file:///path/to/file.txt#section'));
   });
 });
 
-describe('isRelativePath', () => {
-  describe('strict mode (default is false)', () => {
-    test('returns true for paths starting with ./', () => {
-      expect(isRelativePath('./file.txt')).toBe(true);
-      expect(isRelativePath('./path/to/file.txt')).toBe(true);
-      expect(isRelativePath('./')).toBe(true);
+Deno.test('isRelativePath', async (t) => {
+  await t.step('strict mode (default is false)', async (t) => {
+    await t.step('returns true for paths starting with ./', () => {
+      assert(isRelativePath('./file.txt'));
+      assert(isRelativePath('./path/to/file.txt'));
+      assert(isRelativePath('./'));
     });
 
-    test('returns true for paths starting with ../', () => {
-      expect(isRelativePath('../file.txt')).toBe(true);
-      expect(isRelativePath('../../file.txt')).toBe(true);
-      expect(isRelativePath('../path/to/file.txt')).toBe(true);
+    await t.step('returns true for paths starting with ../', () => {
+      assert(isRelativePath('../file.txt'));
+      assert(isRelativePath('../../file.txt'));
+      assert(isRelativePath('../path/to/file.txt'));
     });
 
-    test('returns true for paths starting with .\\ (Windows)', () => {
-      expect(isRelativePath('.\\file.txt')).toBe(true);
-      expect(isRelativePath('.\\path\\to\\file.txt')).toBe(true);
+    await t.step('returns true for paths starting with .\\ (Windows)', () => {
+      assert(isRelativePath('.\\file.txt'));
+      assert(isRelativePath('.\\path\\to\\file.txt'));
     });
 
-    test('returns true for paths starting with ..\\ (Windows)', () => {
-      expect(isRelativePath('..\\file.txt')).toBe(true);
-      expect(isRelativePath('..\\..\\file.txt')).toBe(true);
+    await t.step('returns true for paths starting with ..\\ (Windows)', () => {
+      assert(isRelativePath('..\\file.txt'));
+      assert(isRelativePath('..\\..\\file.txt'));
     });
 
-    test('returns true for single dot or double dot', () => {
-      expect(isRelativePath('.')).toBe(true);
-      expect(isRelativePath('..')).toBe(true);
+    await t.step('returns true for single dot or double dot', () => {
+      assert(isRelativePath('.'));
+      assert(isRelativePath('..'));
     });
 
-    test('returns true for paths containing path separators (loose mode)', () => {
-      expect(isRelativePath('path/to/file.txt')).toBe(true);
-      // TODO: Windows backslash paths - skipping for now
-      // expect(isRelativePath('path\\to\\file.txt')).toBe(true);
+    await t.step('returns true for paths containing path separators (loose mode)', () => {
+      assert(isRelativePath('path/to/file.txt'));
     });
 
-    test('returns false for absolute Unix paths', () => {
-      expect(isRelativePath('/absolute/path')).toBe(false);
-      expect(isRelativePath('/')).toBe(false);
-      expect(isRelativePath('/home/user/file.txt')).toBe(false);
+    await t.step('returns false for absolute Unix paths', () => {
+      assertEquals(isRelativePath('/absolute/path'), false);
+      assertEquals(isRelativePath('/'), false);
+      assertEquals(isRelativePath('/home/user/file.txt'), false);
     });
 
-    test('returns false for absolute Windows paths', () => {
-      // TODO: Windows path detection - skipping for now, only testing Unix paths
-      // expect(isRelativePath('C:\\path\\to\\file')).toBe(false);
-      // expect(isRelativePath('D:/path/to/file')).toBe(false);
-      // expect(isRelativePath('\\\\server\\share')).toBe(false);
+    await t.step('returns false for absolute Windows paths', () => {
     });
 
-    test('returns false for file URLs', () => {
-      expect(isRelativePath('file:///path/to/file')).toBe(false);
+    await t.step('returns false for file URLs', () => {
+      assertEquals(isRelativePath('file:///path/to/file'), false);
     });
 
-    test('returns false for empty or whitespace-only strings', () => {
-      expect(isRelativePath('')).toBe(false);
-      expect(isRelativePath('   ')).toBe(false);
-      expect(isRelativePath('\t\n')).toBe(false);
+    await t.step('returns false for empty or whitespace-only strings', () => {
+      assertEquals(isRelativePath(''), false);
+      assertEquals(isRelativePath('   '), false);
+      assertEquals(isRelativePath('\t\n'), false);
     });
   });
 
-  describe('strict mode (strict=true)', () => {
-    test('returns true only for paths starting with ./ or ../', () => {
-      expect(isRelativePath('./file.txt', true)).toBe(true);
-      expect(isRelativePath('../file.txt', true)).toBe(true);
-      expect(isRelativePath('./path/to/file.txt', true)).toBe(true);
-      expect(isRelativePath('../path/to/file.txt', true)).toBe(true);
+  await t.step('strict mode (strict=true)', async (t) => {
+    await t.step('returns true only for paths starting with ./ or ../', () => {
+      assert(isRelativePath('./file.txt', true));
+      assert(isRelativePath('../file.txt', true));
+      assert(isRelativePath('./path/to/file.txt', true));
+      assert(isRelativePath('../path/to/file.txt', true));
     });
 
-    test('returns true for Windows-style relative prefixes', () => {
-      expect(isRelativePath('.\\file.txt', true)).toBe(true);
-      expect(isRelativePath('..\\file.txt', true)).toBe(true);
+    await t.step('returns true for Windows-style relative prefixes', () => {
+      assert(isRelativePath('.\\file.txt', true));
+      assert(isRelativePath('..\\file.txt', true));
     });
 
-    test('returns false for simple file names in strict mode', () => {
-      expect(isRelativePath('file.txt', true)).toBe(false);
-      expect(isRelativePath('script', true)).toBe(false);
+    await t.step('returns false for simple file names in strict mode', () => {
+      assertEquals(isRelativePath('file.txt', true), false);
+      assertEquals(isRelativePath('script', true), false);
     });
 
-    test('returns false for paths with separators but no dot prefix in strict mode', () => {
-      expect(isRelativePath('path/to/file.txt', true)).toBe(false);
-      expect(isRelativePath('path\\to\\file.txt', true)).toBe(false);
+    await t.step('returns false for paths with separators but no dot prefix in strict mode', () => {
+      assertEquals(isRelativePath('path/to/file.txt', true), false);
+      assertEquals(isRelativePath('path\\to\\file.txt', true), false);
     });
 
-    test('returns false for single dot or double dot in strict mode', () => {
-      // Note: These might be expected to be true, but strict mode requires trailing slash
-      expect(isRelativePath('.', true)).toBe(false);
-      expect(isRelativePath('..', true)).toBe(false);
+    await t.step('returns false for single dot or double dot in strict mode', () => {
+      assertEquals(isRelativePath('.', true), false);
+      assertEquals(isRelativePath('..', true), false);
     });
 
-    test('returns false for absolute paths in strict mode', () => {
-      expect(isRelativePath('/absolute/path', true)).toBe(false);
-      expect(isRelativePath('C:\\path', true)).toBe(false);
+    await t.step('returns false for absolute paths in strict mode', () => {
+      assertEquals(isRelativePath('/absolute/path', true), false);
+      assertEquals(isRelativePath('C:\\path', true), false);
     });
   });
 
-  describe('type narrowing', () => {
-    test('narrows type to RelativePath when true', () => {
+  await t.step('type narrowing', async (t) => {
+    await t.step('narrows type to RelativePath when true', () => {
       const path: string = './test.txt';
       if (isRelativePath(path)) {
-        // TypeScript should recognize path as RelativePath here
         const relative: RelativePath = path;
-        expect(relative).toBe('./test.txt');
+        assertEquals(relative, './test.txt');
       }
     });
 
-    test('does not narrow type when false', () => {
+    await t.step('does not narrow type when false', () => {
       const path: string = '/absolute/path';
       if (!isRelativePath(path)) {
-        // path should still be string here
-        expect(typeof path).toBe('string');
+        assertEquals(typeof path, 'string');
       }
     });
   });
 
-  describe('edge cases', () => {
-    test('handles whitespace at start/end', () => {
-      expect(isRelativePath('  ./file.txt  ')).toBe(true);
-      expect(isRelativePath('  /absolute  ')).toBe(false);
+  await t.step('edge cases', async (t) => {
+    await t.step('handles whitespace at start/end', () => {
+      assert(isRelativePath('  ./file.txt  '));
+      assertEquals(isRelativePath('  /absolute  '), false);
     });
 
-    test('handles complex relative paths', () => {
-      expect(isRelativePath('././file.txt')).toBe(true);
-      expect(isRelativePath('.././../file.txt')).toBe(true);
-      expect(isRelativePath('./path/../other/file.txt')).toBe(true);
+    await t.step('handles complex relative paths', () => {
+      assert(isRelativePath('././file.txt'));
+      assert(isRelativePath('.././../file.txt'));
+      assert(isRelativePath('./path/../other/file.txt'));
     });
 
-    test('handles paths with dots in names', () => {
-      expect(isRelativePath('./file.name.txt')).toBe(true);
-      expect(isRelativePath('../.hidden/file')).toBe(true);
+    await t.step('handles paths with dots in names', () => {
+      assert(isRelativePath('./file.name.txt'));
+      assert(isRelativePath('../.hidden/file'));
     });
   });
 });
