@@ -30,18 +30,23 @@ Before committing or bumping versions in this repository, load the `/git` skill.
 
 ## Project Architecture
 
-`@epdoc/std` is a **Deno monorepo** containing independently published utility packages. The root `deno.json`
-defines the workspace members. Each package is published to JSR under the `@epdoc` scope.
+`@epdoc/std` is a **Deno monorepo** containing independently published utility packages. The root `deno.json` defines
+the workspace members. Each package is published to JSR under the `@epdoc` scope.
 
 ```
 @epdoc/std/
 ├── deno.json                  # Workspace root; defines workspace members and shared imports
 ├── deno.lock
+├── colors/                    # @epdoc/colors
 ├── daterange/                 # @epdoc/daterange
 ├── datetime/                  # @epdoc/datetime
 ├── duration/                  # @epdoc/duration
+├── fmt/                       # @epdoc/fmt
 ├── fs/                        # @epdoc/fs
+├── progress/                  # @epdoc/progress
 ├── response/                  # @epdoc/response
+├── table/                     # @epdoc/table
+├── terminal/                  # @epdoc/terminal
 ├── text/                      # @epdoc/text
 ├── transform/                 # @epdoc/transform
 └── type/                      # @epdoc/type
@@ -49,19 +54,21 @@ defines the workspace members. Each package is published to JSR under the `@epdo
 
 ### Package Entry Points
 
-| Package             | Entry Point     |
-| ------------------- | --------------- |
-| `@epdoc/daterange`  | `src/mod.ts`    |
-| `@epdoc/datetime`   | `src/mod.ts`    |
-| `@epdoc/duration`   | `src/mod.ts`    |
-| `@epdoc/fs`         | `src/mod.ts`    |
-| `@epdoc/response`   | `mod.ts` (root) |
-| `@epdoc/text`       | `mod.ts` (root) |
-| `@epdoc/transform`  | `src/mod.ts`    |
-| `@epdoc/type`       | `src/mod.ts`    |
-
-> Note: `@epdoc/text` and `@epdoc/response` place their entry point at the workspace root (`mod.ts`), not under
-> `src/`.
+| Package            | Entry Point  | Sub-path Exports                             |
+| ------------------ | ------------ | -------------------------------------------- |
+| `@epdoc/colors`    | `src/mod.ts` | `./colors`, `./palette`                      |
+| `@epdoc/daterange` | `src/mod.ts` | —                                            |
+| `@epdoc/datetime`  | `src/mod.ts` | `./types`                                    |
+| `@epdoc/duration`  | `src/mod.ts` | —                                            |
+| `@epdoc/fmt`       | `src/mod.ts` | `./bool`, `./percent`, `./bytes`, `./uptime` |
+| `@epdoc/fs`        | `src/mod.ts` | `./fs`                                       |
+| `@epdoc/progress`  | `src/mod.ts` | —                                            |
+| `@epdoc/response`  | `src/mod.ts` | —                                            |
+| `@epdoc/table`     | `src/mod.ts` | —                                            |
+| `@epdoc/terminal`  | `src/mod.ts` | `./pager`, `./prompt`, `./screen`, `./keys`  |
+| `@epdoc/text`      | `src/mod.ts` | `./msub`, `./text`                           |
+| `@epdoc/transform` | `src/mod.ts` | —                                            |
+| `@epdoc/type`      | `src/mod.ts` | `./semver`, `./types`                        |
 
 ---
 
@@ -69,12 +76,11 @@ defines the workspace members. Each package is published to JSR under the `@epdo
 
 ### `@epdoc/type`
 
-Type guards, deep-copy utilities, JSON serialization, and dictionary helpers.
+Type guards, type checking utilities, and dictionary helpers.
 
 - `isString`, `isNumber`, `isBoolean`, `isDate`, etc. — type guard functions. Always use instead of typeof.
-- `_.deepCopy(obj, opts)` — deep copy with optional string substitution
-- `stripJsonComments` — remove comments from JSON strings
 - Dictionary utilities via `dictutil.ts`
+- `parseTemporalString`, `asRegExp`, `isRegExpDef` — runtime type detection helpers
 
 ### `@epdoc/datetime`
 
@@ -95,12 +101,20 @@ Duration formatting beyond `Intl.DurationFormat`, with adaptive and humanize mod
 - `Time` constants namespace
 - `Format` utilities namespace
 
+### `@epdoc/colors`
+
+Standardized terminal color palette and utilities.
+
 ### `@epdoc/daterange`
 
 Date range creation and management, built on `@epdoc/datetime`.
 
 - `DateRange` and related classes (`src/date-ranges.ts`)
 - Type definitions and utility functions
+
+### `@epdoc/fmt`
+
+Formatting functions for common data types (bool, bytes, percent, uptime).
 
 ### `@epdoc/fs`
 
@@ -114,12 +128,32 @@ Type-safe async filesystem operations for Deno (in progress: Node.js / Bun suppo
 - `util` namespace — path helpers
 - File type detection (PDF, XML, JSON, etc.)
 
-### `@epdoc/string`
+### `@epdoc/progress`
 
-Advanced string manipulation utilities.
+Progress bar and spinner utilities for terminal output.
+
+### `@epdoc/table`
+
+Terminal table formatter with ANSI-aware padding, column auto-sizing, zebra striping, and per-cell styling.
+
+### `@epdoc/terminal`
+
+Terminal interaction utilities.
+
+### `@epdoc/text`
+
+Advanced string manipulation utilities (formerly `@epdoc/string`).
 
 - `ex.ts` exports — string extension helpers
 - `msub` namespace — string substitution (simple and advanced)
+
+### `@epdoc/transform`
+
+Deep copying, JSON serialization/deserialization with special-type preservation, and string replacement.
+
+- `Deep` namespace — deep copy with string replacement and RegExp detection
+- `Json` namespace — serialize/deserialize Set, Map, RegExp, Uint8Array, Temporal types
+- `msubLite` — simple string placeholder substitution
 
 ### `@epdoc/response`
 
@@ -138,7 +172,8 @@ Consistent API response helpers with safe error wrapping.
 @epdoc/datetime   →  @epdoc/type
 @epdoc/duration   →  @epdoc/type
 @epdoc/fs         →  (no internal @epdoc deps)
-@epdoc/string     →  @epdoc/type
+@epdoc/text       →  @epdoc/type
+@epdoc/transform  →  @epdoc/type
 @epdoc/response   →  @epdoc/type
 @epdoc/type       →  (no internal @epdoc deps; foundational package)
 ```
@@ -149,19 +184,31 @@ Consistent API response helpers with safe error wrapping.
 
 ## Development Commands
 
-Run from the **root** of the monorepo:
+### Prerequisites
 
 ```bash
-deno task docs          # Generate docs via _scripts/gen_docs.ts
+deno install -g -A -n dtask jsr:@epdoc/dtask
 ```
+
+### Root Commands
+
+```bash
+deno task fmt          # Format all workspaces (via dtask)
+deno task lint         # Lint root
+deno task check        # Type-check all workspaces
+deno task test         # Test all workspaces
+deno task ok           # fmt + lint + check + test
+```
+
+### Per-Workspace Commands
 
 Run from within a **workspace directory**:
 
 ```bash
 deno task prepublish    # Run fmt, lint, check and test
-deno task docs          # Generate or regenerate library-docs.json, generate library-metadata.json if it does not exist
+deno task docs          # Generate library-docs.json and library-metadata.json if missing
 deno publish            # Publish to JSR
-deno update             # Update project's dependencies. Add --latest for latest
+deno update             # Update dependencies. Add --latest for latest
 bump -g "message"       # Bump version, commit, and push (uses @epdoc/bump)
 ```
 
@@ -171,18 +218,17 @@ bump -g "message"       # Bump version, commit, and push (uses @epdoc/bump)
 
 ### Workspace Layout Variations
 
-Not all workspaces follow the standard `src/` layout:
+All workspaces follow the standard `src/` layout with source files under `src/` and tests under `test/`.
 
-- `@epdoc/string` and `@epdoc/response` have their source files at the workspace root (no `src/` directory)
 - `@epdoc/fs` uses internal import aliases (`$spec`, `$error`, `$util`, `$walk`) defined in its `deno.json`
 
 ### Testing
 
 - Most workspaces use a `test/` directory with `.test.ts` files
-- `@epdoc/string` and `@epdoc/response` place test files at the workspace root (`.test.ts` suffix)
 - Run `deno test -A` from within a workspace for all permissions
 - `@epdoc/fs` requires `deno test -SERW test` (sys, env, read, write permissions)
 - `@epdoc/type` uses `deno test -SERW` (sys, env, read, write permissions)
+- `@epdoc/transform` uses `deno test -SERW` (sys, env, read, write permissions)
 
 ### fs Package: Node.js / Bun Compatibility
 
@@ -191,7 +237,7 @@ aware that Deno-specific APIs may need Node.js equivalents.
 
 ### Version Bumping Workflow
 
-Since these are published packages, it is best to use the `bump` tool rather than manually editing version fields:
+Since these are published packages, use the `bump` tool rather than manually editing version fields:
 
 ```bash
 # Within the workspace being updated
@@ -202,6 +248,8 @@ deno publish
 deno update --latest   # In dependent workspaces
 bump -g "Update @epdoc/type to 1.2.5"
 ```
+
+> The root `deno task publish` (via `dtask publish`) publishes all changed workspaces.
 
 ### Import Convention
 

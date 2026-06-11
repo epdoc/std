@@ -1,5 +1,4 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { assert, assertEquals, assertInstanceOf } from '@std/assert';
 import {
   asTemporal,
   isTemporal,
@@ -8,209 +7,207 @@ import {
   isTemporalZonedDateTime,
 } from '../src/mod.ts';
 
-describe('asTemporal', () => {
-  it('Z-suffixed UTC string returns ZonedDateTime', () => {
+Deno.test('asTemporal', async (t) => {
+  await t.step('Z-suffixed UTC string returns ZonedDateTime', () => {
     const val = asTemporal('2024-01-15T12:30:45.123Z');
-    expect(val).toBeInstanceOf(Temporal.ZonedDateTime);
-    expect((val as Temporal.ZonedDateTime).offset).toBe('+00:00');
+    assertInstanceOf(val, Temporal.ZonedDateTime);
+    assertEquals((val as Temporal.ZonedDateTime).offset, '+00:00');
   });
 
-  it('positive offset returns ZonedDateTime', () => {
+  await t.step('positive offset returns ZonedDateTime', () => {
     const val = asTemporal('2024-01-15T12:30:45+05:00');
-    expect(val).toBeInstanceOf(Temporal.ZonedDateTime);
-    expect((val as Temporal.ZonedDateTime).offset).toBe('+05:00');
+    assertInstanceOf(val, Temporal.ZonedDateTime);
+    assertEquals((val as Temporal.ZonedDateTime).offset, '+05:00');
   });
 
-  it('negative offset returns ZonedDateTime', () => {
+  await t.step('negative offset returns ZonedDateTime', () => {
     const val = asTemporal('2024-01-15T12:30:45-05:00');
-    expect(val).toBeInstanceOf(Temporal.ZonedDateTime);
-    expect((val as Temporal.ZonedDateTime).offset).toBe('-05:00');
+    assertInstanceOf(val, Temporal.ZonedDateTime);
+    assertEquals((val as Temporal.ZonedDateTime).offset, '-05:00');
   });
 
-  it('offset without colon returns ZonedDateTime', () => {
+  await t.step('offset without colon returns ZonedDateTime', () => {
     const val = asTemporal('2024-01-15T12:30:45+0530');
-    expect(val).toBeInstanceOf(Temporal.ZonedDateTime);
-    expect((val as Temporal.ZonedDateTime).offset).toBe('+05:30');
+    assertInstanceOf(val, Temporal.ZonedDateTime);
+    assertEquals((val as Temporal.ZonedDateTime).offset, '+05:30');
   });
 
-  it('negative offset without colon returns ZonedDateTime', () => {
+  await t.step('negative offset without colon returns ZonedDateTime', () => {
     const val = asTemporal('2024-01-15T12:30:45-0530');
-    expect(val).toBeInstanceOf(Temporal.ZonedDateTime);
-    expect((val as Temporal.ZonedDateTime).offset).toBe('-05:30');
+    assertInstanceOf(val, Temporal.ZonedDateTime);
+    assertEquals((val as Temporal.ZonedDateTime).offset, '-05:30');
   });
 
-  it('bracket IANA timezone returns ZonedDateTime', () => {
+  await t.step('bracket IANA timezone returns ZonedDateTime', () => {
     const val = asTemporal('2024-01-15T12:30:45[America/New_York]');
-    expect(val).toBeInstanceOf(Temporal.ZonedDateTime);
-    expect((val as Temporal.ZonedDateTime).timeZoneId).toBe('America/New_York');
+    assertInstanceOf(val, Temporal.ZonedDateTime);
+    assertEquals((val as Temporal.ZonedDateTime).timeZoneId, 'America/New_York');
   });
 
-  it('offset with bracket IANA timezone returns ZonedDateTime', () => {
+  await t.step('offset with bracket IANA timezone returns ZonedDateTime', () => {
     const val = asTemporal('2024-01-15T12:30:45-05:00[America/New_York]');
-    expect(val).toBeInstanceOf(Temporal.ZonedDateTime);
-    expect((val as Temporal.ZonedDateTime).timeZoneId).toBe('America/New_York');
-    expect((val as Temporal.ZonedDateTime).offset).toBe('-05:00');
+    assertInstanceOf(val, Temporal.ZonedDateTime);
+    assertEquals((val as Temporal.ZonedDateTime).timeZoneId, 'America/New_York');
+    assertEquals((val as Temporal.ZonedDateTime).offset, '-05:00');
   });
 
-  it('string without timezone returns PlainDateTime', () => {
+  await t.step('string without timezone returns PlainDateTime', () => {
     const val = asTemporal('2024-01-15T12:30:45.123');
-    expect(val).toBeInstanceOf(Temporal.PlainDateTime);
+    assertInstanceOf(val, Temporal.PlainDateTime);
   });
 
-  it('date-only string without timezone returns undefined', () => {
-    expect(asTemporal('2024-03-15')).toBe(undefined);
+  await t.step('date-only string without timezone returns undefined', () => {
+    assertEquals(asTemporal('2024-03-15'), undefined);
   });
 
-  it('date-time string without timezone returns PlainDateTime', () => {
+  await t.step('date-time string without timezone returns PlainDateTime', () => {
     const val = asTemporal('2024-01-15T12:30:45');
-    expect(val).toBeInstanceOf(Temporal.PlainDateTime);
+    assertInstanceOf(val, Temporal.PlainDateTime);
   });
 
-  it('whitespace around Z-suffixed string returns undefined', () => {
-    expect(asTemporal('  2024-01-15T12:30:45Z  ')).toBe(undefined);
+  await t.step('whitespace around Z-suffixed string returns undefined', () => {
+    assertEquals(asTemporal('  2024-01-15T12:30:45Z  '), undefined);
   });
 
-  it('whitespace around plain string returns undefined', () => {
-    expect(asTemporal('  2024-01-15T12:30:45  ')).toBe(undefined);
+  await t.step('whitespace around plain string returns undefined', () => {
+    assertEquals(asTemporal('  2024-01-15T12:30:45  '), undefined);
   });
 
-  it('legacy Date format "Month Day, Year" returns undefined', () => {
-    expect(asTemporal('July 4, 1776')).toBe(undefined);
+  await t.step('legacy Date format "Month Day, Year" returns undefined', () => {
+    assertEquals(asTemporal('July 4, 1776'), undefined);
   });
 
-  it('legacy Date format "Month Day Year" returns undefined', () => {
-    expect(asTemporal('July 4 2024')).toBe(undefined);
+  await t.step('legacy Date format "Month Day Year" returns undefined', () => {
+    assertEquals(asTemporal('July 4 2024'), undefined);
   });
 
-  it('legacy Date format "Mon DD YYYY" returns undefined', () => {
-    expect(asTemporal('Jan 15 2024')).toBe(undefined);
+  await t.step('legacy Date format "Mon DD YYYY" returns undefined', () => {
+    assertEquals(asTemporal('Jan 15 2024'), undefined);
   });
 
-  it('empty string returns undefined', () => {
-    expect(asTemporal('')).toBe(undefined);
+  await t.step('empty string returns undefined', () => {
+    assertEquals(asTemporal(''), undefined);
   });
 
-  it('truly invalid string returns undefined', () => {
-    expect(asTemporal('not a date')).toBe(undefined);
+  await t.step('truly invalid string returns undefined', () => {
+    assertEquals(asTemporal('not a date'), undefined);
   });
 
-  it('invalid month value returns undefined', () => {
-    expect(asTemporal('2024-13-01')).toBe(undefined);
+  await t.step('invalid month value returns undefined', () => {
+    assertEquals(asTemporal('2024-13-01'), undefined);
   });
 
-  it('garbage with trailing Z returns undefined', () => {
-    expect(asTemporal('garbageZ')).toBe(undefined);
+  await t.step('garbage with trailing Z returns undefined', () => {
+    assertEquals(asTemporal('garbageZ'), undefined);
   });
 
-  it('number returns Instant from epoch milliseconds', () => {
+  await t.step('number returns Instant from epoch milliseconds', () => {
     const val = asTemporal(1705321845000);
-    expect(val).toBeInstanceOf(Temporal.Instant);
-    expect((val as Temporal.Instant).epochMilliseconds).toBe(1705321845000);
+    assertInstanceOf(val, Temporal.Instant);
+    assertEquals((val as Temporal.Instant).epochMilliseconds, 1705321845000);
   });
 
-  it('Date returns Instant', () => {
+  await t.step('Date returns Instant', () => {
     const d = new Date('2024-01-15T12:30:45Z');
     const val = asTemporal(d);
-    expect(val).toBeInstanceOf(Temporal.Instant);
-    expect((val as Temporal.Instant).epochMilliseconds).toBe(d.getTime());
+    assertInstanceOf(val, Temporal.Instant);
+    assertEquals((val as Temporal.Instant).epochMilliseconds, d.getTime());
   });
 
-  it('invalid Date returns undefined', () => {
-    expect(asTemporal(new Date('invalid'))).toBe(undefined);
+  await t.step('invalid Date returns undefined', () => {
+    assertEquals(asTemporal(new Date('invalid')), undefined);
   });
 
-  it('property bag returns PlainDateTime', () => {
+  await t.step('property bag returns PlainDateTime', () => {
     const val = asTemporal({ year: 2024, month: 1, day: 15, hour: 10, minute: 30 });
-    expect(val).toBeInstanceOf(Temporal.PlainDateTime);
-    expect((val as Temporal.PlainDateTime).year).toBe(2024);
-    expect((val as Temporal.PlainDateTime).month).toBe(1);
-    expect((val as Temporal.PlainDateTime).day).toBe(15);
-    expect((val as Temporal.PlainDateTime).hour).toBe(10);
-    expect((val as Temporal.PlainDateTime).minute).toBe(30);
+    assertInstanceOf(val, Temporal.PlainDateTime);
+    assertEquals((val as Temporal.PlainDateTime).year, 2024);
+    assertEquals((val as Temporal.PlainDateTime).month, 1);
+    assertEquals((val as Temporal.PlainDateTime).day, 15);
+    assertEquals((val as Temporal.PlainDateTime).hour, 10);
+    assertEquals((val as Temporal.PlainDateTime).minute, 30);
   });
 
-  it('already a Temporal.Instant returns as-is', () => {
+  await t.step('already a Temporal.Instant returns as-is', () => {
     const original = Temporal.Instant.from('2024-01-15T12:30:45Z');
-    expect(asTemporal(original)).toBe(original);
+    assertEquals(asTemporal(original), original);
   });
 
-  it('already a Temporal.ZonedDateTime returns as-is', () => {
+  await t.step('already a Temporal.ZonedDateTime returns as-is', () => {
     const original = Temporal.ZonedDateTime.from('2024-01-15T12:30:45-05:00[America/New_York]');
-    expect(asTemporal(original)).toBe(original);
+    assertEquals(asTemporal(original), original);
   });
 
-  it('already a Temporal.PlainDateTime returns as-is', () => {
+  await t.step('already a Temporal.PlainDateTime returns as-is', () => {
     const original = Temporal.PlainDateTime.from('2024-01-15T12:30:45');
-    expect(asTemporal(original)).toBe(original);
+    assertEquals(asTemporal(original), original);
   });
 
-  it('null returns undefined', () => {
-    expect(asTemporal(null)).toBe(undefined);
+  await t.step('null returns undefined', () => {
+    assertEquals(asTemporal(null), undefined);
   });
 
-  it('undefined returns undefined', () => {
-    expect(asTemporal(undefined)).toBe(undefined);
+  await t.step('undefined returns undefined', () => {
+    assertEquals(asTemporal(undefined), undefined);
   });
 
-  it('boolean returns undefined', () => {
-    expect(asTemporal(true)).toBe(undefined);
+  await t.step('boolean returns undefined', () => {
+    assertEquals(asTemporal(true), undefined);
   });
 
-  it('correct epoch for Z-suffixed string', () => {
+  await t.step('correct epoch for Z-suffixed string', () => {
     const val = asTemporal('2024-01-15T12:30:45.123Z');
-    expect(val).toBeInstanceOf(Temporal.ZonedDateTime);
+    assertInstanceOf(val, Temporal.ZonedDateTime);
     const expected = Temporal.Instant.from('2024-01-15T12:30:45.123Z').epochMilliseconds;
-    expect((val as Temporal.ZonedDateTime).epochMilliseconds).toBe(expected);
+    assertEquals((val as Temporal.ZonedDateTime).epochMilliseconds, expected);
   });
 
-  it('correct epoch for offset string', () => {
+  await t.step('correct epoch for offset string', () => {
     const val = asTemporal('2024-01-15T12:30:45-05:00');
-    expect(val).toBeInstanceOf(Temporal.ZonedDateTime);
+    assertInstanceOf(val, Temporal.ZonedDateTime);
     const expected = Temporal.Instant.from('2024-01-15T17:30:45Z').epochMilliseconds;
-    expect((val as Temporal.ZonedDateTime).epochMilliseconds).toBe(expected);
+    assertEquals((val as Temporal.ZonedDateTime).epochMilliseconds, expected);
   });
 
-  it('offset with colon and without colon yield same epoch', () => {
+  await t.step('offset with colon and without colon yield same epoch', () => {
     const v1 = asTemporal('2024-01-15T12:30:45+05:30');
     const v2 = asTemporal('2024-01-15T12:30:45+0530');
-    expect(v1).toBeInstanceOf(Temporal.ZonedDateTime);
-    expect(v2).toBeInstanceOf(Temporal.ZonedDateTime);
-    expect((v1 as Temporal.ZonedDateTime).epochMilliseconds).toBe(
-      (v2 as Temporal.ZonedDateTime).epochMilliseconds,
-    );
+    assertInstanceOf(v1, Temporal.ZonedDateTime);
+    assertInstanceOf(v2, Temporal.ZonedDateTime);
+    assertEquals((v1 as Temporal.ZonedDateTime).epochMilliseconds, (v2 as Temporal.ZonedDateTime).epochMilliseconds);
   });
 });
 
-describe('isTemporal type guards', () => {
+Deno.test('isTemporal type guards', async (t) => {
   const instant = Temporal.Instant.from('2024-01-15T12:30:45Z');
   const zdt = Temporal.ZonedDateTime.from('2024-01-15T12:30:45-05:00[America/New_York]');
   const pdt = Temporal.PlainDateTime.from('2024-01-15T12:30:45');
 
-  it('isTemporalInstant', () => {
-    expect(isTemporalInstant(instant)).toBe(true);
-    expect(isTemporalInstant(zdt)).toBe(false);
-    expect(isTemporalInstant(pdt)).toBe(false);
-    expect(isTemporalInstant('string')).toBe(false);
+  await t.step('isTemporalInstant', () => {
+    assert(isTemporalInstant(instant));
+    assertEquals(isTemporalInstant(zdt), false);
+    assertEquals(isTemporalInstant(pdt), false);
+    assertEquals(isTemporalInstant('string'), false);
   });
 
-  it('isTemporalZonedDateTime', () => {
-    expect(isTemporalZonedDateTime(zdt)).toBe(true);
-    expect(isTemporalZonedDateTime(instant)).toBe(false);
-    expect(isTemporalZonedDateTime(pdt)).toBe(false);
+  await t.step('isTemporalZonedDateTime', () => {
+    assert(isTemporalZonedDateTime(zdt));
+    assertEquals(isTemporalZonedDateTime(instant), false);
+    assertEquals(isTemporalZonedDateTime(pdt), false);
   });
 
-  it('isTemporalPlainDateTime', () => {
-    expect(isTemporalPlainDateTime(pdt)).toBe(true);
-    expect(isTemporalPlainDateTime(instant)).toBe(false);
-    expect(isTemporalPlainDateTime(zdt)).toBe(false);
+  await t.step('isTemporalPlainDateTime', () => {
+    assert(isTemporalPlainDateTime(pdt));
+    assertEquals(isTemporalPlainDateTime(instant), false);
+    assertEquals(isTemporalPlainDateTime(zdt), false);
   });
 
-  it('isTemporal', () => {
-    expect(isTemporal(instant)).toBe(true);
-    expect(isTemporal(zdt)).toBe(true);
-    expect(isTemporal(pdt)).toBe(true);
-    expect(isTemporal('string')).toBe(false);
-    expect(isTemporal(null)).toBe(false);
-    expect(isTemporal(123)).toBe(false);
+  await t.step('isTemporal', () => {
+    assert(isTemporal(instant));
+    assert(isTemporal(zdt));
+    assert(isTemporal(pdt));
+    assertEquals(isTemporal('string'), false);
+    assertEquals(isTemporal(null), false);
+    assertEquals(isTemporal(123), false);
   });
 });

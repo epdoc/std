@@ -7,82 +7,78 @@ programming tasks.
 
 This repository is organized into several workspaces, each focusing on a specific domain:
 
-| Workspace                            | Description                                                                |
-| ------------------------------------ | -------------------------------------------------------------------------- |
-| [`colors`](./colors/README.md)       | Standardized terminal color palette and utilities.                         |
-| [`daterange`](./daterange/README.md) | Utilities for creating and managing date ranges.                           |
-| [`datetime`](./datetime/README.md)   | Tools for working with dates and times.                                    |
-| [`duration`](./duration/README.md)   | Functions for handling time durations and formatting.                      |
-| [`fmt`](./fmt/README.md)             | Formatting functions for common data types (bool, bytes, percent, uptime). |
-| [`fs`](./fs/README.md)               | A library for advanced filesystem operations.                              |
-| [`response`](./response/README.md)   | Helpers for creating consistent and safe API responses.                    |
-| [`string`](./string/README.md)       | A collection of advanced string manipulation utilities.                    |
-| [`type`](./type/README.md)           | A set of type guards and utilities for runtime type safety.                |
+| Workspace                            | Description                                                               |
+| ------------------------------------ | ------------------------------------------------------------------------- |
+| [`colors`](./colors/README.md)       | Standardized terminal color palette and utilities.                        |
+| [`daterange`](./daterange/README.md) | Date range creation and management.                                       |
+| [`datetime`](./datetime/README.md)   | Date/time tools.                                                          |
+| [`duration`](./duration/README.md)   | Duration handling and formatting.                                         |
+| [`fmt`](./fmt/README.md)             | Formatting functions (bool, bytes, percent, uptime).                      |
+| [`fs`](./fs/README.md)               | Type-safe filesystem operations.                                          |
+| [`progress`](./progress/README.md)   | Progress bar / spinner utilities.                                         |
+| [`response`](./response/README.md)   | Consistent API response helpers.                                          |
+| [`table`](./table/README.md)         | Terminal table formatter with ANSI-aware padding.                         |
+| [`terminal`](./terminal/README.md)   | Terminal interaction utilities.                                           |
+| [`text`](./text/README.md)           | Advanced string manipulation (formerly `@epdoc/string`).                  |
+| [`transform`](./transform/README.md) | Deep copy, JSON serialization with type preservation, string replacement. |
+| [`type`](./type/README.md)           | Type guards and runtime type safety utilities.                            |
+
+> See [AGENTS.md](./AGENTS.md) for architecture details, cross-package dependencies, and development commands.
 
 ## Usage
 
-You can add a package to your project using the `deno add` command, which will add the package to your `deno.json` file.
-It is recommended to pin to a specific version for stability.
+Each package is published to [JSR](https://jsr.io/@epdoc). Add a package to your project:
 
 ```sh
 deno add @epdoc/type
 ```
 
-_Note: Please replace `0.1.0` with the desired version tag._
-
-Then, you can import and use the modules in your code.
+Then import and use:
 
 ```typescript
-// Example: Using the isString type guard from the 'type' module
 import { isString } from '@epdoc/type';
 
 const value: unknown = 'hello world';
 
 if (isString(value)) {
-  console.log(value.toUpperCase()); // HELLO WORLD
+  console.log(value.toUpperCase());
 }
 ```
-
-### Direct URL Imports
-
-Alternatively, you can import a module directly from its URL without adding it to your `deno.json`.
-
-```typescript
-// Example: Using the isString type guard from the 'type' module
-import { isString } from 'https://deno.land/x/epdoc_std@v0.1.0/type/mod.ts';
-
-const value: unknown = 'hello world';
-
-if (isString(value)) {
-  console.log(value.toUpperCase()); // HELLO WORLD
-}
-```
-
-_Note: Please replace `v0.1.0` with the desired version tag._
 
 ## Development
 
-### Running Tests
-
-To run all tests for all workspaces, execute the following command from the root of the repository:
+### Prerequisites
 
 ```sh
-deno test
+deno install -g -A -n dtask jsr:@epdoc/dtask
 ```
 
-To run tests for a specific workspace, navigate to its directory:
+### Running Tests
+
+Run tests for a specific workspace:
 
 ```sh
-cd type
+cd transform
 deno task test
 ```
 
-### Formatting
-
-This project uses `deno fmt` for code formatting.
+Run all workspace tests from root:
 
 ```sh
-deno fmt
+deno task test
+```
+
+### Formatting & Linting
+
+```sh
+deno task fmt
+deno task lint
+```
+
+### Full Check (fmt + lint + check + test)
+
+```sh
+deno task ok
 ```
 
 ## License
