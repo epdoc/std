@@ -1,5 +1,5 @@
 import type { CompareResult } from '@epdoc/type';
-import { _, asTemporal } from '@epdoc/type';
+import { _, type IStrict, parseTemporalString } from '@epdoc/type';
 import type {
   GoogleSheetsDate,
   IANATZ,
@@ -201,7 +201,7 @@ export class DateTime {
    * ```
    */
   static now(): DateTime {
-    return DateTime.from();
+    return DateTime.from(null, { strict: true });
   }
 
   /**
@@ -268,8 +268,8 @@ export class DateTime {
    * const d4 = DateTime.fromString('July 4, 2024');
    * ```
    */
-  static fromString(isoString: string): DateTime {
-    const val = asTemporal(isoString);
+  static fromString(isoString: string, opts: { strict: boolean } = { strict: true }): DateTime {
+    const val = parseTemporalString(isoString, opts);
     if (!val) {
       throw new Error(`Invalid date string: "${isoString}"`);
     }
@@ -392,42 +392,76 @@ export class DateTime {
    * @see {@link Temporal.PlainDateTime}
    * @see {@link Temporal.ZonedDateTime}
    */
-  static from(arg?: unknown): DateTime {
-    // 1. No arguments: Current Time
-    if (_.isNullOrUndefined(arg)) {
+  static from(): DateTime;
+  static from(arg: unknown): DateTime;
+  static from(arg: unknown, opts: { strict: true }): DateTime;
+  static from(arg?: unknown, opts?: { strict: false }): DateTime | undefined;
+  static from(arg: unknown, opts: { strict?: boolean }): DateTime | undefined;
+  static from(arg?: unknown, opts: IStrict = { strict: true }): DateTime | undefined {
+    if (arg === undefined) {
       return new DateTime(Temporal.Now.instant());
     }
+    if (!_.isString(arg)) {
+      try {
+        // 1. No arguments: Current Time
+        if (_.isNullOrUndefined(arg)) {
+          return new DateTime(Temporal.Now.instant());
+        }
 
-    // 2. Clone existing DateTime
-    if (arg instanceof DateTime) {
-      return new DateTime(arg._value);
+        // 2. Clone existing DateTime
+        if (arg instanceof DateTime) {
+          return new DateTime(arg._value);
+        }
+
+        // 3. Raw Temporal objects
+        if (
+          arg instanceof Temporal.Instant ||
+          arg instanceof Temporal.ZonedDateTime ||
+          arg instanceof Temporal.PlainDateTime
+        ) {
+          return new DateTime(arg);
+        }
+
+        // 4. Legacy JS Date
+        if (_.isDate(arg)) {
+          return DateTime.fromDate(arg);
+        }
+
+        // 5. Epoch Milliseconds (Numbers)
+        if (typeof arg === 'number') {
+          return new DateTime(Temporal.Instant.fromEpochMilliseconds(arg));
+        }
+      } catch (e) {
+        if (opts.strict) throw e;
+        return DateTime.handleInvalidInput(arg, opts);
+      }
+
+      // If it's an unrecognized object/boolean/etc.
+      return DateTime.handleInvalidInput(arg, opts);
     }
 
-    // 3. Raw Temporal objects
-    if (
-      arg instanceof Temporal.Instant ||
-      arg instanceof Temporal.ZonedDateTime ||
-      arg instanceof Temporal.PlainDateTime
-    ) {
-      return new DateTime(arg);
+    const temporalValue = parseTemporalString(arg, opts);
+    if (temporalValue) {
+      return new DateTime(temporalValue);
     }
 
-    // 4. Legacy JS Date
-    if (_.isDate(arg)) {
-      return DateTime.fromDate(arg);
+    // Step B: If your utility returned undefined, try Legacy fallback (only if non-strict)
+    if (!opts.strict) {
+      const timestamp = Date.parse(arg);
+      if (!isNaN(timestamp)) {
+        return new DateTime(Temporal.Instant.fromEpochMilliseconds(timestamp));
+      }
     }
 
-    // 5. Epoch Milliseconds (Numbers)
-    if (typeof arg === 'number') {
-      return new DateTime(Temporal.Instant.fromEpochMilliseconds(arg));
-    }
+    // Step C: End of the road for unparseable strings
+    return DateTime.handleInvalidInput(arg, opts);
+  }
 
-    // 6. Strings (ISO, Timezones, or Legacy fallback)
-    if (_.isString(arg)) {
-      return DateTime.fromString(arg);
+  private static handleInvalidInput(arg: unknown, opts: IStrict): undefined {
+    if (opts.strict) {
+      throw new RangeError(`Could not parse "${String(arg)}"`);
     }
-
-    throw new Error(`Unsupported DateTime input: ${typeof arg}`);
+    return undefined;
   }
 
   /**
@@ -561,9 +595,9 @@ export class DateTime {
    * DateTime.isValid(null)                // false
    * DateTime.isValid({})                  // false
    */
-  static isValid(val: unknown): boolean {
+  static isValid(val: unknown, opts: IStrict = { strict: true }): boolean {
     try {
-      DateTime.from(val);
+      DateTime.from(val, opts);
       return true;
     } catch {
       return false;

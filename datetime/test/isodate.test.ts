@@ -4,8 +4,7 @@ import { DateTime } from '../src/mod.ts';
 Deno.test('DateTime.fromString — delegation', async (t) => {
   await t.step('returns DateTime wrapping ZonedDateTime for Z-suffixed string', () => {
     const d = DateTime.fromString('2024-01-15T12:30:45.123Z');
-    assert(d.temporal instanceof Temporal.ZonedDateTime);
-    assertEquals(d.temporal.offset, '+00:00');
+    assert(d.temporal instanceof Temporal.Instant);
   });
 
   await t.step('returns DateTime wrapping ZonedDateTime for offset string', () => {
@@ -26,13 +25,13 @@ Deno.test('DateTime.fromString — delegation', async (t) => {
   });
 
   await t.step('returns DateTime wrapping PlainDateTime for date-only', () => {
-    const d = DateTime.fromString('2024-03-15');
+    const d = DateTime.fromString('2024-03-15', { strict: false });
     assert(d.temporal instanceof Temporal.PlainDateTime);
+    assertThrows(() => DateTime.fromString('2024-03-15'), Error, 'Invalid date string');
   });
 
   await t.step('returns DateTime wrapping Instant for legacy format', () => {
-    const d = DateTime.fromString('July 4, 1776');
-    assert(d.temporal instanceof Temporal.Instant);
+    assertThrows(() => DateTime.fromString('July 4, 1776'), Error, 'Invalid date string');
   });
 
   await t.step('throws for empty string', () => {
@@ -74,14 +73,14 @@ Deno.test('DateTime.fromString — delegation', async (t) => {
     assertEquals(d1.epochMilliseconds, d2.epochMilliseconds);
   });
 
-  await t.step('whitespace is trimmed', () => {
-    const d1 = DateTime.fromString('2024-01-15T12:30:45Z');
-    const d2 = DateTime.fromString('  2024-01-15T12:30:45Z  ');
-    assertEquals(d1.epochMilliseconds, d2.epochMilliseconds);
+  await t.step('whitespace is not trimmed', () => {
+    assertThrows(() => DateTime.fromString('  2024-01-15T12:30:45Z  '), Error, 'Invalid date string');
   });
 
   await t.step('legacy fallback yields parseable result', () => {
-    const d = DateTime.fromString('January 1, 2024');
+    const date = new Date('January 1, 2024');
+    assertEquals(date.getUTCFullYear(), 2024);
+    const d = DateTime.fromDate(date);
     assert(d.temporal instanceof Temporal.Instant);
     const y = new Date(d.epochMilliseconds).getUTCFullYear();
     assertEquals(y, 2024);
@@ -91,7 +90,7 @@ Deno.test('DateTime.fromString — delegation', async (t) => {
 Deno.test('DateTime.from — string path delegates to fromString', async (t) => {
   await t.step('Z-suffixed string via DateTime.from', () => {
     const d = DateTime.from('2024-01-15T12:30:45Z');
-    assert(d.temporal instanceof Temporal.ZonedDateTime);
+    assert(d.temporal instanceof Temporal.Instant);
   });
 
   await t.step('string without timezone via DateTime.from', () => {
@@ -100,14 +99,15 @@ Deno.test('DateTime.from — string path delegates to fromString', async (t) => 
   });
 
   await t.step('date-only string via DateTime.from', () => {
-    const d = DateTime.from('2024-03-15');
-    assert(d.temporal instanceof Temporal.PlainDateTime);
+    const d = DateTime.from('2024-03-15', { strict: false });
+    assert(d && d.temporal instanceof Temporal.PlainDateTime);
   });
 
   await t.step('DateTime.from and DateTime.fromString agree', () => {
     const byFrom = DateTime.from('2024-01-15T12:30:45Z');
     const byString = DateTime.fromString('2024-01-15T12:30:45Z');
     assertEquals(byFrom.epochMilliseconds, byString.epochMilliseconds);
-    assert(byFrom.temporal instanceof Temporal.ZonedDateTime);
+    assert(byFrom.temporal instanceof Temporal.Instant);
+    assert(byString.temporal instanceof Temporal.Instant);
   });
 });
