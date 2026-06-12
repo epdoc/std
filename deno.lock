@@ -316,7 +316,7 @@
         "dependencies": [
           "jsr:@epdoc/colors@^1.1.1",
           "jsr:@epdoc/duration@~0.3.17",
-          "jsr:@epdoc/type@^2.0.0-alpha.2",
+          "jsr:@epdoc/type@^2.0.0-alpha.4",
           "jsr:@std/assert@^1.0.19",
           "jsr:@std/fmt@^1.0.10"
         ]
