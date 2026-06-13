@@ -1,16 +1,15 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { assert, assertEquals, assertStringIncludes } from '@std/assert';
 import { resolve } from 'node:path';
 import { catchError } from '../src/mod.ts';
 
 const pwd: string = import.meta.dirname as string;
 
-describe('apires', () => {
-  it('response', async () => {
+Deno.test('apires', async (t) => {
+  await t.step('response', async () => {
     const res = await catchError(Deno.readTextFile(resolve(pwd, '../deno.json')));
-    expect(res.isOk()).toBe(true);
-    expect(res.hasData()).toBe(true);
-    expect(res.isError()).toBe(false);
-    expect(res.data).toContain('"name": "@epdoc/response');
+    assert(res.isOk());
+    assert(res.hasData());
+    assertEquals(res.isError(), false);
+    assertStringIncludes(res.data as string, '"name": "@epdoc/response');
   });
 });

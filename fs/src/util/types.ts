@@ -1,5 +1,4 @@
-import type { DeepCopyOpts, Integer, StripJsonCommentsOpts } from '@epdoc/type';
-import type { JsonReplacer } from '../spec/types.ts';
+import type { Integer } from '@epdoc/type';
 import type { fileConflictStrategyType } from './consts.ts';
 
 /**
@@ -85,55 +84,6 @@ export type SafeWriteOptions = {
    * @see {@link FileConflictStrategy} for all available strategies.
    */
   backupStrategy?: FileConflictStrategy;
-};
-
-/**
- * Options for {@link FileSpec.writeJson}, combining JSON formatting
- * with safe write semantics.
- */
-/**
- * Options for {@link FileSpec.writeJson}, combining JSON formatting
- * with safe write semantics from {@link SafeWriteOptions}.
- */
-export type WriteJsonOptions = SafeWriteOptions & {
-  /**
-   * A replacer function or array of property names passed to `JSON.stringify()`.
-   * Controls which values are included in the JSON output.
-   */
-  replacer?: JsonReplacer;
-  /**
-   * Indentation for pretty-printing. Passed as the `space` argument to
-   * `JSON.stringify()`. Use `2` for two-space indentation or `'\t'` for tabs.
-   */
-  space?: string | Integer;
-  /**
-   * When truthy, uses `_.jsonSerialize` instead of `JSON.stringify` for
-   * deep copy serialization (e.g., handling `Date`, `RegExp`, and custom types).
-   * Pass an object for fine-grained control via {@link DeepCopyOpts}.
-   * Defaults to `false`.
-   */
-  deepCopy?: DeepCopyOpts | boolean;
-  /**
-   * Content to append after the final JSON closing brace/bracket.
-   * Commonly set to `'\n'` for git-friendly file formatting.
-   */
-  trailing?: string;
-};
-
-export type ReadJsonOptions = {
-  // Deep copy deserialization (uses _.jsonDeserialize vs JSON.parse)
-  deepCopy?: boolean; // defaults to false
-
-  // JSON comment stripping
-  stripComments?: StripJsonCommentsOpts;
-
-  // Only applicable when deepCopy is true
-  includeUrl?: unknown;
-};
-
-export type WriteYamlOptions = {
-  yaml?: Parameters<typeof import('@std/yaml').stringify>[1];
-  write?: SafeWriteOptions;
 };
 
 export type SafeCopyOptsBase = {

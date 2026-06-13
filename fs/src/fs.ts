@@ -6,7 +6,7 @@ export {
   FSSpec as Spec,
   SymlinkSpec as Symlink,
 } from '$spec';
-export type { JsonReplacer, TypedFSSpec as Typed } from '$spec';
+export type { TypedFSSpec as Typed } from '$spec';
 export { DigestAlgorithm } from './consts.ts';
 export { FSBytes as Bytes } from './fsbytes.ts';
 export * from './fsheaders.ts';

@@ -1,11 +1,10 @@
 import type * as Color from '@epdoc/colors';
 import { assertEquals } from '@std/assert';
 import { bgRgb24, rgb24 } from '@std/fmt/colors';
-import { describe, it } from '@std/testing/bdd';
 import type { Column, ColumnRegistry, RowStyles } from '../src/types.ts';
 import { buildColumns, calculateColumnWidths, isRowStyle, resolveColor } from '../src/utils.ts';
 
-describe('buildColumns', () => {
+Deno.test('buildColumns', async (t) => {
   type TestRow = {
     id: number;
     name: string;
@@ -13,7 +12,7 @@ describe('buildColumns', () => {
     value: number;
   };
 
-  it('should build columns from registry', () => {
+  await t.step('should build columns from registry', () => {
     const registry: ColumnRegistry<TestRow> = {
       id: { header: 'ID', align: 'right' },
       name: { header: 'Name', align: 'left', maxWidth: 20 },
@@ -33,7 +32,7 @@ describe('buildColumns', () => {
     assertEquals(columns[2].header, 'Status');
   });
 
-  it('should provide defaults for keys not in registry', () => {
+  await t.step('should provide defaults for keys not in registry', () => {
     const registry: ColumnRegistry<TestRow> = {
       id: { header: 'ID' },
     };
@@ -49,7 +48,7 @@ describe('buildColumns', () => {
     assertEquals(columns[2].align, 'left');
   });
 
-  it('should preserve column order from keys array', () => {
+  await t.step('should preserve column order from keys array', () => {
     const registry: ColumnRegistry<TestRow> = {
       id: { header: 'ID' },
       name: { header: 'Name' },
@@ -63,7 +62,7 @@ describe('buildColumns', () => {
     assertEquals(columns[2].key, 'name');
   });
 
-  it('should handle empty keys array', () => {
+  await t.step('should handle empty keys array', () => {
     const registry: ColumnRegistry<TestRow> = {
       id: { header: 'ID' },
     };
@@ -72,7 +71,7 @@ describe('buildColumns', () => {
     assertEquals(columns.length, 0);
   });
 
-  it('should include formatter and color callbacks', () => {
+  await t.step('should include formatter and color callbacks', () => {
     const testFormatter = (v: unknown) => String(v);
     const testColor = (_v: unknown, _row: TestRow): Color.StyleFn | undefined => (s) => rgb24(s, 0xff0000);
 
@@ -87,14 +86,14 @@ describe('buildColumns', () => {
   });
 });
 
-describe('calculateColumnWidths', () => {
+Deno.test('calculateColumnWidths', async (t) => {
   type TestRow = {
     id: number;
     name: string;
     value: number;
   };
 
-  it('should respect fixed width when specified', () => {
+  await t.step('should respect fixed width when specified', () => {
     const columns: Column<TestRow>[] = [
       { key: 'id', header: 'ID', width: 10 },
       { key: 'name', header: 'Name' },
@@ -110,7 +109,7 @@ describe('calculateColumnWidths', () => {
     assertEquals(widths.id, 10); // Fixed width takes precedence
   });
 
-  it('should auto-calculate width from header and data', () => {
+  await t.step('should auto-calculate width from header and data', () => {
     const columns: Column<TestRow>[] = [
       { key: 'id', header: 'ID' },
       { key: 'name', header: 'Name' },
@@ -129,7 +128,7 @@ describe('calculateColumnWidths', () => {
     assertEquals(widths.id, 2);
   });
 
-  it('should respect maxWidth cap', () => {
+  await t.step('should respect maxWidth cap', () => {
     const columns: Column<TestRow>[] = [
       { key: 'name', header: 'Name', maxWidth: 8 },
     ];
@@ -143,7 +142,7 @@ describe('calculateColumnWidths', () => {
     assertEquals(widths.name, 8); // Capped at maxWidth
   });
 
-  it('should handle ANSI codes in data when measuring', () => {
+  await t.step('should handle ANSI codes in data when measuring', () => {
     const columns: Column<TestRow>[] = [
       { key: 'name', header: 'Name' },
     ];
@@ -159,7 +158,7 @@ describe('calculateColumnWidths', () => {
     assertEquals(widths.name, 7);
   });
 
-  it('should use formatter when calculating widths', () => {
+  await t.step('should use formatter when calculating widths', () => {
     const columns: Column<TestRow>[] = [
       {
         key: 'value',
@@ -178,7 +177,7 @@ describe('calculateColumnWidths', () => {
     assertEquals(widths.value, 7);
   });
 
-  it('should handle empty data array', () => {
+  await t.step('should handle empty data array', () => {
     const columns: Column<TestRow>[] = [
       { key: 'id', header: 'ID' },
       { key: 'name', header: 'Name' },
@@ -191,7 +190,7 @@ describe('calculateColumnWidths', () => {
     assertEquals(widths.name, 4);
   });
 
-  it('should handle null and undefined values', () => {
+  await t.step('should handle null and undefined values', () => {
     const columns: Column<TestRow>[] = [
       { key: 'name', header: 'Name' },
     ];
@@ -208,36 +207,36 @@ describe('calculateColumnWidths', () => {
   });
 });
 
-describe('resolveColor', () => {
-  it('should return function as-is when passed StyleFn', () => {
+Deno.test('resolveColor', async (t) => {
+  await t.step('should return function as-is when passed StyleFn', () => {
     const testFn: Color.StyleFn = (s) => s.toUpperCase();
     const result = resolveColor(testFn);
     assertEquals(result, testFn);
     assertEquals(result('hello'), 'HELLO');
   });
 
-  it('should convert integer to rgb24 StyleFn (foreground)', () => {
+  await t.step('should convert integer to rgb24 StyleFn (foreground)', () => {
     const styleFn = resolveColor(0xff0000);
     const result = styleFn('test');
     const expected = rgb24('test', 0xff0000);
     assertEquals(result, expected);
   });
 
-  it('should handle ColorSpec with fg only', () => {
+  await t.step('should handle ColorSpec with fg only', () => {
     const styleFn = resolveColor({ fg: 0xff0000 });
     const result = styleFn('test');
     const expected = rgb24('test', 0xff0000);
     assertEquals(result, expected);
   });
 
-  it('should handle ColorSpec with bg only', () => {
+  await t.step('should handle ColorSpec with bg only', () => {
     const styleFn = resolveColor({ bg: 0x00ff00 });
     const result = styleFn('test');
     const expected = bgRgb24('test', 0x00ff00);
     assertEquals(result, expected);
   });
 
-  it('should handle ColorSpec with both fg and bg', () => {
+  await t.step('should handle ColorSpec with both fg and bg', () => {
     const styleFn = resolveColor({ fg: 0xff0000, bg: 0x00ff00 });
     const result = styleFn('test');
     // Apply fg first, then bg
@@ -245,41 +244,41 @@ describe('resolveColor', () => {
     assertEquals(result, expected);
   });
 
-  it('should handle zero as valid RGB value', () => {
+  await t.step('should handle zero as valid RGB value', () => {
     const styleFn = resolveColor(0x000000);
     const result = styleFn('test');
     const expected = rgb24('test', 0x000000);
     assertEquals(result, expected);
   });
 
-  it('should handle max RGB value', () => {
+  await t.step('should handle max RGB value', () => {
     const styleFn = resolveColor(0xffffff);
     const result = styleFn('test');
     const expected = rgb24('test', 0xffffff);
     assertEquals(result, expected);
   });
 
-  it('should handle empty ColorSpec', () => {
+  await t.step('should handle empty ColorSpec', () => {
     const styleFn = resolveColor({});
     const result = styleFn('test');
     assertEquals(result, 'test'); // No styling applied
   });
 });
 
-describe('isRowStyle', () => {
-  it('should return true for valid RowStyles tuple', () => {
+Deno.test('isRowStyle', async (t) => {
+  await t.step('should return true for valid RowStyles tuple', () => {
     const rowStyle: RowStyles = [(s) => s, (s) => s];
     assertEquals(isRowStyle(rowStyle), true);
   });
 
-  it('should return true for tuple with null/undefined entries', () => {
+  await t.step('should return true for tuple with null/undefined entries', () => {
     assertEquals(isRowStyle([null, null]), true);
     assertEquals(isRowStyle([undefined, undefined]), true);
     assertEquals(isRowStyle([(s: string) => s, null]), true);
     assertEquals(isRowStyle([null, (s: string) => s]), true);
   });
 
-  it('should return false for non-array values', () => {
+  await t.step('should return false for non-array values', () => {
     assertEquals(isRowStyle(null), false);
     assertEquals(isRowStyle(undefined), false);
     assertEquals(isRowStyle('string'), false);
@@ -287,7 +286,7 @@ describe('isRowStyle', () => {
     assertEquals(isRowStyle({}), false);
   });
 
-  it('should return false for arrays with wrong length', () => {
+  await t.step('should return false for arrays with wrong length', () => {
     assertEquals(isRowStyle([]), false);
     assertEquals(isRowStyle([(s: string) => s]), false);
     assertEquals(isRowStyle([(s: string) => s, (s: string) => s, (s: string) => s]), false);

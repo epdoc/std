@@ -1,25 +1,15 @@
 import { FileSpec, FolderSpec } from '../src/mod.ts';
-import { expect } from '@std/expect';
-import { afterAll, beforeAll, describe, it } from '@std/testing/bdd';
+import { assertEquals } from '@std/assert';
 import { Readable } from 'node:stream';
 import type { Buffer } from 'node:buffer';
-import { TextDecoder, TextEncoder } from 'node:util'; // Using node:util for TextEncoder/Decoder
+import { TextDecoder, TextEncoder } from 'node:util';
 
-describe('FileSpec Web Stream API', () => {
-  let testDir: FolderSpec;
-  let testFile: FileSpec;
+Deno.test('FileSpec Web Stream API', async (t) => {
+  const testDir = await FolderSpec.makeTemp({ prefix: 'webstream_test_' });
+  const testFile = new FileSpec(testDir, 'stream_test.txt');
 
-  beforeAll(async () => {
-    testDir = await FolderSpec.makeTemp({ prefix: 'webstream_test_' });
-    testFile = new FileSpec(testDir, 'stream_test.txt');
-  });
-
-  afterAll(async () => {
-    await testDir.remove({ recursive: true });
-  });
-
-  describe('readableStream()', () => {
-    it('should return a ReadableStream that reads file content', async () => {
+  try {
+    await t.step('readableStream() should return a ReadableStream that reads file content', async () => {
       const content = 'Hello, Web Streams!';
       await testFile.write(content);
 
@@ -33,12 +23,10 @@ describe('FileSpec Web Stream API', () => {
         receivedContent += new TextDecoder().decode(value);
       }
 
-      expect(receivedContent).toBe(content);
+      assertEquals(receivedContent, content);
     });
-  });
 
-  describe('writableStream()', () => {
-    it('should return a WritableStream that writes to the file', async () => {
+    await t.step('writableStream() should return a WritableStream that writes to the file', async () => {
       const content = 'Writing with WritableStream.';
       const writable = await testFile.writableStream();
       const writer = writable.getWriter();
@@ -47,12 +35,10 @@ describe('FileSpec Web Stream API', () => {
       await writer.close();
 
       const fileContent = await testFile.readAsString();
-      expect(fileContent).toBe(content);
+      assertEquals(fileContent, content);
     });
-  });
 
-  describe('nodeReadableStream()', () => {
-    it('should return a Node.js Readable stream that reads file content', async () => {
+    await t.step('nodeReadableStream() should return a Node.js Readable stream that reads file content', async () => {
       const content = 'Hello, Node Streams!';
       await testFile.write(content);
 
@@ -67,12 +53,10 @@ describe('FileSpec Web Stream API', () => {
         nodeStream.on('error', reject);
       });
 
-      expect(receivedContent).toBe(content);
+      assertEquals(receivedContent, content);
     });
-  });
 
-  describe('nodeWritableStream()', () => {
-    it('should return a Node.js Writable stream that writes to the file', async () => {
+    await t.step('nodeWritableStream() should return a Node.js Writable stream that writes to the file', async () => {
       const content = 'Writing with Node.js Writable stream.';
       const nodeStream = await testFile.nodeWritableStream();
 
@@ -86,10 +70,10 @@ describe('FileSpec Web Stream API', () => {
       });
 
       const fileContent = await testFile.readAsString();
-      expect(fileContent).toBe(content);
+      assertEquals(fileContent, content);
     });
 
-    it('should work with pipe from Node.js Readable', async () => {
+    await t.step('nodeWritableStream() should work with pipe from Node.js Readable', async () => {
       const content = 'Piping from Node.js Readable to file.';
       const readable = Readable.from([content]);
       const writable = await testFile.nodeWritableStream();
@@ -101,12 +85,10 @@ describe('FileSpec Web Stream API', () => {
       });
 
       const fileContent = await testFile.readAsString();
-      expect(fileContent).toBe(content);
+      assertEquals(fileContent, content);
     });
-  });
 
-  describe('pipeFrom()', () => {
-    it('should pipe content from a ReadableStream to the file', async () => {
+    await t.step('pipeFrom() should pipe content from a ReadableStream to the file', async () => {
       const content = 'Piping from a source stream.';
       const sourceStream = new ReadableStream<Uint8Array>({
         start(controller) {
@@ -118,12 +100,10 @@ describe('FileSpec Web Stream API', () => {
       await testFile.pipeFrom(sourceStream);
 
       const fileContent = await testFile.readAsString();
-      expect(fileContent).toBe(content);
+      assertEquals(fileContent, content);
     });
-  });
 
-  describe('pipeTo()', () => {
-    it('should pipe file content to a WritableStream', async () => {
+    await t.step('pipeTo() should pipe file content to a WritableStream', async () => {
       const content = 'Piping to a destination stream.';
       await testFile.write(content);
 
@@ -136,19 +116,19 @@ describe('FileSpec Web Stream API', () => {
 
       await testFile.pipeTo(destinationStream);
 
-      expect(receivedContent).toBe(content);
+      assertEquals(receivedContent, content);
     });
-  });
 
-  describe('writer() and FileSpecWriter', () => {
-    it('should write content using FileSpecWriter', async () => {
+    await t.step('writer() and FileSpecWriter should write content using FileSpecWriter', async () => {
       const writer = await testFile.writer();
       await writer.write('First line.');
       await writer.writeLine('Second line.');
       await writer.close();
 
       const fileContent = await testFile.readAsString();
-      expect(fileContent).toBe('First line.Second line.\n');
+      assertEquals(fileContent, 'First line.Second line.\n');
     });
-  });
+  } finally {
+    await testDir.remove({ recursive: true });
+  }
 });

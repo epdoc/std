@@ -33,6 +33,7 @@
   },
   "workspace": [
     "./type",
+    "./transform",
     "./colors",
     "./duration",
     "./fmt",

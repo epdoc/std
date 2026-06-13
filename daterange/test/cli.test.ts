@@ -1,6 +1,4 @@
-// deno-lint-ignore-file no-explicit-any
-import { expect } from '@std/expect';
-import { describe, test } from '@std/testing/bdd';
+import { assert, assertEquals, assertThrows } from '@std/assert';
 import { DateTime } from '@epdoc/datetime';
 import {
   dateOptionDef,
@@ -14,97 +12,97 @@ import {
 } from '../src/cli.ts';
 import { DateRange, DateRanges } from '../src/mod.ts';
 
-describe('dateRangeOptionDefs', () => {
-  test('contains all six keys', () => {
-    expect(dateRangeOptionDefs.date).toBeDefined();
-    expect(dateRangeOptionDefs.range).toBeDefined();
-    expect(dateRangeOptionDefs.ranges).toBeDefined();
-    expect(dateRangeOptionDefs.since).toBeDefined();
-    expect(dateRangeOptionDefs.until).toBeDefined();
-    expect(dateRangeOptionDefs.window).toBeDefined();
+Deno.test('dateRangeOptionDefs', async (t) => {
+  await t.step('contains all six keys', () => {
+    assert(dateRangeOptionDefs.date);
+    assert(dateRangeOptionDefs.range);
+    assert(dateRangeOptionDefs.ranges);
+    assert(dateRangeOptionDefs.since);
+    assert(dateRangeOptionDefs.until);
+    assert(dateRangeOptionDefs.window);
   });
 });
 
-describe('dateOptionDef', () => {
+Deno.test('dateOptionDef', async (t) => {
   const parse = dateOptionDef.argParser!;
-  test('parses YYYYMMDD to DateRanges', () => {
-    expect(parse('20250115')).toBeInstanceOf(DateRange as any);
+  await t.step('parses YYYYMMDD to DateRanges', () => {
+    assert(parse('20250115') instanceof DateRanges);
   });
-  test('parses comma-separated ranges', () => {
+  await t.step('parses comma-separated ranges', () => {
     const result = parse('2024,2025') as DateRanges;
-    expect(result.ranges.length).toBe(2);
+    assertEquals(result.ranges.length, 2);
   });
-  test('parses relative 7d-now', () => {
+  await t.step('parses relative 7d-now', () => {
     const result = parse('7d-now') as DateRanges;
     const diffMs = DateTime.now().epochMilliseconds - result.ranges[0].after.epochMilliseconds;
-    expect(diffMs).toBeGreaterThanOrEqual(7 * 86400000 - 5000);
-    expect(diffMs).toBeLessThanOrEqual(7 * 86400000 + 5000);
+    assert(diffMs >= 7 * 86400000 - 5000);
+    assert(diffMs <= 7 * 86400000 + 5000);
   });
 });
 
-describe('rangeOptionDef', () => {
+Deno.test('rangeOptionDef', async (t) => {
   const parse = rangeOptionDef.argParser!;
-  test('parses single range to DateRange', () => {
-    expect(parse('20250101-20250131')).toBeInstanceOf(DateRange as any);
+  await t.step('parses single range to DateRange', () => {
+    assert(parse('20250101-20250131') instanceof DateRange);
   });
-  test('throws for multiple ranges', () => {
-    expect(() => parse('2024,2025')).toThrow();
+  await t.step('throws for multiple ranges', () => {
+    assertThrows(() => parse('2024,2025'));
   });
 });
 
-describe('rangesOptionDef', () => {
+Deno.test('rangesOptionDef', async (t) => {
   const parse = rangesOptionDef.argParser!;
-  test('parses multiple ranges to DateRanges', () => {
+  await t.step('parses multiple ranges to DateRanges', () => {
     const result = parse('2024,2025') as DateRanges;
-    expect(result).toBeInstanceOf(DateRange as any);
-    expect(result.ranges.length).toBe(2);
+    assert(result instanceof DateRanges);
+    assertEquals(result.ranges.length, 2);
   });
 });
 
-describe('sinceOptionDef', () => {
+Deno.test('sinceOptionDef', async (t) => {
   const parse = sinceOptionDef.argParser!;
-  test('parses relative time to DateTime', () => {
-    expect(parse('1d')).toBeInstanceOf(DateTime as any);
+  await t.step('parses relative time to DateTime', () => {
+    assert(parse('1d') instanceof DateTime);
   });
-  test('parses compact date to DateTime', () => {
-    expect(parse('20250101')).toBeInstanceOf(DateTime as any);
+  await t.step('parses compact date to DateTime', () => {
+    assert(parse('20250101') instanceof DateTime);
   });
-  test('parses ISO string to DateTime', () => {
-    expect(parse('2025-01-01T00:00:00Z')).toBeInstanceOf(DateTime as any);
+  await t.step('parses ISO string to DateTime', () => {
+    assert(parse('2025-01-01T00:00:00Z') instanceof DateTime);
   });
-  test('throws for invalid input', () => {
-    expect(() => parse('not-a-date')).toThrow();
+  await t.step('throws for invalid input', () => {
+    assertThrows(() => parse('not-a-date'));
   });
 });
 
-describe('untilOptionDef', () => {
+Deno.test('untilOptionDef', async (t) => {
   const parse = untilOptionDef.argParser!;
-  test('has defVal of now', () => {
-    expect(untilOptionDef.defVal).toBe('now');
+  await t.step('has defVal of now', () => {
+    assertEquals(untilOptionDef.defVal, 'now');
   });
-  test('parses now to DateTime', () => {
-    expect(parse('now')).toBeInstanceOf(DateTime as any);
+  await t.step('parses now to DateTime', () => {
+    assert(parse('now') instanceof DateTime);
   });
-  test('parses future relative time to DateTime', () => {
-    expect(parse('-1h')).toBeInstanceOf(DateTime as any);
+  await t.step('parses future relative time to DateTime', () => {
+    assert(parse('-1h') instanceof DateTime);
   });
 });
 
-describe('windowOptionDef', () => {
+Deno.test('windowOptionDef', async (t) => {
   const parse = windowOptionDef.argParser!;
-  test('parses duration to DateRange ending near now', () => {
+  await t.step('parses duration to DateRange ending near now', () => {
     const result = parse('24h') as DateRange;
-    expect(result).toBeInstanceOf(DateRange as any);
-    expect(result.duration()).toBeGreaterThanOrEqual(86400000 - 1000);
-    expect(result.duration()).toBeLessThanOrEqual(86400000 + 1000);
+    assert(result instanceof DateRange);
+    assert(result.duration() >= 86400000 - 1000);
+    assert(result.duration() <= 86400000 + 1000);
   });
-  test('throws for invalid duration', () => {
-    expect(() => parse('not-a-duration')).toThrow();
+  await t.step('throws for invalid duration', () => {
+    assertThrows(() => parse('not-a-duration'));
   });
 });
 
-describe('isDateRanges', () => {
-  test('true for DateRanges', () => expect(isDateRanges(DateRanges.from([]))).toBe(true));
-  test('false for DateRange', () => expect(isDateRanges(DateRange.from())).toBe(false));
-  test('false for string', () => expect(isDateRanges('2025')).toBe(false));
+Deno.test('isDateRanges', async (t) => {
+  await t.step('true for DateRanges', () => assert(isDateRanges(DateRanges.from([]))));
+  await t.step('false for DateRange', () => assertEquals(isDateRanges(DateRange.from()), false));
+  await t.step('false for string', () => assertEquals(isDateRanges('2025'), false));
 });

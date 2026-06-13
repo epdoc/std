@@ -1,147 +1,139 @@
 import * as Runtime from '../src/util/runtime.ts';
-import { expect } from '@std/expect';
-import { describe, test } from '@std/testing/bdd';
+import { assert, assertEquals } from '@std/assert';
 
-describe('Runtime utilities', () => {
-  describe('Runtime detection', () => {
-    test('Runtime object has correct shape', () => {
-      expect(Runtime.Runtime).toHaveProperty('Deno');
-      expect(Runtime.Runtime).toHaveProperty('Node');
-      expect(Runtime.Runtime).toHaveProperty('Bun');
-      expect(typeof Runtime.Runtime.Deno).toBe('boolean');
-      expect(typeof Runtime.Runtime.Node).toBe('boolean');
-      expect(typeof Runtime.Runtime.Bun).toBe('boolean');
+Deno.test('Runtime utilities', async (t) => {
+  await t.step('Runtime detection', async (t) => {
+    await t.step('Runtime object has correct shape', () => {
+      assert('Deno' in Runtime.Runtime);
+      assert('Node' in Runtime.Runtime);
+      assert('Bun' in Runtime.Runtime);
+      assertEquals(typeof Runtime.Runtime.Deno, 'boolean');
+      assertEquals(typeof Runtime.Runtime.Node, 'boolean');
+      assertEquals(typeof Runtime.Runtime.Bun, 'boolean');
     });
 
-    test('getRuntime() returns a valid runtime name', () => {
+    await t.step('getRuntime() returns a valid runtime name', () => {
       const runtime = Runtime.getRuntime();
-      expect(['deno', 'node', 'bun', 'unknown']).toContain(runtime);
+      assert(['deno', 'node', 'bun', 'unknown'].includes(runtime));
     });
 
-    test('At least one runtime should be detected', () => {
-      // In test environment, at least Deno should be true
+    await t.step('At least one runtime should be detected', () => {
       const anyRuntime = Runtime.Runtime.Deno || Runtime.Runtime.Node || Runtime.Runtime.Bun;
-      expect(anyRuntime).toBe(true);
+      assert(anyRuntime);
     });
   });
 
-  describe('getHomeDir()', () => {
-    test('returns a non-empty string', () => {
+  await t.step('getHomeDir()', async (t) => {
+    await t.step('returns a non-empty string', () => {
       const home = Runtime.getHomeDir();
-      expect(typeof home).toBe('string');
-      expect(home.length).toBeGreaterThan(0);
+      assertEquals(typeof home, 'string');
+      assert(home.length > 0);
     });
 
-    test('returns an absolute path', () => {
+    await t.step('returns an absolute path', () => {
       const home = Runtime.getHomeDir();
-      expect(home.startsWith('/')).toBe(true);
+      assert(home.startsWith('/'));
     });
   });
 
-  describe('getCwd()', () => {
-    test('returns current working directory', () => {
+  await t.step('getCwd()', async (t) => {
+    await t.step('returns current working directory', () => {
       const cwd = Runtime.getCwd();
-      expect(typeof cwd).toBe('string');
-      expect(cwd.length).toBeGreaterThan(0);
-      expect(cwd.startsWith('/')).toBe(true);
+      assertEquals(typeof cwd, 'string');
+      assert(cwd.length > 0);
+      assert(cwd.startsWith('/'));
     });
 
-    test('matches Deno.cwd() when running under Deno', () => {
+    await t.step('matches Deno.cwd() when running under Deno', () => {
       if (Runtime.Runtime.Deno) {
-        expect(Runtime.getCwd()).toBe(Deno.cwd());
+        assertEquals(Runtime.getCwd(), Deno.cwd());
       }
     });
   });
 
-  describe('setCwd()', () => {
-    test('changes current working directory', () => {
+  await t.step('setCwd()', async (t) => {
+    await t.step('changes current working directory', () => {
       const originalCwd = Runtime.getCwd();
       const tempDir = Runtime.getTempDir();
 
       Runtime.setCwd(tempDir);
       const newCwd = Runtime.getCwd();
-      // On macOS, /var is a symlink to /private/var, and paths may have trailing slashes
-      // Normalize both paths before comparing
       const normalize = (p: string) => p.replace('/private', '').replace(/\/$/, '');
-      expect(normalize(newCwd)).toBe(normalize(tempDir));
+      assertEquals(normalize(newCwd), normalize(tempDir));
 
-      // Restore original
       Runtime.setCwd(originalCwd);
-      expect(Runtime.getCwd()).toBe(originalCwd);
+      assertEquals(Runtime.getCwd(), originalCwd);
     });
   });
 
-  describe('getEnv()', () => {
-    test('returns value for existing environment variable', () => {
-      // PATH should exist on all platforms
+  await t.step('getEnv()', async (t) => {
+    await t.step('returns value for existing environment variable', () => {
       const path = Runtime.getEnv('PATH');
-      expect(typeof path).toBe('string');
-      expect(path!.length).toBeGreaterThan(0);
+      assertEquals(typeof path, 'string');
+      assert(path!.length > 0);
     });
 
-    test('returns undefined for non-existent variable', () => {
+    await t.step('returns undefined for non-existent variable', () => {
       const value = Runtime.getEnv('THIS_VAR_DEFINITELY_DOES_NOT_EXIST_12345');
-      expect(value).toBeUndefined();
+      assertEquals(value, undefined);
     });
   });
 
-  describe('getTempDir()', () => {
-    test('returns a non-empty string', () => {
+  await t.step('getTempDir()', async (t) => {
+    await t.step('returns a non-empty string', () => {
       const tmp = Runtime.getTempDir();
-      expect(typeof tmp).toBe('string');
-      expect(tmp.length).toBeGreaterThan(0);
+      assertEquals(typeof tmp, 'string');
+      assert(tmp.length > 0);
     });
 
-    test('returns an absolute path', () => {
+    await t.step('returns an absolute path', () => {
       const tmp = Runtime.getTempDir();
-      expect(tmp.startsWith('/')).toBe(true);
+      assert(tmp.startsWith('/'));
     });
   });
 
-  describe('fileURLToPath()', () => {
-    test('converts file URL to path', () => {
+  await t.step('fileURLToPath()', async (t) => {
+    await t.step('converts file URL to path', () => {
       const url = 'file:///home/user/project/file.ts';
       const path = Runtime.fileURLToPath(url);
-      expect(path).toBe('/home/user/project/file.ts');
+      assertEquals(path, '/home/user/project/file.ts');
     });
 
-    test('handles URL object', () => {
+    await t.step('handles URL object', () => {
       const url = new URL('file:///home/user/project/file.ts');
       const path = Runtime.fileURLToPath(url);
-      expect(path).toBe('/home/user/project/file.ts');
+      assertEquals(path, '/home/user/project/file.ts');
     });
   });
 
-  describe('makeTempDir()', () => {
-    test('creates a temporary directory', async () => {
+  await t.step('makeTempDir()', async (t) => {
+    await t.step('creates a temporary directory', async () => {
       const tmpDir = await Runtime.makeTempDir('test-');
-      expect(typeof tmpDir).toBe('string');
-      expect(tmpDir.includes('test-')).toBe(true);
+      assertEquals(typeof tmpDir, 'string');
+      assert(tmpDir.includes('test-'));
 
-      // Cleanup
       await Deno.remove(tmpDir);
     });
 
-    test('creates directory with default prefix', async () => {
+    await t.step('creates directory with default prefix', async () => {
       const tmpDir = await Runtime.makeTempDir();
-      expect(typeof tmpDir).toBe('string');
-      expect(tmpDir.length).toBeGreaterThan(0);
+      assertEquals(typeof tmpDir, 'string');
+      assert(tmpDir.length > 0);
 
-      // Cleanup
       await Deno.remove(tmpDir);
     });
   });
 
-  describe('resolvePath()', () => {
-    test('resolves relative paths', () => {
+  await t.step('resolvePath()', async (t) => {
+    await t.step('resolves relative paths', () => {
       const resolved = Runtime.resolvePath('src', 'util', 'test.ts');
-      expect(typeof resolved).toBe('string');
-      expect(resolved.startsWith('/')).toBe(true);
+      assertEquals(typeof resolved, 'string');
+      assert(resolved.startsWith('/'));
     });
 
-    test('handles absolute paths', () => {
+    await t.step('handles absolute paths', () => {
       const resolved = Runtime.resolvePath('/usr', 'local', 'bin');
-      expect(resolved).toBe('/usr/local/bin');
+      assertEquals(resolved, '/usr/local/bin');
     });
   });
 });

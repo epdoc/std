@@ -5,10 +5,9 @@
  * This API provides a one-liner approach with auto-formatting and sensible defaults.
  */
 
-import { describe, it } from '@std/testing/bdd';
 import { table } from '../src/simple.ts';
 
-describe('Example 12: Simple API', () => {
+Deno.test('Example 12: Simple API', async (t) => {
   interface Server {
     id: string;
     name: string;
@@ -49,7 +48,7 @@ describe('Example 12: Simple API', () => {
     },
   ];
 
-  it('should render with default settings', () => {
+  await t.step('should render with default settings', () => {
     console.log('\n=== Example 12.1: Default Settings ===\n');
     console.log('One-liner: table(data).print()');
     console.log('Auto-discovers columns, applies cyan headers, light borders\n');
@@ -58,7 +57,7 @@ describe('Example 12: Simple API', () => {
     console.log('');
   });
 
-  it('should select specific columns', () => {
+  await t.step('should select specific columns', () => {
     console.log('\n=== Example 12.2: Select Columns ===\n');
     console.log('table(data, ["name", "cpu", "memory"]).print()\n');
 
@@ -66,7 +65,7 @@ describe('Example 12: Simple API', () => {
     console.log('');
   });
 
-  it('should format data types automatically', () => {
+  await t.step('should format data types automatically', () => {
     console.log('\n=== Example 12.3: Auto-Formatting ===\n');
     console.log('Using format option for bytes, percent, uptime, checkmark\n');
 
@@ -80,7 +79,7 @@ describe('Example 12: Simple API', () => {
     console.log('');
   });
 
-  it('should format datetime with patterns', () => {
+  await t.step('should format datetime with patterns', () => {
     console.log('\n=== Example 12.4: Datetime Formatting ===\n');
 
     table(servers)
@@ -96,7 +95,7 @@ describe('Example 12: Simple API', () => {
     console.log('');
   });
 
-  it('should apply custom styling', () => {
+  await t.step('should apply custom styling', () => {
     console.log('\n=== Example 12.5: Custom Styling ===\n');
     console.log('Named colors, zebra striping, heavy borders\n');
 
@@ -117,7 +116,7 @@ describe('Example 12: Simple API', () => {
     console.log('');
   });
 
-  it('should support custom color palettes', async () => {
+  await t.step('should support custom color palettes', async () => {
     console.log('\n=== Example 12.6: Custom Color Palette ===\n');
 
     const { defineColors } = await import('../src/simple.ts');
@@ -142,7 +141,7 @@ describe('Example 12: Simple API', () => {
     console.log('');
   });
 
-  it('should disable formatting for plain output', () => {
+  await t.step('should disable formatting for plain output', () => {
     console.log('\n=== Example 12.7: Plain Output (No Colors) ===\n');
 
     table(servers)
@@ -154,7 +153,7 @@ describe('Example 12: Simple API', () => {
     console.log('');
   });
 
-  it('should demonstrate column alignment', () => {
+  await t.step('should demonstrate column alignment', () => {
     console.log('\n=== Example 12.8: Column Alignment ===\n');
 
     table(servers)

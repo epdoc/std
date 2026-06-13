@@ -435,7 +435,8 @@ Deno.test('date-util', async (t) => {
   await t.step('comparison methods', async (t) => {
     await t.step('isValid', async (t) => {
       await t.step('should return true for valid date strings', () => {
-        assertEquals(DateTime.isValid('2024-03-15'), true);
+        assertEquals(DateTime.isValid('2024-03-15', { strict: false }), true);
+        assertEquals(DateTime.isValid('2024-03-15', { strict: true }), false);
         assertEquals(DateTime.isValid('2024-03-15T10:30:00Z'), true);
       });
 
@@ -466,7 +467,7 @@ Deno.test('date-util', async (t) => {
       });
 
       await t.step('should return true for DateTime objects', () => {
-        assertEquals(DateTime.isDateLike(DateTime.from('2024-03-15')), true);
+        assertEquals(DateTime.isDateLike(DateTime.from('2024-03-15', { strict: false })), true);
       });
 
       await t.step('should return true for Temporal.Instant', () => {

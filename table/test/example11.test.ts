@@ -5,7 +5,6 @@
  * and vertical separators.
  */
 
-import { describe, it } from '@std/testing/bdd';
 import { bold, rgb24 } from '@std/fmt/colors';
 import { TableRenderer } from '../src/render.ts';
 import { buildColumns } from '../src/utils.ts';
@@ -20,7 +19,7 @@ interface Device {
   isRouter: boolean;
 }
 
-describe('Example 11: Full Box-Drawing Borders', () => {
+Deno.test('Example 11: Full Box-Drawing Borders', async (t) => {
   const data: Device[] = [
     { hostname: 'hex-router', ip: '10.0.0.1', board: 'RB750Gr3', platform: 'arm', version: '7.18.2', isRouter: true },
     {
@@ -41,7 +40,7 @@ describe('Example 11: Full Box-Drawing Borders', () => {
     },
   ];
 
-  it('should render table with light borders (no color)', () => {
+  await t.step('should render table with light borders (no color)', () => {
     const columns: ColumnRegistry<Device> = {
       hostname: { header: 'Hostname', width: 15 },
       ip: { header: 'IP Address', width: 16 },
@@ -69,7 +68,7 @@ describe('Example 11: Full Box-Drawing Borders', () => {
     console.log('');
   });
 
-  it('should render table with heavy borders and color', () => {
+  await t.step('should render table with heavy borders and color', () => {
     const columns: ColumnRegistry<Device> = {
       hostname: { header: 'Hostname', width: 15 },
       ip: { header: 'IP Address', width: 16 },
@@ -98,7 +97,7 @@ describe('Example 11: Full Box-Drawing Borders', () => {
     console.log('');
   });
 
-  it('should render table with double borders and cyan color', () => {
+  await t.step('should render table with double borders and cyan color', () => {
     const columns: ColumnRegistry<Device> = {
       hostname: { header: 'Hostname', width: 15 },
       ip: { header: 'IP Address', width: 16 },
@@ -128,7 +127,7 @@ describe('Example 11: Full Box-Drawing Borders', () => {
     console.log('');
   });
 
-  it('should render using fluent API', () => {
+  await t.step('should render using fluent API', () => {
     console.log('\n=== Example 11.4: Fluent API with Borders ===\n');
     TableRenderer.create<Device>()
       .column('hostname', { header: 'Hostname', width: 15 })
@@ -150,7 +149,7 @@ describe('Example 11: Full Box-Drawing Borders', () => {
     console.log('');
   });
 
-  it('should render with custom border characters', () => {
+  await t.step('should render with custom border characters', () => {
     const columns: ColumnRegistry<Device> = {
       hostname: { header: 'Hostname', width: 15 },
       ip: { header: 'IP Address', width: 16 },
@@ -184,7 +183,7 @@ describe('Example 11: Full Box-Drawing Borders', () => {
     console.log('');
   });
 
-  it('should render with colored cells and borders', () => {
+  await t.step('should render with colored cells and borders', () => {
     const green = 0x51d67c;
     const red = 0xef5867;
 
@@ -215,7 +214,7 @@ describe('Example 11: Full Box-Drawing Borders', () => {
     console.log('');
   });
 
-  it('should render with borders disabled (default behavior)', () => {
+  await t.step('should render with borders disabled (default behavior)', () => {
     const columns: ColumnRegistry<Device> = {
       hostname: { header: 'Hostname', align: 'left' },
       ip: { header: 'IP Address', align: 'left' },
@@ -232,7 +231,7 @@ describe('Example 11: Full Box-Drawing Borders', () => {
     console.log('');
   });
 
-  it('should render with noColor mode (strips border colors)', () => {
+  await t.step('should render with noColor mode (strips border colors)', () => {
     const columns: ColumnRegistry<Device> = {
       hostname: { header: 'Hostname', width: 15 },
       ip: { header: 'IP Address', width: 16 },

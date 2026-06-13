@@ -1,9 +1,16 @@
 import type { Dict, Integer } from '@epdoc/type';
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { assertEquals } from '@std/assert';
 import { Duration, type Seconds } from '../src/mod.ts';
 
-const zero = {
+function assertRecord(actual: Duration.Record, expected: Record<string, unknown>) {
+  const actualObj: Record<string, unknown> = {};
+  for (const key of Object.keys(expected)) {
+    actualObj[key] = (actual as unknown as Record<string, unknown>)[key];
+  }
+  assertEquals(actualObj, expected);
+}
+
+const zero: Record<string, number> = {
   _ms: 0,
   years: 0,
   days: 0,
@@ -44,45 +51,46 @@ const constructorTest = (
     nanoseconds: nanoseconds,
   };
   const record = new Duration.Record(ms);
-  expect(record).toEqual(result);
+  assertRecord(record, result);
   return record;
 };
 
-describe('duration-record', () => {
-  it('construct from ms', () => {
-    expect(new Duration.Record(0)).toEqual(zero);
-    expect(new Duration.Record(1)).toEqual(modZero({ _ms: 1, milliseconds: 1 }));
-    expect(new Duration.Record(2345)).toEqual(modZero({ _ms: 2345, seconds: 2, milliseconds: 345 }));
-    expect(new Duration.Record(2345)).toEqual(modZero({ _ms: 2345, seconds: 2, milliseconds: 345 }));
+Deno.test('duration-record', async (t) => {
+  await t.step('construct from ms', () => {
+    assertRecord(new Duration.Record(0), zero);
+    assertRecord(new Duration.Record(1), modZero({ _ms: 1, milliseconds: 1 }));
+    assertRecord(new Duration.Record(2345), modZero({ _ms: 2345, seconds: 2, milliseconds: 345 }));
+    assertRecord(new Duration.Record(2345), modZero({ _ms: 2345, seconds: 2, milliseconds: 345 }));
     constructorTest(0, 0, 0, 0, 2, 345, 0, 0);
     constructorTest(0, 0, 1, 1, 1, 1, 1, 0);
     constructorTest(0, 3, 23, 59, 59, 999, 999, 998);
-    expect(new Duration.Record(3454.345898)).toEqual(
+    assertRecord(
+      new Duration.Record(3454.345898),
       modZero({ _ms: 3454.345898, seconds: 3, milliseconds: 454, microseconds: 345, nanoseconds: 898 }),
     );
   });
-  describe('prune', () => {
-    it('should prune minimum fields correctly', () => {
-      const record = new Duration.Record(10000); // 10 seconds
+  await t.step('prune', async (t) => {
+    await t.step('should prune minimum fields correctly', () => {
+      const record = new Duration.Record(10000);
       record.pruneMin('milliseconds');
-      expect(record).toEqual(modZero({ _ms: 10000, seconds: 10 })); // Should retain milliseconds
+      assertRecord(record, modZero({ _ms: 10000, seconds: 10 }));
       record.pruneMin('seconds');
-      expect(record).toEqual(modZero({ _ms: 10000, seconds: 10 })); // Should retain seconds
+      assertRecord(record, modZero({ _ms: 10000, seconds: 10 }));
     });
-    it('should prune minimum fields correctly', () => {
-      const record = new Duration.Record(6000 + 4 * 60000); // 4 minutes 10 seconds
+    await t.step('should prune minimum fields correctly', () => {
+      const record = new Duration.Record(6000 + 4 * 60000);
       record.pruneMin('seconds');
-      expect(record).toEqual(modZero({ _ms: 246000, minutes: 4, seconds: 6 })); // Should retain milliseconds
+      assertRecord(record, modZero({ _ms: 246000, minutes: 4, seconds: 6 }));
       record.pruneMin('minutes');
-      expect(record).toEqual(modZero({ _ms: 246000, minutes: 4.1, seconds: 0 })); // Should retain seconds
+      assertRecord(record, modZero({ _ms: 246000, minutes: 4.1, seconds: 0 }));
     });
 
-    it('should prune maximum fields correctly', () => {
-      const record = new Duration.Record(10000); // 10 seconds
+    await t.step('should prune maximum fields correctly', () => {
+      const record = new Duration.Record(10000);
       record.pruneMax('seconds');
-      expect(record).toEqual(modZero({ _ms: 10000, seconds: 10 })); // Should retain seconds
+      assertRecord(record, modZero({ _ms: 10000, seconds: 10 }));
       record.pruneMax('milliseconds');
-      expect(record).toEqual(modZero({ _ms: 10000, milliseconds: 10000 })); // Should retain milliseconds
+      assertRecord(record, modZero({ _ms: 10000, milliseconds: 10000 }));
     });
   });
 });

@@ -5,12 +5,11 @@
  */
 
 import { bold, rgb24 } from '@std/fmt/colors';
-import { describe, it } from '@std/testing/bdd';
 import { formatters } from '../src/formatters.ts';
 import { TableRenderer } from '../src/render.ts';
 
-describe('Example 04: Fluent API', () => {
-  it('should build a table using the fluent API', () => {
+Deno.test('Example 04: Fluent API', async (t) => {
+  await t.step('should build a table using the fluent API', () => {
     type Metric = {
       name: string;
       value: number;

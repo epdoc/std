@@ -5,14 +5,13 @@
  * the numeric values prominent. This creates a cleaner visual hierarchy.
  */
 
-import { describe, it } from '@std/testing/bdd';
 import { bold, dim, rgb24 } from '@std/fmt/colors';
 import { TableRenderer } from '../src/render.ts';
 import { buildColumns } from '../src/utils.ts';
 import type { ColumnRegistry } from '../src/types.ts';
 
-describe('Example 06: Dim Units', () => {
-  it('should render a table with dimmed units for better readability', () => {
+Deno.test('Example 06: Dim Units', async (t) => {
+  await t.step('should render a table with dimmed units for better readability', () => {
     type SystemMetric = {
       resource: string;
       current: number;
@@ -121,7 +120,7 @@ describe('Example 06: Dim Units', () => {
     console.log('');
   });
 
-  it('should show comparison: with and without dimmed units', () => {
+  await t.step('should show comparison: with and without dimmed units', () => {
     type Comparison = {
       metric: string;
       withDim: string;

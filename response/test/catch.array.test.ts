@@ -1,54 +1,53 @@
 import { FileSpec } from '@epdoc/fs';
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import { assert, assertEquals, assertInstanceOf, assertStringIncludes } from '@std/assert';
 import { resolve } from 'node:path';
 import * as Resp from '../src/mod.ts';
 
 const pwd: string = import.meta.dirname as string;
 
-describe('safe', () => {
-  describe('response', () => {
-    it('normal', async () => {
+Deno.test('safe', async (t) => {
+  await t.step('response', async (t) => {
+    await t.step('normal', async () => {
       const p: Resp.catchAsArray.Result<string> = await Resp.catchAsArray.wrap<string>(
         Deno.readTextFile(resolve(pwd, '../deno.json')),
       );
-      expect(p[0]).toBeNull();
-      expect(p[1]).toContain('"name": "@epdoc/response');
+      assertEquals(p[0], null);
+      assertStringIncludes(p[1] as string, '"name": "@epdoc/response');
     });
-    it('error', async () => {
+    await t.step('error', async () => {
       const [error, data] = await Resp.catchAsArray.wrap<string>(Deno.readTextFile(resolve(pwd, '../deno.xyz')));
-      expect(error).toBeDefined();
-      expect(data).toBeNull();
+      assert(error);
+      assertEquals(data, null);
       if (error) {
-        expect(error.constructor.name).toBe('NotFound');
-        expect(error).toBeInstanceOf(Error);
-        expect(error.code).toEqual('ENOENT');
+        assertEquals(error.constructor.name, 'NotFound');
+        assertInstanceOf(error, Error);
+        assertEquals(error.code, 'ENOENT');
       }
     });
   });
-  describe('api response', () => {
-    it('normal', async () => {
+  await t.step('api response', async (t) => {
+    await t.step('normal', async () => {
       const [error, data, duration] = await Resp.catchAsArray.twrap(Deno.readTextFile(resolve(pwd, '../deno.json')));
-      expect(error).toBeNull;
-      expect(data).toContain('"name": "@epdoc/response');
-      expect(duration).toBeGreaterThan(0);
+      assertEquals(error, null);
+      assertStringIncludes(data as string, '"name": "@epdoc/response');
+      assert(duration > 0);
     });
-    it('error', async () => {
+    await t.step('error', async () => {
       const path = resolve(pwd, '../deno.xyz');
       const fs = new FileSpec(pwd, '../deno.xyz');
       const [error, data, duration] = await Resp.catchAsArray.twrap(fs.readAsString());
-      expect(error).toBeDefined();
+      assert(error);
       if (error) {
-        expect(error).toBeInstanceOf(Error);
-        expect(error.constructor.name).toBe('NotFound');
+        assertInstanceOf(error, Error);
+        assertEquals(error.constructor.name, 'NotFound');
         // @ts-ignore xxx
-        expect(error.path).toBe(path);
-        expect(error.cause).toBe('readAsString');
+        assertEquals(error.path, path);
+        assertEquals(error.cause, 'readAsString');
         // @ts-ignore xxx
-        expect(error.code).toBe('ENOENT');
+        assertEquals(error.code, 'ENOENT');
       }
-      expect(data).toBeNull;
-      expect(duration).toBeGreaterThan(0);
+      assertEquals(data, null);
+      assert(duration > 0);
     });
   });
 });

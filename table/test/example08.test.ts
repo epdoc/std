@@ -8,15 +8,14 @@
  * - Control number of decimal places and time units
  */
 
-import { describe, it } from '@std/testing/bdd';
 import { bold, rgb24 } from '@std/fmt/colors';
 import { TableRenderer } from '../src/render.ts';
 import { buildColumns } from '../src/utils.ts';
 import { formatters } from '../src/formatters.ts';
 import type { ColumnRegistry } from '../src/types.ts';
 
-describe('Example 08: Formatter Options API', () => {
-  it('should show default space-separated formatting', () => {
+Deno.test('Example 08: Formatter Options API', async (t) => {
+  await t.step('should show default space-separated formatting', () => {
     type Resource = {
       name: string;
       cpu: number;
@@ -74,7 +73,7 @@ describe('Example 08: Formatter Options API', () => {
     console.log('');
   });
 
-  it('should show compact formatting with no separators', () => {
+  await t.step('should show compact formatting with no separators', () => {
     type Resource = {
       name: string;
       cpu: number;
@@ -125,7 +124,7 @@ describe('Example 08: Formatter Options API', () => {
     console.log('');
   });
 
-  it('should show colored units for visual hierarchy', () => {
+  await t.step('should show colored units for visual hierarchy', () => {
     type SystemMetric = {
       resource: string;
       current: number;
@@ -198,7 +197,7 @@ describe('Example 08: Formatter Options API', () => {
     console.log('');
   });
 
-  it('should show custom separators and unit counts', () => {
+  await t.step('should show custom separators and unit counts', () => {
     type Service = {
       name: string;
       load: number;
@@ -253,7 +252,7 @@ describe('Example 08: Formatter Options API', () => {
     console.log('');
   });
 
-  it('should compare all separator styles side-by-side', () => {
+  await t.step('should compare all separator styles side-by-side', () => {
     type Comparison = {
       style: string;
       percent: string;

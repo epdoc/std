@@ -4,13 +4,12 @@
  * Demonstrates the simplest way to create and render a table.
  */
 
-import { describe, it } from '@std/testing/bdd';
 import { TableRenderer } from '../src/render.ts';
 import { buildColumns } from '../src/utils.ts';
 import type { ColumnRegistry } from '../src/types.ts';
 
-describe('Example 01: Basic Table', () => {
-  it('should render a simple user table', () => {
+Deno.test('Example 01: Basic Table', async (t) => {
+  await t.step('should render a simple user table', () => {
     // Define your data type
     type User = {
       id: number;

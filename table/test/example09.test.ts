@@ -7,14 +7,13 @@
  * - StyleFn - full control with custom ANSI styling
  */
 
-import { describe, it } from '@std/testing/bdd';
 import { bold, rgb24 } from '@std/fmt/colors';
 import { TableRenderer } from '../src/render.ts';
 import { buildColumns } from '../src/utils.ts';
 import type { ColumnRegistry } from '../src/types.ts';
 
-describe('Example 09: ColorType API', () => {
-  it('should demonstrate simple number colors (foreground)', () => {
+Deno.test('Example 09: ColorType API', async (t) => {
+  await t.step('should demonstrate simple number colors (foreground)', () => {
     type ServerStatus = {
       name: string;
       status: string;
@@ -59,7 +58,7 @@ describe('Example 09: ColorType API', () => {
     console.log('');
   });
 
-  it('should demonstrate ColorSpec for background colors', () => {
+  await t.step('should demonstrate ColorSpec for background colors', () => {
     type AlertLevel = {
       level: string;
       message: string;
@@ -109,7 +108,7 @@ describe('Example 09: ColorType API', () => {
     console.log('');
   });
 
-  it('should demonstrate mixed ColorType usage', () => {
+  await t.step('should demonstrate mixed ColorType usage', () => {
     type Metric = {
       name: string;
       value: number;
@@ -181,7 +180,7 @@ describe('Example 09: ColorType API', () => {
     console.log('');
   });
 
-  it('should show comparison of all ColorType variants', () => {
+  await t.step('should show comparison of all ColorType variants', () => {
     type Comparison = {
       variant: string;
       syntax: string;

@@ -5,7 +5,6 @@
  * Useful when writing to files, logs, or terminals without color support.
  */
 
-import { describe, it } from '@std/testing/bdd';
 import { bold, rgb24 } from '@std/fmt/colors';
 import { TableRenderer } from '../src/render.ts';
 import { buildColumns } from '../src/utils.ts';
@@ -13,8 +12,8 @@ import { formatters } from '../src/formatters.ts';
 import { stripAnsi } from '../src/terminal.ts';
 import type { ColumnRegistry } from '../src/types.ts';
 
-describe('Example 10: noColor Option', () => {
-  it('should demonstrate colored vs plain output side-by-side', () => {
+Deno.test('Example 10: noColor Option', async (t) => {
+  await t.step('should demonstrate colored vs plain output side-by-side', () => {
     type ServerStatus = {
       name: string;
       status: string;
@@ -91,7 +90,7 @@ describe('Example 10: noColor Option', () => {
     console.log('');
   });
 
-  it('should demonstrate fluent API with noColor', () => {
+  await t.step('should demonstrate fluent API with noColor', () => {
     type LogEntry = {
       timestamp: string;
       level: string;
@@ -132,7 +131,7 @@ describe('Example 10: noColor Option', () => {
     console.log('');
   });
 
-  it('should demonstrate Deno.noColor auto-detection pattern', () => {
+  await t.step('should demonstrate Deno.noColor auto-detection pattern', () => {
     type SystemMetric = {
       metric: string;
       value: number;
@@ -175,7 +174,7 @@ describe('Example 10: noColor Option', () => {
     console.log('');
   });
 
-  it('should verify stripAnsi safety net catches formatter colors', () => {
+  await t.step('should verify stripAnsi safety net catches formatter colors', () => {
     type Product = {
       name: string;
       price: number;

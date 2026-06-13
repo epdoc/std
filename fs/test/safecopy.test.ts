@@ -1,19 +1,8 @@
 import * as Err from '$error';
 import { FileSpec, FolderSpec, util } from '$mod';
-import { expect } from '@std/expect';
-import { afterEach, beforeEach, describe, test } from '@std/testing/bdd';
-
-// ---------------------------------------------------------------------------
-// Shared helpers
-// ---------------------------------------------------------------------------
+import { assert, assertEquals, assertInstanceOf, assertStringIncludes } from '@std/assert';
 
 async function makeTree(root: FolderSpec): Promise<void> {
-  // root/
-  //   a.txt       "file-a"
-  //   sub/
-  //     b.txt     "file-b"
-  //     deep/
-  //       c.txt   "file-c"
   await root.ensureDir();
   await new FileSpec(root, 'a.txt').write('file-a');
   const sub = new FolderSpec(root, 'sub');
@@ -24,51 +13,66 @@ async function makeTree(root: FolderSpec): Promise<void> {
   await new FileSpec(deep, 'c.txt').write('file-c');
 }
 
-// ---------------------------------------------------------------------------
-// Suite 1 – FileSpec → FileSpec  (existing conflict-strategy coverage)
-// ---------------------------------------------------------------------------
+async function withFiles(
+  fn: (env: {
+    testDir: string;
+    srcFile: FileSpec;
+    destFile: FileSpec;
+    destFolder: FolderSpec;
+  }) => Promise<void>,
+): Promise<void> {
+  const testDir = await Deno.makeTempDir({ prefix: 'safecopy_test_' });
+  const testDirSpec = new FolderSpec(testDir);
+  const srcFile = new FileSpec(testDirSpec.path, 'src', 'file.txt');
+  const destFile = new FileSpec(testDirSpec.path, 'dest', 'file.txt');
+  const destFolder = new FolderSpec(testDirSpec.path, 'dest');
 
-describe('Safe Copy Operations', () => {
-  let testDir: string;
-  let srcFile: FileSpec;
-  let destFile: FileSpec;
-  let destFolder: FolderSpec;
+  await testDirSpec.ensureDir();
+  await srcFile.ensureParentDir();
+  await srcFile.write('source file');
+  await destFolder.ensureDir();
 
-  beforeEach(async () => {
-    testDir = await Deno.makeTempDir({ prefix: 'safecopy_test_' });
-    const testDirSpec = new FolderSpec(testDir);
-    srcFile = new FileSpec(testDirSpec.path, 'src', 'file.txt');
-    destFile = new FileSpec(testDirSpec.path, 'dest', 'file.txt');
-    destFolder = new FolderSpec(testDirSpec.path, 'dest');
-
-    await testDirSpec.ensureDir();
-    await srcFile.ensureParentDir();
-    await srcFile.write('source file');
-    await destFolder.ensureDir();
-  });
-
-  afterEach(async () => {
+  try {
+    await fn({ testDir, srcFile, destFile, destFolder });
+  } finally {
     await Deno.remove(testDir, { recursive: true });
-  });
+  }
+}
 
-  // -------------------------------------------------------------------------
+async function withFolders(
+  fn: (env: {
+    testDir: string;
+    srcDir: FolderSpec;
+    dstDir: FolderSpec;
+  }) => Promise<void>,
+): Promise<void> {
+  const testDir = await Deno.makeTempDir({ prefix: 'safecopy_test_' });
+  const srcDir = new FolderSpec(testDir, 'src_tree');
+  const dstDir = new FolderSpec(testDir, 'dst_tree');
+  await makeTree(srcDir);
+
+  try {
+    await fn({ testDir, srcDir, dstDir });
+  } finally {
+    await Deno.remove(testDir, { recursive: true });
+  }
+}
+
+Deno.test('Safe Copy Operations', async (t) => {
   // Conflict strategies (file → file, dest pre-exists)
-  // -------------------------------------------------------------------------
-
-  describe('Conflict Strategies', () => {
-    test('skip strategy does nothing if destination exists', async () => {
+  await t.step('skip strategy does nothing if destination exists', () =>
+    withFiles(async ({ srcFile, destFile }) => {
       await destFile.write('dest file');
-      const opts: util.SafeCopyOpts = {
+      await srcFile.safeCopy(destFile, {
         conflictStrategy: { type: util.fileConflictStrategyType.skip },
-      };
-      await srcFile.safeCopy(destFile, opts);
-      const content = await destFile.readAsString();
-      expect(content).toBe('dest file');
-    });
+      });
+      assertEquals(await destFile.readAsString(), 'dest file');
+    }));
 
-    test('error strategy throws if destination exists', async () => {
+  await t.step('error strategy throws if destination exists', () =>
+    withFiles(async ({ srcFile, destFile }) => {
       await destFile.write('dest file');
-      const opts: util.SafeCopyOpts = {
+      const opts = {
         conflictStrategy: { type: util.fileConflictStrategyType.error, errorIfExists: true },
       };
 
@@ -77,300 +81,295 @@ describe('Safe Copy Operations', () => {
         await srcFile.safeCopy(destFile, opts);
       } catch (e) {
         errorThrown = true;
-        expect(e).toBeInstanceOf(Error);
+        assertInstanceOf(e, Error);
         if (e instanceof Error) {
-          expect(e.message).toContain('File exists');
+          assertStringIncludes(e.message, 'File exists');
         }
       }
-      expect(errorThrown).toBe(true);
-    });
+      assert(errorThrown);
+    }));
 
-    test('overwrite strategy overwrites if destination exists', async () => {
+  await t.step('overwrite strategy overwrites if destination exists', () =>
+    withFiles(async ({ srcFile, destFile }) => {
       await destFile.write('dest file');
-      const opts: util.SafeCopyOpts = {
+      await srcFile.safeCopy(destFile, {
         conflictStrategy: { type: util.fileConflictStrategyType.overwrite },
-      };
-      await srcFile.safeCopy(destFile, opts);
-      const content = await destFile.readAsString();
-      expect(content).toBe('source file');
-    });
+      });
+      assertEquals(await destFile.readAsString(), 'source file');
+    }));
 
-    test('renameWithTilde strategy renames destination if it exists', async () => {
-      await destFile.write('dest file');
-      const opts: util.SafeCopyOpts = {
-        conflictStrategy: { type: util.fileConflictStrategyType.renameWithTilde },
-      };
-      await srcFile.safeCopy(destFile, opts);
+  await t.step(
+    'renameWithTilde strategy renames destination if it exists',
+    () =>
+      withFiles(async ({ srcFile, destFile }) => {
+        await destFile.write('dest file');
+        await srcFile.safeCopy(destFile, {
+          conflictStrategy: { type: util.fileConflictStrategyType.renameWithTilde },
+        });
 
-      const content = await destFile.readAsString();
-      expect(content).toBe('source file');
+        assertEquals(await destFile.readAsString(), 'source file');
 
-      const backupFile = new FileSpec(destFile.path + '~');
-      const backupContent = await backupFile.readAsString();
-      expect(backupContent).toBe('dest file');
-    });
+        const backupFile = new FileSpec(destFile.path + '~');
+        assertEquals(await backupFile.readAsString(), 'dest file');
+      }),
+  );
 
-    test('renameWithNumber strategy renames destination if it exists', async () => {
-      await destFile.write('dest file');
-      const opts: util.SafeCopyOpts = {
-        conflictStrategy: { type: util.fileConflictStrategyType.renameWithNumber },
-      };
-      await srcFile.safeCopy(destFile, opts);
+  await t.step(
+    'renameWithNumber strategy renames destination if it exists',
+    () =>
+      withFiles(async ({ srcFile, destFile, destFolder }) => {
+        await destFile.write('dest file');
+        await srcFile.safeCopy(destFile, {
+          conflictStrategy: { type: util.fileConflictStrategyType.renameWithNumber },
+        });
 
-      const content = await destFile.readAsString();
-      expect(content).toBe('source file');
+        assertEquals(await destFile.readAsString(), 'source file');
 
-      const backupFile = new FileSpec(destFolder.path, 'file-01.txt');
-      const backupContent = await backupFile.readAsString();
-      expect(backupContent).toBe('dest file');
-    });
+        const backupFile = new FileSpec(destFolder.path, 'file-01.txt');
+        assertEquals(await backupFile.readAsString(), 'dest file');
+      }),
+  );
 
-    test('renameWithDatetime strategy renames destination with timestamp', async () => {
-      await destFile.write('dest file');
-      const opts: util.SafeCopyOpts = {
-        conflictStrategy: {
-          type: util.fileConflictStrategyType.renameWithDatetime,
-          format: 'yyyyMMdd',
-          separator: '_',
-          prefix: 'backup',
-        },
-      };
-      await srcFile.safeCopy(destFile, opts);
+  await t.step(
+    'renameWithDatetime strategy renames destination with timestamp',
+    () =>
+      withFiles(async ({ srcFile, destFile, destFolder }) => {
+        await destFile.write('dest file');
+        await srcFile.safeCopy(destFile, {
+          conflictStrategy: {
+            type: util.fileConflictStrategyType.renameWithDatetime,
+            format: 'yyyyMMdd',
+            separator: '_',
+            prefix: 'backup',
+          },
+        });
 
-      const content = await destFile.readAsString();
-      expect(content).toBe('source file');
+        assertEquals(await destFile.readAsString(), 'source file');
 
-      // Since we can't predict exact time, we check pattern
-      const entries = await destFolder.getFiles();
-      const backupFile = entries.find((e) => e.basename.startsWith('file_backup'));
-      expect(backupFile).toBeDefined();
-      if (backupFile instanceof FileSpec) {
-        const backupContent = await backupFile.readAsString();
-        expect(backupContent).toBe('dest file');
-      }
-    });
+        const entries = await destFolder.getFiles();
+        const backupFile = entries.find((e) => e.basename.startsWith('file_backup'));
+        assert(backupFile);
+        if (backupFile instanceof FileSpec) {
+          assertEquals(await backupFile.readAsString(), 'dest file');
+        }
+      }),
+  );
 
-    test('renameWithEpochMs strategy renames destination with epoch', async () => {
-      await destFile.write('dest file');
-      const opts: util.SafeCopyOpts = {
-        conflictStrategy: {
-          type: util.fileConflictStrategyType.renameWithEpochMs,
-          separator: '.',
-          prefix: 'old',
-        },
-      };
-      await srcFile.safeCopy(destFile, opts);
+  await t.step(
+    'renameWithEpochMs strategy renames destination with epoch',
+    () =>
+      withFiles(async ({ srcFile, destFile, destFolder }) => {
+        await destFile.write('dest file');
+        await srcFile.safeCopy(destFile, {
+          conflictStrategy: {
+            type: util.fileConflictStrategyType.renameWithEpochMs,
+            separator: '.',
+            prefix: 'old',
+          },
+        });
 
-      const content = await destFile.readAsString();
-      expect(content).toBe('source file');
+        assertEquals(await destFile.readAsString(), 'source file');
 
-      const entries = await destFolder.getFiles();
-      const backupFile = entries.find((e) => e.basename.startsWith('file.old'));
-      expect(backupFile).toBeDefined();
-      if (backupFile instanceof FileSpec) {
-        const backupContent = await backupFile.readAsString();
-        expect(backupContent).toBe('dest file');
-        // Check if suffix is numeric (epoch)
-        const suffix = backupFile.basename.split('old').pop();
-        expect(Number(suffix)).not.toBeNaN();
-      }
-    });
-  });
+        const entries = await destFolder.getFiles();
+        const backupFile = entries.find((e) => e.basename.startsWith('file.old'));
+        assert(backupFile);
+        if (backupFile instanceof FileSpec) {
+          assertEquals(await backupFile.readAsString(), 'dest file');
+          const suffix = backupFile.basename.split('old').pop();
+          assert(!isNaN(Number(suffix)));
+        }
+      }),
+  );
 
-  // -------------------------------------------------------------------------
   // FileSpec → FileSpec: new parent directories, move, and no-conflict copy
-  // -------------------------------------------------------------------------
+  await t.step(
+    'copies to a destination that does not yet exist (creates parent dirs)',
+    () =>
+      withFiles(async ({ testDir, srcFile }) => {
+        const deepDest = new FileSpec(testDir, 'new', 'nested', 'file.txt');
+        assertEquals(await deepDest.exists(), false);
+        await srcFile.safeCopy(deepDest);
+        assertEquals(await deepDest.readAsString(), 'source file');
+      }),
+  );
 
-  describe('FileSpec → FileSpec', () => {
-    test('copies to a destination that does not yet exist (creates parent dirs)', async () => {
-      const deepDest = new FileSpec(testDir, 'new', 'nested', 'file.txt');
-      // Parent does not exist yet
-      expect(await deepDest.exists()).toBe(false);
-      await srcFile.safeCopy(deepDest);
-      expect(await deepDest.readAsString()).toBe('source file');
-    });
-
-    test('copy leaves source intact', async () => {
+  await t.step('copy leaves source intact', () =>
+    withFiles(async ({ srcFile, destFile }) => {
       await srcFile.safeCopy(destFile);
-      expect(await srcFile.exists()).toBe(true);
-      expect(await srcFile.readAsString()).toBe('source file');
-    });
+      assertEquals(await srcFile.exists(), true);
+      assertEquals(await srcFile.readAsString(), 'source file');
+    }));
 
-    test('move removes source after copy', async () => {
+  await t.step('move removes source after copy', () =>
+    withFiles(async ({ srcFile, destFile }) => {
       await srcFile.safeCopy(destFile, { move: true });
-      expect(await destFile.readAsString()).toBe('source file');
-      expect(await srcFile.exists()).toBe(false);
-    });
-  });
+      assertEquals(await destFile.readAsString(), 'source file');
+      assertEquals(await srcFile.exists(), false);
+    }));
 
-  // -------------------------------------------------------------------------
-  // FileSpec → FolderSpec  (the fixed code path)
-  // -------------------------------------------------------------------------
+  // FileSpec → FolderSpec
+  await t.step(
+    'copies file into existing folder using original filename',
+    () =>
+      withFiles(async ({ srcFile, destFolder }) => {
+        await srcFile.safeCopy(destFolder);
+        const copied = new FileSpec(destFolder, 'file.txt');
+        assertEquals(await copied.readAsString(), 'source file');
+      }),
+  );
 
-  describe('FileSpec → FolderSpec', () => {
-    test('copies file into existing folder using original filename', async () => {
-      // destFolder already created in beforeEach
-      await srcFile.safeCopy(destFolder);
-      const copied = new FileSpec(destFolder, 'file.txt');
-      expect(await copied.readAsString()).toBe('source file');
-    });
-
-    test('creates the destination folder if it does not exist', async () => {
+  await t.step('creates the destination folder if it does not exist', () =>
+    withFiles(async ({ testDir, srcFile }) => {
       const newFolder = new FolderSpec(testDir, 'brand-new-dir');
-      expect(await newFolder.exists()).toBe(false);
+      assertEquals(await newFolder.exists(), false);
       await srcFile.safeCopy(newFolder);
       const copied = new FileSpec(newFolder, 'file.txt');
-      expect(await copied.readAsString()).toBe('source file');
-    });
+      assertEquals(await copied.readAsString(), 'source file');
+    }));
 
-    test('conflict strategy (skip) applies when copying into a folder', async () => {
-      // Pre-populate the destination
-      const existingDest = new FileSpec(destFolder, 'file.txt');
-      await existingDest.write('original content');
+  await t.step(
+    'conflict strategy (skip) applies when copying into a folder',
+    () =>
+      withFiles(async ({ srcFile, destFolder }) => {
+        const existingDest = new FileSpec(destFolder, 'file.txt');
+        await existingDest.write('original content');
 
-      const opts: util.SafeCopyOpts = {
-        conflictStrategy: { type: util.fileConflictStrategyType.skip },
-      };
-      await srcFile.safeCopy(destFolder, opts);
-      // File should be unchanged because skip was applied
-      expect(await existingDest.readAsString()).toBe('original content');
-    });
+        await srcFile.safeCopy(destFolder, {
+          conflictStrategy: { type: util.fileConflictStrategyType.skip },
+        });
+        assertEquals(await existingDest.readAsString(), 'original content');
+      }),
+  );
 
-    test('conflict strategy (renameWithTilde) applies when copying into a folder', async () => {
-      const existingDest = new FileSpec(destFolder, 'file.txt');
-      await existingDest.write('original content');
+  await t.step(
+    'conflict strategy (renameWithTilde) applies when copying into a folder',
+    () =>
+      withFiles(async ({ srcFile, destFolder }) => {
+        const existingDest = new FileSpec(destFolder, 'file.txt');
+        await existingDest.write('original content');
 
-      const opts: util.SafeCopyOpts = {
-        conflictStrategy: { type: util.fileConflictStrategyType.renameWithTilde },
-      };
-      await srcFile.safeCopy(destFolder, opts);
-      expect(await existingDest.readAsString()).toBe('source file');
-      const backup = new FileSpec(existingDest.path + '~');
-      expect(await backup.readAsString()).toBe('original content');
-    });
+        await srcFile.safeCopy(destFolder, {
+          conflictStrategy: { type: util.fileConflictStrategyType.renameWithTilde },
+        });
+        assertEquals(await existingDest.readAsString(), 'source file');
+        const backup = new FileSpec(existingDest.path + '~');
+        assertEquals(await backup.readAsString(), 'original content');
+      }),
+  );
 
-    test('move removes source file when copying into a folder', async () => {
-      await srcFile.safeCopy(destFolder, { move: true });
-      expect(await srcFile.exists()).toBe(false);
-      const copied = new FileSpec(destFolder, 'file.txt');
-      expect(await copied.readAsString()).toBe('source file');
-    });
-  });
+  await t.step(
+    'move removes source file when copying into a folder',
+    () =>
+      withFiles(async ({ srcFile, destFolder }) => {
+        await srcFile.safeCopy(destFolder, { move: true });
+        assertEquals(await srcFile.exists(), false);
+        const copied = new FileSpec(destFolder, 'file.txt');
+        assertEquals(await copied.readAsString(), 'source file');
+      }),
+  );
 
-  // -------------------------------------------------------------------------
-  // FolderSpec → FolderSpec
-  // -------------------------------------------------------------------------
+  // FolderSpec → FolderSpec (safeCopyFolder)
+  await t.step(
+    'copies entire directory tree to an existing destination',
+    () =>
+      withFolders(async ({ srcDir, dstDir }) => {
+        await dstDir.ensureDir();
+        await new FolderSpec(srcDir).safeCopy(dstDir);
 
-  describe('FolderSpec → FolderSpec (safeCopyFolder)', () => {
-    let srcDir: FolderSpec;
-    let dstDir: FolderSpec;
+        assertEquals(await new FileSpec(dstDir, 'a.txt').readAsString(), 'file-a');
+        assertEquals(await new FileSpec(dstDir, 'sub', 'b.txt').readAsString(), 'file-b');
+        assertEquals(await new FileSpec(dstDir, 'sub', 'deep', 'c.txt').readAsString(), 'file-c');
+      }),
+  );
 
-    beforeEach(async () => {
-      srcDir = new FolderSpec(testDir, 'src_tree');
-      dstDir = new FolderSpec(testDir, 'dst_tree');
-      await makeTree(srcDir);
-    });
+  await t.step(
+    'creates the destination directory tree if it does not exist',
+    () =>
+      withFolders(async ({ srcDir, dstDir }) => {
+        await new FolderSpec(srcDir).safeCopy(dstDir);
 
-    test('copies entire directory tree to an existing destination', async () => {
-      await dstDir.ensureDir();
-      const srcFolder = new FolderSpec(srcDir);
-      await srcFolder.safeCopy(dstDir);
+        assertEquals(await new FileSpec(dstDir, 'a.txt').readAsString(), 'file-a');
+        assertEquals(await new FileSpec(dstDir, 'sub', 'b.txt').readAsString(), 'file-b');
+      }),
+  );
 
-      expect(await new FileSpec(dstDir, 'a.txt').readAsString()).toBe('file-a');
-      expect(await new FileSpec(dstDir, 'sub', 'b.txt').readAsString()).toBe('file-b');
-      expect(await new FileSpec(dstDir, 'sub', 'deep', 'c.txt').readAsString()).toBe('file-c');
-    });
+  await t.step('move removes entire source tree after copy', () =>
+    withFolders(async ({ srcDir, dstDir }) => {
+      await new FolderSpec(srcDir).safeCopy(dstDir, { move: true });
 
-    test('creates the destination directory tree if it does not exist', async () => {
-      const srcFolder = new FolderSpec(srcDir);
-      await srcFolder.safeCopy(dstDir);
+      assertEquals(await new FileSpec(dstDir, 'a.txt').readAsString(), 'file-a');
+      assertEquals(await new FileSpec(dstDir, 'sub', 'b.txt').readAsString(), 'file-b');
+      assertEquals(await new FileSpec(dstDir, 'sub', 'deep', 'c.txt').readAsString(), 'file-c');
 
-      expect(await new FileSpec(dstDir, 'a.txt').readAsString()).toBe('file-a');
-      expect(await new FileSpec(dstDir, 'sub', 'b.txt').readAsString()).toBe('file-b');
-    });
+      assertEquals(await srcDir.exists(), false);
+    }));
 
-    test('move removes entire source tree after copy', async () => {
-      const srcFolder = new FolderSpec(srcDir);
-      await srcFolder.safeCopy(dstDir, { move: true });
+  await t.step('copy leaves source tree intact', () =>
+    withFolders(async ({ srcDir, dstDir }) => {
+      await new FolderSpec(srcDir).safeCopy(dstDir);
 
-      // Destination should have all files
-      expect(await new FileSpec(dstDir, 'a.txt').readAsString()).toBe('file-a');
-      expect(await new FileSpec(dstDir, 'sub', 'b.txt').readAsString()).toBe('file-b');
-      expect(await new FileSpec(dstDir, 'sub', 'deep', 'c.txt').readAsString()).toBe('file-c');
+      assertEquals(await srcDir.exists(), true);
+      assertEquals(await new FileSpec(srcDir, 'a.txt').readAsString(), 'file-a');
+    }));
 
-      // Source should be gone
-      expect(await srcDir.exists()).toBe(false);
-    });
+  await t.step(
+    'conflict strategy applies to individual files during folder copy',
+    () =>
+      withFolders(async ({ srcDir, dstDir }) => {
+        await dstDir.ensureDir();
+        const existingFile = new FileSpec(dstDir, 'a.txt');
+        await existingFile.write('original-a');
 
-    test('copy leaves source tree intact', async () => {
-      const srcFolder = new FolderSpec(srcDir);
-      await srcFolder.safeCopy(dstDir);
+        await new FolderSpec(srcDir).safeCopy(dstDir, {
+          conflictStrategy: { type: util.fileConflictStrategyType.skip },
+        });
 
-      // Source should still exist with original content
-      expect(await srcDir.exists()).toBe(true);
-      expect(await new FileSpec(srcDir, 'a.txt').readAsString()).toBe('file-a');
-    });
+        assertEquals(await existingFile.readAsString(), 'original-a');
+        assertEquals(await new FileSpec(dstDir, 'sub', 'b.txt').readAsString(), 'file-b');
+      }),
+  );
 
-    test('conflict strategy applies to individual files during folder copy', async () => {
-      // Pre-populate destination with a file that will conflict
-      await dstDir.ensureDir();
-      const existingFile = new FileSpec(dstDir, 'a.txt');
-      await existingFile.write('original-a');
-
-      const opts: util.SafeCopyOpts = {
-        conflictStrategy: { type: util.fileConflictStrategyType.skip },
-      };
-      const srcFolder = new FolderSpec(srcDir);
-      await srcFolder.safeCopy(dstDir, opts);
-
-      // Conflicting file should be skipped (unchanged)
-      expect(await existingFile.readAsString()).toBe('original-a');
-      // Non-conflicting file should be copied
-      expect(await new FileSpec(dstDir, 'sub', 'b.txt').readAsString()).toBe('file-b');
-    });
-  });
-
-  // -------------------------------------------------------------------------
   // Error cases
-  // -------------------------------------------------------------------------
-
-  describe('Error cases', () => {
-    test('throws NotFound when source file does not exist', async () => {
+  await t.step('throws NotFound when source file does not exist', () =>
+    withFiles(async ({ testDir, destFolder }) => {
       const missing = new FileSpec(testDir, 'no-such-file.txt');
       let threw = false;
       try {
         await missing.safeCopy(destFolder);
       } catch (e) {
         threw = true;
-        expect(e).toBeInstanceOf(Err.NotFound);
+        assertInstanceOf(e, Err.NotFound);
       }
-      expect(threw).toBe(true);
-    });
+      assert(threw);
+    }));
 
-    test('throws InvalidData when source is a symlink', async () => {
-      const linkPath = testDir + '/mylink.txt';
-      await Deno.symlink(srcFile.path, linkPath);
+  await t.step(
+    'throws InvalidData when source is a symlink',
+    () =>
+      withFiles(async ({ testDir, srcFile, destFolder }) => {
+        const linkPath = testDir + '/mylink.txt';
+        await Deno.symlink(srcFile.path, linkPath);
 
-      // Wrap in FSSpec so resolveType hits the disk and detects the symlink.
-      const { safeCopy } = await import('$util');
-      const { FSSpec } = await import('$spec');
-      let threw = false;
-      try {
-        await safeCopy(new FSSpec(linkPath), destFolder);
-      } catch (e) {
-        threw = true;
-        expect(e).toBeInstanceOf(Err.InvalidData);
-      }
-      expect(threw).toBe(true);
-    });
+        const { safeCopy } = await import('$util');
+        const { FSSpec } = await import('$spec');
+        let threw = false;
+        try {
+          await safeCopy(new FSSpec(linkPath), destFolder);
+        } catch (e) {
+          threw = true;
+          assertInstanceOf(e, Err.InvalidData);
+        }
+        assert(threw);
+      }),
+  );
 
-    test('throws InvalidData when destination is a symlink', async () => {
+  await t.step('throws InvalidData when destination is a symlink', () =>
+    withFiles(async ({ testDir, srcFile }) => {
       const linkTarget = new FolderSpec(testDir, 'real_dir');
       await linkTarget.ensureDir();
       const linkPath = testDir + '/linked_dir';
       await Deno.symlink(linkTarget.path, linkPath);
 
-      // Wrap in FSSpec so resolveType detects the symlink on disk.
       const { safeCopy } = await import('$util');
       const { FSSpec } = await import('$spec');
       let threw = false;
@@ -378,9 +377,8 @@ describe('Safe Copy Operations', () => {
         await safeCopy(srcFile, new FSSpec(linkPath));
       } catch (e) {
         threw = true;
-        expect(e).toBeInstanceOf(Err.InvalidData);
+        assertInstanceOf(e, Err.InvalidData);
       }
-      expect(threw).toBe(true);
-    });
-  });
+      assert(threw);
+    }));
 });

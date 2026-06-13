@@ -141,3 +141,18 @@ export function isFileConflictStrategyType(value: unknown): value is FileConflic
   return _.isString(value) &&
     Object.values(fileConflictStrategyType).includes(value as unknown as FileConflictStrategyType);
 }
+
+/**
+ * Detects if val has actionable deepCopy options. This is not stricklty speaking a type guard.
+ * Instead it tells us if deepCopy needs to be used.
+ * @param val
+ * @returns
+ */
+export function hasDeepCopyOpts(val: unknown): boolean {
+  if (!_.isDict(val)) return false;
+  if (val.deepCopy === true) return true;
+  if ('replace' in val && _.isDict(val.replace)) return true;
+  if ('detectRegExp' in val && val.detectRegExp === true) return true;
+  if ('includeUrl' in val && val.includeUrl === true) return true;
+  return false;
+}

@@ -1,5 +1,14 @@
 import { REGEX } from './consts.ts';
-import type { AsFloatOpts, CompareResult, Dict, Integer, PosInteger, RegExpDef, WholeNumber } from './types.ts';
+import type {
+  AsFloatOpts,
+  CompareResult,
+  Dict,
+  Integer,
+  IStrict,
+  PosInteger,
+  RegExpDef,
+  WholeNumber,
+} from './types.ts';
 
 /**
  * Checks if the given value is a boolean.
@@ -309,9 +318,9 @@ export function isDict(val: unknown): val is Dict {
   }
 
   // 4. Check for plain object prototype. This will exclude class instances.
-  // This also means objects created with Object.create(null) will return false.
+  // This handles objects created with Object.create(null) by returning true.
   const proto = Object.getPrototypeOf(val);
-  return proto === Object.prototype || proto === null; // proto === null handles Object.create(null)
+  return proto === Object.prototype || proto === null;
 }
 
 /**
@@ -337,50 +346,23 @@ export function hasOnlyAllowedProperties<T extends string>(
 }
 
 /**
- * Type guard to check if an unknown value is a valid RegExpDef object.
- * It ensures that the value is an object with either a non-empty 'pattern'
- * or a non-empty 'regex' property (but not both).
- *
- * @param {unknown} val The value to check.
- * @returns {val is RegExpDef} True if the value conforms to the RegExpDef type, false otherwise.
+ * Validates if an unknown value strictly conforms to the RegExpDef type.
+ * Rejects any objects containing undocumented or excess properties.
+ * * @param val - The value to evaluate.
+ * @returns True if the value is a valid RegExpDef, otherwise false.
  */
 export function isRegExpDef(val: unknown): val is RegExpDef {
-  // First, ensure it's a dictionary-like object
-  if (!isDict(val)) {
+  if (!val || typeof val !== 'object') return false;
+
+  const obj = val as Record<string, unknown>;
+  const mainKey = 'pattern' in obj ? 'pattern' : 'regex';
+
+  if (typeof obj[mainKey] !== 'string' || ('flags' in obj && typeof obj.flags !== 'string')) {
     return false;
   }
 
-  const asDict = val as Record<string, unknown>; // Cast for easier property access
-
-  const hasPattern = Object.prototype.hasOwnProperty.call(asDict, 'pattern');
-  const hasRegex = Object.prototype.hasOwnProperty.call(asDict, 'regex');
-  const hasFlags = Object.prototype.hasOwnProperty.call(asDict, 'flags');
-
-  // Must have exactly one of 'pattern' or 'regex'
-  if (!(hasPattern || hasRegex) || (hasPattern && hasRegex)) {
-    return false;
-  }
-
-  // Check the 'pattern' property if it exists
-  if (hasPattern) {
-    if (!isNonEmptyString(asDict.pattern)) {
-      return false;
-    }
-  }
-
-  // Check the 'regex' property if it exists
-  if (hasRegex) {
-    if (!isNonEmptyString(asDict.regex)) {
-      return false;
-    }
-  }
-
-  // If flags exist, ensure they are a string
-  if (hasFlags && typeof asDict.flags !== 'string') {
-    return false;
-  }
-
-  return true;
+  // Strictly ensure no properties exist outside of the active main key and flags
+  return Object.keys(obj).every((key) => key === mainKey || key === 'flags');
 }
 
 /**
@@ -651,17 +633,11 @@ export function asRegExp(val: unknown): RegExp | undefined {
 
   // Case 2: Value is a RegExpDef object
   if (isRegExpDef(val)) {
-    const patternString: string | undefined = val.pattern ? val.pattern : val.regex;
-
-    if (isNonEmptyString(patternString)) {
-      // Create and return the RegExp object
-      try {
-        return new RegExp(patternString, val.flags);
-      } catch (_e) {
-        // Catch potential errors if the pattern or flags are invalid for RegExp constructor
-        // console.warn('Failed to create RegExp from RegExpDef:', e, 'Input:', val);
-        return undefined;
-      }
+    const pattern = ('pattern' in val && val.pattern !== undefined) ? val.pattern : val.regex;
+    try {
+      return new RegExp(pattern, val.flags);
+    } catch (_e) {
+      return undefined;
     }
   }
 
@@ -673,7 +649,7 @@ export function asRegExp(val: unknown): RegExp | undefined {
  * Union of the Temporal types supported by this library.
  * These are the three types used internally by {@link DateTime} in @epdoc/datetime.
  */
-export type TemporalVal = Temporal.Instant | Temporal.ZonedDateTime | Temporal.PlainDateTime;
+export type TemporalDateTime = Temporal.Instant | Temporal.ZonedDateTime | Temporal.PlainDateTime;
 
 const _hasTemporal = typeof Temporal !== 'undefined';
 
@@ -709,7 +685,7 @@ export function isTemporalPlainDateTime(val: unknown): val is Temporal.PlainDate
  * @param val - The value to check
  * @returns True if the value is a Temporal.Instant, Temporal.ZonedDateTime, or Temporal.PlainDateTime
  */
-export function isTemporal(val: unknown): val is TemporalVal {
+export function isTemporal(val: unknown): val is TemporalDateTime {
   return isTemporalInstant(val) || isTemporalZonedDateTime(val) || isTemporalPlainDateTime(val);
 }
 
@@ -743,7 +719,7 @@ export function isTemporal(val: unknown): val is TemporalVal {
  * asTemporal('invalid');                              // undefined
  * ```
  */
-export function asTemporal(input: unknown): TemporalVal | undefined {
+export function asTemporal(input: unknown, opts?: { strict: boolean }): TemporalDateTime | undefined {
   if (!_hasTemporal || input === null || input === undefined) return undefined;
 
   // Already a supported Temporal type
@@ -761,7 +737,7 @@ export function asTemporal(input: unknown): TemporalVal | undefined {
 
   // String → parse with timezone awareness
   if (typeof input === 'string') {
-    return parseTemporalString(input);
+    return parseTemporalString(input, opts);
   }
 
   // Property bag → PlainDateTime
@@ -776,6 +752,8 @@ export function asTemporal(input: unknown): TemporalVal | undefined {
   return undefined;
 }
 
+const ISO_DATE_PREFIX = /^\d{4}-\d{2}-\d{2}/;
+
 /**
  * Parses a string into the most appropriate Temporal type.
  *
@@ -787,38 +765,47 @@ export function asTemporal(input: unknown): TemporalVal | undefined {
  * @returns A Temporal type, or `undefined` if parsing fails
  * @internal
  */
-export function parseTemporalString(s: string): TemporalVal | undefined {
-  const sanitized = s.trim();
+export function parseTemporalString(
+  s: string,
+  opts: IStrict = { strict: true },
+): TemporalDateTime | undefined {
+  // Fast-fail 1: must start with ISO 8601 date prefix
+  if (!ISO_DATE_PREFIX.test(s)) return undefined;
+
   try {
-    // 1. Bracket IANA timezone annotation → ZonedDateTime natively
-    const bracketMatch = sanitized.match(/\[([\w/_-]+)\]$/);
-    if (bracketMatch) {
-      return Temporal.ZonedDateTime.from(sanitized);
+    // Fast-fail 2: must contain time component (T) - we only handle datetimes
+    if (!s.includes('T')) {
+      if (opts.strict) return undefined;
+      return Temporal.PlainDateTime.from(s);
     }
 
-    // 2. 'Z' or numeric offset → Instant + apply timezone
-    const offsetMatch = sanitized.match(/(Z|[+-]\d{2}:?\d{2})$/);
+    // 1. Bracket IANA timezone → ZonedDateTime
+    if (/\[[\w/_-]+\]$/.test(s)) {
+      return Temporal.ZonedDateTime.from(s);
+    }
+
+    // 2. 'Z' or numeric offset (hh:mm or hhmm) → Instant + toZonedDateTimeISO
+    const offsetMatch = s.match(/(Z|[+-]\d{2}:?\d{2})$/);
     if (offsetMatch) {
       const rawTz = offsetMatch[1];
-      let tzId: string;
+      // If it's just 'Z', Instant handles it perfectly
       if (rawTz === 'Z') {
-        tzId = 'UTC';
-      } else if (/^[+-]\d{4}$/.test(rawTz)) {
+        return Temporal.Instant.from(s);
+      }
+
+      // If it's a numeric offset, format it and append as a bracket annotation
+      let tzId: string;
+      if (/^[+-]\d{4}$/.test(rawTz)) {
         tzId = rawTz.slice(0, 3) + ':' + rawTz.slice(3);
       } else {
         tzId = rawTz;
       }
-      const instant = Temporal.Instant.from(sanitized);
-      return instant.toZonedDateTimeISO(tzId);
+      return Temporal.ZonedDateTime.from(`${s}[${tzId}]`);
     }
 
-    // 3. No timezone info: treat as wall-clock time
-    return Temporal.PlainDateTime.from(sanitized);
+    // 3. Has T but no timezone → PlainDateTime
+    return Temporal.PlainDateTime.from(s);
   } catch {
-    const d = new Date(sanitized);
-    if (!isNaN(d.getTime())) {
-      return Temporal.Instant.fromEpochMilliseconds(d.getTime());
-    }
     return undefined;
   }
 }

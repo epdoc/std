@@ -5,7 +5,6 @@
  * and TableBuilder fluent API.
  */
 
-import { describe, it } from '@std/testing/bdd';
 import { assertEquals, assertStringIncludes } from '@std/assert';
 import { table } from '../src/simple.ts';
 
@@ -22,9 +21,9 @@ const users: User[] = [
   { id: 3, userName: 'Charlie Brown', emailAddress: 'charlie@example.com', isActive: true },
 ];
 
-describe('Simple API', () => {
-  describe('Basic table() function', () => {
-    it('should create a table with auto-discovered columns', () => {
+Deno.test('Simple API', async (t) => {
+  await t.step('Basic table() function', async (t) => {
+    await t.step('should create a table with auto-discovered columns', () => {
       const result = table(users).toString();
 
       // Should include auto-formatted headers
@@ -34,7 +33,7 @@ describe('Simple API', () => {
       assertStringIncludes(result, 'Is Active');
     });
 
-    it('should select specific columns when provided', () => {
+    await t.step('should select specific columns when provided', () => {
       const result = table(users, ['id', 'userName']).toString();
 
       assertStringIncludes(result, 'Id');
@@ -44,7 +43,7 @@ describe('Simple API', () => {
       assertEquals(result.includes('Is Active'), false);
     });
 
-    it('should select specific columns using columns option', () => {
+    await t.step('should select specific columns using columns option', () => {
       const result = table(users, { columns: ['id', 'emailAddress'] }).toString();
 
       assertStringIncludes(result, 'Id');
@@ -53,8 +52,8 @@ describe('Simple API', () => {
     });
   });
 
-  describe('Column configuration', () => {
-    it('should configure column alignment', () => {
+  await t.step('Column configuration', async (t) => {
+    await t.step('should configure column alignment', () => {
       const result = table(users)
         .column('id', 'right')
         .column('userName', 'left')
@@ -64,7 +63,7 @@ describe('Simple API', () => {
       assertStringIncludes(result, 'User Name');
     });
 
-    it('should configure column with full options', () => {
+    await t.step('should configure column with full options', () => {
       const result = table(users)
         .column('id', {
           align: 'right',
@@ -75,7 +74,7 @@ describe('Simple API', () => {
       assertStringIncludes(result, 'ID#');
     });
 
-    it('should override auto-formatted headers', () => {
+    await t.step('should override auto-formatted headers', () => {
       const result = table(users)
         .column('userName', { header: 'Name' })
         .toString();
@@ -85,13 +84,13 @@ describe('Simple API', () => {
     });
   });
 
-  describe('Header configuration', () => {
-    it('should show header by default', () => {
+  await t.step('Header configuration', async (t) => {
+    await t.step('should show header by default', () => {
       const result = table(users).toString();
       assertStringIncludes(result, 'Id');
     });
 
-    it('should configure header color', () => {
+    await t.step('should configure header color', () => {
       const result = table(users)
         .header('cyan')
         .toString();
@@ -102,7 +101,7 @@ describe('Simple API', () => {
 
     // Note: noHeader() currently prevents header styling but doesn't hide the row
     // This would require TableRenderer enhancement
-    it('should allow noHeader() call for future enhancement', () => {
+    await t.step('should allow noHeader() call for future enhancement', () => {
       const result = table(users)
         .noHeader()
         .toString();
@@ -113,8 +112,8 @@ describe('Simple API', () => {
     });
   });
 
-  describe('Borders', () => {
-    it('should enable borders by default', () => {
+  await t.step('Borders', async (t) => {
+    await t.step('should enable borders by default', () => {
       const result = table(users).toString();
       // Should contain box-drawing characters
       assertStringIncludes(result, '┌');
@@ -123,14 +122,14 @@ describe('Simple API', () => {
       assertStringIncludes(result, '┘');
     });
 
-    it('should disable borders with noBorders()', () => {
+    await t.step('should disable borders with noBorders()', () => {
       const result = table(users).noBorders().toString();
       // Should NOT contain box-drawing characters
       assertEquals(result.includes('┌'), false);
       assertEquals(result.includes('│'), false);
     });
 
-    it('should support different border styles', () => {
+    await t.step('should support different border styles', () => {
       const light = table(users).borders('light').toString();
       const heavy = table(users).borders('heavy').toString();
       const double = table(users).borders('double').toString();
@@ -142,27 +141,27 @@ describe('Simple API', () => {
     });
   });
 
-  describe('Zebra striping', () => {
-    it('should not have zebra striping by default', () => {
+  await t.step('Zebra striping', async (t) => {
+    await t.step('should not have zebra striping by default', () => {
       const builder = table(users);
       const result = builder.toString();
       // Just verify it renders without error
       assertStringIncludes(result, 'Alice');
     });
 
-    it('should enable zebra striping', () => {
+    await t.step('should enable zebra striping', () => {
       const result = table(users).zebra().toString();
       // Just verify it renders without error
       assertStringIncludes(result, 'Alice');
     });
 
-    it('should disable zebra striping with noZebra()', () => {
+    await t.step('should disable zebra striping with noZebra()', () => {
       const result = table(users).zebra().noZebra().toString();
       assertStringIncludes(result, 'Alice');
     });
   });
 
-  describe('Formatters', () => {
+  await t.step('Formatters', async (t) => {
     interface Server {
       name: string;
       memory: number;
@@ -176,7 +175,7 @@ describe('Simple API', () => {
       { name: 'web-02', memory: 4294967296, cpu: 0.567, uptime: 43200, isOnline: false },
     ];
 
-    it('should format bytes', () => {
+    await t.step('should format bytes', () => {
       const result = table(servers)
         .column('memory', { format: 'bytes' })
         .toString();
@@ -184,7 +183,7 @@ describe('Simple API', () => {
       assertStringIncludes(result, 'GiB');
     });
 
-    it('should format percentages', () => {
+    await t.step('should format percentages', () => {
       const result = table(servers)
         .column('cpu', { format: 'percent' })
         .toString();
@@ -192,7 +191,7 @@ describe('Simple API', () => {
       assertStringIncludes(result, '%');
     });
 
-    it('should format uptime', () => {
+    await t.step('should format uptime', () => {
       const result = table(servers)
         .column('uptime', { format: 'uptime' })
         .toString();
@@ -201,7 +200,7 @@ describe('Simple API', () => {
       assertStringIncludes(result, 'h'); // hours
     });
 
-    it('should format checkmarks', () => {
+    await t.step('should format checkmarks', () => {
       const result = table(servers)
         .column('isOnline', { format: 'checkmark' })
         .toString();
@@ -210,7 +209,7 @@ describe('Simple API', () => {
       assertStringIncludes(result, '✘');
     });
 
-    it('should format boolean with default preset', () => {
+    await t.step('should format boolean with default preset', () => {
       const result = table(servers)
         .column('isOnline', { format: 'boolean' })
         .toString();
@@ -219,7 +218,7 @@ describe('Simple API', () => {
       assertStringIncludes(result, '✗');
     });
 
-    it('should format boolean with circleDot preset', () => {
+    await t.step('should format boolean with circleDot preset', () => {
       const result = table(servers)
         .column('isOnline', { format: 'boolean', boolPreset: 'circleDot' })
         .toString();
@@ -228,7 +227,7 @@ describe('Simple API', () => {
       assertStringIncludes(result, '‧');
     });
 
-    it('should format boolean with yesno preset', () => {
+    await t.step('should format boolean with yesno preset', () => {
       const result = table(servers)
         .column('isOnline', { format: 'boolean', boolPreset: 'yesno' })
         .toString();
@@ -238,7 +237,7 @@ describe('Simple API', () => {
     });
   });
 
-  describe('Datetime formatting', () => {
+  await t.step('Datetime formatting', async (t) => {
     interface LogEntry {
       timestamp: Date;
       message: string;
@@ -249,7 +248,7 @@ describe('Simple API', () => {
       { timestamp: new Date('2024-01-16T08:15:30Z'), message: 'Request received' },
     ];
 
-    it('should format datetime with default pattern', () => {
+    await t.step('should format datetime with default pattern', () => {
       const result = table(logs)
         .column('timestamp', { format: 'datetime' })
         .toString();
@@ -258,7 +257,7 @@ describe('Simple API', () => {
       assertStringIncludes(result, 'Timestamp');
     });
 
-    it('should format datetime with custom pattern', () => {
+    await t.step('should format datetime with custom pattern', () => {
       const result = table(logs)
         .column('timestamp', {
           format: 'datetime',
@@ -269,7 +268,7 @@ describe('Simple API', () => {
       assertStringIncludes(result, '20240115');
     });
 
-    it('should handle string dates', () => {
+    await t.step('should handle string dates', () => {
       interface Event {
         date: string;
         name: string;
@@ -286,7 +285,7 @@ describe('Simple API', () => {
       assertStringIncludes(result, '2024');
     });
 
-    it('should handle epoch timestamps', () => {
+    await t.step('should handle epoch timestamps', () => {
       interface Metric {
         time: number;
         value: number;
@@ -304,8 +303,8 @@ describe('Simple API', () => {
     });
   });
 
-  describe('Colors', () => {
-    it('should support hex colors', () => {
+  await t.step('Colors', async (t) => {
+    await t.step('should support hex colors', () => {
       const result = table(users)
         .header(0x58d1eb)
         .toString();
@@ -314,7 +313,7 @@ describe('Simple API', () => {
       assertStringIncludes(result, 'Id');
     });
 
-    it('should support named colors', () => {
+    await t.step('should support named colors', () => {
       const result = table(users)
         .header('cyan')
         .column('isActive', { color: 'green' })
@@ -324,8 +323,8 @@ describe('Simple API', () => {
     });
   });
 
-  describe('No color mode', () => {
-    it('should strip colors with noColor()', () => {
+  await t.step('No color mode', async (t) => {
+    await t.step('should strip colors with noColor()', () => {
       const result = table(users)
         .header('cyan')
         .noColor()
@@ -336,8 +335,8 @@ describe('Simple API', () => {
     });
   });
 
-  describe('Custom color palettes', () => {
-    it('should support custom color definitions', async () => {
+  await t.step('Custom color palettes', async (t) => {
+    await t.step('should support custom color definitions', async () => {
       const { defineColors } = await import('../src/simple.ts');
 
       const myColors = defineColors({
@@ -354,22 +353,22 @@ describe('Simple API', () => {
     });
   });
 
-  describe('Header formatting options', () => {
-    it('should format camelCase to Title Case by default', () => {
+  await t.step('Header formatting options', async (t) => {
+    await t.step('should format camelCase to Title Case by default', () => {
       const result = table(users).toString();
       assertStringIncludes(result, 'User Name');
       assertStringIncludes(result, 'Email Address');
     });
 
-    it('should preserve original keys when formatHeaders is false', () => {
+    await t.step('should preserve original keys when formatHeaders is false', () => {
       const result = table(users, { formatHeaders: false }).toString();
       assertStringIncludes(result, 'userName');
       assertStringIncludes(result, 'emailAddress');
     });
   });
 
-  describe('Data override', () => {
-    it('should allow overriding data', () => {
+  await t.step('Data override', async (t) => {
+    await t.step('should allow overriding data', () => {
       const newUsers: User[] = [
         { id: 99, userName: 'New User', emailAddress: 'new@example.com', isActive: true },
       ];
@@ -383,14 +382,14 @@ describe('Simple API', () => {
     });
   });
 
-  describe('Output methods', () => {
-    it('should support toString()', () => {
+  await t.step('Output methods', async (t) => {
+    await t.step('should support toString()', () => {
       const result = table(users).toString();
       assertEquals(typeof result, 'string');
       assertStringIncludes(result, 'Alice');
     });
 
-    it('should support render() returning array', () => {
+    await t.step('should support render() returning array', () => {
       const lines = table(users).render();
       assertEquals(Array.isArray(lines), true);
       assertEquals(lines.length > 0, true);

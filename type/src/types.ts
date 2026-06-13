@@ -34,6 +34,13 @@ export type EmptyDict = Record<string, never>;
 export type EmptyObject = Record<PropertyKey, never>;
 
 /**
+ * Represents all values that evaluate to `false` in a JavaScript boolean context.
+ *
+ * Includes: `false`, `""` (empty string), `0` (and `-0`, `0n`), `null`, and `undefined`.
+ */
+export type Falsy = undefined | null | false | 0 | '';
+
+/**
  * Result of a comparison between two Dict objects.
  */
 export type CompareResult = -1 | 0 | 1;
@@ -58,7 +65,7 @@ export type Brand<T, B> = T & { [__brand]: B };
  *
  * @template T - The base object type from which to derive the properties.
  * @template K - The subset of keys from T to enforce the "exactly one" rule upon. Defaults to all keys
-   of T.
+ *  of T.
  *
  * @example
  * // Define a base type for different kinds of messages
@@ -241,53 +248,6 @@ export type AsFloatOpts = {
   commaAsDecimal?: boolean;
 };
 
-/**
- * Function type for deep copying an object.
- */
-export type DeepCopyFn = (a: unknown, opts: DeepCopyOpts) => unknown;
-
-/**
- * Options for deep copying an object.
- */
-export type MSubFn = (s: string, replace: Record<string, unknown>, pre?: string, post?: string) => string;
-
-export type DeepCopyCommonOpts = {
-  detectRegExp?: boolean;
-  pre?: string;
-  post?: string;
-};
-
-export type DeepCopyOpts =
-  & DeepCopyCommonOpts
-  & (
-    | { replace?: never; msubFn?: never } // No replacements
-    | { replace: Record<string, string>; msubFn?: never } // Simple string replacements
-    | { replace: Record<string, unknown>; msubFn: MSubFn } // Complex replacements with function
-  );
-
-export type JsonDeserializeOpts = DeepCopyOpts & {
-  stripComments?: StripJsonCommentsOpts;
-  /**
-   * When true, ISO 8601 date-time strings encountered during deserialization
-   * will be converted to the appropriate Temporal type (ZonedDateTime,
-   * PlainDateTime, or Instant) via {@link asTemporal}, rather than left as
-   * plain strings.
-   * @default false
-   */
-  autoTemporal?: boolean;
-};
-
-export type StripJsonCommentsOpts = {
-  /**
-   * If true, whitespace characters in comments will be replaced with a single space.
-   * If false, comments will be removed without replacing them with spaces.
-   * Defaults to true.
-   */
-  whitespace?: boolean;
-
-  /**
-   * If true, trailing commas in arrays and objects will be removed.
-   * Defaults to false.
-   */
-  trailingCommas?: boolean;
-};
+export interface IStrict {
+  strict?: boolean;
+}
