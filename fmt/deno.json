@@ -1,12 +1,13 @@
 {
   "name": "@epdoc/fmt",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "exports": {
     ".": "./src/mod.ts",
     "./bool": "./src/bool.ts",
     "./percent": "./src/percent.ts",
     "./bytes": "./src/bytes.ts",
-    "./uptime": "./src/uptime.ts"
+    "./uptime": "./src/uptime.ts",
+    "./char": "./src/char.ts"
   },
   "publish": {
     "include": [
