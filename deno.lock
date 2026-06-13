@@ -298,8 +298,8 @@
       },
       "daterange": {
         "dependencies": [
-          "jsr:@epdoc/datetime@^4.1.6",
-          "jsr:@epdoc/type@^2.0.0-alpha.2",
+          "jsr:@epdoc/datetime@^4.1.9",
+          "jsr:@epdoc/type@^2.0.0-alpha.4",
           "jsr:@std/assert@^1.0.19"
         ]
       },
