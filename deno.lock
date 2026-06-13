@@ -2,15 +2,11 @@
   "version": "5",
   "specifiers": {
     "jsr:@deno/graph@*": "0.108.2",
-    "jsr:@epdoc/colors@^1.1.2": "1.1.2",
     "jsr:@epdoc/datetime@^4.1.9": "4.1.9",
     "jsr:@epdoc/duration@~0.3.20": "0.3.20",
-    "jsr:@epdoc/fmt@^1.0.12": "1.0.12",
-    "jsr:@epdoc/fs@^1.5.6": "1.5.6",
-    "jsr:@epdoc/terminal@^0.0.14": "0.0.14",
-    "jsr:@epdoc/transform@^2.0.0-alpha.7": "2.0.0-alpha.7",
+    "jsr:@epdoc/transform@2": "2.0.0",
     "jsr:@epdoc/type@1.0.3": "1.0.3",
-    "jsr:@epdoc/type@^1.2.17": "1.2.18",
+    "jsr:@epdoc/type@2": "2.0.0",
     "jsr:@epdoc/type@^2.0.0-alpha.4": "2.0.0-alpha.4",
     "jsr:@std/assert@^1.0.19": "1.0.19",
     "jsr:@std/bytes@^1.0.5": "1.0.5",
@@ -33,12 +29,6 @@
   "jsr": {
     "@deno/graph@0.108.2": {
       "integrity": "b273a0d33dc42cbed5bead5a0593c10c2ebcd9b02939c648647ed238db5438a6"
-    },
-    "@epdoc/colors@1.1.2": {
-      "integrity": "5b565e92ff0edb01c61164625d6ddeda08ed0e503ccaec366e6336dcc4dbbe9c",
-      "dependencies": [
-        "jsr:@std/fmt@^1.0.10"
-      ]
     },
     "@epdoc/datetime@2.0.0-beta.4": {
       "integrity": "432b2b266ba6c32de75b6ea72152d9443bd96ca30257311a36a2777b13061d7a"
@@ -70,32 +60,8 @@
     "@epdoc/duration@0.3.20": {
       "integrity": "53c3c68e574f90f4526da5263af9c342eac3e2c1d5882770413b6777789e7fa6"
     },
-    "@epdoc/fmt@1.0.12": {
-      "integrity": "68c8aa72f5867d3370ccbf333e5e1082a13cdfe8a4446e60a2b8bef199b8fe7e",
-      "dependencies": [
-        "jsr:@std/fmt@^1.0.10"
-      ]
-    },
-    "@epdoc/fs@1.5.6": {
-      "integrity": "82a478a3ee2be81daf628039c1f108c181b009917ad771361ff5bc87f172112e",
-      "dependencies": [
-        "jsr:@epdoc/type@^1.2.17",
-        "jsr:@std/assert",
-        "jsr:@std/bytes@^1.0.6",
-        "jsr:@std/encoding@^1.0.10",
-        "jsr:@std/fs",
-        "jsr:@std/path"
-      ]
-    },
-    "@epdoc/terminal@0.0.14": {
-      "integrity": "fafb9d2fe53d67417e6f005d19f099da3b6da69adff1c6ad0bcc29f2fab838a1",
-      "dependencies": [
-        "jsr:@std/fmt@^1.0.10",
-        "jsr:@std/path"
-      ]
-    },
-    "@epdoc/transform@2.0.0-alpha.7": {
-      "integrity": "64eb5c6f06306c68ef7f24a130ffc6a912e811415b0aa912261d7a483318bf15",
+    "@epdoc/transform@2.0.0": {
+      "integrity": "df4de8c191f1690e5d82ba2f8c168abced74cdcc1068fbaf17488bcb8c22d747",
       "dependencies": [
         "jsr:@std/encoding@^1.0.10"
       ]
@@ -103,17 +69,14 @@
     "@epdoc/type@1.0.3": {
       "integrity": "fec5a44cb1568c77e41ff2139e5503da9291d302ddf3443ed02dca68f7307045"
     },
-    "@epdoc/type@1.2.18": {
-      "integrity": "0f95652669fc4e19ff7620270dffe90e998480ebcf0c286c59ccdbed3a7f0a67",
-      "dependencies": [
-        "jsr:@std/encoding@^1.0.10"
-      ]
-    },
     "@epdoc/type@2.0.0-alpha.2": {
       "integrity": "6bd2fa3a484d69100ee28ee59389345aac72d6221f762c87be9d039ede757051"
     },
     "@epdoc/type@2.0.0-alpha.4": {
       "integrity": "8456f24650cfd03ac2c9d7cdd80e757378b2a9775daf532f9baff7e854e7df6f"
+    },
+    "@epdoc/type@2.0.0": {
+      "integrity": "f0c0d77a6b0e74ada5a568267128af88d7512154e5fdc0268d254f55012a4aa6"
     },
     "@std/assert@1.0.19": {
       "integrity": "eaada96ee120cb980bc47e040f82814d786fe8162ecc53c91d8df60b8755991e",
@@ -330,8 +293,8 @@
       "fs": {
         "dependencies": [
           "jsr:@epdoc/datetime@^4.1.9",
-          "jsr:@epdoc/transform@^2.0.0-alpha.7",
-          "jsr:@epdoc/type@^2.0.0-alpha.4",
+          "jsr:@epdoc/transform@2",
+          "jsr:@epdoc/type@2",
           "jsr:@std/assert@^1.0.19",
           "jsr:@std/bytes@^1.0.6",
           "jsr:@std/encoding@^1.0.10",
