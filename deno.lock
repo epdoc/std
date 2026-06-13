@@ -372,7 +372,7 @@
       },
       "text": {
         "dependencies": [
-          "jsr:@epdoc/type@^2.0.0-alpha.2",
+          "jsr:@epdoc/type@^2.0.0-alpha.4",
           "jsr:@std/assert@^1.0.19"
         ]
       },
