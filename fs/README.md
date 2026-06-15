@@ -158,21 +158,21 @@ and function.
 
 ## Conflict Strategies for Backup
 
-When writing a file that already exists, `@epdoc/fs` lets you choose how to handle the conflict. Pass a
-`backupStrategy` (a `FileConflictStrategy`) via `SafeWriteOptions` to any write method (`write`, `writeJson`,
-`writeToml`, `writeYaml`), or call `backup()` / `safeCopy()` directly.
+When writing a file that already exists, `@epdoc/fs` lets you choose how to handle the conflict. Pass a `backupStrategy`
+(a `FileConflictStrategy`) via `SafeWriteOptions` to any write method (`write`, `writeJson`, `writeToml`, `writeYaml`),
+or call `backup()` / `safeCopy()` directly.
 
 ### Available Strategies
 
-| Strategy | Behaviour | Example backup filename |
-|---|---|---|
-| `renameWithTilde` | Appends `~` to the existing filename. Simple and fast. **Default for `backup()`.** | `config.json~` |
-| `renameWithNumber` | Appends an incrementing zero-padded index. Supports `limit`, `separator`, `prefix`, and `keep` options. | `config-01.json` |
-| `renameWithDatetime` | Appends a formatted datetime string. Use `format` (default `yyyyMMddHHmmssSSS`) to customise. Supports `keep`. | `config-20240614153045123.json` |
-| `renameWithEpochMs` | Appends the current epoch millisecond timestamp. Timezone-safe; recommended when rotating across timezones. Supports `keep`. | `config-1718382645123.json` |
-| `overwrite` | Overwrites the destination without creating a backup (no-op for the backup path). | — |
-| `skip` | Skips the write if the file already exists. | — |
-| `error` | Throws an `AlreadyExists` error if the file already exists. | — |
+| Strategy             | Behaviour                                                                                                                    | Example backup filename         |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| `renameWithTilde`    | Appends `~` to the existing filename. Simple and fast. **Default for `backup()`.**                                           | `config.json~`                  |
+| `renameWithNumber`   | Appends an incrementing zero-padded index. Supports `limit`, `separator`, `prefix`, and `keep` options.                      | `config-01.json`                |
+| `renameWithDatetime` | Appends a formatted datetime string. Use `format` (default `yyyyMMddHHmmssSSS`) to customise. Supports `keep`.               | `config-20240614153045123.json` |
+| `renameWithEpochMs`  | Appends the current epoch millisecond timestamp. Timezone-safe; recommended when rotating across timezones. Supports `keep`. | `config-1718382645123.json`     |
+| `overwrite`          | Overwrites the destination without creating a backup (no-op for the backup path).                                            | —                               |
+| `skip`               | Skips the write if the file already exists.                                                                                  | —                               |
+| `error`              | Throws an `AlreadyExists` error if the file already exists.                                                                  | —                               |
 
 ### Defaults
 
