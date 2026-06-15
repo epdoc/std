@@ -2,40 +2,75 @@ import type { Integer } from '@epdoc/type';
 import type { fileConflictStrategyType } from './consts.ts';
 
 /**
- * Represents the possible conflict resolution strategies for a file.
+ * Conflict resolution strategy used when a write or copy operation targets a file that already exists.
+ *
+ * Pass as `backupStrategy` in {@link SafeWriteOptions} or as the `opts` argument to `backup()` / `safeCopy()`.
+ *
+ * **Strategies at a glance:**
+ *
+ * - `renameWithTilde` — Renames the existing file by appending `~` (e.g. `config.json~`).
+ *   Simple and cheap; only one backup is kept. **Default for `backup()`.**
+ *
+ * - `renameWithNumber` — Renames the existing file with an incrementing zero-padded index
+ *   (e.g. `config-01.json`). Use `limit` (default 32) to cap the search, `separator` (default `'-'`)
+ *   and `prefix` to customise the suffix, and `keep` to auto-rotate old backups.
+ *
+ * - `renameWithDatetime` — Renames with a formatted datetime string
+ *   (e.g. `config-20240614153045123.json`). Customise with `format` (default `'yyyyMMddHHmmssSSS'`).
+ *   **Note:** age is derived from the timestamp embedded in the filename, which is in local time.
+ *   Use `renameWithEpochMs` when rotating across timezones.
+ *
+ * - `renameWithEpochMs` — Renames with the current epoch milliseconds
+ *   (e.g. `config-1718382645123.json`). Timezone-safe; recommended for short-interval rotation.
+ *
+ * - `overwrite` — Overwrites the destination without backing it up.
+ *
+ * - `skip` — Leaves the existing file untouched and silently skips the write.
+ *
+ * - `error` — Throws an `AlreadyExists` error when the target already exists.
+ *
+ * The `keep` option (available on `renameWithNumber`, `renameWithDatetime`, `renameWithEpochMs`) trims
+ * old backups after each write. Set `generations` to keep at most N copies and/or `ms` to remove
+ * backups older than a given age. When both are supplied, a backup is only deleted if **both**
+ * conditions are satisfied simultaneously.
  */
 export type FileConflictStrategy =
   | { type: 'renameWithTilde'; errorIfExists?: boolean }
   | {
     type: 'renameWithNumber';
+    /** Maximum indexed attempts before giving up. Defaults to `32`. */
     limit?: Integer;
+    /** String inserted between the basename and the index. Defaults to `'-'`. */
     separator?: string;
+    /** Optional string inserted before the index digits. */
     prefix?: string;
     errorIfExists?: boolean;
     keep?: { ms?: Integer; generations?: Integer };
   }
   | {
-    /**
-     * @remarks
-     * When `keep` is used with this strategy, the age is determined by parsing the timestamp from the filename.
-     * The timestamp is assumed to be in local time. Use `renameWithEpochMs` for cross-timezone reliability IF
-     * you are rotating backups with short time periods.
-     */
     type: 'renameWithDatetime';
+    /**
+     * `DateTime.format()` pattern for the timestamp suffix. Defaults to `'yyyyMMddHHmmssSSS'`.
+     * @remarks Age for `keep` is derived from the timestamp in the filename (local time).
+     * Use `renameWithEpochMs` for cross-timezone reliability.
+     */
     format?: string;
+    /** String inserted between the basename and the timestamp. Defaults to `'-'`. */
     separator?: string;
+    /** Optional string inserted before the timestamp. */
     prefix?: string;
     errorIfExists?: boolean;
     keep?: { ms?: Integer; generations?: Integer };
   }
   | {
-    /**
-     * @remarks
-     * When `keep` is used with this strategy, the age is determined by parsing the epoch milliseconds from the filename.
-     * This is recommended for cross-timezone reliability.
-     */
     type: 'renameWithEpochMs';
+    /**
+     * @remarks Age for `keep` is derived from the epoch milliseconds embedded in the filename.
+     * Recommended over `renameWithDatetime` when rotating across timezones.
+     */
+    /** String inserted between the basename and the epoch value. Defaults to `'-'`. */
     separator?: string;
+    /** Optional string inserted before the epoch value. */
     prefix?: string;
     errorIfExists?: boolean;
     keep?: { ms?: Integer; generations?: Integer };

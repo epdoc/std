@@ -937,6 +937,10 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
    * // Combined: formatting + safe write
    * await file.writeJson(data, null, 2, { safe: true });
    *
+   * // Keep the last 10 numbered backups (e.g. config-01.json, config-02.json, …)
+   * await file.writeJson(data, { backupStrategy: { type: 'renameWithNumber', keep: { generations: 10 } } });
+   * // Backup filename example: config-01.json
+   *
    * @category Write Operations
    */
   async writeJson(data: unknown, writeOpts?: WriteJsonOptions): Promise<this>;

@@ -53,10 +53,10 @@ The `FileSpecWriter` class provides a higher-level abstraction for writing to a 
 **Piping a network download directly to a file:**
 
 ```typescript
-import { FileSpec } from '@epdoc/fs';
+import * as FS from '@epdoc/fs/fs';
 
 const url = 'https://example.com/large-file.zip';
-const fileSpec = new FileSpec('./downloaded-file.zip');
+const fileSpec = FS.File.from('./downloaded-file.zip');
 
 const response = await fetch(url);
 if (response.body) {
@@ -67,22 +67,23 @@ if (response.body) {
 **Reading a file and piping it to standard output:**
 
 ```typescript
-import { FileSpec } from '@epdoc/fs';
+import * as FS from '@epdoc/fs/fs';
 
-const fileSpec = new FileSpec('./my-large-log-file.log');
+const fileSpec = FS.File.from('./my-large-log-file.log');
 await fileSpec.pipeTo(Deno.stdout.writable);
 ```
 
 **Using the FileSpecWriter:**
 
 ```typescript
-import { FileSpec } from '@epdoc/fs';
+import * as FS from '@epdoc/fs/fs';
+import { DateTime } from '@epdoc/datetime';
 
-const fileSpec = new FileSpec('./log.txt');
+const fileSpec = FS.File.from('./log.txt');
 const writer = await fileSpec.writer();
 
 try {
-  await writer.writeLine('Log started at ' + new Date().toISOString());
+  await writer.writeLine('Log started at ' + DateTime.now().setTz().toISOString());
   await writer.write('This is a log entry.');
   await writer.write(' And another one.');
 } finally {
@@ -98,59 +99,6 @@ To install @epdoc/fs, run the following command in your project directory:
 
 ```bash
 deno add jsr:@epdoc/fs
-```
-
-### Importing the Library
-
-This library provides two distinct ways to import its functionality, separating the primary components from the file
-system utilities for cleaner usage.
-
-### 1\. Primary Export (Default)
-
-The main features of the library are available directly from the package name. Use a **named import** to access the
-functions and classes defined in the primary module (`./src/mod.ts`).
-
-```typescript
-import { mainFunction, MyClass } from '@my-scope/my-project';
-
-// Use the primary function
-mainFunction('Data');
-
-// Instantiate the main class
-const instance = new MyClass();
-```
-
----
-
-### 2\. File System Utilities (Namespaced)
-
-The file system utilities are exposed under a dedicated namespace. Use a **namespace import** (`import * as FS`) on the
-`/fs` subpath to access all utilities from `./src/fs.ts` neatly grouped under the `FS` object.
-
-```typescript
-import * as FS from '@my-scope/my-project/fs';
-
-// Use the namespaced utilities
-FS.readDir('./path/to/files');
-FS.writeFile('output.txt', 'content');
-```
-
-## Usage
-
-Here's an example of how to use @epdoc/fs to read a JSON file:
-
-```javascript
-import { fileSpec } from 'jsr:@epdoc/fs';
-// Check if a directory exists
-if (await new FolderSpec('~/.ssh').isDirectory()) {
-  console.log('SSH directory exists');
-}
-// Read a JSON file
-const config = await new FileSpec('config.json').readJson();
-// Write to a file
-await new FileSpec('output.txt').write('Hello, World!');
-// Copy a file safely
-await new FileSpec('source.txt').safeCopy('destination.txt');
 ```
 
 ## API Overview
@@ -194,7 +142,7 @@ assert(fsItem3 === undefined);
 ### Creating a FileSpec for a new or existing file
 
 ```ts
-const fsFile = new FileSpec('/my/path/to/non-existant/file.txt');
+const fsFile = FileSpec.from('/my/path/to/non-existant/file.txt');
 assert(fsFile instanceof FileSpec);
 const exists = await fsFile.exists();
 assert(exists);
@@ -207,6 +155,73 @@ assert(exists);
 
 For detailed API documentation and usage examples, please refer to the JSDoc comments in the source code of each class
 and function.
+
+## Conflict Strategies for Backup
+
+When writing a file that already exists, `@epdoc/fs` lets you choose how to handle the conflict. Pass a
+`backupStrategy` (a `FileConflictStrategy`) via `SafeWriteOptions` to any write method (`write`, `writeJson`,
+`writeToml`, `writeYaml`), or call `backup()` / `safeCopy()` directly.
+
+### Available Strategies
+
+| Strategy | Behaviour | Example backup filename |
+|---|---|---|
+| `renameWithTilde` | Appends `~` to the existing filename. Simple and fast. **Default for `backup()`.** | `config.json~` |
+| `renameWithNumber` | Appends an incrementing zero-padded index. Supports `limit`, `separator`, `prefix`, and `keep` options. | `config-01.json` |
+| `renameWithDatetime` | Appends a formatted datetime string. Use `format` (default `yyyyMMddHHmmssSSS`) to customise. Supports `keep`. | `config-20240614153045123.json` |
+| `renameWithEpochMs` | Appends the current epoch millisecond timestamp. Timezone-safe; recommended when rotating across timezones. Supports `keep`. | `config-1718382645123.json` |
+| `overwrite` | Overwrites the destination without creating a backup (no-op for the backup path). | — |
+| `skip` | Skips the write if the file already exists. | — |
+| `error` | Throws an `AlreadyExists` error if the file already exists. | — |
+
+### Defaults
+
+- `backup()` defaults to `{ type: 'renameWithTilde' }`.
+- Write methods (`writeJson`, etc.) do **not** back up by default — you must supply `backupStrategy` explicitly.
+- `safe` (atomic temp-file write) defaults to `false`.
+
+### Rotating old backups (`keep`)
+
+The `renameWithNumber`, `renameWithDatetime`, and `renameWithEpochMs` strategies accept a `keep` object:
+
+```ts
+keep?: {
+  ms?: number;        // delete backups older than this many milliseconds
+  generations?: number; // keep at most this many backup files
+}
+```
+
+When both are set, a backup is only deleted if **both** conditions are met.
+
+### Usage Examples
+
+```ts
+import * as FS from '@epdoc/fs/fs';
+
+const file = FS.File.from('./config.json');
+
+// Simple tilde backup (config.json → config.json~)
+await file.writeJson(data, { backupStrategy: { type: 'renameWithTilde' } });
+
+// Numbered backups, keep last 5 (config.json → config-01.json … config-05.json)
+await file.writeJson(data, {
+  backupStrategy: { type: 'renameWithNumber', keep: { generations: 5 } },
+});
+
+// Datetime-stamped backup with atomic write
+await file.writeJson(data, {
+  safe: true,
+  backupStrategy: { type: 'renameWithDatetime', format: 'yyyyMMdd-HHmmss' },
+});
+
+// Epoch-ms backup — safe for cross-timezone rotation
+await file.writeJson(data, {
+  backupStrategy: { type: 'renameWithEpochMs', keep: { ms: 7 * 24 * 60 * 60 * 1000 } },
+});
+
+// Skip the write if the file already exists
+await file.writeJson(data, { backupStrategy: { type: 'skip' } });
+```
 
 ## License
 
