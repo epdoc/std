@@ -1,4 +1,3 @@
-import { FileSpec } from '@epdoc/fs';
 import { assert, assertEquals, assertInstanceOf, assertStringIncludes } from '@std/assert';
 import { resolve } from 'node:path';
 import * as Resp from '../src/mod.ts';
@@ -34,16 +33,11 @@ Deno.test('safe', async (t) => {
     });
     await t.step('error', async () => {
       const path = resolve(pwd, '../deno.xyz');
-      const fs = new FileSpec(pwd, '../deno.xyz');
-      const [error, data, duration] = await Resp.catchAsArray.twrap(fs.readAsString());
+      const [error, data, duration] = await Resp.catchAsArray.twrap(Deno.readTextFile(path));
       assert(error);
       if (error) {
         assertInstanceOf(error, Error);
         assertEquals(error.constructor.name, 'NotFound');
-        // @ts-ignore xxx
-        assertEquals(error.path, path);
-        assertEquals(error.cause, 'readAsString');
-        // @ts-ignore xxx
         assertEquals(error.code, 'ENOENT');
       }
       assertEquals(data, null);
