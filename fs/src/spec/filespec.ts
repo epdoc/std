@@ -712,16 +712,40 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
   }
 
   /**
-   * Reads the file as JSON and parses it, optionally stripping comments for JSONC files.
-   * Supports both standard JSON and JSON-with-comments (JSONC) formats.
+   * Reads the file as JSON and parses it, optionally stripping comments for JSONC files. Supports
+   * both standard JSON and JSON-with-comments (JSONC) formats. Also supports automatic processing
+   * of JSON content, including string-literal style replacements.
    *
    * @template T - The expected type of the parsed JSON data. Defaults to `unknown`.
-   * @param {boolean} [opts.stripComments=false] - Whether to strip comments before parsing.
-   *                                           If `true`, comments will always be stripped.
-   *                                           If `false` and the file is JSONC, comments will still be stripped.
+   *
+   * @param {object} [options] - Optional configuration.
+   * @param {boolean | Json.StripCommentsOpts} [options.stripComments=false] - Strip comments before
+   *   parsing. If `true`, uses default whitespace-preserving behavior. Pass an object ({
+   *   whitespace, trailingCommas }) to control comment handling. Automatically enabled for .jsonc
+   *   files.
+   * @param {boolean} [options.autoTemporal=false] - When true, ISO 8601 date-time strings are
+   *   converted to Temporal types (ZonedDateTime, PlainDateTime, Instant) instead of left as plain
+   *   strings.
+   * @param {boolean} [options.autoRegExp=false] - When true, strings matching RegExp patterns are
+   *   deserialized to RegExp objects ({regex: string,flags: string})
+   * @param {Record<string,string> | Record<string,unknown>} [options.replace] - A map of
+   *   placeholder keys to replacement values. If all values are strings, built-in msubLite
+   *   substitution is used. If any value is non-string, a custom `msubFn` is required.
+   * @param {MSubFn} [options.msubFn] - Custom substitution function, required when `replace`
+   *   contains non-string values. Signature: (s, replace, pre?, post?) => string.
+   * @param {string} [options.pre="${open}"] - Opening delimiter for placeholders (default: `${`).
+   * @param {string} [options.post="}"] - Closing delimiter for placeholders (default: `}`).
+   * @param {Json.Reviver} [options.reviver] - A custom reviver function passed to `JSON.parse`. If
+   *   provided, all other options except `stripComments` and `includeUrl` are ignored.
+   * @param {boolean} [options.decode=false] - When true, JSON objects with `__filter` keys are
+   *   decoded to their original types (Set, Map, RegExp, Uint8Array, Temporal). This is roundtrip
+   *   support for writeJson.
+   * @param {boolean} [options.includeUrl=false] - @experimental When true, URL strings in values
+   *   are resolved relative to the file's location via Deep.copy.
+   *
    * @returns {Promise<T>} A promise that resolves with the parsed JSON content of type `T`.
-   * @throws {Error} If the file cannot be read or contains invalid JSON.
-   *                  The error is wrapped with additional context about the file.
+   * @throws {Error} If the file cannot be read or contains invalid JSON. The error is wrapped with
+   *                  additional context about the file.
    *
    * @example
    * // Basic usage - automatically strips comments for .jsonc files
@@ -740,8 +764,8 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
    * const config = await file.readJson<Config>();
    *
    * @remarks
-   * This method uses `stripJsonComments` internally for comment removal.
-   * When `stripComments` is `true` or the file is JSONC, trailing commas are also supported.
+   * This method uses `Json.stripComments` internally for comment removal. When `stripComments` is
+   * `true` or the file is JSONC, trailing commas are also supported.
    *
    * @see {@link isJsonc} - Method that determines if the file should be treated as JSONC
    * @see {@link readAsString} - Underlying method that reads the file content
