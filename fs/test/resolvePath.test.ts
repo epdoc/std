@@ -6,6 +6,8 @@ import * as FS from '../src/fs.ts';
 // import type { GID, Mode, UID } from '../src/types.ts';
 // import { FS.resolvePathArgs } from '../src/util/resolve-path.ts';
 
+const home = Deno.env.get('HOME') || Deno.env.get('USERPROFILE');
+
 // Mock FSSpecBase for testing
 class MockFSSpec extends FSSpecBase {
   constructor(public mockPath: string) {
@@ -56,7 +58,7 @@ Deno.test('resolvePathArgs - absolute path as non-first argument throws error', 
 Deno.test('resolvePathArgs - home relative path as first argument', () => {
   const homeRelPath = '~/documents/file.txt';
   const result = FS.resolvePathArgs(homeRelPath);
-  assertEquals(result, path.resolve(homeRelPath));
+  assertEquals(result, home + '/' + homeRelPath.slice(2));
 });
 
 Deno.test('resolvePathArgs - home relative path as non-first argument throws error', () => {

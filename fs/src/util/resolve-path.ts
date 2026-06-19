@@ -2,6 +2,7 @@ import { FSSpecBase } from '$spec';
 import { isString } from '@epdoc/type';
 import path from 'node:path';
 import type * as FS from '../types.ts';
+import { getHomeDir } from './runtime.ts';
 
 /**
  * Error messages for invalid argument types.
@@ -29,8 +30,7 @@ export const isFileNameCheck = (val: unknown): val is FS.FileName =>
  * The return type is determined by the last segment of the path.
  */
 export function resolvePathArgs(...args: FS.PathSegment[]): FS.Path {
-  // Start with CWD as the root
-  const parts: string[] = []; // [Deno.cwd()];
+  const parts: string[] = [];
 
   for (let i = 0; i < args.length; i++) {
     const item = args[i];
@@ -45,10 +45,14 @@ export function resolvePathArgs(...args: FS.PathSegment[]): FS.Path {
     } else if (typeof item === 'string') {
       const isAbsolute = path.isAbsolute(item);
       const isRelHome = item.startsWith('~/');
-      // If it's an absolute path but NOT the first argument, that's usually a bug
+
       if (isFirst) {
-        if (isAbsolute || isRelHome) {
+        if (isAbsolute) {
           parts.push(item);
+        } else if (isRelHome) {
+          // Fix: Expand the tilde into an absolute path before passing to path.resolve
+          const expandedHome = path.join(getHomeDir(), item.slice(2));
+          parts.push(expandedHome);
         } else {
           parts.push(Deno.cwd());
           parts.push(item);
@@ -69,6 +73,5 @@ export function resolvePathArgs(...args: FS.PathSegment[]): FS.Path {
     }
   }
 
-  // path.resolve creates an absolute path, so we cast to our branded Path
   return path.resolve(...parts) as FS.Path;
 }
