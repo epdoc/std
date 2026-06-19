@@ -14,6 +14,7 @@ export type { ReadJsonOptions, TypedFSSpec as Typed, WriteJsonOptions, WriteYaml
 export * from './types.ts';
 export * from './util/consts.ts';
 export * from './util/fileinfo.ts';
+export { resolvePathArgs } from './util/resolve-path.ts';
 export * from './util/resolve-type.ts';
 export * from './util/types.ts';
 export { cwd } from './utils.ts';

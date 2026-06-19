@@ -30,7 +30,7 @@ export const isFileNameCheck = (val: unknown): val is FS.FileName =>
  */
 export function resolvePathArgs(...args: FS.PathSegment[]): FS.Path {
   // Start with CWD as the root
-  const parts: string[] = [Deno.cwd()];
+  const parts: string[] = []; // [Deno.cwd()];
 
   for (let i = 0; i < args.length; i++) {
     const item = args[i];
@@ -43,18 +43,27 @@ export function resolvePathArgs(...args: FS.PathSegment[]): FS.Path {
         throw new Error(`A path may only use a ${item.constructor.name} as its first parameter`);
       }
     } else if (typeof item === 'string') {
+      const isAbsolute = path.isAbsolute(item);
+      const isRelHome = item.startsWith('~/');
       // If it's an absolute path but NOT the first argument, that's usually a bug
-      if (!isFirst) {
-        if (path.isAbsolute(item)) {
+      if (isFirst) {
+        if (isAbsolute || isRelHome) {
+          parts.push(item);
+        } else {
+          parts.push(Deno.cwd());
+          parts.push(item);
+        }
+      } else {
+        if (isAbsolute) {
           throw new Error(`Absolute path "${item}" found at index ${i}. Only the first argument can be absolute.`);
         }
-        if (item.startsWith('~/')) {
+        if (isRelHome) {
           throw new Error(
             `Home relative path "${item}" found at index ${i}. Only the first argument can be home relative.`,
           );
         }
+        parts.push(item);
       }
-      parts.push(item);
     } else {
       throw new Error(`Invalid argument type: ${typeof item}`);
     }
