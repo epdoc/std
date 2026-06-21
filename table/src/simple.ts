@@ -141,12 +141,11 @@ function createColorFn<T>(
  * Example: 'userName' -> 'User Name', 'emailAddress' -> 'Email Address'
  */
 function camelCaseToTitleCase(str: string): string {
-  return str
-    // Insert space before capital letters
+  // Strip leading underscores (for '__key' -> 'key')
+  const s = str.replace(/^_+/, '');
+  return s
     .replace(/([A-Z])/g, ' $1')
-    // Trim leading space if string started with capital
     .trim()
-    // Capitalize first letter
     .replace(/^./, (char) => char.toUpperCase());
 }
 
@@ -244,11 +243,17 @@ class TableBuilderImpl<T> implements TableBuilder<T> {
   #padding: number;
   #noColor: boolean;
 
-  constructor(data: T[], options: SimpleOptions<T> = {}) {
-    this.#data = data;
+  constructor(data: T[] | Map<string, unknown> | Record<string, unknown>, options: SimpleOptions<T> = {}) {
+    if (data instanceof Map) {
+      this.#data = [...data].map(([k, v]) => this.#flattenEntry(k, v)) as T[];
+    } else if (!Array.isArray(data)) {
+      this.#data = Object.entries(data).map(([k, v]) => this.#flattenEntry(k, v)) as T[];
+    } else {
+      this.#data = data;
+    }
     this.#columns = options.columns ??
-      (data.length > 0 && data[0] !== null && typeof data[0] === 'object'
-        ? Object.keys(data[0] as object) as (keyof T)[]
+      (this.#data.length > 0 && this.#data[0] !== null && typeof this.#data[0] === 'object'
+        ? Object.keys(this.#data[0] as object) as (keyof T)[]
         : []);
     this.#columnConfigs = new Map();
     this.#palette = { ...DEFAULT_COLORS, ...(options.colors ?? {}) };
@@ -259,6 +264,17 @@ class TableBuilderImpl<T> implements TableBuilder<T> {
     this.#borderStyle = 'light';
     this.#padding = 2;
     this.#noColor = false;
+  }
+
+  /**
+   * Flatten a Map entry key-value pair into a row object with __key.
+   * Primitive values get a 'value' column; objects get their properties spread.
+   */
+  #flattenEntry(key: string, value: unknown): Record<string, unknown> {
+    if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+      return { ...value as Record<string, unknown>, __key: key };
+    }
+    return { value, __key: key };
   }
 
   columns(keys: (keyof T)[]): this {
@@ -351,8 +367,9 @@ class TableBuilderImpl<T> implements TableBuilder<T> {
         column.maxWidth = config.maxWidth;
       }
 
-      if (config.format) {
-        // Create formatter for built-in formats
+      if (config.formatter) {
+        column.formatter = config.formatter;
+      } else if (config.format) {
         const formatter = createFormatter(
           config.format,
           config.decimals,
@@ -448,7 +465,7 @@ class TableBuilderImpl<T> implements TableBuilder<T> {
 /**
  * Factory function for creating a table with a simple, intuitive API.
  *
- * @param data Array of data objects to display in the table
+ * @param data Array or Map or Record of data to display
  * @param columnsOrOptions Either an array of column keys to display, or options object
  * @returns A TableBuilder for configuring and rendering the table
  *
@@ -462,28 +479,60 @@ class TableBuilderImpl<T> implements TableBuilder<T> {
  * table(users, ['id', 'name', 'email']).print();
  * ```
  *
- * @example With options and chainable configuration
+ * @example Map with primitive values — auto-creates `__key` and `value` columns
  * ```ts
- * table(users, { formatHeaders: false })
- *   .column('id', 'right')
- *   .column('status', { color: 'green' })
- *   .header('cyan')
- *   .borders()
- *   .print();
+ * table(new Map([['a', 1], ['b', 2]])).print();
+ * ```
+ *
+ * @example Map with object values — auto-creates `__key` plus value property columns
+ * ```ts
+ * table(new Map([['x', {a: 1}]]), ['__key', 'a']).print();
+ * ```
+ *
+ * @example Record — same flattening as Map
+ * ```ts
+ * table({user1: {score: 10}}, ['__key', 'score']).print();
  * ```
  */
-export function table<T>(data: T[], columnsOrOptions?: (keyof T)[] | SimpleOptions<T>): TableBuilder<T> {
-  let options: SimpleOptions<T> = {};
+// 1. Array of typed objects
+export function table<T>(data: T[], columnsOrOptions?: (keyof T)[] | SimpleOptions<T>): TableBuilder<T>;
+// 2. Map with object values
+export function table<K extends string, V extends Record<string, unknown>>(
+  data: Map<K, V>,
+  columnsOrOptions?: (keyof ({ __key: K } & V))[] | SimpleOptions<{ __key: K } & V>,
+): TableBuilder<{ __key: K } & V>;
+// 3. Map with primitive values
+export function table<K extends string, V>(
+  data: Map<K, V>,
+  columnsOrOptions?: ('__key' | 'value')[] | SimpleOptions<{ __key: K; value: V }>,
+): TableBuilder<{ __key: K; value: V }>;
+// 4. Record<string, object values>
+export function table<K extends string, V extends Record<string, unknown>>(
+  data: Record<K, V>,
+  columnsOrOptions?: (keyof ({ __key: K } & V))[] | SimpleOptions<{ __key: K } & V>,
+): TableBuilder<{ __key: K } & V>;
+// 5. Record<string, primitive values>
+export function table<K extends string, V>(
+  data: Record<K, V>,
+  columnsOrOptions?: ('__key' | 'value')[] | SimpleOptions<{ __key: K; value: V }>,
+): TableBuilder<{ __key: K; value: V }>;
+// Implementation
+export function table(
+  data: unknown,
+  columnsOrOptions?: unknown,
+): TableBuilder<Record<string, unknown>> {
+  let options: SimpleOptions<Record<string, unknown>> = {};
 
   if (Array.isArray(columnsOrOptions)) {
-    // First argument is column keys array
     options = { columns: columnsOrOptions };
-  } else if (columnsOrOptions) {
-    // First argument is options object
-    options = columnsOrOptions;
+  } else if (columnsOrOptions && typeof columnsOrOptions === 'object') {
+    options = columnsOrOptions as SimpleOptions<Record<string, unknown>>;
   }
 
-  return new TableBuilderImpl(data, options);
+  return new TableBuilderImpl(
+    data as Record<string, unknown>[] | Map<string, unknown> | Record<string, unknown>,
+    options,
+  );
 }
 
 /**

@@ -396,4 +396,122 @@ Deno.test('Simple API', async (t) => {
       assertEquals(typeof lines[0], 'string');
     });
   });
+
+  await t.step('Map support', async (t) => {
+    await t.step('should render Map with object values', () => {
+      const map = new Map<string, { score: number; active: boolean }>([
+        ['alice', { score: 95, active: true }],
+        ['bob', { score: 87, active: false }],
+      ]);
+      const result = table(map, ['__key', 'score']).toString();
+      assertStringIncludes(result, 'Key');
+      assertStringIncludes(result, 'Score');
+      assertStringIncludes(result, 'alice');
+      assertStringIncludes(result, 'bob');
+      assertStringIncludes(result, '95');
+      assertStringIncludes(result, '87');
+    });
+
+    await t.step('should render Map with primitive values', () => {
+      const map = new Map<string, number>([
+        ['alpha', 1],
+        ['beta', 2],
+      ]);
+      const result = table(map).toString();
+      assertStringIncludes(result, 'Key');
+      assertStringIncludes(result, 'Value');
+      assertStringIncludes(result, 'alpha');
+      assertStringIncludes(result, 'beta');
+    });
+
+    await t.step('should auto-discover __key column from Map', () => {
+      const map = new Map<string, { name: string }>([
+        ['u1', { name: 'Alice' }],
+        ['u2', { name: 'Bob' }],
+      ]);
+      const result = table(map).toString();
+      assertStringIncludes(result, 'Key');
+      assertStringIncludes(result, 'Name');
+      assertStringIncludes(result, 'Alice');
+    });
+
+    await t.step('should format header for __key', () => {
+      const map = new Map([['a', 1]]);
+      const result = table(map).toString();
+      assertStringIncludes(result, 'Key');
+    });
+  });
+
+  await t.step('Record support', async (t) => {
+    await t.step('should render Record with object values', () => {
+      const rec: Record<string, { role: string }> = {
+        admin: { role: 'administrator' },
+        guest: { role: 'read-only' },
+      };
+      const result = table(rec, ['__key', 'role']).toString();
+      assertStringIncludes(result, 'Key');
+      assertStringIncludes(result, 'Role');
+      assertStringIncludes(result, 'admin');
+      assertStringIncludes(result, 'guest');
+    });
+
+    await t.step('should render Record with primitive values', () => {
+      const rec: Record<string, number> = { x: 10, y: 20 };
+      const result = table(rec).toString();
+      assertStringIncludes(result, 'Key');
+      assertStringIncludes(result, 'Value');
+      assertStringIncludes(result, 'x');
+      assertStringIncludes(result, 'y');
+    });
+  });
+
+  await t.step('Custom formatter', async (t) => {
+    interface Item {
+      name: string;
+      value: number;
+    }
+    const items: Item[] = [
+      { name: 'foo', value: 42 },
+      { name: 'bar', value: 100 },
+    ];
+
+    await t.step('should support formatter callback in SimpleColumnOptions', () => {
+      const result = table(items, ['name', 'value'])
+        .column('value', {
+          header: 'Score',
+          formatter: (v: unknown) => `${v} pts`,
+        })
+        .toString();
+      assertStringIncludes(result, '42 pts');
+      assertStringIncludes(result, '100 pts');
+      assertEquals(result.includes('Score'), true);
+    });
+
+    await t.step('formatter should take precedence over format', () => {
+      const result = table(items, ['name', 'value'])
+        .column('value', {
+          format: 'bytes',
+          formatter: (v: unknown) => `custom-${v}`,
+        })
+        .toString();
+      assertStringIncludes(result, 'custom-42');
+      assertStringIncludes(result, 'custom-100');
+      assertEquals(result.includes('GiB'), false);
+    });
+
+    await t.step('formatter should receive value and row', () => {
+      const specMap = new Map<string, { multiplier: number }>([
+        ['a', { multiplier: 10 }],
+        ['b', { multiplier: 20 }],
+      ]);
+      const result = table(specMap, ['__key', 'multiplier'])
+        .column('__key', {
+          header: 'ID',
+          formatter: (_v: unknown, row: Record<string, unknown>) => `${row.__key}-formatted`,
+        })
+        .toString();
+      assertStringIncludes(result, 'a-formatted');
+      assertStringIncludes(result, 'b-formatted');
+    });
+  });
 });

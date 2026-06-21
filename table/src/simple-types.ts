@@ -59,6 +59,10 @@ export interface SimpleColumnOptions<T> {
   /** Maximum visual width (truncates with ellipsis if exceeded) */
   maxWidth?: number;
   /**
+   * Custom formatter function. Takes precedence over `format` when both are set.
+   */
+  formatter?: (value: unknown, row: T) => string;
+  /**
    * Built-in formatter type.
    * - 'bytes': Human-readable bytes (KiB, MiB, GiB, etc.)
    * - 'percent': Percentage with % sign

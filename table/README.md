@@ -62,6 +62,10 @@ ID  Name            Status
 - **Per-cell styling**: Dynamic colors and formatting based on cell values
 - **Zebra striping**: Alternating row backgrounds for better readability
 - **Fluent API**: Chain methods to build tables incrementally
+- **Simple one-liner API**: `table()` factory with auto-discovery, presets, and sensible defaults
+- **Map & Record support**: Pass `Map<K, V>` or `Record<string, V>` directly — entries flatten into `__key` + property
+  columns
+- **Custom formatter callbacks**: Full control over cell rendering in the simple API
 - **Built-in formatters**: Percentages, bytes, and uptime formatting
 - **Flexible headers**: Styled headers with custom separators
 - **Borders**: Optional top and bottom borders, or full box-drawing borders with corners and junctions
@@ -280,6 +284,91 @@ formatter: formatters.uptime({ separator: ' ' });
 // Limited units: "31d06h"
 formatter: formatters.uptime({ units: 2 });
 ```
+
+## Simple API (`table()`)
+
+A one-liner `table()` factory for quick, intuitive table creation with sensible defaults:
+
+```ts
+import { table } from '@epdoc/table';
+
+// Auto-discover columns, one-liner
+table(users).print();
+
+// Select specific columns
+table(users, ['id', 'name']).print();
+
+// Chained configuration
+table(users)
+  .column('id', 'right')
+  .column('status', { color: 'green' })
+  .header('cyan')
+  .borders()
+  .print();
+```
+
+### Map and Record Support
+
+Pass `Map<K, V>` or `Record<string, V>` directly — entries are flattened into rows with `__key` as the first column:
+
+```ts
+// Map with object values — value properties become columns
+const servers = new Map<string, { cpu: number; memory: number }>([
+  ['web-01', { cpu: 0.45, memory: 8 }],
+  ['db-01', { cpu: 0.89, memory: 32 }],
+]);
+table(servers, ['__key', 'cpu', 'memory']).print();
+
+// Map with primitive values — auto-creates 'value' column
+const scores = new Map([['Alice', 95], ['Bob', 87]]);
+table(scores).print();
+// Key    Value
+// Alice  95
+// Bob    87
+
+// Record — same flattening as Map
+const configs: Record<string, { role: string }> = {
+  admin: { role: 'administrator' },
+  guest: { role: 'read-only' },
+};
+table(configs, ['__key', 'role']).print();
+```
+
+The `__key` column is auto-discovered and renders as `Key` in the header.
+
+### Custom Formatter Callback
+
+When the built-in `format` presets aren't enough, pass a `formatter` callback:
+
+```ts
+table(logEntries, ['__key', 'timestamp'])
+  .column('__key', {
+    header: 'Level',
+    formatter: (_value, row) => specMap.get(row.__key)!.fmtFn(row.__key),
+  })
+  .column('timestamp', {
+    formatter: (v) => new Date(v as number).toISOString(),
+  })
+  .column('severity', { align: 'center' })
+  .print();
+```
+
+`formatter` takes precedence over `format` when both are set.
+
+## Available Methods
+
+| Method               | Description                                                            |
+| -------------------- | ---------------------------------------------------------------------- |
+| `.columns(keys)`     | Set column order                                                       |
+| `.column(key, opts)` | Configure a column (alignment, header, format, formatter, color, etc.) |
+| `.header(color)`     | Style the header row                                                   |
+| `.noHeader()`        | Hide the header                                                        |
+| `.zebra()`           | Enable alternating row backgrounds                                     |
+| `.borders(style?)`   | Enable box-drawing borders                                             |
+| `.noBorders()`       | Disable borders                                                        |
+| `.padding(n)`        | Set column spacing (no effect with borders)                            |
+| `.noColor()`         | Strip all ANSI output                                                  |
+| `.data(rows)`        | Override data rows                                                     |
 
 ## Advanced Examples
 
