@@ -19,6 +19,10 @@ export class DateRanges implements Iterable<DateRange> {
     this._ranges = ranges;
   }
 
+  clear() {
+    this._ranges.length = 0;
+  }
+
   clone(): DateRanges {
     return DateRanges.fromDef(this._ranges.map((r) => ({ after: r.after, before: r.before })));
   }
@@ -111,6 +115,18 @@ export class DateRanges implements Iterable<DateRange> {
       }
     }
     return new DateRanges(ranges);
+  }
+
+  setDef(def?: DateRangeDef | DateRangeDef[]): this {
+    this.clear();
+    const ranges: DateRange[] = [];
+    const defs = _.isArray(def) ? def : def ? [def] : [];
+    if (isNonEmptyArray(defs)) {
+      for (const def of defs) {
+        ranges.push(DateRange.fromDef(def));
+      }
+    }
+    return this;
   }
 
   /**
