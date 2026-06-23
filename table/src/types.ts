@@ -19,6 +19,11 @@ export type Column<T> = {
    * ellipsis character. Applied after formatting and coloring.
    */
   maxWidth?: number;
+  /**
+   * Minimum visual width when the table is fitted to the terminal.
+   * If not set, falls back to `Options.minWidth` (default 10).
+   */
+  minWidth?: number;
   /** Text alignment within the column (default: `'left'`). */
   align?: Alignment;
   /**
@@ -130,6 +135,28 @@ export interface Options<T> {
    * ```
    */
   rowStyles?: [Color.Spec | null | undefined, Color.Spec | null | undefined];
+  /**
+   * When `true`, automatically reduces column widths so the table fits
+   * within the available terminal width. Uses `Deno.consoleSize()` to
+   * detect width (falls back to 80).
+   *
+   * Columns are reduced from right to left, each down to its
+   * {@link Column.minWidth} or `Options.minWidth` (whichever is lower
+   * than the column's natural width). Content truncated by fitting is
+   * appended with `…`.
+   *
+   * @default false
+   */
+  fit?: boolean;
+  /**
+   * Global minimum visual width for columns during terminal fitting.
+   * Used as the floor when a column has no explicit {@link Column.minWidth}.
+   * The effective min is the **smaller** of this value and the column's
+   * natural width — so narrow columns are not artificially widened.
+   *
+   * @default 10
+   */
+  minWidth?: number;
   /**
    * When `true`, strips all ANSI color codes from output. Useful for writing
    * to files, logs, or terminals without color support.

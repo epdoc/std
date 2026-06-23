@@ -59,6 +59,11 @@ export interface SimpleColumnOptions<T> {
   /** Maximum visual width (truncates with ellipsis if exceeded) */
   maxWidth?: number;
   /**
+   * Minimum visual width when the table is fitted to the terminal.
+   * If not set, falls back to the global `minWidth` option (default 10).
+   */
+  minWidth?: number;
+  /**
    * Custom formatter function. Takes precedence over `format` when both are set.
    */
   formatter?: (value: unknown, row: T) => string;
@@ -94,6 +99,10 @@ export interface SimpleOptions<T> {
   colors?: Record<string, number>;
   /** Whether to auto-format camelCase keys to Title Case headers (default: true) */
   formatHeaders?: boolean;
+  /** When true, shrinks columns to fit within the terminal width (default: false) */
+  fit?: boolean;
+  /** Global minimum column width used during terminal fitting (default: 10) */
+  minWidth?: number;
 }
 
 /**
@@ -171,6 +180,20 @@ export interface TableBuilder<T> {
    * Disable all color output (useful for files or non-TTY).
    */
   noColor(): this;
+
+  /**
+   * Enable or disable fitting the table to the terminal width.
+   * When enabled, columns are reduced right-to-left to fit within
+   * the detected terminal width.
+   * @param enabled Whether to enable fitting (default: true)
+   */
+  fit(enabled?: boolean): this;
+
+  /**
+   * Set the global minimum column width used during terminal fitting.
+   * @param val Minimum visual width (default: 10)
+   */
+  minWidth(val: number): this;
 
   /**
    * Override the data rows.

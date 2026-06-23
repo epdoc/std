@@ -242,6 +242,8 @@ class TableBuilderImpl<T> implements TableBuilder<T> {
   #borderColor?: SimpleColor;
   #padding: number;
   #noColor: boolean;
+  #fitEnabled: boolean;
+  #fitMinWidthValue: number;
 
   constructor(data: T[] | Map<string, unknown> | Record<string, unknown>, options: SimpleOptions<T> = {}) {
     if (data instanceof Map) {
@@ -264,6 +266,8 @@ class TableBuilderImpl<T> implements TableBuilder<T> {
     this.#borderStyle = 'light';
     this.#padding = 2;
     this.#noColor = false;
+    this.#fitEnabled = options.fit ?? false;
+    this.#fitMinWidthValue = options.minWidth ?? 10;
   }
 
   /**
@@ -344,6 +348,16 @@ class TableBuilderImpl<T> implements TableBuilder<T> {
     return this;
   }
 
+  fit(enabled = true): this {
+    this.#fitEnabled = enabled;
+    return this;
+  }
+
+  minWidth(val: number): this {
+    this.#fitMinWidthValue = val;
+    return this;
+  }
+
   data(rows: T[]): this {
     this.#data = rows;
     return this;
@@ -365,6 +379,10 @@ class TableBuilderImpl<T> implements TableBuilder<T> {
 
       if (config.maxWidth !== undefined) {
         column.maxWidth = config.maxWidth;
+      }
+
+      if (config.minWidth !== undefined) {
+        column.minWidth = config.minWidth;
       }
 
       if (config.formatter) {
@@ -402,6 +420,8 @@ class TableBuilderImpl<T> implements TableBuilder<T> {
       rowStyles?: [Color.Spec | null | undefined, Color.Spec | null | undefined];
       borders?: { enabled: boolean; style?: BorderStyle; color?: Color.Spec };
       noColor?: boolean;
+      fit?: boolean;
+      minWidth?: number;
     } = {
       columns,
       data: this.#data,
@@ -444,6 +464,12 @@ class TableBuilderImpl<T> implements TableBuilder<T> {
     // No color
     if (this.#noColor) {
       options.noColor = true;
+    }
+
+    // Fit to terminal
+    if (this.#fitEnabled) {
+      options.fit = true;
+      options.minWidth = this.#fitMinWidthValue;
     }
 
     return new TableRenderer(options);

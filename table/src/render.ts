@@ -63,6 +63,8 @@ export class TableRenderer<T> {
   #topBorder: boolean = false;
   #bottomBorder: boolean = false;
   #borders: Table.BorderConfig | undefined;
+  #fit: boolean = false;
+  #globalMinWidth: number = 10;
   static #identity: Color.StyleFn = (s) => s;
 
   /**
@@ -103,6 +105,8 @@ export class TableRenderer<T> {
     this.#topBorder = options.topBorder ?? false;
     this.#bottomBorder = options.bottomBorder ?? false;
     this.#borders = options.borders;
+    this.#fit = options.fit ?? false;
+    this.#globalMinWidth = options.minWidth ?? 10;
     // Defer width calculation for fluent API usage
     if (this.#columns.length > 0 && this.#data.length > 0) {
       this.#widths = Util.calculateColumnWidths<T>(this.#data, this.#columns);
@@ -267,6 +271,32 @@ export class TableRenderer<T> {
   }
 
   /**
+   * Enable or disable fitting the table to the terminal width (fluent API).
+   * When enabled, column widths are reduced right-to-left so the rendered
+   * table fits within the detected terminal width.
+   *
+   * @param enabled - Whether to enable terminal fitting (default: true)
+   * @returns This instance for method chaining
+   */
+  fit(enabled = true): this {
+    this.#fit = enabled;
+    return this;
+  }
+
+  /**
+   * Set the global minimum column width used during terminal fitting (fluent API).
+   * Columns without an explicit `minWidth` are reduced no smaller than
+   * `min(value, naturalWidth)`.
+   *
+   * @param val - Minimum visual width (default: 10)
+   * @returns This instance for method chaining
+   */
+  minWidth(val: number): this {
+    this.#globalMinWidth = val;
+    return this;
+  }
+
+  /**
    * Set border style (fluent API).
    * Only effective if borders are enabled.
    *
@@ -404,6 +434,17 @@ export class TableRenderer<T> {
   #ensureWidths(): void {
     if (this.#widths === null) {
       this.#widths = Util.calculateColumnWidths<T>(this.#data, this.#columns);
+      if (this.#fit) {
+        const availableWidth = Util.getAvailableWidth();
+        this.#widths = Util.fitWidths<T>(
+          this.#widths,
+          this.#columns,
+          availableWidth,
+          this.#padding,
+          this.#globalMinWidth,
+          this.#borders,
+        );
+      }
     }
   }
 
@@ -423,7 +464,12 @@ export class TableRenderer<T> {
     const parts = this.#columns.map((col) => {
       const width = this.#widths![col.key as keyof T];
       const align = col.align ?? 'left';
-      let text = padVisual(col.header, width, align);
+      let text = col.header;
+      // Truncate header if column was shrunk by fitting
+      if (stripAnsi(text).length > width) {
+        text = visibleTruncate(text, width);
+      }
+      text = padVisual(text, width, align);
       if (headerStyleFn) {
         text = headerStyleFn(text);
       }
@@ -497,9 +543,9 @@ export class TableRenderer<T> {
         }
       }
 
-      // 3. MaxWidth truncation
-      if (col.maxWidth !== undefined && stripAnsi(text).length > col.maxWidth) {
-        text = visibleTruncate(text, col.maxWidth);
+      // 3. Truncate to column display width
+      if (stripAnsi(text).length > width) {
+        text = visibleTruncate(text, width);
       }
 
       // 4. ANSI-aware pad

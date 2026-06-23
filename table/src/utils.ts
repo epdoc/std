@@ -27,6 +27,22 @@ export function buildColumns<T>(
   });
 }
 
+// ── Terminal width detection ───────────────────────────────────────────────
+
+/**
+ * Detects the available display width of the terminal.
+ * Uses `Deno.consoleSize()` when available, falls back to 80 columns.
+ *
+ * @returns The number of available character columns
+ */
+export function getAvailableWidth(): number {
+  try {
+    return Deno.consoleSize().columns;
+  } catch {
+    return 80;
+  }
+}
+
 // ── Column width calculation ───────────────────────────────────────────────
 
 /**
@@ -70,6 +86,94 @@ export function calculateColumnWidths<T>(
   }
 
   return widths;
+}
+
+// ── Table width fitting ────────────────────────────────────────────────────
+
+/**
+ * Calculates the table-level overhead (borders and padding between columns)
+ * that must be added to column content widths to get the total table width.
+ */
+export function calculateTableOverhead<T>(
+  columns: Table.Column<T>[],
+  padding: number,
+  borders: Table.BorderConfig | undefined,
+): number {
+  if (borders?.enabled) {
+    return 3 * columns.length + 1;
+  }
+  return (columns.length - 1) * padding;
+}
+
+/**
+ * Returns the effective minimum width for a column during fitting.
+ * Uses the column's own `minWidth` if set, otherwise the smaller of
+ * `globalMinWidth` and the column's natural width.
+ */
+export function getEffectiveMinWidth<T>(
+  col: Table.Column<T>,
+  globalMinWidth: number,
+  naturalWidth: number,
+): number {
+  if (col.minWidth !== undefined) {
+    return Math.max(1, col.minWidth);
+  }
+  return Math.max(1, Math.min(globalMinWidth, naturalWidth));
+}
+
+/**
+ * Reduces column widths (right-to-left) so the rendered table fits within
+ * `availableWidth`. Each column is shrunk to at most its effective minimum
+ * width; content that exceeds the reduced width is truncated with `…`
+ * during rendering.
+ *
+ * Columns with a fixed {@link Table.Column.width} are excluded from
+ * shrinking.
+ *
+ * @param widths - Natural column widths (already respecting maxWidth caps)
+ * @param columns - Column definitions (same order as widths, for right-to-left order)
+ * @param availableWidth - Available display width (e.g. terminal columns)
+ * @param padding - Inter-column padding (ignored when borders are enabled)
+ * @param globalMinWidth - Fallback min width for columns without their own `minWidth`
+ * @param borders - Border configuration
+ * @returns Adjusted widths (may still exceed `availableWidth` if all columns are at minimum)
+ */
+export function fitWidths<T>(
+  widths: Record<keyof T, number>,
+  columns: Table.Column<T>[],
+  availableWidth: number,
+  padding: number,
+  globalMinWidth: number,
+  borders: Table.BorderConfig | undefined,
+): Record<keyof T, number> {
+  const overhead = calculateTableOverhead(columns, padding, borders);
+  const totalWidth = Object.values<number>(widths).reduce((sum, w) => sum + w, 0) + overhead;
+
+  if (totalWidth <= availableWidth) {
+    return widths;
+  }
+
+  let excess = totalWidth - availableWidth;
+  const adjusted = { ...widths };
+
+  for (let i = columns.length - 1; i >= 0 && excess > 0; i--) {
+    const col = columns[i];
+    const key = col.key as keyof T;
+    const currentWidth = adjusted[key];
+
+    // Fixed-width columns are not reduced
+    if (col.width !== undefined) continue;
+
+    const effectiveMin = getEffectiveMinWidth(col, globalMinWidth, currentWidth);
+
+    if (currentWidth > effectiveMin) {
+      const reduction = Math.min(excess, currentWidth - effectiveMin);
+      adjusted[key] = currentWidth - reduction;
+      excess -= reduction;
+    }
+  }
+
+  return adjusted;
 }
 
 /**
