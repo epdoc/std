@@ -38,6 +38,7 @@ the workspace members. Each package is published to JSR under the `@epdoc` scope
 ├── deno.json                  # Workspace root; defines workspace members and shared imports
 ├── deno.lock
 ├── colors/                    # @epdoc/colors
+├── condition/                 # @epdoc/condition
 ├── daterange/                 # @epdoc/daterange
 ├── datetime/                  # @epdoc/datetime
 ├── duration/                  # @epdoc/duration
@@ -48,7 +49,7 @@ the workspace members. Each package is published to JSR under the `@epdoc` scope
 ├── table/                     # @epdoc/table
 ├── terminal/                  # @epdoc/terminal
 ├── text/                      # @epdoc/text
-├── transform/                 # @epdoc/transform
+├── transform/                  # @epdoc/transform
 └── type/                      # @epdoc/type
 ```
 
@@ -57,6 +58,7 @@ the workspace members. Each package is published to JSR under the `@epdoc` scope
 | Package            | Entry Point  | Sub-path Exports                             |
 | ------------------ | ------------ | -------------------------------------------- |
 | `@epdoc/colors`    | `src/mod.ts` | `./colors`, `./palette`                      |
+| `@epdoc/condition` | `src/mod.ts` | —                                            |
 | `@epdoc/daterange` | `src/mod.ts` | —                                            |
 | `@epdoc/datetime`  | `src/mod.ts` | `./types`                                    |
 | `@epdoc/duration`  | `src/mod.ts` | —                                            |
@@ -73,6 +75,12 @@ the workspace members. Each package is published to JSR under the `@epdoc` scope
 ---
 
 ## Package Descriptions and Key Exports
+
+### `@epdoc/condition`
+
+Generic condition evaluation library: logical combinators (`and`/`or`/`not`), value operators (`eq`, `contains`, `gt`,
+`regex`, `includes`, etc.), and a pure evaluation engine. No domain knowledge; consumers supply field extraction and
+domain factories.
 
 ### `@epdoc/type`
 
@@ -168,6 +176,7 @@ Consistent API response helpers with safe error wrapping.
 ## Cross-Package Dependencies
 
 ```
+@epdoc/condition  →  @epdoc/type, @epdoc/datetime
 @epdoc/daterange  →  @epdoc/datetime, @epdoc/type
 @epdoc/datetime   →  @epdoc/type
 @epdoc/duration   →  @epdoc/type

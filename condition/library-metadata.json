@@ -1,0 +1,33 @@
+{
+  "package": "@epdoc/condition",
+  "version": "0.1.0",
+  "purpose": "Generic condition evaluation library providing logical combinators (and/or/not), value operators (eq, contains, gt, regex, includes, etc.), and a pure evaluation engine with no domain knowledge",
+  "quickStart": "import { evaluateValueCondition, factory } from '@epdoc/condition';\n\nconst ok = evaluateValueCondition('hello world', { contains: 'world' });\nconst c = factory({ and: [true, { not: false }] });\nconsole.log(c.test({})); // true",
+  "keyExports": [
+    "evaluateValueCondition — evaluate a single value against a ValueCondition",
+    "evaluateFieldCondition — evaluate a Record<string, ValueCondition> against an object",
+    "factory — build ITestable<D> instances for logical and boolean conditions",
+    "AndCondition, OrCondition, NotCondition, BooleanCondition — composable condition classes",
+    "ValueCondition, StringOperators, NumberOperators, DateOperators, ArrayOperators, AnyCondition — type definitions"
+  ],
+  "dependencies": {
+    "internal": ["@epdoc/type", "@epdoc/datetime"],
+    "external": ["@std/assert", "@std/testing"]
+  },
+  "keyPatterns": [
+    {
+      "name": "Value evaluation",
+      "description": "Use evaluateValueCondition to test a primitive, array, or date against a declarative operator",
+      "file": "evaluator.ts"
+    },
+    {
+      "name": "Logical composition",
+      "description": "Use AndCondition, OrCondition, NotCondition, or factory to compose nested conditions",
+      "file": "factory.ts"
+    }
+  ],
+  "architecture": {
+    "flow": "types.ts → evaluator.ts + and/or/not/boolean.ts → factory.ts → mod.ts",
+    "keyDesign": "Domain-agnostic core; field extraction and domain-specific factory logic live in consumer packages"
+  }
+}
