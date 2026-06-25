@@ -206,7 +206,7 @@ export class DateTime {
    * ```
    */
   static now(): DateTime {
-    return DateTime.from(null, { strict: true });
+    return new DateTime(Temporal.Now.instant());
   }
 
   /**
