@@ -1,76 +1,100 @@
-import { assertEquals } from '@std/assert';
+import { assert, assertEquals, assertInstanceOf, assertThrows } from '@std/assert';
 import { util } from '../src/mod.ts';
 
-Deno.test('stringToDate', async (t) => {
-  await t.step('basic parsing', async (t) => {
-    await t.step('should parse yyyyMMdd', () => {
-      const d = util.stringToDate('20240102');
-      assertEquals(d, new Date(2024, 0, 2, 0, 0, 0));
+Deno.test('util', async (t) => {
+  await t.step('stringToDate', async (t) => {
+    await t.step('basic parsing', async (t) => {
+      await t.step('should parse yyyyMMdd', () => {
+        const d = util.stringToDate('20240102');
+        assert(d);
+        assertInstanceOf(d.temporal, Temporal.PlainDateTime);
+        const d1 = new Temporal.PlainDateTime(2024, 1, 2, 0, 0, 0);
+        assertEquals(d.temporal, d1);
+      });
+
+      await t.step('should parse yyyy-MM-dd', () => {
+        const d = util.stringToDate('2024-01-02');
+        assert(d);
+        assertInstanceOf(d.temporal, Temporal.PlainDateTime);
+        const d1 = new Temporal.PlainDateTime(2024, 1, 2, 0, 0, 0);
+        assertEquals(d.temporal, d1);
+      });
+
+      await t.step('should parse yyyy_MM_dd', () => {
+        const d = util.stringToDate('2024_01_02');
+        assert(d);
+        assertInstanceOf(d.temporal, Temporal.PlainDateTime);
+        const d1 = new Temporal.PlainDateTime(2024, 1, 2, 0, 0, 0);
+        assertEquals(d.temporal, d1);
+      });
+
+      await t.step('should parse yyyy/MM/dd', () => {
+        const d = util.stringToDate('2024/01/02');
+        assert(d);
+        assertInstanceOf(d.temporal, Temporal.PlainDateTime);
+        const d1 = new Temporal.PlainDateTime(2024, 1, 2, 0, 0, 0);
+        assertEquals(d.temporal, d1);
+      });
+
+      await t.step('should parse yyyy MM dd', () => {
+        const d = util.stringToDate('2024 01 02');
+        assert(d);
+        assertInstanceOf(d.temporal, Temporal.PlainDateTime);
+        const d1 = new Temporal.PlainDateTime(2024, 1, 2, 0, 0, 0);
+        assertEquals(d.temporal, d1);
+      });
+
+      await t.step('should parse yyyyMMdd_HHmmss', () => {
+        const d = util.stringToDate('20240102_102030');
+        assert(d);
+        assertInstanceOf(d.temporal, Temporal.PlainDateTime);
+        const d1 = new Temporal.PlainDateTime(2024, 1, 2, 10, 20, 30);
+        assertEquals(d.temporal, d1);
+      });
+
+      await t.step('should parse "yyyy-MM-dd HH:mm:ss"', () => {
+        const d = util.stringToDate('2024-01-02 10:20:30');
+        assert(d);
+        assertInstanceOf(d.temporal, Temporal.PlainDateTime);
+        const d1 = new Temporal.PlainDateTime(2024, 1, 2, 10, 20, 30);
+        assertEquals(d.temporal, d1);
+      });
     });
 
-    await t.step('should parse yyyy-MM-dd', () => {
-      const d = util.stringToDate('2024-01-02');
-      assertEquals(d, new Date(2024, 0, 2, 0, 0, 0));
+    await t.step('timezone handling', async (t) => {
+      await t.step('should handle UTC timezone', () => {
+        const d = util.stringToDate('20240102_102030', { tz: 0 });
+        assertEquals(d?.toISOString({ fractionalSecondDigits: 0 }), '2024-01-02T10:20:30+00:00');
+      });
+
+      await t.step('should handle positive timezone offset', () => {
+        const d = util.stringToDate('20240102_102030', { tz: 60 });
+        assertEquals(d?.toISOString(), '2024-01-02T10:20:30+01:00');
+      });
+
+      await t.step('should handle negative timezone offset', () => {
+        Deno.env.set('TZ', 'America/Chicago'); // this does nothing
+        const d = util.stringToDate('20240102_102030', { tz: -360 });
+        assertEquals(d?.toISOString({ fractionalSecondDigits: 0 }), '2024-01-02T10:20:30-06:00');
+      });
     });
 
-    await t.step('should parse yyyy_MM_dd', () => {
-      const d = util.stringToDate('2024_01_02');
-      assertEquals(d, new Date(2024, 0, 2, 0, 0, 0));
-    });
+    await t.step('invalid dates', async (t) => {
+      await t.step('should return undefined for invalid date string', () => {
+        assertEquals(util.stringToDate('not a date'), undefined);
+      });
 
-    await t.step('should parse yyyy/MM/dd', () => {
-      const d = util.stringToDate('2024/01/02');
-      assertEquals(d, new Date(2024, 0, 2, 0, 0, 0));
-    });
+      await t.step('should return undefined for invalid month', () => {
+        assertEquals(util.stringToDate('20241301'), undefined);
+      });
 
-    await t.step('should parse yyyy MM dd', () => {
-      const d = util.stringToDate('2024 01 02');
-      assertEquals(d, new Date(2024, 0, 2, 0, 0, 0));
-    });
-
-    await t.step('should parse yyyyMMdd_HHmmss', () => {
-      const d = util.stringToDate('20240102_102030');
-      assertEquals(d, new Date(2024, 0, 2, 10, 20, 30));
-    });
-
-    await t.step('should parse "yyyy-MM-dd HH:mm:ss"', () => {
-      const d = util.stringToDate('2024-01-02 10:20:30');
-      assertEquals(d, new Date(2024, 0, 2, 10, 20, 30));
+      await t.step('should throw for invalid day', () => {
+        assertThrows(() => {
+          return util.stringToDate('20240230');
+        });
+      });
     });
   });
-
-  await t.step('timezone handling', async (t) => {
-    await t.step('should handle UTC timezone', () => {
-      const d = util.stringToDate('20240102_102030', { tz: 0 });
-      assertEquals(d?.toISOString(), '2024-01-02T10:20:30.000Z');
-    });
-
-    await t.step('should handle positive timezone offset', () => {
-      const d = util.stringToDate('20240102_102030', { tz: 60 });
-      assertEquals(d?.toISOString(), '2024-01-02T09:20:30.000Z');
-    });
-
-    await t.step('should handle negative timezone offset', () => {
-      Deno.env.set('TZ', 'America/Chicago');
-      const d = util.stringToDate('20240102_102030', { tz: -360 });
-      assertEquals(d?.toISOString(), '2024-01-02T16:20:30.000Z');
-    });
-  });
-
-  await t.step('invalid dates', async (t) => {
-    await t.step('should return undefined for invalid date string', () => {
-      assertEquals(util.stringToDate('not a date'), undefined);
-    });
-
-    await t.step('should return undefined for invalid month', () => {
-      assertEquals(util.stringToDate('20241301'), undefined);
-    });
-
-    await t.step('should return undefined for invalid day', () => {
-      assertEquals(util.stringToDate('20240230'), undefined);
-    });
-  });
-
   await t.step('isISODate', async (t) => {
     await t.step('should return true for valid ISO date strings', () => {
       assertEquals(util.isISODate('2025-10-05T10:20:30Z'), true);

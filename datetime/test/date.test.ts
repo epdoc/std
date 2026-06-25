@@ -1,7 +1,7 @@
 import { assert, assertAlmostEquals, assertEquals, assertExists, assertMatch, assertThrows } from '@std/assert';
 import { DateTime, type IANATZ, type ISOTZ, type TzMinutes, util } from '../src/mod.ts';
 
-Deno.test('date-util', async (t) => {
+Deno.test('util', async (t) => {
   Deno.env.set('TZ', 'America/Costa_Rica');
 
   await t.step('tz statics', async (t) => {

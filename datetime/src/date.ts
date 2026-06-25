@@ -148,6 +148,10 @@ export class DateTime {
     this._value = value;
   }
 
+  static is(val: unknown): val is DateTime {
+    return val instanceof DateTime;
+  }
+
   /**
    * Creates a copy of this DateTime instance.
    * The clone has the same internal value but is a separate object.
@@ -243,7 +247,8 @@ export class DateTime {
   }
 
   /**
-   * Parses an ISO 8601 date string or attempts to parse using legacy Date parsing.
+   * Parses an ISO 8601 date string. For support of a greater variety of strings, use the
+   * stringToDate utility function.
    *
    * - Strings with timezone info (Z or offset like +05:00) become ZonedDateTime
    * - Strings without timezone become PlainDateTime (wall-clock time)
@@ -433,11 +438,11 @@ export class DateTime {
         }
       } catch (e) {
         if (opts.strict) throw e;
-        return DateTime.handleInvalidInput(arg, opts);
+        return DateTime.#handleInvalidInput(arg, opts);
       }
 
       // If it's an unrecognized object/boolean/etc.
-      return DateTime.handleInvalidInput(arg, opts);
+      return DateTime.#handleInvalidInput(arg, opts);
     }
 
     const temporalValue = parseTemporalString(arg, opts);
@@ -454,10 +459,10 @@ export class DateTime {
     }
 
     // Step C: End of the road for unparseable strings
-    return DateTime.handleInvalidInput(arg, opts);
+    return DateTime.#handleInvalidInput(arg, opts);
   }
 
-  private static handleInvalidInput(arg: unknown, opts: IStrict): undefined {
+  static #handleInvalidInput(arg: unknown, opts: IStrict): undefined {
     if (opts.strict) {
       throw new RangeError(`Could not parse "${String(arg)}"`);
     }

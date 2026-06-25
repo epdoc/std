@@ -1,4 +1,5 @@
 import { _ } from '@epdoc/type';
+import { DateTime } from './date.ts';
 import type {
   DateParseOptions,
   GMTTZ,
@@ -157,12 +158,14 @@ export function safeGoogleSheetsDate(value: unknown): GoogleSheetsDate | null {
 }
 
 /**
- * Converts a string representation of a date into a `Date` object.
+ * Converts a string representation of a date into a `DateTime` object.
  *
- * This function is highly flexible and can parse a variety of formats. It is
- * designed to handle common, sometimes ambiguous, date formats that may not
- * strictly adhere to ISO 8601. It can infer missing date and time components,
- * applying sensible defaults.
+ * This function first will convert any ISO 8601 dates to the appropriate Temporal value. If the
+ * string is not an ISO Date it will try other parsing techniques.
+ *
+ * This function is highly flexible and can parse a variety of formats. It is designed to handle
+ * common, sometimes ambiguous, date formats that may not strictly adhere to ISO 8601. It can infer
+ * missing date and time components, applying sensible defaults.
  *
  * Key features:
  * - Handles various separators (e.g., '-', '_', '/', ' ') for date and time parts.
@@ -173,7 +176,10 @@ export function safeGoogleSheetsDate(value: unknown): GoogleSheetsDate | null {
  * @param opts Options for parsing, including separators and default values.
  * @returns A `Date` object, or `undefined` if the string cannot be parsed.
  */
-export function stringToDate(s: string, opts?: DateParseOptions): Date | undefined {
+export function stringToDate(s: string, opts?: DateParseOptions): DateTime | undefined {
+  const temporal = _.parseTemporalString(s);
+  if (temporal) return DateTime.of(temporal);
+
   // Default options
   const defaultOpts = {
     ymdSep: ['-', '_', '', '/', ' '],
@@ -207,17 +213,11 @@ export function stringToDate(s: string, opts?: DateParseOptions): Date | undefin
   const match = s.match(regex);
 
   if (!match) {
-    // If it's an ISO 8601 string, let Date() handle it.
-    // This is a basic check to prevent parsing common ISO formats.
-    // ISO 8601 typically includes 'T' for time separator or 'Z' for UTC.
-    if (isISODate(s)) {
-      const d = new Date(s);
-      // Verify if the native Date constructor actually produced a valid date
-      if (!isNaN(d.getTime())) {
-        return d;
-      }
+    const d = new Date(s);
+    if (_.isValidDate(d)) {
+      return DateTime.fromDate(d);
     }
-    return undefined; // Does not match our custom format or is an invalid ISO string
+    return undefined;
   }
 
   // Group 0 is the full match, subsequent groups are captured components
@@ -242,7 +242,7 @@ export function stringToDate(s: string, opts?: DateParseOptions): Date | undefin
     return undefined;
   }
 
-  let date: Date;
+  let date: DateTime;
   if (options.tz !== undefined) {
     // Logic from date.ts's DateTime constructor (implicitly from its usage with Date.UTC when tz is present)
     // If opts.tz is defined, it's the offset in minutes.
@@ -252,20 +252,21 @@ export function stringToDate(s: string, opts?: DateParseOptions): Date | undefin
     // we calculate the true UTC components:
     // UTC_H = H - (tz / 60)
     // UTC_Min = Min - (tz % 60)
-    const offsetHours = Math.floor(options.tz / 60);
-    const offsetMinutes = options.tz % 60;
+    // const offsetHours = Math.floor(options.tz / 60);
+    // const offsetMinutes = options.tz % 60 as TzMinutes;
 
-    date = new Date(Date.UTC(year, month - 1, day, hour - offsetHours, minute - offsetMinutes, second));
+    date = DateTime.fromComponents(year, month, day, hour, minute, second);
+    date.setTz(options.tz as TzMinutes);
   } else {
     // Default to local time if opts.tz is not set
-    date = new Date(year, month - 1, day, hour, minute, second);
+    date = DateTime.fromComponents(year, month, day, hour, minute, second);
   }
 
   // Verify that the day is valid for the given month and year
   // (e.g., 31st of April, or February 30th)
   // We use `getUTCFullYear`, `getUTCMonth`, `getUTCDate` to avoid local timezone issues
   // in this validation, especially if `tz` was explicitly set.
-  if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
+  if (date.year !== year || date.month !== month || date.day !== day) {
     return undefined;
   }
 
