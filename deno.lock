@@ -377,7 +377,7 @@
       "table": {
         "dependencies": [
           "jsr:@epdoc/colors@^1.1.2",
-          "jsr:@epdoc/datetime@^4.2.3",
+          "jsr:@epdoc/datetime@^4.2.4",
           "jsr:@epdoc/fmt@^1.0.16",
           "jsr:@epdoc/type@2",
           "jsr:@std/assert@^1.0.19",
