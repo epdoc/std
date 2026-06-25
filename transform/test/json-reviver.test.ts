@@ -1,3 +1,4 @@
+import { DateTime } from '@epdoc/datetime';
 import type { Dict } from '@epdoc/type';
 import { assert, assertEquals, assertInstanceOf } from '@std/assert';
 import { Json } from '../src/mod.ts';
@@ -250,6 +251,19 @@ Deno.test('jsonDeserialize reviver', async (t) => {
       assertInstanceOf(result.re, RegExp);
       assertEquals((result.re as RegExp).source, 'abc');
       assertInstanceOf(result.time, Temporal.Instant);
+    });
+
+    await t.step('autoDateTime override autoTemporal', () => {
+      const json = '{"re":{"pattern":"abc"},"time":"2024-01-15T12:30:45Z"}';
+      const result = Json.deserialize<Dict>(json, {
+        autoRegExp: true,
+        autoDateTime: true,
+        autoTemporal: true,
+      });
+      assertInstanceOf(result.re, RegExp);
+      assertEquals((result.re as RegExp).source, 'abc');
+      assert(DateTime.is(result.time));
+      assertEquals(result.time.toISOString(), '2024-01-15T12:30:45Z');
     });
 
     await t.step('autoRegExp and replace both work independently', () => {

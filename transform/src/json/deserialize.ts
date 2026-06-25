@@ -1,3 +1,4 @@
+import { DateTime } from '@epdoc/datetime';
 import { _, type Dict } from '@epdoc/type';
 import { decodeAscii85 } from '@std/encoding/ascii85';
 import * as Deep from '../deep/mod.ts';
@@ -96,9 +97,9 @@ export function createDeserializerReviver(
       if (opts.replace) {
         s = Deep.processStringWithReplacements(s, opts);
       }
-      if (opts.autoTemporal) {
+      if (opts.autoDateTime || opts.autoTemporal) {
         const parsed = _.parseTemporalString(s, { strict: true });
-        if (parsed) return parsed;
+        if (parsed) return opts.autoDateTime ? DateTime.from(parsed) : parsed;
       }
       return s;
     }

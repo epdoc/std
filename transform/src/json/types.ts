@@ -3,14 +3,15 @@ import type * as Deep from '../deep/types.ts';
 export type DeserializerReviverOptions = Deep.CopyOpts & IAutoTemporal & IDecode & IAutoRegExp;
 
 /**
- * When true, ISO 8601 date-time strings encountered during deserialization
- * will be converted to the appropriate Temporal type (ZonedDateTime,
- * PlainDateTime, or Instant) via {@link asTemporal}, rather than left as
- * plain strings.
+ * When true, ISO 8601 date-time strings encountered during deserialization will be converted to the
+ * appropriate Temporal type (ZonedDateTime, PlainDateTime, or Instant) via {@link asTemporal},
+ * rather than left as plain strings. Setting autoDateTime will convert to an @epdoc/datetime
+ * DateTime wrapper for the temporal.
  * @default false
  */
 export interface IAutoTemporal {
   autoTemporal?: boolean;
+  autoDateTime?: boolean;
 }
 export interface IAutoRegExp {
   autoRegExp?: boolean;

@@ -1,0 +1,30 @@
+{
+  "launch": {
+    "groups": {
+      "test": {
+        "name": "Tests",
+        "console": "internalConsole",
+        "includes": [
+          "**/*.test.ts"
+        ],
+        "runtimeArgs": [
+          "test",
+          "-A",
+          "--inspect-brk"
+        ]
+      },
+      "run": {
+        "name": "Runnable",
+        "console": "internalConsole",
+        "includes": [
+          "**/*.run.ts"
+        ],
+        "runtimeArgs": [
+          "run",
+          "-A",
+          "--inspect-brk"
+        ]
+      }
+    }
+  }
+}
