@@ -140,7 +140,7 @@ export type PDFTZ = Brand<string, 'PDFTZ'>;
  * A string representing an IANA (Internet Assigned Numbers Authority) timezone.
  * @example "America/New_York", "Europe/London", "Asia/Tokyo"
  */
-export type IANATZ = Brand<string, 'IANATZ'>;
+export type IANATZ = Brand<`${string}/${string}`, 'IANATZ'>;
 
 /**
  * An integer value representing the Julian Day, a continuous count of days
@@ -158,6 +158,11 @@ export type JulianDay = Integer;
  */
 export type GoogleSheetsDate = Brand<number, 'GoogleSheetsDate'>;
 
+export type DateTimeToISOStringOptions = {
+  fractionalSecondDigits?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 'auto';
+  // true is auto, false is never
+  timeZoneName?: 'auto' | 'never' | 'critical';
+};
 /**
  * Defines options for parsing date strings with the `stringToDate` function.
  */

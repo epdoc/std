@@ -83,21 +83,15 @@ Deno.test('util', async (t) => {
   });
 
   await t.step('toISOLocaleString', async (t) => {
-    const d = new Date('1997-11-25T12:13:14.456Z');
-    Deno.env.set('TZ', 'America/Chicago');
+    const d = DateTime.from('1997-11-25T12:13:14.456Z').setTz('America/Chicago' as IANATZ);
 
     await t.step('default', () => {
-      assertEquals(d.getTimezoneOffset(), 360);
-      assertEquals(d.toISOString(), '1997-11-25T12:13:14.456Z');
-      assertEquals(DateTime.fromDate(d).toISOLocalString(), '1997-11-25T06:13:14.456-06:00');
-    });
-
-    await t.step('show milliseconds', () => {
-      assertEquals(DateTime.fromDate(d).toISOLocalString(true), '1997-11-25T06:13:14.456-06:00');
-    });
-
-    await t.step('hide milliseconds', () => {
-      assertEquals(DateTime.fromDate(d).toISOLocalString(false), '1997-11-25T06:13:14-06:00');
+      assertEquals(d.getTzOffset(), -360);
+      assertEquals(d.toISOString(), '1997-11-25T06:13:14.456-06:00');
+      assertEquals(
+        d.toISOString({ timeZoneName: 'auto', fractionalSecondDigits: 0 }),
+        '1997-11-25T06:13:14-06:00[America/Chicago]',
+      );
     });
   });
 

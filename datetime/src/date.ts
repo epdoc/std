@@ -1,6 +1,7 @@
 import type { CompareResult } from '@epdoc/type';
 import { _, type IStrict, parseTemporalString } from '@epdoc/type';
 import type {
+  DateTimeToISOStringOptions,
   GoogleSheetsDate,
   IANATZ,
   ISODate,
@@ -1270,6 +1271,7 @@ export class DateTime {
    * @param options.fractionalSecondDigits - Number of fractional second digits (0-9) to show.
    *   Use 0 to hide fractional seconds, 3 to show milliseconds, or 'auto' (default) to show
    *   nonzero fractional seconds only. Matches Temporal's toString() behavior.
+   * @param options.timeZoneName - whether to include the timezone name. eg. "[America/New_York]""
    * @returns ISO 8601 formatted string
    * @throws Error if the internal value is a PlainDateTime
    *
@@ -1285,7 +1287,7 @@ export class DateTime {
    * console.log(d2.toISOString({ fractionalSecondDigits: 3 })); // "2024-03-15T05:30:00.000-05:00"
    * ```
    */
-  public toISOString(options?: { fractionalSecondDigits?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 'auto' }): string {
+  public toISOString(options?: DateTimeToISOStringOptions): string {
     return this.toISODate(options) as string;
   }
 
@@ -1296,14 +1298,19 @@ export class DateTime {
    * @param options.fractionalSecondDigits - Number of fractional second digits (0-9) to show.
    *   Use 0 to hide fractional seconds, 3 to show milliseconds, or 'auto' (default) to show
    *   nonzero fractional seconds only. Matches Temporal's toString() behavior.
+   * @param options.timeZoneName - whether to include the timezone name. eg. "[America/New_York]""
    * @returns ISO 8601 formatted string
    * @throws Error if the internal value is a PlainDateTime
    */
-  public toISODate(options?: { fractionalSecondDigits?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 'auto' }): ISODate {
+  public toISODate(options?: DateTimeToISOStringOptions): ISODate {
     if (this._value instanceof Temporal.Instant) {
       return this._value.toString(options) as ISODateInstant;
     } else if (this._value instanceof Temporal.ZonedDateTime) {
-      return this._value.toString({ timeZoneName: 'never', ...options }) as ISODateOffset;
+      return this._value.toString({
+        timeZoneName: 'never',
+        fractionalSecondDigits: 'auto',
+        ...options,
+      }) as ISODateOffset;
     } else if (this._value instanceof Temporal.PlainDateTime) {
       throw new Error('Cannot convert PlainDateTime to ISO string: use withTz() to set a timezone first');
     }
@@ -1409,6 +1416,10 @@ export class DateTime {
       | Temporal.PlainDateTimeToStringOptions,
   ): string {
     return this._value.toString(options as Temporal.InstantToStringOptions);
+  }
+
+  toJSON(): string {
+    return this._value.toString();
   }
 
   /**
