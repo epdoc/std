@@ -1,5 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 import { FileSpec } from '$mod';
+import { DateTime } from '@epdoc/datetime';
 import { deepEquals, type Dict } from '@epdoc/type';
 import { assert, assertEquals, assertInstanceOf } from '@std/assert';
 
@@ -99,6 +100,56 @@ Deno.test('JSON Extended Operations', async (t) => {
       assertInstanceOf(readData.byteArray, Uint8Array);
       assert(deepEquals(readData.byteArray, data.byteArray));
     }));
+
+  await t.step('roundtrips Temporal as string', () => {
+    const ds = '2026-06-24T15:30:45.123-04:00[America/New_York]';
+    const dt = Temporal.ZonedDateTime.from(ds);
+    withJsonFile(async (f) => {
+      const data = {
+        datetime: dt,
+        id: 1,
+      };
+      await f.writeJson(data, { encode: true });
+      const readData = await f.readJson({ decode: true }) as any;
+
+      assertEquals(readData.id, data.id);
+      assertEquals(typeof readData.datetime, 'string');
+      assertEquals(readData.datetime, ds);
+    });
+  });
+
+  await t.step('roundtrips Temporal with autoTemporal', () => {
+    const ds = '2026-06-24T15:30:45.123-04:00[America/New_York]';
+    const dt = Temporal.ZonedDateTime.from(ds);
+    withJsonFile(async (f) => {
+      const data = {
+        datetime: dt,
+        id: 1,
+      };
+      await f.writeJson(data, { encode: true });
+      const readData = await f.readJson({ decode: true, autoTemporal: true }) as any;
+
+      assertEquals(readData.id, data.id);
+      assertInstanceOf(readData.datetime, Temporal.ZonedDateTime);
+      assertEquals(readData.datetime, dt);
+    });
+  });
+  await t.step('roundtrips DateTime with autoDateTime', () => {
+    const ds = '2026-06-24T15:30:45.123-04:00[America/New_York]';
+    const dt = DateTime.fromString(ds);
+    withJsonFile(async (f) => {
+      const data = {
+        datetime: dt,
+        id: 1,
+      };
+      await f.writeJson(data, { encode: false });
+      const readData = await f.readJson({ decode: false, autoDateTime: true }) as any;
+
+      assertEquals(readData.id, data.id);
+      assert(DateTime.is(readData.datetime));
+      assertEquals(readData.datetime, dt);
+    });
+  });
 
   await t.step('performs string replacements during write and read', () =>
     withJsonFile(async (f, testDir) => {

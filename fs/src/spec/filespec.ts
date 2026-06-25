@@ -785,7 +785,8 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
         if (options.reviver) {
           reviver = options.reviver;
         } else if (
-          options.decode || options.replace || options.autoTemporal || options.autoRegExp || options.msubFn
+          options.decode || options.replace || options.autoTemporal || options.autoDateTime || options.autoRegExp ||
+          options.msubFn
         ) {
           reviver = Json.createDeserializerReviver(options);
         }
