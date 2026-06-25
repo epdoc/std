@@ -1137,13 +1137,21 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
     await destFile.ensureParentDir();
 
     try {
-      if (options?.overwrite) {
-        await nfs.rename(this._f, destFile.path);
-      } else {
-        const destExists = await destFile.exists(true);
-        if (destExists) {
-          throw new Error.AlreadyExists('Destination file already exists', { path: destFile.path });
+      const destFileExists = await destFile.isFile();
+      if (destFileExists) {
+        const srcHash = await this.digest();
+        const destHash = await destFile.digest();
+        if (srcHash === destHash) {
+          // if the destfile is the same as the src file then just remove the src because the move is already done
+          this.remove();
+        } else {
+          if (options?.overwrite) {
+            await nfs.rename(this._f, destFile.path);
+          } else {
+            throw new Error.AlreadyExists('A non-equal destination file already exists', { path: destFile.path });
+          }
         }
+      } else {
         await nfs.rename(this._f, destFile.path);
       }
       this.clearInfo();
