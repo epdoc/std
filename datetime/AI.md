@@ -136,6 +136,46 @@ if (DateTime.isValid(userInput)) {
 }
 ```
 
+### Parse CLI Timezone Strings
+
+Use `util.parseTzString()` to parse command-line timezone arguments into minutes offset:
+
+```typescript
+import { util } from '@epdoc/datetime';
+
+util.parseTzString('-6h'); // -360  (US Central behind UTC)
+util.parseTzString('-06:00'); // -360
+util.parseTzString('-6h30'); // -390  (e.g. Newfoundland)
+util.parseTzString('+6h'); // 360
+util.parseTzString('6'); // 360  (unsigned defaults to positive)
+util.parseTzString('6h'); // 360
+util.parseTzString('Z'); // 0    (UTC)
+util.parseTzString('America/Chicago'); // current offset for Chicago (~ -300 or -360)
+util.parseTzString('chicago'); // same, via partial IANA match
+```
+
+### Resolve IANA Timezones
+
+Use `util.resolveIANATZ()` to resolve a timezone identifier to a full IANA name:
+
+```typescript
+import { util } from '@epdoc/datetime';
+
+util.resolveIANATZ('America/Chicago'); // "America/Chicago"
+util.resolveIANATZ('america/chicago'); // "America/Chicago" (case-insensitive)
+util.resolveIANATZ('chicago'); // "America/Chicago" (partial match)
+util.resolveIANATZ('invalid'); // undefined
+```
+
+This is useful for setting the timezone of a `Temporal.ZonedDateTime`:
+
+```typescript
+const iana = util.resolveIANATZ('chicago');
+if (iana) {
+  const zdt = Temporal.Now.instant().toZonedDateTimeISO(iana);
+}
+```
+
 ### Julian Day Calculations
 
 ```typescript

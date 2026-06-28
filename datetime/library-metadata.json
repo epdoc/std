@@ -9,7 +9,7 @@
     "DateTime.tryFrom() — safe factory method returning undefined on invalid input",
     "DateEx — deprecated alias for DateTime",
     "dateEx() — deprecated factory function",
-    "util namespace — date utility functions"
+    "util namespace — date utility functions (stringToDate, parseTzString, resolveIANATZ, formatTzAsISOTZ, etc.)"
   ],
   "dependencies": {
     "internal": ["@epdoc/type"],
@@ -30,6 +30,16 @@
       "name": "Comparison methods",
       "description": "equals(), compare(), isBefore(), isAfter(), isSameOrBefore(), isSameOrAfter() for comparing DateTime instances",
       "file": "src/date.ts"
+    },
+    {
+      "name": "parseTzString — CLI timezone offset parser",
+      "description": "Converts CLI-style tz strings (-6h, -06:00, -6h30, +6h, 6, 6h, Z) to TzMinutes. Also resolves IANA names (America/Chicago) and partial matches (chicago) via resolveIANATZ. Returns TzMinutes or undefined.",
+      "file": "src/utils.ts"
+    },
+    {
+      "name": "resolveIANATZ — IANA timezone resolver",
+      "description": "Resolves full or partial IANA timezone names (case-insensitive) using Intl.supportedValuesOf('timeZone'). Separate reusable function, useful for setting a Temporal.ZonedDateTime timezone.",
+      "file": "src/utils.ts"
     }
   ],
   "architecture": {

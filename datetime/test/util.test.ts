@@ -168,4 +168,101 @@ Deno.test('util', async (t) => {
       assertEquals(util.isIANATZ('invalid-timezone'), false);
     });
   });
+
+  await t.step('parseTzString', async (t) => {
+    await t.step('numeric offset formats', async (t) => {
+      await t.step('should parse -6h as -360', () => {
+        assertEquals(util.parseTzString('-6h'), -360);
+      });
+
+      await t.step('should parse -06:00 as -360', () => {
+        assertEquals(util.parseTzString('-06:00'), -360);
+      });
+
+      await t.step('should parse -6h30 as -390', () => {
+        assertEquals(util.parseTzString('-6h30'), -390);
+      });
+
+      await t.step('should parse +6h as 360', () => {
+        assertEquals(util.parseTzString('+6h'), 360);
+      });
+
+      await t.step('should parse 6 as 360 (defaults to plus)', () => {
+        assertEquals(util.parseTzString('6'), 360);
+      });
+
+      await t.step('should parse 6h as 360 (defaults to plus)', () => {
+        assertEquals(util.parseTzString('6h'), 360);
+      });
+
+      await t.step('should parse +06:00 as 360', () => {
+        assertEquals(util.parseTzString('+06:00'), 360);
+      });
+
+      await t.step('should parse 0 as 0 (UTC)', () => {
+        assertEquals(util.parseTzString('0'), 0);
+      });
+
+      await t.step('should parse Z as 0 (UTC)', () => {
+        assertEquals(util.parseTzString('Z'), 0);
+      });
+    });
+
+    await t.step('IANA timezone resolution', async (t) => {
+      await t.step('should resolve America/Chicago to a valid offset', () => {
+        const result = util.parseTzString('America/Chicago');
+        assert(typeof result === 'number');
+        assert(Number.isInteger(result));
+      });
+
+      await t.step('should resolve partial IANA name', () => {
+        const result = util.parseTzString('chicago');
+        assert(typeof result === 'number');
+        assert(Number.isInteger(result));
+      });
+    });
+
+    await t.step('invalid inputs', async (t) => {
+      await t.step('should return undefined for empty string', () => {
+        assertEquals(util.parseTzString(''), undefined);
+      });
+
+      await t.step('should return undefined for gibberish', () => {
+        assertEquals(util.parseTzString('not-a-tz'), undefined);
+      });
+
+      await t.step('should return undefined for hours > 24', () => {
+        assertEquals(util.parseTzString('25h'), undefined);
+      });
+
+      await t.step('should return undefined for minutes > 59', () => {
+        assertEquals(util.parseTzString('6h70'), undefined);
+      });
+    });
+  });
+
+  await t.step('resolveIANATZ', async (t) => {
+    await t.step('should resolve full IANA name', () => {
+      assertEquals(util.resolveIANATZ('America/Chicago'), 'America/Chicago');
+    });
+
+    await t.step('should resolve case-insensitive IANA name', () => {
+      assertEquals(util.resolveIANATZ('america/chicago'), 'America/Chicago');
+    });
+
+    await t.step('should resolve partial match', () => {
+      assertEquals(util.resolveIANATZ('chicago'), 'America/Chicago');
+    });
+
+    await t.step('should return undefined for no match', () => {
+      assertEquals(util.resolveIANATZ('nonexistent/zone'), undefined);
+    });
+
+    await t.step('should return undefined for ambiguous partial match', () => {
+      // 'europe' should match only Europe/...
+      const result = util.resolveIANATZ('europe');
+      // There should be many matches for 'europe', so undefined
+      assertEquals(result, undefined);
+    });
+  });
 });

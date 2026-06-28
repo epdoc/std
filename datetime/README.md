@@ -239,6 +239,43 @@ console.log(isISODate('2025-10-05T10:20:30Z')); // true
 console.log(isISODate('2025-10-05')); // false
 ```
 
+### `parseTzString(val: string): TzMinutes | undefined`
+
+Parses a command-line-style timezone string and returns the offset in minutes from UTC. Handles numeric offset formats
+like `-6h`, `-06:00`, `-6h30`, `+6h`, `6`, `6h` (unsigned defaults to positive / ahead of UTC). Also accepts IANA
+timezone names (e.g. `"America/Chicago"`, `"chicago"`) via `resolveIANATZ` and resolves to their current numeric offset
+using Temporal.
+
+```typescript
+import { parseTzString } from '@epdoc/datetime';
+
+parseTzString('-6h'); // -360
+parseTzString('-06:00'); // -360
+parseTzString('-6h30'); // -390
+parseTzString('+6h'); // 360
+parseTzString('6'); // 360
+parseTzString('6h'); // 360
+parseTzString('Z'); // 0
+parseTzString('America/Chicago'); // current offset (e.g. -300)
+parseTzString('chicago'); // same, via partial IANA match
+```
+
+### `resolveIANATZ(val: string): IANATZ | undefined`
+
+Resolves a timezone identifier to a full IANA timezone name. Accepts full names like `"America/Chicago"` or
+case-insensitive partial matches like `"chicago"`, `"new_york"`. Uses `Intl.supportedValuesOf('timeZone')` for timezone
+discovery (no hardcoded list).
+
+```typescript
+import { resolveIANATZ } from '@epdoc/datetime';
+
+resolveIANATZ('America/Chicago'); // "America/Chicago"
+resolveIANATZ('america/chicago'); // "America/Chicago"
+resolveIANATZ('chicago'); // "America/Chicago"
+resolveIANATZ('new_york'); // "America/New_York"
+resolveIANATZ('invalid'); // undefined
+```
+
 ### Types
 
 The module exports several types for clarity and type safety:

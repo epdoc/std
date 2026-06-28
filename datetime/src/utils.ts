@@ -348,3 +348,94 @@ export function parsePDFTZ(val: PDFTZ): TzMinutes | undefined {
     }
   }
 }
+
+/**
+ * Parses a timezone string from command-line-style input and returns the offset
+ * in minutes from UTC. Handles numeric offset formats like `-6h`, `-06:00`,
+ * `-6h30`, `+6h`, `6`, `6h` (unsigned defaults to positive / ahead of UTC).
+ * Also accepts IANA timezone names (e.g. `"America/Chicago"`, `"chicago"`) via
+ * {@link resolveIANATZ} and resolves them to their current numeric offset using
+ * Temporal.
+ * @param val - The timezone string to parse
+ * @returns Timezone offset in minutes, or undefined if parsing fails
+ */
+export function parseTzString(val: string): TzMinutes | undefined {
+  if (!_.isString(val)) return undefined;
+
+  if (val === 'Z' || val === 'z') return 0 as TzMinutes;
+
+  const offset = parseTzOffset(val);
+  if (offset !== undefined) return offset;
+
+  const iana = resolveIANATZ(val);
+  if (iana) {
+    try {
+      const zdt = Temporal.Now.zonedDateTimeISO(iana);
+      const offsetMinutes = Number(zdt.offsetNanoseconds) / 60_000_000_000;
+      return Math.round(offsetMinutes) as TzMinutes;
+    } catch {
+      return undefined;
+    }
+  }
+
+  return undefined;
+}
+
+/**
+ * Parses a numeric timezone offset string.
+ * Supports formats: `[±]HH`, `[±]HHh`, `[±]HHhMM`, `[±]HH:MM`.
+ * @internal
+ */
+function parseTzOffset(val: string): TzMinutes | undefined {
+  const m1 = val.match(/^([+-])?(\d+)(?:h(\d+)?)?$/i);
+  if (m1) {
+    const sign = m1[1] === '-' ? -1 : 1;
+    const hours = _.asInt(m1[2]);
+    const minutes = m1[3] !== undefined ? _.asInt(m1[3]) : 0;
+    if (hours > 24 || minutes > 59) return undefined;
+    return (sign * (hours * 60 + minutes)) as TzMinutes;
+  }
+
+  const m2 = val.match(/^([+-])?(\d{2}):(\d{2})$/);
+  if (m2) {
+    const sign = m2[1] === '-' ? -1 : 1;
+    const hours = _.asInt(m2[2]);
+    const minutes = _.asInt(m2[3]);
+    if (hours > 23 || minutes > 59) return undefined;
+    return (sign * (hours * 60 + minutes)) as TzMinutes;
+  }
+
+  return undefined;
+}
+
+/**
+ * Resolves a timezone identifier to a full IANA timezone name.
+ * Accepts full IANA names (e.g. `"America/Chicago"`) or case-insensitive
+ * partial matches (e.g. `"chicago"`, `"new_york"`).
+ * Uses `Intl.supportedValuesOf('timeZone')` for available timezone discovery,
+ * avoiding any hardcoded timezone list.
+ * @param val - The timezone identifier to resolve
+ * @returns The full IANA timezone name, or undefined if no match
+ */
+export function resolveIANATZ(val: string): IANATZ | undefined {
+  if (!_.isString(val)) return undefined;
+
+  let timezones: string[];
+  try {
+    timezones = Intl.supportedValuesOf('timeZone');
+  } catch {
+    return undefined;
+  }
+
+  const lower = val.toLowerCase();
+
+  const exact = timezones.find((tz) => tz.toLowerCase() === lower);
+  if (exact) return exact as IANATZ;
+
+  const matches = timezones.filter((tz) => tz.toLowerCase().includes(lower));
+  if (matches.length === 1) {
+    return matches[0] as IANATZ;
+  }
+
+  return undefined;
+}
