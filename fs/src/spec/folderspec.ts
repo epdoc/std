@@ -330,6 +330,10 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
   // PATH PROPERTIES & INSPECTION
   // ============================================================================
 
+  static is(val: unknown): val is FolderSpec {
+    return val instanceof FolderSpec;
+  }
+
   /**
    * The absolute, normalized path of this folder.
    *

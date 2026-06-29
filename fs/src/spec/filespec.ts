@@ -229,6 +229,10 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
   // PATH PROPERTIES & INSPECTION
   // ============================================================================
 
+  static is(val: unknown): val is FileSpec {
+    return val instanceof FileSpec;
+  }
+
   /**
    * Returns the file's base file name, minus it's extension. For example, for
    * '/path/to/file.name.html', this method will return 'file.name'. Unlike
