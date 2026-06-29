@@ -873,6 +873,7 @@ export interface IError extends Error {
   /** Setting silent to true implies that logging of the error has already been done and no stack
    * trace should be output */
   silent?: boolean;
+  path?: string;
 }
 
 function newError(msg: string, opts: Dict = {}): IError {
