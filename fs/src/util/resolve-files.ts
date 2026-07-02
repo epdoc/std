@@ -1,5 +1,5 @@
-import { Walk } from '@epdoc/fs';
-import * as FS from '@epdoc/fs/fs';
+import * as Spec from '../spec/mod.ts';
+import * as Walk from '../walk/mod.ts';
 
 export type IRecursive = {
   recursive?: boolean;
@@ -19,21 +19,21 @@ export type IRecursive = {
 export async function resolveFiles(
   args: string[],
   opts: IRecursive = {},
-): Promise<FS.File[]> {
-  const files: FS.File[] = [];
+): Promise<Spec.FileSpec[]> {
+  const files: Spec.FileSpec[] = [];
   const recursive = opts.recursive ?? false;
 
   for (const arg of args) {
-    const spec = new FS.Spec(arg);
+    const spec = new Spec.FSSpec(arg);
     const resolved = await spec.resolvedType();
 
     if (!resolved) {
       continue;
     }
 
-    if (FS.File.is(resolved)) {
+    if (Spec.FileSpec.is(resolved)) {
       files.push(resolved);
-    } else if (FS.Folder.is(resolved) && recursive) {
+    } else if (Spec.FolderSpec.is(resolved) && recursive) {
       for await (
         const entry of Walk.walk(resolved, {
           includeFiles: true,
@@ -41,7 +41,7 @@ export async function resolveFiles(
           maxDepth: Infinity,
         })
       ) {
-        if (FS.File.is(entry)) {
+        if (Spec.FileSpec.is(entry)) {
           files.push(entry);
         }
       }
@@ -56,11 +56,11 @@ export async function resolveFiles(
  * @returns
  * @experimental
  */
-export async function resolveFolders(args: string[]): Promise<FS.Folder[]> {
-  const folders: FS.Folder[] = [];
+export async function resolveFolders(args: string[]): Promise<Spec.FolderSpec[]> {
+  const folders: Spec.FolderSpec[] = [];
 
   for (const arg of args) {
-    const folder = new FS.Folder(arg);
+    const folder = new Spec.FolderSpec(arg);
     if (await folder.isFolder()) {
       folders.push(folder);
     }

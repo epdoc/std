@@ -1,6 +1,7 @@
 {
   "version": "5",
   "specifiers": {
+    "jsr:@epdoc/colors@^1.1.2": "1.1.2",
     "jsr:@epdoc/datetime@^4.2.6": "4.2.6",
     "jsr:@epdoc/duration@~0.3.22": "0.3.22",
     "jsr:@epdoc/terminal@^0.0.14": "0.0.14",
@@ -23,6 +24,12 @@
     "jsr:@std/yaml@^1.1.2": "1.1.2"
   },
   "jsr": {
+    "@epdoc/colors@1.1.2": {
+      "integrity": "5b565e92ff0edb01c61164625d6ddeda08ed0e503ccaec366e6336dcc4dbbe9c",
+      "dependencies": [
+        "jsr:@std/fmt"
+      ]
+    },
     "@epdoc/datetime@4.2.6": {
       "integrity": "f1584062facc340265efa365f0e47156e2e0b18614655ae2ecc5e22db355b2ac"
     },
