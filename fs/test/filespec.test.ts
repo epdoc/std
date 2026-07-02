@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 import type * as FS from '$mod';
-import { DigestAlgorithm, FileSpec, FolderSpec } from '$mod';
+import { DigestAlgorithm, Error as FsError, FileSpec, FolderSpec } from '$mod';
 import { DateTime } from '@epdoc/datetime';
 import { _ } from '@epdoc/type';
 import { assert, assertEquals, assertInstanceOf, assertRejects, assertStringIncludes, assertThrows } from '@std/assert';
@@ -193,6 +193,143 @@ Deno.test('FileSpec', async (t) => {
         const destExists = await destFile.exists(true);
         assert(destExists);
 
+        const srcExists = await srcFile.exists(true);
+        assertEquals(srcExists, false);
+      });
+
+      await t.step('moveTo() same path returns without deleting', async () => {
+        const file = new FileSpec(testDir, 'move-self.txt');
+        await file.write('self test');
+
+        const result = await file.moveTo(file);
+
+        assertEquals(result.path, file.path);
+        const stillExists = await file.exists(true);
+        assert(stillExists);
+      });
+
+      await t.step('moveTo() case-only rename on case-insensitive fs', async () => {
+        const srcFile = new FileSpec(testDir, 'MOVETEST_CASE.TXT');
+        const content = 'case rename test';
+        await srcFile.write(content);
+        const destFile = new FileSpec(testDir, 'movetest_case.txt');
+
+        await srcFile.moveTo(destFile);
+
+        const destExists = await destFile.exists(true);
+        assert(destExists);
+        const destContent = await destFile.readAsString();
+        assertEquals(destContent, content);
+      });
+
+      await t.step('moveTo() same content removes source without overwrite flag', async () => {
+        const srcFile = new FileSpec(testDir, 'move-samecontent-src.txt');
+        const destFile = new FileSpec(testDir, 'move-samecontent-dst.txt');
+        await srcFile.write('identical content');
+        await destFile.write('identical content');
+
+        await srcFile.moveTo(destFile);
+
+        const destExists = await destFile.exists(true);
+        assert(destExists);
+        const srcExists = await srcFile.exists(true);
+        assertEquals(srcExists, false);
+      });
+
+      await t.step('moveTo() different inode same content with overwrite succeeds', async () => {
+        const srcFile = new FileSpec(testDir, 'move-sameover-src.txt');
+        const destFile = new FileSpec(testDir, 'move-sameover-dst.txt');
+        await srcFile.write('identical content');
+        await destFile.write('identical content');
+
+        await srcFile.moveTo(destFile, { overwrite: true });
+
+        const destExists = await destFile.exists(true);
+        assert(destExists);
+        const srcExists = await srcFile.exists(true);
+        assertEquals(srcExists, false);
+      });
+
+      await t.step('moveTo() different content without overwrite throws AlreadyExists', async () => {
+        const srcFile = new FileSpec(testDir, 'move-diff-src.txt');
+        const destFile = new FileSpec(testDir, 'move-diff-dst.txt');
+        await srcFile.write('source content');
+        await destFile.write('dest content');
+
+        await assertRejects(
+          () => srcFile.moveTo(destFile),
+          FsError.AlreadyExists,
+        );
+
+        const srcStillExists = await srcFile.exists(true);
+        assert(srcStillExists);
+        const destStillExists = await destFile.exists(true);
+        assert(destStillExists);
+      });
+
+      await t.step('moveTo() different content with overwrite succeeds', async () => {
+        const srcFile = new FileSpec(testDir, 'move-diffover-src.txt');
+        const destFile = new FileSpec(testDir, 'move-diffover-dst.txt');
+        await srcFile.write('source content');
+        await destFile.write('dest content');
+
+        await srcFile.moveTo(destFile, { overwrite: true });
+
+        const destExists = await destFile.exists(true);
+        assert(destExists);
+        const destContent = await destFile.readAsString();
+        assertEquals(destContent, 'source content');
+        const srcExists = await srcFile.exists(true);
+        assertEquals(srcExists, false);
+      });
+
+      await t.step('moveTo() hard link removes source, link remains', async () => {
+        const srcFile = new FileSpec(testDir, 'move-hl-src.txt');
+        await srcFile.write('hard link test');
+        const linkPath = path.join(testDir.path, 'move-hl-link.txt');
+        await nfs.link(srcFile.path, linkPath);
+        const linkFile = new FileSpec(linkPath);
+
+        await srcFile.moveTo(linkFile);
+
+        const linkExists = await linkFile.exists(true);
+        assert(linkExists);
+        const linkContent = await linkFile.readAsString();
+        assertEquals(linkContent, 'hard link test');
+        const srcExists = await srcFile.exists(true);
+        assertEquals(srcExists, false);
+      });
+
+      await t.step('moveTo() returns FileSpec with correct path and exists()', async () => {
+        const srcFile = new FileSpec(testDir, 'move-return-src.txt');
+        const content = 'return path test';
+        await srcFile.write(content);
+        const destFile = new FileSpec(testDir, 'move-return-dst.txt');
+
+        const result = await srcFile.moveTo(destFile);
+
+        assertEquals(result.path, destFile.path);
+        const resultExists = await result.exists();
+        assert(resultExists);
+        const resultContent = await result.readAsString();
+        assertEquals(resultContent, content);
+      });
+
+      await t.step('moveTo() folder destination moves file into folder', async () => {
+        const srcFile = new FileSpec(testDir, 'move-into-folder.txt');
+        const content = 'move into folder test';
+        await srcFile.write(content);
+        const destFolder = new FolderSpec(testDir, 'move-subfolder');
+        await destFolder.ensureDir();
+
+        const result = await srcFile.moveTo(destFolder);
+
+        const expectedPath = path.join(destFolder.path, 'move-into-folder.txt');
+        assertEquals(result.path, expectedPath);
+        const resultExists = await result.exists(true);
+        assert(resultExists);
+        const resultContent = await result.readAsString();
+        assertEquals(resultContent, content);
         const srcExists = await srcFile.exists(true);
         assertEquals(srcExists, false);
       });

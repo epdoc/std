@@ -1138,18 +1138,35 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
     }
 
     const destFile = (dest instanceof FileSpec) ? dest : new FileSpec(dest, this.filename);
+
+    if (this._f === destFile.path) {
+      return destFile;
+    }
+
     await destFile.ensureParentDir();
 
     try {
       const destFileExists = await destFile.isFile();
       if (destFileExists) {
-        const srcHash = await this.digest();
-        const destHash = await destFile.digest();
-        if (srcHash === destHash) {
-          // if the destfile is the same as the src file then just remove the src because the move is already done
-          this.remove();
+        const srcStat = await this.stats(true);
+        const destStat = await destFile.stats(true);
+        const srcIno = srcStat?.ino;
+        const destIno = destStat?.ino;
+
+        if (srcIno != null && destIno != null && srcIno === destIno) {
+          // On case-insensitive filesystems, rename is a no-op when paths
+          // resolve to the same directory entry (case-only rename). Use a
+          // two-step rename through a temp name to force the change. This
+          // also handles hard links atomically.
+          const tmpPath = `${this._f}.${performance.now()}.tmp`;
+          await nfs.rename(this._f, tmpPath);
+          await nfs.rename(tmpPath, destFile.path);
         } else {
-          if (options?.overwrite) {
+          const srcHash = await this.digest();
+          const destHash = await destFile.digest();
+          if (srcHash === destHash) {
+            await this.remove();
+          } else if (options?.overwrite) {
             await nfs.rename(this._f, destFile.path);
           } else {
             throw new Error.AlreadyExists('A non-equal destination file already exists', { path: destFile.path });
