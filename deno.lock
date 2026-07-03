@@ -124,6 +124,12 @@
   },
   "workspace": {
     "members": {
+      "cmd": {
+        "dependencies": [
+          "jsr:@epdoc/type@^2.0.2",
+          "jsr:@std/assert@^1.0.19"
+        ]
+      },
       "colors": {
         "dependencies": [
           "jsr:@std/assert@^1.0.19",

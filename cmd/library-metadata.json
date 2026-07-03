@@ -1,0 +1,80 @@
+{
+  "identity": {
+    "name": "@epdoc/cmd",
+    "purpose": "Fluent wrapper around Deno.Command for running external processes with captured or interactive output",
+    "type": "utility",
+    "complexity": "simple"
+  },
+  "quickStart": {
+    "pattern": "cmd(command, args).fluentOpts().run()",
+    "code": "import { cmd } from '@epdoc/cmd';\n\nconst result = await cmd('git', ['status', '--short'])\n  .cwd('/my/repo')\n  .run();\nif (result.success) console.log(result.stdout);"
+  },
+  "exports": [
+    {
+      "name": "cmd",
+      "role": "main_entry",
+      "description": "Factory function returning a Cmd builder",
+      "whenToUse": "Every command execution starts here"
+    },
+    {
+      "name": "Cmd",
+      "role": "helper",
+      "description": "Fluent builder class wrapping Deno.Command",
+      "whenToUse": "Extend this to create custom command wrappers (e.g. DenoCmd)"
+    },
+    {
+      "name": "CmdResult",
+      "role": "helper",
+      "description": "Typed result with stdout, stderr, code, duration, and json() helper",
+      "whenToUse": "Reading command output, parsing JSON, constructing test results"
+    },
+    {
+      "name": "CmdError",
+      "role": "helper",
+      "description": "Error thrown by orThrow() with access to the CmdResult",
+      "whenToUse": "Catching command failures in throw-based workflows"
+    },
+    {
+      "name": "CmdOptions",
+      "role": "type",
+      "description": "Configuration interface: cwd, env, dryRun, timeout, stdin, etc.",
+      "whenToUse": "Typing higher-level option objects passed to cmd()"
+    }
+  ],
+  "patterns": [
+    {
+      "name": "Captured output",
+      "when": "Need stdout/stderr as strings for programmatic use",
+      "code": "const r = await cmd('git', ['status']).cwd('/repo').run();\nconsole.log(r.stdout);"
+    },
+    {
+      "name": "Interactive mode",
+      "when": "Command needs user input (stdin) or inheriting terminal",
+      "code": "await cmd('deno', ['publish']).interactive().run();"
+    },
+    {
+      "name": "Throw on failure",
+      "when": "Want early exit on non-zero exit code",
+      "code": "const r = await cmd('git', ['push']).orThrow();"
+    },
+    {
+      "name": "Dry-run / test mode",
+      "when": "Skip execution, return success immediately",
+      "code": "const r = await cmd('deno', ['cache', 'mod.ts']).dryRun(true).run();"
+    },
+    {
+      "name": "JSON output parsing",
+      "when": "Command returns JSON on stdout",
+      "code": "const data = (await cmd('exiftool', ['-j', 'photo.jpg']).run()).json<Metadata[]>();"
+    },
+    {
+      "name": "Subclass for fixed command",
+      "when": "Always run the same binary",
+      "code": "class DenoCmd extends Cmd {\n  constructor(args, opts) { super('deno', args, opts); }\n}"
+    }
+  ],
+  "relationships": {
+    "dependsOn": ["@epdoc/type"],
+    "usedBy": []
+  }
+}

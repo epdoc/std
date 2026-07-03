@@ -38,6 +38,7 @@
     "./duration",
     "./fmt",
     "./terminal",
+    "./cmd",
     "./datetime",
     "./progress",
     "./fs",
