@@ -1,5 +1,5 @@
-import { CmdResult } from './cmd-result.ts';
 import { CmdError } from './cmd-error.ts';
+import { CmdResult } from './cmd-result.ts';
 import type { CmdOptions, Milliseconds } from './types.ts';
 
 const encoder = new TextEncoder();
@@ -13,6 +13,10 @@ export class Cmd<T = void> {
     this.#cmd = cmd;
     this.#args = args ?? [];
     this.#opts = { ...opts };
+  }
+
+  static from(cmd: string, args?: string[], opts?: CmdOptions): Cmd {
+    return new Cmd(cmd, args, opts);
   }
 
   cwd(path: string): this {
@@ -31,7 +35,7 @@ export class Cmd<T = void> {
   }
 
   dryRun(value?: boolean): this {
-    this.#opts.dryRun = value ?? true;
+    this.#opts.dryRun = !!value;
     return this;
   }
 
@@ -46,7 +50,7 @@ export class Cmd<T = void> {
   }
 
   interactive(value?: boolean): this {
-    this.#opts.interactive = value ?? true;
+    this.#opts.interactive = !!value;
     return this;
   }
 
