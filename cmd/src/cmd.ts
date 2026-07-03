@@ -15,8 +15,8 @@ export class Cmd<T = void> {
     this.#opts = { ...opts };
   }
 
-  static from(cmd: string, args?: string[], opts?: CmdOptions): Cmd {
-    return new Cmd(cmd, args, opts);
+  static from<T>(cmd: string, args?: string[], opts?: CmdOptions): Cmd<T> {
+    return new Cmd<T>(cmd, args, opts);
   }
 
   cwd(path: string): this {
