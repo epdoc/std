@@ -4,7 +4,7 @@ import type { CmdOptions, Milliseconds } from './types.ts';
 
 const encoder = new TextEncoder();
 
-export class Cmd<T = void, E extends Error = Error> {
+export class Cmd<T = void> {
   #cmd: string;
   #args: string[];
   #opts: CmdOptions;
@@ -74,8 +74,8 @@ export class Cmd<T = void, E extends Error = Error> {
     return { ...this.#opts };
   }
 
-  async run(): Promise<CmdResult<T, E>> {
-    const result = CmdResult.from<T, E>(this.#cmd, this.#args, this.#opts);
+  async run(): Promise<CmdResult<T>> {
+    const result = CmdResult.from<T>(this.#cmd, this.#args, this.#opts);
 
     if (this.#opts.dryRun) {
       return result.asSuccess();
@@ -129,7 +129,7 @@ export class Cmd<T = void, E extends Error = Error> {
     }
   }
 
-  async orThrow(): Promise<CmdResult<T, E>> {
+  async orThrow(): Promise<CmdResult<T>> {
     const result = await this.run();
     if (!result.success) {
       throw new CmdError(
@@ -157,9 +157,9 @@ export class Cmd<T = void, E extends Error = Error> {
   }
 
   async #runInteractive(
-    result: CmdResult<T, E>,
+    result: CmdResult<T>,
     denoOpts: Deno.CommandOptions,
-  ): Promise<CmdResult<T, E>> {
+  ): Promise<CmdResult<T>> {
     const command = new Deno.Command(this.#cmd, {
       ...denoOpts,
       stdin: 'inherit',
@@ -187,9 +187,9 @@ export class Cmd<T = void, E extends Error = Error> {
   }
 
   async #runCaptured(
-    result: CmdResult<T, E>,
+    result: CmdResult<T>,
     denoOpts: Deno.CommandOptions,
-  ): Promise<CmdResult<T, E>> {
+  ): Promise<CmdResult<T>> {
     const stdin = this.#opts.stdin;
 
     if (stdin !== undefined) {

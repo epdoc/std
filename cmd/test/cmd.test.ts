@@ -120,7 +120,7 @@ Deno.test('cmd - CmdResult.from for test mode', () => {
 });
 
 Deno.test('Cmd - subclassable (DenoCmd pattern)', async () => {
-  class DenoCmd<T = void, E extends Error = Error> extends Cmd<T, E> {
+  class DenoCmd extends Cmd {
     constructor(args?: string[], opts?: CmdOptions) {
       super('deno', args, opts);
     }

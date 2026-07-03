@@ -66,25 +66,41 @@ function runBuild(opts: CmdOptions) {
 }
 ```
 
+### Typed data result
+
+```typescript
+interface AddData {
+  filesStaged: number;
+}
+
+const result = await cmd<AddData>('git', ['add', '.']).run();
+if (result.success) {
+  console.log(result.data?.filesStaged); // typed as AddData | undefined
+}
+```
+
 ### Subclassing for a fixed command
 
 ```typescript
 import { Cmd, type CmdOptions } from '@epdoc/cmd';
 
-class DenoCmd<T, E> extends Cmd<T, E> {
+class DenoCmd extends Cmd {
   constructor(args?: string[], opts?: CmdOptions) {
     super('deno', args, opts);
   }
 }
+
+const result = await new DenoCmd(['cache', 'mod.ts']).run();
 ```
 
 ## API
 
-### `cmd(command, args?, opts?)`
+### `cmd<T>(command, args?, opts?)`
 
-Returns a `Cmd` builder instance.
+Returns a `Cmd<T>` builder instance. `T` is the type of `.data` on the result — specify it when you plan to attach typed
+data.
 
-### `Cmd` builder methods
+### `Cmd<T>` — `T` is the type of `.data` on the result
 
 | Method                | Description                                   |
 | --------------------- | --------------------------------------------- |
@@ -101,7 +117,10 @@ Returns a `Cmd` builder instance.
 | `.run()`              | Execute, return `CmdResult` (never throws)    |
 | `.orThrow()`          | Execute, throw `CmdError` on failure          |
 
-### `CmdResult<T, E>`
+### `CmdResult<T, E>` — `T` is your data type, `E` is your error type
+
+When you use `cmd<AddData>('git', ['add', '.'])`, the result is `CmdResult<AddData>`. If you need a typed error, cast
+the result: `result as CmdResult<AddData, MyError>`.
 
 | Member             | Description                              |
 | ------------------ | ---------------------------------------- |
@@ -113,8 +132,8 @@ Returns a `Cmd` builder instance.
 | `.stderrLines`     | stderr split into trimmed lines          |
 | `.command`         | Full command string (e.g., "git status") |
 | `.duration`        | Execution time in ms                     |
-| `.data`            | Optional typed data payload              |
-| `.error`           | Optional error on failure                |
+| `.data`            | Optional typed data payload (type `T`)   |
+| `.error`           | Optional error on failure (type `E`)     |
 | `.dryRun`          | Whether execution was skipped            |
 | `.json<D>()`       | Parse stdout as JSON                     |
 | `CmdResult.from()` | Static factory for test/mock results     |
