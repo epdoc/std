@@ -13,7 +13,7 @@ export class CmdResult<T = void, E extends Error = Error> {
   _stdout?: Uint8Array;
   _stderr?: Uint8Array;
   _outParser?: (data: string) => T;
-  _errParser?: (data: string) => E;
+  _errParser?: (stderr: string, stdout: string) => E;
   data?: T;
   /** Indicates this was a dry run */
   dryRun?: boolean;
@@ -76,7 +76,9 @@ export class CmdResult<T = void, E extends Error = Error> {
       this.data = this._outParser(decoder.decode(this._stdout));
     }
     if (this._errParser && this._stderr && this._stderr.length > 0) {
-      this.error = this._errParser(decoder.decode(this._stderr));
+      const stderr = decoder.decode(this._stderr);
+      const stdout = this._stdout ? decoder.decode(this._stdout) : '';
+      this.error = this._errParser(stderr, stdout);
     }
     return this;
   }

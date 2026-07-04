@@ -78,8 +78,8 @@ export class CmdRunner<T = void, E extends Error = Error> {
     return this as unknown as CmdRunner<R, E>;
   }
 
-  errParser<F extends Error>(parser: (data: string) => F): CmdRunner<T, F> {
-    this.#opts.errParser = parser as unknown as (data: string) => E;
+  errParser<F extends Error>(parser: (stderr: string, stdout: string) => F): CmdRunner<T, F> {
+    this.#opts.errParser = parser as unknown as (stderr: string, stdout: string) => E;
     return this as unknown as CmdRunner<T, F>;
   }
 

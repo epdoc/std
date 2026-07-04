@@ -65,7 +65,7 @@
     {
       "name": "Parse stderr into error object",
       "when": "Command emits structured errors on stderr",
-      "code": "const result = await runner('tool', ['--json'])\n  .errParser(s => new MyError(JSON.parse(s)))\n  .run();\nif (result.error) throw result.error;"
+      "code": "const result = await runner('tool', ['--json'])\n  .errParser((stderr, stdout) => new MyError(JSON.parse(stderr)))\n  .run();\nif (result.error) throw result.error;"
     },
     {
       "name": "Parsed data with orThrow",
