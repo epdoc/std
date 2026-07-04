@@ -1,10 +1,10 @@
 import type { CmdResult } from './cmd-result.ts';
 
-export class CmdError extends Error {
-  readonly result: CmdResult;
+export class CmdError<T = void> extends Error {
+  readonly result: CmdResult<T>;
   silent: boolean = false;
 
-  constructor(message: string, result: CmdResult) {
+  constructor(message: string, result: CmdResult<T>) {
     super(message);
     this.name = 'CmdError';
     this.result = result;
