@@ -7,11 +7,13 @@ export class CmdResult<T = void, E extends Error = Error> {
   #t0 = performance.now();
   success: boolean = false;
   code?: number;
+  /** A string that can be used in UI that show the command that was run */
   command: string = '';
   duration: Milliseconds = 0;
   _stdout?: Uint8Array;
   _stderr?: Uint8Array;
   data?: T;
+  /** Indicates this was a dry run */
   dryRun?: boolean;
   error?: E;
 

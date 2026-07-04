@@ -86,6 +86,7 @@ export class CmdRunner<T = void> {
     const result = CmdResult.from<T>(this.#cmd, this.#args, this.#opts);
 
     if (this.#opts.dryRun) {
+      result.dryRun = true;
       return result.asSuccess();
     }
 
