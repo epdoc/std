@@ -4,7 +4,7 @@ import type { CmdOptions, Milliseconds } from './types.ts';
 
 const encoder = new TextEncoder();
 
-export class Cmd<T = void> {
+export class CmdRunner<T = void> {
   #cmd: string;
   #args: string[];
   #opts: CmdOptions;
@@ -15,8 +15,8 @@ export class Cmd<T = void> {
     this.#opts = { ...opts };
   }
 
-  static from<T>(cmd: string, args?: string[], opts?: CmdOptions): Cmd<T> {
-    return new Cmd<T>(cmd, args, opts);
+  static from<T>(cmd: string, args?: string[], opts?: CmdOptions): CmdRunner<T> {
+    return new CmdRunner<T>(cmd, args, opts);
   }
 
   cwd(path: string): this {
@@ -226,6 +226,6 @@ export class Cmd<T = void> {
   }
 }
 
-export function cmd(command: string, args?: string[], opts?: CmdOptions): Cmd {
-  return new Cmd(command, args, opts);
+export function runner(command: string, args?: string[], opts?: CmdOptions): CmdRunner {
+  return new CmdRunner(command, args, opts);
 }

@@ -1,4 +1,4 @@
-export { Cmd, cmd } from './cmd.ts';
-export { CmdResult } from './cmd-result.ts';
-export { CmdError } from './cmd-error.ts';
-export type { CmdOptions, Milliseconds } from './types.ts';
+export { CmdError as Error } from './cmd-error.ts';
+export { CmdResult as Result } from './cmd-result.ts';
+export { CmdRunner as Runner, runner } from './cmd.ts';
+export type { CmdOptions as Options, Milliseconds } from './types.ts';
