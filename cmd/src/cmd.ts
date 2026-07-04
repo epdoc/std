@@ -226,6 +226,6 @@ export class CmdRunner<T = void> {
   }
 }
 
-export function runner(command: string, args?: string[], opts?: CmdOptions): CmdRunner {
-  return new CmdRunner(command, args, opts);
+export function runner<T>(command: string, args?: string[], opts?: CmdOptions): CmdRunner<T> {
+  return new CmdRunner<T>(command, args, opts);
 }
