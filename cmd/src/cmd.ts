@@ -78,6 +78,10 @@ export class CmdRunner<T = void> {
     return { ...this.#opts };
   }
 
+  toString(): string {
+    return [this.#cmd, ...this.#args].join(' ');
+  }
+
   async run(): Promise<CmdResult<T>> {
     const result = CmdResult.from<T>(this.#cmd, this.#args, this.#opts);
 
