@@ -12,5 +12,10 @@ export interface CmdOptions<T = unknown, E extends Error = Error> {
   uid?: number;
   gid?: number;
   outParser?: (data: string) => T;
-  errParser?: (stderr: string, stdout: string) => E;
+  errParser?: (result: {
+    stdout: string;
+    stderr: string;
+    command: string;
+    code?: number;
+  }) => E;
 }

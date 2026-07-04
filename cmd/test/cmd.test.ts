@@ -180,7 +180,7 @@ Deno.test('cmd - errParser parses stderr into error', async () => {
     'eval',
     'console.error(JSON.stringify({errCode: 99})); Deno.exit(1)',
   ])
-    .errParser((stderr) => new ParseError(JSON.parse(stderr) as Record<string, unknown>))
+    .errParser((result) => new ParseError(JSON.parse(result.stderr) as Record<string, unknown>))
     .run();
   assertEquals(result.success, false);
   assert(result.error instanceof ParseError);
@@ -204,7 +204,7 @@ Deno.test('cmd - orThrow throws parsed error on failure', async () => {
   await assertRejects(
     () =>
       Cmd.runner('deno', ['eval', 'console.error(JSON.stringify({code: 99})); Deno.exit(1)'])
-        .errParser((stderr) => new CliError((JSON.parse(stderr) as { code: number }).code))
+        .errParser((result) => new CliError((JSON.parse(result.stderr) as { code: number }).code))
         .orThrow(),
     CliError,
   );
