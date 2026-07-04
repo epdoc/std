@@ -1,6 +1,6 @@
 export type Milliseconds = number;
 
-export interface CmdOptions {
+export interface CmdOptions<T = unknown, E extends Error = Error> {
   cwd?: string;
   env?: Record<string, string>;
   clearEnv?: boolean;
@@ -11,4 +11,6 @@ export interface CmdOptions {
   signal?: AbortSignal;
   uid?: number;
   gid?: number;
+  outParser?: (data: string) => T;
+  errParser?: (data: string) => E;
 }

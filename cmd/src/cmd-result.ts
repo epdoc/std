@@ -12,6 +12,8 @@ export class CmdResult<T = void, E extends Error = Error> {
   duration: Milliseconds = 0;
   _stdout?: Uint8Array;
   _stderr?: Uint8Array;
+  _outParser?: (data: string) => T;
+  _errParser?: (data: string) => E;
   data?: T;
   /** Indicates this was a dry run */
   dryRun?: boolean;
@@ -38,7 +40,7 @@ export class CmdResult<T = void, E extends Error = Error> {
   static from<T = void, E extends Error = Error>(
     cmd: string,
     args: string[],
-    opts?: CmdOptions,
+    opts?: CmdOptions<T, E>,
   ): CmdResult<T, E> {
     const result = new CmdResult<T, E>();
     result.command = [cmd, ...args].join(' ');
@@ -66,6 +68,16 @@ export class CmdResult<T = void, E extends Error = Error> {
 
   setStderr(value: Uint8Array | string): this {
     this._stderr = typeof value === 'string' ? encoder.encode(value) : value;
+    return this;
+  }
+
+  applyParsers(): this {
+    if (this._outParser && this._stdout && this._stdout.length > 0) {
+      this.data = this._outParser(decoder.decode(this._stdout));
+    }
+    if (this._errParser && this._stderr && this._stderr.length > 0) {
+      this.error = this._errParser(decoder.decode(this._stderr));
+    }
     return this;
   }
 

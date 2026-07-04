@@ -7,74 +7,89 @@
   },
   "quickStart": {
     "pattern": "cmd(command, args).fluentOpts().run()",
-    "code": "import { cmd } from '@epdoc/cmd';\n\nconst result = await cmd('git', ['status', '--short'])\n  .cwd('/my/repo')\n  .run();\nif (result.success) console.log(result.stdout);"
+    "code": "import { runner } from '@epdoc/cmd';\n\nconst result = await runner('git', ['status', '--short'])\n  .cwd('/my/repo')\n  .run();\nif (result.success) console.log(result.stdout);"
   },
   "exports": [
     {
-      "name": "cmd",
+      "name": "runner",
       "role": "main_entry",
-      "description": "Factory function returning a Cmd builder",
+      "description": "Factory function returning a CmdRunner builder",
       "whenToUse": "Every command execution starts here"
     },
     {
-      "name": "Cmd",
+      "name": "Runner",
       "role": "helper",
-      "description": "Fluent builder class wrapping Deno.Command",
-      "whenToUse": "Extend this to create custom command wrappers (e.g. DenoCmd)"
+      "description": "Fluent builder class wrapping Deno.Command with generic parsers",
+      "whenToUse": "Extend this to create custom command wrappers, or use for typed output parsing"
     },
     {
-      "name": "CmdResult",
+      "name": "Result",
       "role": "helper",
-      "description": "Typed result with stdout, stderr, code, duration, and json() helper",
+      "description": "Typed result with stdout, stderr, code, duration, data, error, and json() helper",
       "whenToUse": "Reading command output, parsing JSON, constructing test results"
     },
     {
-      "name": "CmdError",
+      "name": "Error",
       "role": "helper",
       "description": "Error thrown by orThrow() with access to the CmdResult",
       "whenToUse": "Catching command failures in throw-based workflows"
     },
     {
-      "name": "CmdOptions",
+      "name": "Options",
       "role": "type",
-      "description": "Configuration interface: cwd, env, dryRun, timeout, stdin, etc.",
-      "whenToUse": "Typing higher-level option objects passed to cmd()"
+      "description": "Configuration interface: cwd, env, dryRun, timeout, stdin, outParser, errParser, etc.",
+      "whenToUse": "Typing higher-level option objects passed to runner()"
     }
   ],
   "patterns": [
     {
       "name": "Captured output",
       "when": "Need stdout/stderr as strings for programmatic use",
-      "code": "const r = await cmd('git', ['status']).cwd('/repo').run();\nconsole.log(r.stdout);"
+      "code": "const r = await runner('git', ['status']).cwd('/repo').run();\nconsole.log(r.stdout);"
     },
     {
       "name": "Interactive mode",
       "when": "Command needs user input (stdin) or inheriting terminal",
-      "code": "await cmd('deno', ['publish']).interactive().run();"
+      "code": "await runner('deno', ['publish']).interactive().run();"
     },
     {
       "name": "Throw on failure",
       "when": "Want early exit on non-zero exit code",
-      "code": "const r = await cmd('git', ['push']).orThrow();"
+      "code": "const r = await runner('git', ['push']).orThrow();"
+    },
+    {
+      "name": "Parse stdout into typed data",
+      "when": "Command output needs to be parsed into structured data",
+      "code": "const result = await runner('node', ['script.js'])\n  .outParser(s => JSON.parse(s) as MyType)\n  .run();\nconsole.log(result.data.property);"
+    },
+    {
+      "name": "Parse stderr into error object",
+      "when": "Command emits structured errors on stderr",
+      "code": "const result = await runner('tool', ['--json'])\n  .errParser(s => new MyError(JSON.parse(s)))\n  .run();\nif (result.error) throw result.error;"
+    },
+    {
+      "name": "Parsed data with orThrow",
+      "when": "Want parsed data or throw on failure",
+      "code": "const data = await runner('exiftool', ['-j', 'photo.jpg'])\n  .outParser(s => JSON.parse(s) as Metadata[])\n  .orThrow();"
     },
     {
       "name": "Dry-run / test mode",
       "when": "Skip execution, return success immediately",
-      "code": "const r = await cmd('deno', ['cache', 'mod.ts']).dryRun(true).run();"
+      "code": "const r = await runner('deno', ['cache', 'mod.ts']).dryRun(true).run();"
     },
     {
-      "name": "JSON output parsing",
-      "when": "Command returns JSON on stdout",
-      "code": "const data = (await cmd('exiftool', ['-j', 'photo.jpg']).run()).json<Metadata[]>();"
+      "name": "JSON output parsing (no parser)",
+      "when": "Command returns JSON on stdout without using outParser",
+      "code": "const data = (await runner('exiftool', ['-j', 'photo.jpg']).run()).json<Metadata[]>();"
     },
     {
       "name": "Subclass for fixed command",
       "when": "Always run the same binary",
-      "code": "class DenoCmd extends Cmd {\n  constructor(args, opts) { super('deno', args, opts); }\n}"
+      "code": "class DenoRunner extends Runner {\n  constructor(args, opts) { super('deno', args, opts); }\n}"
     }
   ],
   "relationships": {
-    "dependsOn": ["@epdoc/type"],
+    "dependsOn": [],
     "usedBy": []
   }
 }

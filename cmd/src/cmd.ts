@@ -4,19 +4,23 @@ import type { CmdOptions, Milliseconds } from './types.ts';
 
 const encoder = new TextEncoder();
 
-export class CmdRunner<T = void> {
+export class CmdRunner<T = void, E extends Error = Error> {
   #cmd: string;
   #args: string[];
-  #opts: CmdOptions;
+  #opts: CmdOptions<T, E>;
 
-  constructor(cmd: string, args?: string[], opts?: CmdOptions) {
+  constructor(cmd: string, args?: string[], opts?: CmdOptions<T, E>) {
     this.#cmd = cmd;
     this.#args = args ?? [];
     this.#opts = { ...opts };
   }
 
-  static from<T>(cmd: string, args?: string[], opts?: CmdOptions): CmdRunner<T> {
-    return new CmdRunner<T>(cmd, args, opts);
+  static from<T, E extends Error = Error>(
+    cmd: string,
+    args?: string[],
+    opts?: CmdOptions<T, E>,
+  ): CmdRunner<T, E> {
+    return new CmdRunner<T, E>(cmd, args, opts);
   }
 
   cwd(path: string): this {
@@ -49,7 +53,7 @@ export class CmdRunner<T = void> {
     return this;
   }
 
-  interactive(value?: boolean): this {
+  interactive(value: boolean = true): this {
     this.#opts.interactive = !!value;
     return this;
   }
@@ -69,12 +73,22 @@ export class CmdRunner<T = void> {
     return this;
   }
 
-  options(opts: CmdOptions): this {
+  outParser<R>(parser: (data: string) => R): CmdRunner<R, E> {
+    this.#opts.outParser = parser as unknown as (data: string) => T;
+    return this as unknown as CmdRunner<R, E>;
+  }
+
+  errParser<F extends Error>(parser: (data: string) => F): CmdRunner<T, F> {
+    this.#opts.errParser = parser as unknown as (data: string) => E;
+    return this as unknown as CmdRunner<T, F>;
+  }
+
+  options(opts: Partial<CmdOptions<T, E>>): this {
     Object.assign(this.#opts, opts);
     return this;
   }
 
-  get opts(): CmdOptions {
+  get opts(): CmdOptions<T, E> {
     return { ...this.#opts };
   }
 
@@ -82,8 +96,10 @@ export class CmdRunner<T = void> {
     return [this.#cmd, ...this.#args].join(' ');
   }
 
-  async run(): Promise<CmdResult<T>> {
-    const result = CmdResult.from<T>(this.#cmd, this.#args, this.#opts);
+  async run(): Promise<CmdResult<T, E>> {
+    const result = CmdResult.from<T, E>(this.#cmd, this.#args, this.#opts);
+    result._outParser = this.#opts.outParser;
+    result._errParser = this.#opts.errParser;
 
     if (this.#opts.dryRun) {
       result.dryRun = true;
@@ -138,15 +154,18 @@ export class CmdRunner<T = void> {
     }
   }
 
-  async orThrow(): Promise<CmdResult<T>> {
+  async orThrow(): Promise<T> {
     const result = await this.run();
+    if (result.error) {
+      throw result.error;
+    }
     if (!result.success) {
       throw new CmdError(
         `Command failed: ${result.command} (exit code: ${result.code})`,
         result as CmdResult,
       );
     }
-    return result;
+    return result.data as T;
   }
 
   #combineSignals(...signals: (AbortSignal | undefined)[]): AbortSignal | undefined {
@@ -166,9 +185,15 @@ export class CmdRunner<T = void> {
   }
 
   async #runInteractive(
-    result: CmdResult<T>,
+    result: CmdResult<T, E>,
     denoOpts: Deno.CommandOptions,
-  ): Promise<CmdResult<T>> {
+  ): Promise<CmdResult<T, E>> {
+    if (this.#opts.outParser || this.#opts.errParser) {
+      throw new CmdError(
+        'Parsers cannot be used in interactive mode; stdout and stderr are not captured',
+        result as CmdResult,
+      );
+    }
     const command = new Deno.Command(this.#cmd, {
       ...denoOpts,
       stdin: 'inherit',
@@ -196,9 +221,9 @@ export class CmdRunner<T = void> {
   }
 
   async #runCaptured(
-    result: CmdResult<T>,
+    result: CmdResult<T, E>,
     denoOpts: Deno.CommandOptions,
-  ): Promise<CmdResult<T>> {
+  ): Promise<CmdResult<T, E>> {
     const stdin = this.#opts.stdin;
 
     if (stdin !== undefined) {
@@ -223,14 +248,18 @@ export class CmdRunner<T = void> {
         await writer.close();
       }
       const { code, stdout, stderr } = await child.output();
-      return result.setCode(code).setStdout(stdout).setStderr(stderr);
+      return result.setCode(code).setStdout(stdout).setStderr(stderr).applyParsers();
     } else {
       const { code, stdout, stderr } = await command.output();
-      return result.setCode(code).setStdout(stdout).setStderr(stderr);
+      return result.setCode(code).setStdout(stdout).setStderr(stderr).applyParsers();
     }
   }
 }
 
-export function runner<T>(command: string, args?: string[], opts?: CmdOptions): CmdRunner<T> {
-  return new CmdRunner<T>(command, args, opts);
+export function run<T, E extends Error = Error>(
+  command: string,
+  args?: string[],
+  opts?: CmdOptions<T, E>,
+): CmdRunner<T, E> {
+  return new CmdRunner<T, E>(command, args, opts);
 }

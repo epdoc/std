@@ -30,9 +30,11 @@ Deno.test('cmd - non-zero exit code', async () => {
   assertEquals(result.code, 42);
 });
 
-Deno.test('cmd - orThrow succeeds on success', async () => {
-  const result = await Cmd.runner('echo', ['ok']).orThrow();
-  assertEquals(result.stdout.trim(), 'ok');
+Deno.test('cmd - orThrow returns parsed data', async () => {
+  const data = await Cmd.runner('echo', ['{"msg":"hello"}'])
+    .outParser((s) => JSON.parse(s) as { msg: string })
+    .orThrow();
+  assertEquals(data.msg, 'hello');
 });
 
 Deno.test('cmd - orThrow throws on failure', async () => {
@@ -147,13 +149,81 @@ Deno.test('cmd - env merge preserves existing', () => {
   assertEquals(opts.env?.VAR2, 'two');
 });
 
-Deno.test('cmd - orThrow returns result on success', async () => {
-  const result = await Cmd.runner('echo', ['success']).orThrow();
-  assertEquals(result.stdout.trim(), 'success');
+Deno.test('cmd - orThrow without parser returns void', async () => {
+  const data = await Cmd.runner('echo', ['success']).orThrow();
+  assertEquals(data, undefined);
 });
 
 Deno.test('cmd - stderr captured on failure', async () => {
   const result = await Cmd.runner('deno', ['eval', 'console.error("err msg"); Deno.exit(1)']).run();
   assertEquals(result.success, false);
   assert(result.stderr.includes('err msg') || result.stderr.length > 0);
+});
+
+Deno.test('cmd - outParser parses stdout into data', async () => {
+  const result = await Cmd.runner('echo', ['{"a":1,"b":"two"}'])
+    .outParser((stdout) => JSON.parse(stdout) as { a: number; b: string })
+    .run();
+  assertEquals(result.data?.a, 1);
+  assertEquals(result.data?.b, 'two');
+  assertEquals(result.success, true);
+});
+
+Deno.test('cmd - errParser parses stderr into error', async () => {
+  class ParseError extends Error {
+    constructor(readonly parsed: Record<string, unknown>) {
+      super('parsed stderr error');
+      this.name = 'ParseError';
+    }
+  }
+  const result = await Cmd.runner('deno', [
+    'eval',
+    'console.error(JSON.stringify({errCode: 99})); Deno.exit(1)',
+  ])
+    .errParser((stderr) => new ParseError(JSON.parse(stderr) as Record<string, unknown>))
+    .run();
+  assertEquals(result.success, false);
+  assert(result.error instanceof ParseError);
+  assertEquals((result.error as ParseError).parsed.errCode, 99);
+});
+
+Deno.test('cmd - orThrow returns parsed data on success', async () => {
+  const data = await Cmd.runner('echo', ['{"value":42}'])
+    .outParser((stdout) => JSON.parse(stdout) as { value: number })
+    .orThrow();
+  assertEquals(data.value, 42);
+});
+
+Deno.test('cmd - orThrow throws parsed error on failure', async () => {
+  class CliError extends Error {
+    constructor(readonly code: number) {
+      super('CLI error');
+      this.name = 'CliError';
+    }
+  }
+  await assertRejects(
+    () =>
+      Cmd.runner('deno', ['eval', 'console.error(JSON.stringify({code: 99})); Deno.exit(1)'])
+        .errParser((stderr) => new CliError((JSON.parse(stderr) as { code: number }).code))
+        .orThrow(),
+    CliError,
+  );
+});
+
+Deno.test('cmd - interactive mode with parser throws', async () => {
+  await assertRejects(
+    () =>
+      Cmd.runner('echo', ['test'])
+        .interactive(true)
+        .outParser((s) => s.trim())
+        .run(),
+    Cmd.Error,
+  );
+});
+
+Deno.test('cmd - applyParsers does nothing when stdout empty', () => {
+  const result = new Cmd.Result<string>();
+  result._outParser = (s) => s.toUpperCase();
+  result.applyParsers();
+  assertEquals(result.data, undefined);
 });
