@@ -11,11 +11,13 @@ export interface CmdOptions<T = unknown, E extends Error = Error> {
   signal?: AbortSignal;
   uid?: number;
   gid?: number;
-  outParser?: (data: string) => T;
-  errParser?: (result: {
-    stdout: string;
-    stderr: string;
-    command: string;
-    code?: number;
-  }) => E;
+  outParser?: (result: ICmdResults) => T;
+  errParser?: (result: ICmdResults) => E;
+}
+
+export interface ICmdResults {
+  stdout: string;
+  stderr: string;
+  command: string;
+  code?: number;
 }

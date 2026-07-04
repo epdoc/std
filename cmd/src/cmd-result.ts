@@ -1,9 +1,9 @@
-import type { CmdOptions, Milliseconds } from './types.ts';
+import type { CmdOptions, ICmdResults, Milliseconds } from './types.ts';
 
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 
-export class CmdResult<T = void, E extends Error = Error> {
+export class CmdResult<T = void, E extends Error = Error> implements ICmdResults {
   #t0 = performance.now();
   success: boolean = false;
   code?: number;
@@ -12,13 +12,8 @@ export class CmdResult<T = void, E extends Error = Error> {
   duration: Milliseconds = 0;
   _stdout?: Uint8Array;
   _stderr?: Uint8Array;
-  _outParser?: (data: string) => T;
-  _errParser?: (result: {
-    stdout: string;
-    stderr: string;
-    command: string;
-    code?: number;
-  }) => E;
+  _outParser?: (result: ICmdResults) => T;
+  _errParser?: (result: ICmdResults) => E;
   data?: T;
   /** Indicates this was a dry run */
   dryRun?: boolean;
@@ -78,15 +73,10 @@ export class CmdResult<T = void, E extends Error = Error> {
 
   applyParsers(): this {
     if (this._outParser && this._stdout && this._stdout.length > 0) {
-      this.data = this._outParser(decoder.decode(this._stdout));
+      this.data = this._outParser(this);
     }
     if (this._errParser && this._stderr && this._stderr.length > 0) {
-      this.error = this._errParser({
-        stdout: this.stdout,
-        stderr: this.stderr,
-        command: this.command,
-        code: this.code,
-      });
+      this.error = this._errParser(this);
     }
     return this;
   }
