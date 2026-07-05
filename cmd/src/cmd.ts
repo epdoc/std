@@ -6,7 +6,7 @@ const encoder = new TextEncoder();
 
 export class CmdRunner<T = void, E extends Error = Error> {
   #cmd: string;
-  #args: string[];
+  #args: string[] = [];
   #opts: CmdOptions<T, E>;
 
   constructor(cmd: string, args?: string[], opts?: CmdOptions<T, E>) {
@@ -26,6 +26,10 @@ export class CmdRunner<T = void, E extends Error = Error> {
   cwd(path: string): this {
     this.#opts.cwd = path;
     return this;
+  }
+
+  args(args: string | string[]) {
+    this.#args = this.#args.concat(args);
   }
 
   env(vars: Record<string, string>): this {
