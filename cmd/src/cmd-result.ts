@@ -72,7 +72,7 @@ export class CmdResult<T = void, E extends Error = Error> implements ICmdResult 
   }
 
   applyParsers(): this {
-    if (this._outParser && this._stdout && this._stdout.length > 0) {
+    if (this._outParser) {
       this.data = this._outParser(this);
     }
     if (this._errParser && this._stderr && this._stderr.length > 0) {

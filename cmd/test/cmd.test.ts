@@ -247,11 +247,11 @@ Deno.test('cmd - interactive mode with parser throws', async () => {
   );
 });
 
-Deno.test('cmd - applyParsers does nothing when stdout empty', () => {
+Deno.test('cmd - applyParsers runs even when stdout empty', () => {
   const result = new Cmd.Result<string>();
   result._outParser = (s) => s.stdout.toUpperCase();
   result.applyParsers();
-  assertEquals(result.data, undefined);
+  assertEquals(result.data, '');
 });
 
 Deno.test('cmd - outAsLines splits stdout into trimmed lines', async () => {
@@ -288,4 +288,52 @@ Deno.test('cmd - outJson with orThrow', async () => {
     .outJson()
     .orThrow();
   assertEquals(data.value, 42);
+});
+
+Deno.test('cmd - outAsLines with explicit stdout stream', async () => {
+  const result = await Cmd.runner('echo', ['a\nb'])
+    .outAsLines('stdout')
+    .run();
+  assertEquals(result.data, ['a', 'b']);
+});
+
+Deno.test('cmd - outAsLines reads stderr', async () => {
+  const result = await Cmd.runner('deno', [
+    'eval',
+    'console.error("err1\\nerr2"); Deno.exit(1)',
+  ])
+    .outAsLines('stderr')
+    .run();
+  assertEquals(result.data, ['err1', 'err2']);
+});
+
+Deno.test('cmd - outAsLines merges multiple streams', async () => {
+  const result = await Cmd.runner('deno', [
+    'eval',
+    'console.log("out"); console.error("err"); Deno.exit(1)',
+  ])
+    .outAsLines(['stdout', 'stderr'])
+    .run();
+  assert(result.data!.includes('out'));
+  assert(result.data!.includes('err'));
+});
+
+Deno.test('cmd - outAsString reads stderr', async () => {
+  const result = await Cmd.runner('deno', [
+    'eval',
+    'console.error("  hello from err  "); Deno.exit(1)',
+  ])
+    .outAsString('stderr')
+    .run();
+  assertEquals(result.data, 'hello from err');
+});
+
+Deno.test('cmd - outJson reads stderr', async () => {
+  const result = await Cmd.runner('deno', [
+    'eval',
+    'console.error(JSON.stringify({x: 1})); Deno.exit(1)',
+  ])
+    .outJson('stderr')
+    .run();
+  assertEquals(result.data?.x, 1);
 });

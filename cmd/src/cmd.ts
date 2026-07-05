@@ -1,6 +1,7 @@
+import { _ } from '@epdoc/type';
 import { CmdError } from './cmd-error.ts';
 import { CmdResult } from './cmd-result.ts';
-import type { CmdOptions, ICmdResult, Milliseconds } from './types.ts';
+import { type CmdOptions, type ICmdResult, type Milliseconds, Stream, type StreamTag } from './types.ts';
 
 const encoder = new TextEncoder();
 
@@ -95,24 +96,35 @@ export class CmdRunner<T = void, E extends Error = Error> {
     return this as unknown as CmdRunner<T, F>;
   }
 
-  outAsLines(): CmdRunner<string[], E> {
+  outAsLines(streams: StreamTag | StreamTag[] = Stream.stdout): CmdRunner<string[], E> {
+    const stms = _.isArray(streams) ? streams : [streams];
     this.#opts.outParser = ((res: ICmdResult) => {
-      return res.stdout.split(/\r?\n|\r/)
-        .map((line) => line.trim())
-        .filter((line) => line.length > 0);
+      const result: string[] = [];
+      for (const stm of stms) {
+        const lines = res[stm].split(/\r?\n|\r/)
+          .map((line) => line.trim())
+          .filter((line) => line.length > 0);
+        result.push(...lines);
+      }
+      return result;
     }) as unknown as (res: ICmdResult) => T;
     return this as unknown as CmdRunner<string[], E>;
   }
 
-  outAsString(): CmdRunner<string, E> {
+  outAsString(streams: StreamTag | StreamTag[] = Stream.stdout): CmdRunner<string, E> {
+    const stms = _.isArray(streams) ? streams : [streams];
     this.#opts.outParser = ((res: ICmdResult) => {
-      return res.stdout.trim();
+      let result: string = '';
+      for (const stm of stms) {
+        result += res[stm].trim();
+      }
+      return result;
     }) as unknown as (res: ICmdResult) => T;
     return this as unknown as CmdRunner<string, E>;
   }
 
-  outJson(): CmdRunner<Record<string, unknown>, E> {
-    this.#opts.outParser = (res) => JSON.parse(res.stdout);
+  outJson(stm: StreamTag = Stream.stdout): CmdRunner<Record<string, unknown>, E> {
+    this.#opts.outParser = (res) => JSON.parse(res[stm]);
     return this as unknown as CmdRunner<Record<string, unknown>, E>;
   }
 

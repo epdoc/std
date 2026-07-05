@@ -22,3 +22,13 @@ export interface ICmdResult {
   command: string;
   code?: number;
 }
+
+export const Stream = {
+  stdout: 'stdout',
+  stderr: 'stderr',
+} as const;
+export type StreamTag = typeof Stream[keyof typeof Stream];
+export const StreamEnum: StreamTag[] = Object.values(Stream);
+export function isStreamTag(value: unknown): value is StreamTag {
+  return StreamEnum.includes(value as StreamTag);
+}
