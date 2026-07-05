@@ -17,7 +17,7 @@ export class CmdRunner<T = void, E extends Error = Error> {
 
   static from<T, E extends Error = Error>(
     cmd: string,
-    args?: string[],
+    args?: string | string[],
     opts?: CmdOptions<T, E>,
   ): CmdRunner<T, E> {
     return new CmdRunner<T, E>(cmd, args, opts);
@@ -276,7 +276,7 @@ export class CmdRunner<T = void, E extends Error = Error> {
 
 export function run<T, E extends Error = Error>(
   command: string,
-  args?: string[],
+  args?: string | string[],
   opts?: CmdOptions<T, E>,
 ): CmdRunner<T, E> {
   return new CmdRunner<T, E>(command, args, opts);
