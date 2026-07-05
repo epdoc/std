@@ -9,9 +9,9 @@ export class CmdRunner<T = void, E extends Error = Error> {
   #args: string[] = [];
   #opts: CmdOptions<T, E>;
 
-  constructor(cmd: string, args?: string[], opts?: CmdOptions<T, E>) {
+  constructor(cmd: string, args?: string | string[], opts?: CmdOptions<T, E>) {
     this.#cmd = cmd;
-    this.#args = args ?? [];
+    this.#args = args ? (Array.isArray(args) ? args : [args]) : [];
     this.#opts = { ...opts };
   }
 
@@ -28,8 +28,9 @@ export class CmdRunner<T = void, E extends Error = Error> {
     return this;
   }
 
-  args(args: string | string[]) {
+  args(args: string | string[]): this {
     this.#args = this.#args.concat(args);
+    return this;
   }
 
   env(vars: Record<string, string>): this {
