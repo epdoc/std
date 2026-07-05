@@ -1,6 +1,6 @@
 import { CmdError } from './cmd-error.ts';
 import { CmdResult } from './cmd-result.ts';
-import type { CmdOptions, ICmdResults, Milliseconds } from './types.ts';
+import type { CmdOptions, ICmdResult, Milliseconds } from './types.ts';
 
 const encoder = new TextEncoder();
 
@@ -73,15 +73,15 @@ export class CmdRunner<T = void, E extends Error = Error> {
     return this;
   }
 
-  outParser<R>(parser: (data: ICmdResults) => R): CmdRunner<R, E> {
-    this.#opts.outParser = parser as unknown as (data: ICmdResults) => T;
+  outParser<R>(parser: (data: ICmdResult) => R): CmdRunner<R, E> {
+    this.#opts.outParser = parser as unknown as (data: ICmdResult) => T;
     return this as unknown as CmdRunner<R, E>;
   }
 
   errParser<F extends Error>(
-    parser: (result: ICmdResults) => F,
+    parser: (result: ICmdResult) => F,
   ): CmdRunner<T, F> {
-    this.#opts.errParser = parser as unknown as (result: ICmdResults) => E;
+    this.#opts.errParser = parser as unknown as (result: ICmdResult) => E;
     return this as unknown as CmdRunner<T, F>;
   }
 

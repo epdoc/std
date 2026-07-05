@@ -1,9 +1,9 @@
-import type { CmdOptions, ICmdResults, Milliseconds } from './types.ts';
+import type { CmdOptions, ICmdResult, Milliseconds } from './types.ts';
 
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 
-export class CmdResult<T = void, E extends Error = Error> implements ICmdResults {
+export class CmdResult<T = void, E extends Error = Error> implements ICmdResult {
   #t0 = performance.now();
   success: boolean = false;
   code?: number;
@@ -12,8 +12,8 @@ export class CmdResult<T = void, E extends Error = Error> implements ICmdResults
   duration: Milliseconds = 0;
   _stdout?: Uint8Array;
   _stderr?: Uint8Array;
-  _outParser?: (result: ICmdResults) => T;
-  _errParser?: (result: ICmdResults) => E;
+  _outParser?: (result: ICmdResult) => T;
+  _errParser?: (result: ICmdResult) => E;
   data?: T;
   /** Indicates this was a dry run */
   dryRun?: boolean;
