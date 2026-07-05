@@ -95,6 +95,27 @@ export class CmdRunner<T = void, E extends Error = Error> {
     return this as unknown as CmdRunner<T, F>;
   }
 
+  outAsLines(): CmdRunner<string[], E> {
+    this.#opts.outParser = ((res: ICmdResult) => {
+      return res.stdout.split(/\r?\n|\r/)
+        .map((line) => line.trim())
+        .filter((line) => line.length > 0);
+    }) as unknown as (res: ICmdResult) => T;
+    return this as unknown as CmdRunner<string[], E>;
+  }
+
+  outAsString(): CmdRunner<string, E> {
+    this.#opts.outParser = ((res: ICmdResult) => {
+      return res.stdout.trim();
+    }) as unknown as (res: ICmdResult) => T;
+    return this as unknown as CmdRunner<string, E>;
+  }
+
+  outJson(): CmdRunner<Record<string, unknown>, E> {
+    this.#opts.outParser = (res) => JSON.parse(res.stdout);
+    return this as unknown as CmdRunner<Record<string, unknown>, E>;
+  }
+
   options(opts: Partial<CmdOptions<T, E>>): this {
     Object.assign(this.#opts, opts);
     return this;

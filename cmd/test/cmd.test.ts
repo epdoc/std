@@ -253,3 +253,39 @@ Deno.test('cmd - applyParsers does nothing when stdout empty', () => {
   result.applyParsers();
   assertEquals(result.data, undefined);
 });
+
+Deno.test('cmd - outAsLines splits stdout into trimmed lines', async () => {
+  const result = await Cmd.runner('echo', ['line1\n  line2\n\nline3'])
+    .outAsLines()
+    .run();
+  assertEquals(result.data, ['line1', 'line2', 'line3']);
+});
+
+Deno.test('cmd - outAsString returns trimmed stdout', async () => {
+  const result = await Cmd.runner('echo', ['  hello world  '])
+    .outAsString()
+    .run();
+  assertEquals(result.data, 'hello world');
+});
+
+Deno.test('cmd - outAsString with orThrow', async () => {
+  const data = await Cmd.runner('echo', ['hello'])
+    .outAsString()
+    .orThrow();
+  assertEquals(data, 'hello');
+});
+
+Deno.test('cmd - outJson parses stdout as JSON', async () => {
+  const result = await Cmd.runner('echo', ['{"a":1,"b":"two"}'])
+    .outJson()
+    .run();
+  assertEquals(result.data?.a, 1);
+  assertEquals(result.data?.b, 'two');
+});
+
+Deno.test('cmd - outJson with orThrow', async () => {
+  const data = await Cmd.runner('echo', ['{"value":42}'])
+    .outJson()
+    .orThrow();
+  assertEquals(data.value, 42);
+});
