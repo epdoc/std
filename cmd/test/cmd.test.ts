@@ -160,6 +160,32 @@ Deno.test('cmd - stderr captured on failure', async () => {
   assert(result.stderr.includes('err msg') || result.stderr.length > 0);
 });
 
+Deno.test('cmd - error set on failure by default', async () => {
+  const result = await Cmd.runner('deno', ['eval', 'Deno.exit(1)']).run();
+  assertEquals(result.success, false);
+  assert(result.error instanceof Cmd.Error);
+  assertEquals(result.error?.exitCode, 1);
+  assert(result.error?.message.includes('exit code: 1'));
+});
+
+Deno.test('cmd - silent sets error.silent property', async () => {
+  const result = await Cmd.runner('deno', ['eval', 'Deno.exit(1)'])
+    .silent()
+    .run();
+  assertEquals(result.success, false);
+  assert(result.error instanceof Cmd.Error);
+  assertEquals((result.error as Cmd.Error).silent, true);
+});
+
+Deno.test('cmd - silent(false) leaves silent as false', async () => {
+  const result = await Cmd.runner('deno', ['eval', 'Deno.exit(1)'])
+    .silent(false)
+    .run();
+  assertEquals(result.success, false);
+  assert(result.error instanceof Cmd.Error);
+  assertEquals((result.error as Cmd.Error).silent, false);
+});
+
 Deno.test('cmd - outParser parses stdout into data', async () => {
   const result = await Cmd.runner('echo', ['{"a":1,"b":"two"}'])
     .outParser((result) => JSON.parse(result.stdout) as { a: number; b: string })

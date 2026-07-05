@@ -11,6 +11,7 @@ export interface CmdOptions<T = unknown, E extends Error = Error> {
   signal?: AbortSignal;
   uid?: number;
   gid?: number;
+  silent?: boolean;
   outParser?: (result: ICmdResult) => T;
   errParser?: (result: ICmdResult) => E;
 }

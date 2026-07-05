@@ -73,6 +73,11 @@
       "code": "const data = await runner('exiftool', ['-j', 'photo.jpg'])\n  .outParser(s => JSON.parse(s) as Metadata[])\n  .orThrow();"
     },
     {
+      "name": "Error always populated on failure",
+      "when": "Checking result.error after run() instead of orThrow()",
+      "code": "const r = await runner('git', ['push']).run();\nif (!r.success) {\n  console.error(r.error?.message);  // CmdError by default, or custom via errParser\n}"
+    },
+    {
       "name": "Dry-run / test mode",
       "when": "Skip execution, return success immediately",
       "code": "const r = await runner('deno', ['cache', 'mod.ts']).dryRun(true).run();"

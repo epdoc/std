@@ -73,6 +73,11 @@ export class CmdRunner<T = void, E extends Error = Error> {
     return this;
   }
 
+  silent(value: boolean = true): this {
+    this.#opts.silent = value;
+    return this;
+  }
+
   outParser<R>(parser: (data: ICmdResult) => R): CmdRunner<R, E> {
     this.#opts.outParser = parser as unknown as (data: ICmdResult) => T;
     return this as unknown as CmdRunner<R, E>;
@@ -145,27 +150,33 @@ export class CmdRunner<T = void, E extends Error = Error> {
       denoOpts.signal = combinedSignal;
     }
 
+    let cmdResult: CmdResult<T, E>;
     try {
       if (interactive) {
-        return await this.#runInteractive(result, denoOpts);
+        cmdResult = await this.#runInteractive(result, denoOpts);
       } else {
-        return await this.#runCaptured(result, denoOpts);
+        cmdResult = await this.#runCaptured(result, denoOpts);
       }
     } finally {
       if (timeoutId) clearTimeout(timeoutId);
     }
+
+    if (!cmdResult.success && !cmdResult.error) {
+      const err = new CmdError(
+        `Command failed: ${cmdResult.command} (exit code: ${cmdResult.code})`,
+        cmdResult as CmdResult,
+      );
+      err.silent = this.#opts.silent ?? false;
+      cmdResult.error = err as unknown as E;
+    }
+
+    return cmdResult;
   }
 
   async orThrow(): Promise<T> {
     const result = await this.run();
-    if (result.error) {
-      throw result.error;
-    }
     if (!result.success) {
-      throw new CmdError(
-        `Command failed: ${result.command} (exit code: ${result.code})`,
-        result as CmdResult,
-      );
+      throw result.error!;
     }
     return result.data as T;
   }
