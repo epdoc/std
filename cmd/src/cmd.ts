@@ -1,7 +1,7 @@
 import { _ } from '@epdoc/type';
 import { CmdError } from './cmd-error.ts';
 import { CmdResult } from './cmd-result.ts';
-import { parseJson, parseLines, parseTrimmed } from './parse.ts';
+import { parseLines } from './parse.ts';
 import { type CmdOptions, type ICmdResult, type Milliseconds, Stream, type StreamTag } from './types.ts';
 
 const encoder = new TextEncoder();
@@ -114,7 +114,7 @@ export class CmdRunner<T = void, E extends Error = Error> {
     this.#opts.outParser = ((res: ICmdResult) => {
       let result: string = '';
       for (const stm of stms) {
-        result += parseTrimmed(res[stm]);
+        result += res[stm].trim();
       }
       return result;
     }) as unknown as (res: ICmdResult) => T;
@@ -122,7 +122,7 @@ export class CmdRunner<T = void, E extends Error = Error> {
   }
 
   outJson(stm: StreamTag = Stream.stdout): CmdRunner<Record<string, unknown>, E> {
-    this.#opts.outParser = ((res: ICmdResult) => parseJson(res[stm])) as unknown as (res: ICmdResult) => T;
+    this.#opts.outParser = ((res: ICmdResult) => JSON.parse(res[stm])) as unknown as (res: ICmdResult) => T;
     return this as unknown as CmdRunner<Record<string, unknown>, E>;
   }
 
