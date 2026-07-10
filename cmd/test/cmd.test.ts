@@ -337,3 +337,55 @@ Deno.test('cmd - outJson reads stderr', async () => {
     .run();
   assertEquals(result.data?.x, 1);
 });
+
+Deno.test('cmd - Cmd.Result.ok creates success mock', () => {
+  const result = Cmd.Result.ok<string>();
+  assertEquals(result.success, true);
+  assertEquals(result.code, undefined);
+});
+
+Deno.test('cmd - Cmd.Result.ok with data', () => {
+  const result = Cmd.Result.ok<string, Error>('hello');
+  assertEquals(result.success, true);
+  assertEquals(result.data, 'hello');
+});
+
+Deno.test('cmd - Cmd.Result.fail creates failure mock', () => {
+  const result = Cmd.Result.fail(1, 'error msg');
+  assertEquals(result.success, false);
+  assertEquals(result.code, 1);
+  assertEquals(result.stderr, 'error msg');
+});
+
+Deno.test('cmd - Runner.commandArgs returns readonly args', () => {
+  const runner = Cmd.runner('echo', ['a', 'b']);
+  assertEquals(runner.commandArgs, ['a', 'b']);
+});
+
+Deno.test('cmd - Runner.toRecord snapshots command, args and opts', () => {
+  const runner = Cmd.runner('git', ['status']).cwd('/repo');
+  const record = runner.toRecord();
+  assertEquals(record.command, 'git');
+  assertEquals(record.args, ['status']);
+  assertEquals(record.opts.cwd, '/repo');
+});
+
+Deno.test('cmd - Runner.onRun fires on dry-run', async () => {
+  const recorded: { command: string; args: string[]; opts: Cmd.Options }[] = [];
+  await Cmd.runner('echo', ['hello'])
+    .onRun((r) => recorded.push({ command: r.command, args: r.args, opts: r.opts }))
+    .dryRun(true)
+    .run();
+  assertEquals(recorded.length, 1);
+  assertEquals(recorded[0].args, ['hello']);
+  assertEquals(recorded[0].command, 'echo');
+});
+
+Deno.test('cmd - Runner.onRun fires on real execution', async () => {
+  const recorded: Cmd.Result<unknown>[] = [];
+  await Cmd.runner('echo', ['hello'])
+    .onRun((r) => recorded.push(r.result))
+    .run();
+  assertEquals(recorded.length, 1);
+  assert(recorded[0].success);
+});

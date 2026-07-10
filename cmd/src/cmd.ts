@@ -10,6 +10,7 @@ export class CmdRunner<T = void, E extends Error = Error> {
   #cmd: string;
   #args: string[] = [];
   #opts: CmdOptions<T, E>;
+  #onRun?: (record: { command: string; args: string[]; opts: CmdOptions; result: CmdResult<T, E> }) => void;
 
   constructor(cmd: string, args?: string | string[], opts?: CmdOptions<T, E>) {
     this.#cmd = cmd;
@@ -135,6 +136,30 @@ export class CmdRunner<T = void, E extends Error = Error> {
     return { ...this.#opts };
   }
 
+  /** Testing helper: read-only access to the configured command arguments. */
+  get commandArgs(): readonly string[] {
+    return this.#args;
+  }
+
+  /**
+   * Testing helper: snapshot the current args, command name, and opts without executing.
+   * Useful for asserting what a runner WOULD run in a test.
+   */
+  toRecord(): { command: string; args: string[]; opts: CmdOptions } {
+    return { command: this.#cmd, args: [...this.#args], opts: { ...this.#opts } };
+  }
+
+  /**
+   * Testing helper: register a callback invoked after each `run()` or `orThrow()` call.
+   * Receives the command name, args, opts, and result — letting tests record every invocation.
+   *
+   * In dry-run mode, `result` is a mock success; in real execution it carries the actual output.
+   */
+  onRun(fn: (record: { command: string; args: string[]; opts: CmdOptions; result: CmdResult<T, E> }) => void): this {
+    this.#onRun = fn;
+    return this;
+  }
+
   toString(): string {
     return [this.#cmd, ...this.#args].join(' ');
   }
@@ -146,7 +171,9 @@ export class CmdRunner<T = void, E extends Error = Error> {
 
     if (this.#opts.dryRun) {
       result.dryRun = true;
-      return result.asSuccess();
+      const success = result.asSuccess();
+      this.#onRun?.({ command: this.#cmd, args: [...this.#args], opts: { ...this.#opts }, result: success });
+      return success;
     }
 
     const cwd = this.#opts.cwd ?? Deno.cwd();
@@ -205,6 +232,8 @@ export class CmdRunner<T = void, E extends Error = Error> {
       err.silent = this.#opts.silent ?? false;
       cmdResult.error = err as unknown as E;
     }
+
+    this.#onRun?.({ command: this.#cmd, args: [...this.#args], opts: { ...this.#opts }, result: cmdResult });
 
     return cmdResult;
   }

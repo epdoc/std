@@ -249,6 +249,16 @@ Returns a `CmdRunner<T, E>` builder instance. `T` is the type of `.data`, `E` is
 | `.dryRun`          | Whether execution was skipped                                                                            |
 | `.json<D>()`       | Parse stdout as JSON (no parser required)                                                                |
 | `CmdResult.from()` | Static factory for test/mock results                                                                     |
+| `CmdResult.ok()`   | Static factory for a successful mock result (no `as` cast needed)                                        |
+| `CmdResult.fail()` | Static factory for a failure mock result with optional exit code and stderr                              |
+
+### `CmdRunner` — new testing helpers
+
+| Method / Getter | Description                                                                   |
+| --------------- | ----------------------------------------------------------------------------- |
+| `.commandArgs`  | Read-only getter for the configured command arguments                         |
+| `.toRecord()`   | Snapshot `{ args, opts }` without executing — inspect what would run          |
+| `.onRun(fn)`    | Register a callback invoked after every `run()` with `{ args, opts, result }` |
 
 ### `CmdError`
 
@@ -276,6 +286,111 @@ interface ICmdResult {
 ```typescript
 const Stream = { stdout: 'stdout', stderr: 'stderr' } as const;
 type StreamTag = 'stdout' | 'stderr';
+```
+
+## Testing & Mocking
+
+`@epdoc/cmd` provides several hooks to make it easy to test code that runs external commands.
+
+### 1. Inspect what would run without executing
+
+Use `toRecord()` to inspect the runner's command name, args, and opts without executing:
+
+```typescript
+const runner = Cmd.runner('git', ['add', '.']).cwd('/repo');
+const record = runner.toRecord();
+assertEquals(record.command, 'git');
+assertEquals(record.args, ['add', '.']);
+assertEquals(record.opts.cwd, '/repo');
+```
+
+Or access `commandArgs` directly:
+
+```typescript
+const runner = Cmd.runner('echo', ['hello']);
+assertEquals(runner.commandArgs, ['hello']);
+```
+
+### 2. Record commands with `onRun()`
+
+Attach a callback that fires after each `run()` or `orThrow()` call. The callback receives the command name, args, opts,
+and result:
+
+```typescript
+const recorded: { command: string; args: string[]; opts: Cmd.Options }[] = [];
+const runner = Cmd.runner('git', ['status'])
+  .cwd('/repo')
+  .onRun((record) => recorded.push({ command: record.command, args: record.args, opts: record.opts }));
+
+await runner.dryRun(true).run();
+assertEquals(recorded[0].command, 'git');
+assertEquals(recorded[0].args, ['status']);
+assertEquals(recorded[0].opts.cwd, '/repo');
+```
+
+In test mode (dry-run), `onRun` fires with a mock success result. In real execution, it fires with the actual result.
+This lets consumers build a central recorder once:
+
+```typescript
+class MyTool {
+  #recorded: ExecutedCommand[] = [];
+
+  #cmd(args: string[], cwd: string): Cmd.Runner {
+    return Cmd.runner('git', args)
+      .cwd(cwd)
+      .onRun((r) => this.#recorded.push({ command: r.command, args: r.args, opts: r.opts }));
+  }
+
+  async add(): Promise<void> {
+    // Recording happens automatically via onRun
+    await this.#cmd(['add', '.'], '/repo').dryRun(true).run();
+  }
+}
+```
+
+### 3. Create mock results with `Cmd.Result.ok()` / `Cmd.Result.fail()`
+
+Construct mock `CmdResult` instances without type-casting:
+
+```typescript
+// Before: requires `as` cast
+return new Cmd.Result<T, MyError>({ success: true }) as Cmd.Result<T, MyError>;
+
+// After: clean generic inference
+return Cmd.Result.ok<T, MyError>();
+return Cmd.Result.fail<T, MyError>(1, 'error output');
+```
+
+### 4. Full test pattern for a command wrapper
+
+```typescript
+import { type CmdOptions, type Options, Result, runner as cmd } from '@epdoc/cmd';
+
+class GitWrapper {
+  #executed: { args: string[]; opts: CmdOptions }[] = [];
+
+  #runner<T>(args: string[], opts?: CmdOptions<T>): Cmd.Runner<T> {
+    return cmd<T>('git', args, opts)
+      .onRun((r) => this.#executed.push({ args: r.args, opts: r.opts }));
+  }
+
+  async add(paths?: string[]): Promise<void> {
+    const files = paths ?? ['.'];
+    await this.#runner(['add', ...files]).run();
+  }
+
+  get executedCommands() {
+    return this.#executed;
+  }
+}
+
+// In tests:
+Deno.test('add records command', async () => {
+  const git = new GitWrapper();
+  // Inject dry-run + onRun via runner
+  await git.add(['src/file.ts']);
+  assertEquals(git.executedCommands[0].args, ['add', 'src/file.ts']);
+});
 ```
 
 ## License

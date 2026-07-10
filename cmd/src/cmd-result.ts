@@ -48,6 +48,34 @@ export class CmdResult<T = void, E extends Error = Error> implements ICmdResult 
     return result;
   }
 
+  /**
+   * Create a successful mock result for testing.
+   * Generic types are inferred from the return type expression, avoiding `as` casts.
+   * @example Cmd.Result.ok<MyData, MyError>(parsedData);
+   */
+  static ok<T = void, E extends Error = Error>(data?: T): CmdResult<T, E> {
+    const result = new CmdResult<T, E>();
+    result.success = true;
+    result.data = data;
+    return result;
+  }
+
+  /**
+   * Create a failure mock result for testing.
+   * @param code - Simulated exit code (default: undefined, meaning no exit)
+   * @param stderr - Simulated stderr output
+   */
+  static fail<T = void, E extends Error = Error>(code?: number, stderr?: string): CmdResult<T, E> {
+    const result = new CmdResult<T, E>();
+    if (code !== undefined) {
+      result.code = code;
+    }
+    if (stderr !== undefined) {
+      result._stderr = encoder.encode(stderr);
+    }
+    return result;
+  }
+
   asSuccess(): this {
     this.success = true;
     this.duration = performance.now() - this.#t0;
