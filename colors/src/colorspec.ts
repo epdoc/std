@@ -130,9 +130,6 @@ export const palette = {
   steel: 0x8899aa, // blue-gray
   gray: 0x9ca3af,
   cream: 0xfdf6e3,
-  tan: 0xd2b48c,
-  taupe: 0xb5a090,
-  stone: 0xa89880,
   white: 0xffffff,
 
   // Reds
@@ -174,12 +171,22 @@ export const palette = {
   lilac: 0xe0a0ff,
   magenta: 0xe879f9,
 
-  // Earth tones
-  sand: 0xe8c99a,
+  // Earth tones (lightest → darkest gradient)
   wheat: 0xf5deb3,
+  sand: 0xe8c99a,
+  tan: 0xd2b48c,
+  peru: 0xcd853f,
   ochre: 0xcb8c00,
   bronze: 0xcd7f32,
-  copper: 0xb87333,
+  camel: 0xc19a6b,
   sienna: 0xc47a45,
+  copper: 0xb87333,
+  terra: 0xbe6e46,
+  taupe: 0xb5a090,
+  stone: 0xa89880,
   brown: 0xa0724a,
+  russet: 0x8b5a3c,
+  greige: 0x8b7d6b,
+  umber: 0x735f4d,
+  peat: 0x5a4f44,
 } as const;
