@@ -5,7 +5,7 @@ export class CmdError<T = void> extends Error {
   silent: boolean = false;
 
   constructor(message: string, result: CmdResult<T>) {
-    super(message);
+    super(message, { cause: result._parseError });
     this.name = 'CmdError';
     this.result = result;
   }

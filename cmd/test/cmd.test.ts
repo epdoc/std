@@ -209,8 +209,9 @@ Deno.test('cmd - errParser parses stderr into error', async () => {
     .errParser((result) => new ParseError(JSON.parse(result.stderr) as Record<string, unknown>))
     .run();
   assertEquals(result.success, false);
-  assert(result.error instanceof ParseError);
-  assertEquals((result.error as ParseError).parsed.errCode, 99);
+  assert(result.error instanceof Cmd.Error);
+  assert(result.error?.cause instanceof ParseError);
+  assertEquals((result.error?.cause as ParseError).parsed.errCode, 99);
 });
 
 Deno.test('cmd - orThrow returns parsed data on success', async () => {
@@ -227,13 +228,24 @@ Deno.test('cmd - orThrow throws parsed error on failure', async () => {
       this.name = 'CliError';
     }
   }
+  let thrown: unknown;
   await assertRejects(
     () =>
       Cmd.runner('deno', ['eval', 'console.error(JSON.stringify({code: 99})); Deno.exit(1)'])
         .errParser((result) => new CliError((JSON.parse(result.stderr) as { code: number }).code))
         .orThrow(),
-    CliError,
+    Cmd.Error,
   );
+  try {
+    await Cmd.runner('deno', ['eval', 'console.error(JSON.stringify({code: 99})); Deno.exit(1)'])
+      .errParser((result) => new CliError((JSON.parse(result.stderr) as { code: number }).code))
+      .orThrow();
+  } catch (err) {
+    thrown = err;
+  }
+  assert(thrown instanceof Cmd.Error);
+  assert(thrown.cause instanceof CliError);
+  assertEquals((thrown.cause as CliError).code, 99);
 });
 
 Deno.test('cmd - interactive mode with parser throws', async () => {
@@ -345,7 +357,7 @@ Deno.test('cmd - Cmd.Result.ok creates success mock', () => {
 });
 
 Deno.test('cmd - Cmd.Result.ok with data', () => {
-  const result = Cmd.Result.ok<string, Error>('hello');
+  const result = Cmd.Result.ok<string>('hello');
   assertEquals(result.success, true);
   assertEquals(result.data, 'hello');
 });

@@ -1,9 +1,10 @@
+import type { CmdError } from './cmd-error.ts';
 import type { CmdOptions, ICmdResult, Milliseconds } from './types.ts';
 
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 
-export class CmdResult<T = void, E extends Error = Error> implements ICmdResult {
+export class CmdResult<T = void> implements ICmdResult {
   #t0 = performance.now();
   success: boolean = false;
   code?: number;
@@ -13,15 +14,16 @@ export class CmdResult<T = void, E extends Error = Error> implements ICmdResult 
   _stdout?: Uint8Array;
   _stderr?: Uint8Array;
   _outParser?: (result: ICmdResult) => T;
-  _errParser?: (result: ICmdResult) => E;
+  _errParser?: (result: ICmdResult) => Error;
+  _parseError?: Error;
   data?: T;
   /** Indicates this was a dry run */
   dryRun?: boolean;
-  error?: E;
+  error?: CmdError<T>;
 
   constructor(
     init?: Partial<
-      Omit<CmdResult<T, E>, 'stdout' | 'stderr' | 'lines' | 'stdoutLines' | 'stderrLines' | 'stdoutRaw' | 'stderrRaw'>
+      Omit<CmdResult<T>, 'stdout' | 'stderr' | 'lines' | 'stdoutLines' | 'stderrLines' | 'stdoutRaw' | 'stderrRaw'>
     >,
   ) {
     if (init) {
@@ -33,16 +35,13 @@ export class CmdResult<T = void, E extends Error = Error> implements ICmdResult 
       this._stderr = init._stderr;
       this.data = init.data;
       this.dryRun = init.dryRun;
-      this.error = init.error as E | undefined;
+      this.error = init.error;
+      this._parseError = init._parseError;
     }
   }
 
-  static from<T = void, E extends Error = Error>(
-    cmd: string,
-    args: string[],
-    opts?: CmdOptions<T, E>,
-  ): CmdResult<T, E> {
-    const result = new CmdResult<T, E>();
+  static from<T = void>(cmd: string, args: string[], opts?: CmdOptions<T>): CmdResult<T> {
+    const result = new CmdResult<T>();
     result.command = [cmd, ...args].join(' ');
     result.dryRun = !!opts?.dryRun;
     return result;
@@ -51,10 +50,10 @@ export class CmdResult<T = void, E extends Error = Error> implements ICmdResult 
   /**
    * Create a successful mock result for testing.
    * Generic types are inferred from the return type expression, avoiding `as` casts.
-   * @example Cmd.Result.ok<MyData, MyError>(parsedData);
+   * @example Cmd.Result.ok<MyData>(parsedData);
    */
-  static ok<T = void, E extends Error = Error>(data?: T): CmdResult<T, E> {
-    const result = new CmdResult<T, E>();
+  static ok<T = void>(data?: T): CmdResult<T> {
+    const result = new CmdResult<T>();
     result.success = true;
     result.data = data;
     return result;
@@ -65,8 +64,8 @@ export class CmdResult<T = void, E extends Error = Error> implements ICmdResult 
    * @param code - Simulated exit code (default: undefined, meaning no exit)
    * @param stderr - Simulated stderr output
    */
-  static fail<T = void, E extends Error = Error>(code?: number, stderr?: string): CmdResult<T, E> {
-    const result = new CmdResult<T, E>();
+  static fail<T = void>(code?: number, stderr?: string): CmdResult<T> {
+    const result = new CmdResult<T>();
     if (code !== undefined) {
       result.code = code;
     }
@@ -89,6 +88,11 @@ export class CmdResult<T = void, E extends Error = Error> implements ICmdResult 
     return this;
   }
 
+  get err(): CmdError<T> {
+    if (!this.error) throw new Error('CmdResult.error is not set');
+    return this.error;
+  }
+
   setStdout(value: Uint8Array | string): this {
     this._stdout = typeof value === 'string' ? encoder.encode(value) : value;
     return this;
@@ -104,7 +108,7 @@ export class CmdResult<T = void, E extends Error = Error> implements ICmdResult 
       this.data = this._outParser(this);
     }
     if (this._errParser && this._stderr && this._stderr.length > 0) {
-      this.error = this._errParser(this);
+      this._parseError = this._errParser(this);
     }
     return this;
   }

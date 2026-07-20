@@ -1,6 +1,6 @@
 export type Milliseconds = number;
 
-export interface CmdOptions<T = unknown, E extends Error = Error> {
+export interface CmdOptions<T = unknown> {
   cwd?: string;
   env?: Record<string, string>;
   clearEnv?: boolean;
@@ -13,7 +13,7 @@ export interface CmdOptions<T = unknown, E extends Error = Error> {
   gid?: number;
   silent?: boolean;
   outParser?: (result: ICmdResult) => T;
-  errParser?: (result: ICmdResult) => E;
+  errParser?: (result: ICmdResult) => Error;
 }
 
 export interface ICmdResult {

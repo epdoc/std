@@ -6,24 +6,20 @@ import { type CmdOptions, type ICmdResult, type Milliseconds, Stream, type Strea
 
 const encoder = new TextEncoder();
 
-export class CmdRunner<T = void, E extends Error = Error> {
+export class CmdRunner<T = void> {
   #cmd: string;
   #args: string[] = [];
-  #opts: CmdOptions<T, E>;
-  #onRun?: (record: { command: string; args: string[]; opts: CmdOptions; result: CmdResult<T, E> }) => void;
+  #opts: CmdOptions<T>;
+  #onRun?: (record: { command: string; args: string[]; opts: CmdOptions; result: CmdResult<T> }) => void;
 
-  constructor(cmd: string, args?: string | string[], opts?: CmdOptions<T, E>) {
+  constructor(cmd: string, args?: string | string[], opts?: CmdOptions<T>) {
     this.#cmd = cmd;
     this.#args = args ? (Array.isArray(args) ? args : [args]) : [];
     this.#opts = { ...opts };
   }
 
-  static from<T, E extends Error = Error>(
-    cmd: string,
-    args?: string | string[],
-    opts?: CmdOptions<T, E>,
-  ): CmdRunner<T, E> {
-    return new CmdRunner<T, E>(cmd, args, opts);
+  static from<T>(cmd: string, args?: string | string[], opts?: CmdOptions<T>): CmdRunner<T> {
+    return new CmdRunner<T>(cmd, args, opts);
   }
 
   cwd(path: string): this {
@@ -86,19 +82,17 @@ export class CmdRunner<T = void, E extends Error = Error> {
     return this;
   }
 
-  outParser<R>(parser: (data: ICmdResult) => R): CmdRunner<R, E> {
+  outParser<R>(parser: (data: ICmdResult) => R): CmdRunner<R> {
     this.#opts.outParser = parser as unknown as (data: ICmdResult) => T;
-    return this as unknown as CmdRunner<R, E>;
+    return this as unknown as CmdRunner<R>;
   }
 
-  errParser<F extends Error>(
-    parser: (result: ICmdResult) => F,
-  ): CmdRunner<T, F> {
-    this.#opts.errParser = parser as unknown as (result: ICmdResult) => E;
-    return this as unknown as CmdRunner<T, F>;
+  errParser(parser: (result: ICmdResult) => Error): CmdRunner<T> {
+    this.#opts.errParser = parser;
+    return this;
   }
 
-  outAsLines(streams: StreamTag | StreamTag[] = Stream.stdout): CmdRunner<string[], E> {
+  outAsLines(streams: StreamTag | StreamTag[] = Stream.stdout): CmdRunner<string[]> {
     const stms = _.isArray(streams) ? streams : [streams];
     this.#opts.outParser = ((res: ICmdResult) => {
       const result: string[] = [];
@@ -107,10 +101,10 @@ export class CmdRunner<T = void, E extends Error = Error> {
       }
       return result;
     }) as unknown as (res: ICmdResult) => T;
-    return this as unknown as CmdRunner<string[], E>;
+    return this as unknown as CmdRunner<string[]>;
   }
 
-  outAsString(streams: StreamTag | StreamTag[] = Stream.stdout): CmdRunner<string, E> {
+  outAsString(streams: StreamTag | StreamTag[] = Stream.stdout): CmdRunner<string> {
     const stms = _.isArray(streams) ? streams : [streams];
     this.#opts.outParser = ((res: ICmdResult) => {
       let result: string = '';
@@ -119,20 +113,20 @@ export class CmdRunner<T = void, E extends Error = Error> {
       }
       return result;
     }) as unknown as (res: ICmdResult) => T;
-    return this as unknown as CmdRunner<string, E>;
+    return this as unknown as CmdRunner<string>;
   }
 
-  outJson(stm: StreamTag = Stream.stdout): CmdRunner<Record<string, unknown>, E> {
+  outJson(stm: StreamTag = Stream.stdout): CmdRunner<Record<string, unknown>> {
     this.#opts.outParser = ((res: ICmdResult) => JSON.parse(res[stm])) as unknown as (res: ICmdResult) => T;
-    return this as unknown as CmdRunner<Record<string, unknown>, E>;
+    return this as unknown as CmdRunner<Record<string, unknown>>;
   }
 
-  options(opts: Partial<CmdOptions<T, E>>): this {
+  options(opts: Partial<CmdOptions<T>>): this {
     Object.assign(this.#opts, opts);
     return this;
   }
 
-  get opts(): CmdOptions<T, E> {
+  get opts(): CmdOptions<T> {
     return { ...this.#opts };
   }
 
@@ -155,7 +149,7 @@ export class CmdRunner<T = void, E extends Error = Error> {
    *
    * In dry-run mode, `result` is a mock success; in real execution it carries the actual output.
    */
-  onRun(fn: (record: { command: string; args: string[]; opts: CmdOptions; result: CmdResult<T, E> }) => void): this {
+  onRun(fn: (record: { command: string; args: string[]; opts: CmdOptions; result: CmdResult<T> }) => void): this {
     this.#onRun = fn;
     return this;
   }
@@ -164,8 +158,8 @@ export class CmdRunner<T = void, E extends Error = Error> {
     return [this.#cmd, ...this.#args].join(' ');
   }
 
-  async run(): Promise<CmdResult<T, E>> {
-    const result = CmdResult.from<T, E>(this.#cmd, this.#args, this.#opts);
+  async run(): Promise<CmdResult<T>> {
+    const result = CmdResult.from<T>(this.#cmd, this.#args, this.#opts);
     result._outParser = this.#opts.outParser;
     result._errParser = this.#opts.errParser;
 
@@ -213,7 +207,7 @@ export class CmdRunner<T = void, E extends Error = Error> {
       denoOpts.signal = combinedSignal;
     }
 
-    let cmdResult: CmdResult<T, E>;
+    let cmdResult: CmdResult<T>;
     try {
       if (interactive) {
         cmdResult = await this.#runInteractive(result, denoOpts);
@@ -224,13 +218,13 @@ export class CmdRunner<T = void, E extends Error = Error> {
       if (timeoutId) clearTimeout(timeoutId);
     }
 
-    if (!cmdResult.success && !cmdResult.error) {
-      const err = new CmdError(
-        `Command failed: ${cmdResult.command} (exit code: ${cmdResult.code})`,
-        cmdResult as CmdResult,
-      );
+    if (!cmdResult.success) {
+      const msg = cmdResult._parseError
+        ? `Command failed: ${cmdResult.command} (exit code: ${cmdResult.code}) ${cmdResult._parseError.message}`
+        : `Command failed: ${cmdResult.command} (exit code: ${cmdResult.code})`;
+      const err = new CmdError(msg, cmdResult);
       err.silent = this.#opts.silent ?? false;
-      cmdResult.error = err as unknown as E;
+      cmdResult.error = err;
     }
 
     this.#onRun?.({ command: this.#cmd, args: [...this.#args], opts: { ...this.#opts }, result: cmdResult });
@@ -262,14 +256,11 @@ export class CmdRunner<T = void, E extends Error = Error> {
     return controller.signal;
   }
 
-  async #runInteractive(
-    result: CmdResult<T, E>,
-    denoOpts: Deno.CommandOptions,
-  ): Promise<CmdResult<T, E>> {
+  async #runInteractive(result: CmdResult<T>, denoOpts: Deno.CommandOptions): Promise<CmdResult<T>> {
     if (this.#opts.outParser || this.#opts.errParser) {
       throw new CmdError(
         'Parsers cannot be used in interactive mode; stdout and stderr are not captured',
-        result as CmdResult,
+        result,
       );
     }
     const command = new Deno.Command(this.#cmd, {
@@ -298,10 +289,7 @@ export class CmdRunner<T = void, E extends Error = Error> {
     }
   }
 
-  async #runCaptured(
-    result: CmdResult<T, E>,
-    denoOpts: Deno.CommandOptions,
-  ): Promise<CmdResult<T, E>> {
+  async #runCaptured(result: CmdResult<T>, denoOpts: Deno.CommandOptions): Promise<CmdResult<T>> {
     const stdin = this.#opts.stdin;
 
     if (stdin !== undefined) {
@@ -334,10 +322,6 @@ export class CmdRunner<T = void, E extends Error = Error> {
   }
 }
 
-export function run<T, E extends Error = Error>(
-  command: string,
-  args?: string | string[],
-  opts?: CmdOptions<T, E>,
-): CmdRunner<T, E> {
-  return new CmdRunner<T, E>(command, args, opts);
+export function run<T>(command: string, args?: string | string[], opts?: CmdOptions<T>): CmdRunner<T> {
+  return new CmdRunner<T>(command, args, opts);
 }
