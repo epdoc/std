@@ -1,4 +1,5 @@
 import { _ } from '@epdoc/type';
+import { getExitCodeDescription } from './codes.ts';
 import { CmdError } from './cmd-error.ts';
 import { CmdResult } from './cmd-result.ts';
 import { parseLines } from './parse.ts';
@@ -219,9 +220,12 @@ export class CmdRunner<T = void> {
     }
 
     if (!cmdResult.success) {
+      const exitStr = cmdResult.exitCode !== undefined
+        ? `(exit ${cmdResult.exitCode}: ${getExitCodeDescription(cmdResult.exitCode)})`
+        : '(no exit code)';
       const msg = cmdResult._parseError
-        ? `Command failed: ${cmdResult.command} (exit code: ${cmdResult.code}) ${cmdResult._parseError.message}`
-        : `Command failed: ${cmdResult.command} (exit code: ${cmdResult.code})`;
+        ? `Command failed: ${cmdResult.command} ${exitStr} ${cmdResult._parseError.message}`
+        : `Command failed: ${cmdResult.command} ${exitStr}`;
       const err = new CmdError(msg, cmdResult);
       err.silent = this.#opts.silent ?? false;
       cmdResult.error = err;
@@ -283,7 +287,7 @@ export class CmdRunner<T = void> {
 
     try {
       const { code } = await child.output();
-      return result.setCode(code);
+      return result.setExitCode(code);
     } finally {
       Deno.removeSignalListener('SIGINT', sigintHandler);
     }
@@ -314,10 +318,10 @@ export class CmdRunner<T = void> {
         await writer.close();
       }
       const { code, stdout, stderr } = await child.output();
-      return result.setCode(code).setStdout(stdout).setStderr(stderr).applyParsers();
+      return result.setExitCode(code).setStdout(stdout).setStderr(stderr).applyParsers();
     } else {
       const { code, stdout, stderr } = await command.output();
-      return result.setCode(code).setStdout(stdout).setStderr(stderr).applyParsers();
+      return result.setExitCode(code).setStdout(stdout).setStderr(stderr).applyParsers();
     }
   }
 }

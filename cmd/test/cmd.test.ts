@@ -4,7 +4,7 @@ import * as Cmd from '../src/mod.ts';
 Deno.test('cmd - basic command execution', async () => {
   const result = await Cmd.runner('echo', ['hello world']).run();
   assertEquals(result.success, true);
-  assertEquals(result.code, 0);
+  assertEquals(result.exitCode, 0);
   assertEquals(result.stdout.trim(), 'hello world');
 });
 
@@ -27,7 +27,7 @@ Deno.test('cmd - dry run returns success without executing', async () => {
 Deno.test('cmd - non-zero exit code', async () => {
   const result = await Cmd.runner('deno', ['eval', 'Deno.exit(42)']).run();
   assertEquals(result.success, false);
-  assertEquals(result.code, 42);
+  assertEquals(result.exitCode, 42);
 });
 
 Deno.test('cmd - orThrow returns parsed data', async () => {
@@ -50,7 +50,7 @@ Deno.test('cmd - Cmd.Error properties', async () => {
   } catch (err) {
     assertInstanceOf(err, Cmd.Error);
     assertEquals(err.exitCode, 2);
-    assert(err.message.includes('exit code: 2'));
+    assert(err.message.includes('(exit 2:'));
     assertInstanceOf(err.result, Cmd.Result);
   }
 });
@@ -73,7 +73,7 @@ Deno.test('cmd - timeout kills long-running command', async () => {
     .timeout(100)
     .run();
   assertEquals(result.success, false);
-  assert(result.code !== 0 || result.code === undefined);
+  assert(result.exitCode !== 0 || result.exitCode === undefined);
 });
 
 Deno.test('cmd - environment variables', async () => {
@@ -165,7 +165,7 @@ Deno.test('cmd - error set on failure by default', async () => {
   assertEquals(result.success, false);
   assert(result.error instanceof Cmd.Error);
   assertEquals(result.error?.exitCode, 1);
-  assert(result.error?.message.includes('exit code: 1'));
+  assert(result.error?.message.includes('(exit 1:'));
 });
 
 Deno.test('cmd - silent sets error.silent property', async () => {
@@ -353,7 +353,7 @@ Deno.test('cmd - outJson reads stderr', async () => {
 Deno.test('cmd - Cmd.Result.ok creates success mock', () => {
   const result = Cmd.Result.ok<string>();
   assertEquals(result.success, true);
-  assertEquals(result.code, undefined);
+  assertEquals(result.exitCode, undefined);
 });
 
 Deno.test('cmd - Cmd.Result.ok with data', () => {
@@ -365,7 +365,7 @@ Deno.test('cmd - Cmd.Result.ok with data', () => {
 Deno.test('cmd - Cmd.Result.fail creates failure mock', () => {
   const result = Cmd.Result.fail(1, 'error msg');
   assertEquals(result.success, false);
-  assertEquals(result.code, 1);
+  assertEquals(result.exitCode, 1);
   assertEquals(result.stderr, 'error msg');
 });
 

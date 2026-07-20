@@ -119,7 +119,7 @@ interface AddResult {
 
 const data = await runner('deno', ['add', 'pkg'])
   .outParser((result) => {
-    if (result.code === 0) {
+    if (result.exitCode === 0) {
       return { lines: parseLines(result.stdout) };
     }
     return { lines: parseLines(result.stderr), version: extractVersion(result.stderr) };
@@ -136,7 +136,7 @@ import { parseLines, parseTrimmed, parseJson } from '@epdoc/cmd';
 
 // Use in a custom outParser
 .outParser((result) => {
-  if (result.code === 0) return parseLines(result.stdout);
+  if (result.exitCode === 0) return parseLines(result.stdout);
   return parseLines(result.stderr);
 })
 
@@ -237,7 +237,8 @@ Returns a `CmdRunner<T, E>` builder instance. `T` is the type of `.data`, `E` is
 | Member             | Description                                                                                              |
 | ------------------ | -------------------------------------------------------------------------------------------------------- |
 | `.success`         | Boolean, true if exit code is 0                                                                          |
-| `.code`            | Exit code number                                                                                         |
+| `.exitCode`        | Process exit code number                                                                                 |
+| `.exitDescription` | Human-readable exit code description, or `undefined` if no exit code                                     |
 | `.stdout`          | stdout as string                                                                                         |
 | `.stderr`          | stderr as string                                                                                         |
 | `.stdoutLines`     | stdout split into trimmed lines                                                                          |
@@ -277,9 +278,14 @@ interface ICmdResult {
   stdout: string;
   stderr: string;
   command: string;
-  code?: number;
+  exitCode?: number;
 }
 ```
+
+### `getExitCodeDescription(code: number): string`
+
+Returns a human-readable description for a POSIX/`sysexits.h` exit code (e.g. `getExitCodeDescription(1)` →
+`"General error / Catch-all"`).
 
 ### `Stream` / `StreamTag`
 

@@ -20,7 +20,7 @@ export interface ICmdResult {
   stdout: string;
   stderr: string;
   command: string;
-  code?: number;
+  exitCode?: number;
 }
 
 export const Stream = {

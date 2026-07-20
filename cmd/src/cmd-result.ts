@@ -1,5 +1,6 @@
 import type { CmdError } from './cmd-error.ts';
 import type { CmdOptions, ICmdResult, Milliseconds } from './types.ts';
+import { getExitCodeDescription } from './codes.ts';
 
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
@@ -7,7 +8,7 @@ const encoder = new TextEncoder();
 export class CmdResult<T = void> implements ICmdResult {
   #t0 = performance.now();
   success: boolean = false;
-  code?: number;
+  exitCode?: number;
   /** A string that can be used in UI that show the command that was run */
   command: string = '';
   duration: Milliseconds = 0;
@@ -28,7 +29,7 @@ export class CmdResult<T = void> implements ICmdResult {
   ) {
     if (init) {
       this.success = init.success ?? false;
-      this.code = init.code;
+      this.exitCode = init.exitCode;
       this.command = init.command ?? '';
       this.duration = init.duration ?? 0;
       this._stdout = init._stdout;
@@ -64,10 +65,10 @@ export class CmdResult<T = void> implements ICmdResult {
    * @param code - Simulated exit code (default: undefined, meaning no exit)
    * @param stderr - Simulated stderr output
    */
-  static fail<T = void>(code?: number, stderr?: string): CmdResult<T> {
+  static fail<T = void>(exitCode?: number, stderr?: string): CmdResult<T> {
     const result = new CmdResult<T>();
-    if (code !== undefined) {
-      result.code = code;
+    if (exitCode !== undefined) {
+      result.exitCode = exitCode;
     }
     if (stderr !== undefined) {
       result._stderr = encoder.encode(stderr);
@@ -81,11 +82,15 @@ export class CmdResult<T = void> implements ICmdResult {
     return this;
   }
 
-  setCode(code: number): this {
-    this.code = code;
+  setExitCode(code: number): this {
+    this.exitCode = code;
     this.success = code === 0;
     this.duration = performance.now() - this.#t0;
     return this;
+  }
+
+  get exitDescription(): string | undefined {
+    return this.exitCode !== undefined ? getExitCodeDescription(this.exitCode) : undefined;
   }
 
   get err(): CmdError<T> {

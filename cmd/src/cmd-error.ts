@@ -19,6 +19,6 @@ export class CmdError<T = void> extends Error {
   }
 
   get exitCode(): number | undefined {
-    return this.result.code;
+    return this.result.exitCode;
   }
 }
