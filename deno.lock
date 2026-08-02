@@ -2,13 +2,9 @@
   "version": "5",
   "specifiers": {
     "jsr:@epdoc/cmd@~0.3.1": "0.3.1",
-    "jsr:@epdoc/colors@^1.1.3": "1.1.3",
     "jsr:@epdoc/datetime@^4.2.8": "4.2.8",
     "jsr:@epdoc/duration@~0.3.22": "0.3.22",
-    "jsr:@epdoc/fmt@^1.0.19": "1.0.19",
-    "jsr:@epdoc/fs@^1.6.6": "1.6.6",
-    "jsr:@epdoc/terminal@^0.0.15": "0.0.15",
-    "jsr:@epdoc/transform@^2.0.7": "2.0.7",
+    "jsr:@epdoc/fs@^1.6.7": "1.6.7",
     "jsr:@epdoc/type@^2.0.2": "2.0.2",
     "jsr:@std/assert@^1.0.19": "1.0.19",
     "jsr:@std/bytes@^1.0.6": "1.0.6",
@@ -27,12 +23,6 @@
     "@epdoc/cmd@0.3.1": {
       "integrity": "7663f9427fff3e8ff528f8692f41137b19f1ca9857c1b2672ee0f1c1b103848f"
     },
-    "@epdoc/colors@1.1.3": {
-      "integrity": "8ca629eba888a4b567e09b5f7f3cc49273d06d054af5f2d398a60c23b9b86492",
-      "dependencies": [
-        "jsr:@std/fmt"
-      ]
-    },
     "@epdoc/datetime@4.2.7": {
       "integrity": "4776d91837cb200c81ae80d589ad2b7f7fe5c2fdb60f8f759bab5f4bf1a6e52e"
     },
@@ -42,14 +32,8 @@
     "@epdoc/duration@0.3.22": {
       "integrity": "bf388c84ef857fc79a6c8dcddc34c03a0af9b9872bb308c56809e5cb6eca416c"
     },
-    "@epdoc/fmt@1.0.19": {
-      "integrity": "6fce6b8799c5bc0d4036062ff3cbd6a60c74e13d7b41d6218d81c8575168593c",
-      "dependencies": [
-        "jsr:@std/fmt"
-      ]
-    },
-    "@epdoc/fs@1.6.6": {
-      "integrity": "954dc5654faf79e0e3bbb9465e2c003ec6a502b42df5e1cb7754e9f915c4c6f7",
+    "@epdoc/fs@1.6.7": {
+      "integrity": "ed4b4f287dbc9c2b47dc687287391500b68edb01f8711c8cf091caf9477e0c9c",
       "dependencies": [
         "jsr:@std/assert",
         "jsr:@std/bytes",
@@ -58,19 +42,6 @@
         "jsr:@std/path@^1.1.6",
         "jsr:@std/toml",
         "jsr:@std/yaml"
-      ]
-    },
-    "@epdoc/terminal@0.0.15": {
-      "integrity": "fa6cb986e82b76f15fec572098737c6a519ec8e1158172c6f87a5cd4b463bda1",
-      "dependencies": [
-        "jsr:@std/fmt",
-        "jsr:@std/path@^1.1.6"
-      ]
-    },
-    "@epdoc/transform@2.0.7": {
-      "integrity": "ed67cdbf4bece9ed8c0f7024b2b4d209af0a1c24462768e8f24be312dfb26333",
-      "dependencies": [
-        "jsr:@std/encoding"
       ]
     },
     "@epdoc/type@2.0.0": {
@@ -170,7 +141,7 @@
         "dependencies": [
           "jsr:@epdoc/cmd@~0.3.1",
           "jsr:@epdoc/datetime@^4.2.8",
-          "jsr:@epdoc/fs@^1.6.6",
+          "jsr:@epdoc/fs@^1.6.7",
           "jsr:@epdoc/type@^2.0.2",
           "jsr:@std/assert@^1.0.19"
         ]
