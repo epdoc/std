@@ -289,7 +289,7 @@ export function formatTzAsISOTZ(m: TzMinutes): ISOTZ {
   if (m === 0) {
     return 'Z' as ISOTZ;
   }
-  return (m < 0 ? '+' : '-') + String(Math.floor(Math.abs(m) / 60)).padStart(2, '0') + ':' +
+  return (m < 0 ? '-' : '+') + String(Math.floor(Math.abs(m) / 60)).padStart(2, '0') + ':' +
     String(Math.abs(m) % 60).padStart(2, '0') as ISOTZ;
 }
 
@@ -312,7 +312,7 @@ export function parseISOTZ(val: ISOTZ): TzMinutes | undefined {
       return 0 as TzMinutes;
     }
     if (p.length > 4) {
-      const pol = p[3] === '-' ? 1 : -1;
+      const pol = p[3] === '+' ? 1 : -1;
       const result = _.asInt(p[4]) * 60 + _.asInt(p[5]);
       return (result ? pol * result : result) as TzMinutes;
     }

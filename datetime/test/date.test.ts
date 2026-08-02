@@ -6,20 +6,20 @@ Deno.test('util', async (t) => {
 
   await t.step('tz statics', async (t) => {
     await t.step('parse', () => {
-      assertEquals(util.parseISOTZ('-06:00' as ISOTZ), 360);
-      assertEquals(util.parseISOTZ('+06:00' as ISOTZ), -360);
-      assertEquals(util.parseISOTZ('-02:30' as ISOTZ), 150);
-      assertEquals(util.parseISOTZ('+01:00' as ISOTZ), -60);
+      assertEquals(util.parseISOTZ('-06:00' as ISOTZ), -360);
+      assertEquals(util.parseISOTZ('+06:00' as ISOTZ), 360);
+      assertEquals(util.parseISOTZ('-02:30' as ISOTZ), -150);
+      assertEquals(util.parseISOTZ('+01:00' as ISOTZ), 60);
       assertEquals(util.parseISOTZ('+00:00' as ISOTZ), 0);
       assertEquals(util.parseISOTZ('-00:00' as ISOTZ), 0);
       assertEquals(util.parseISOTZ('Z' as ISOTZ), 0);
     });
 
     await t.step('format', () => {
-      assertEquals(util.formatTzAsISOTZ(-360 as TzMinutes), '+06:00');
-      assertEquals(util.formatTzAsISOTZ(360 as TzMinutes), '-06:00');
-      assertEquals(util.formatTzAsISOTZ(-390 as TzMinutes), '+06:30');
-      assertEquals(util.formatTzAsISOTZ(150 as TzMinutes), '-02:30');
+      assertEquals(util.formatTzAsISOTZ(-360 as TzMinutes), '-06:00');
+      assertEquals(util.formatTzAsISOTZ(360 as TzMinutes), '+06:00');
+      assertEquals(util.formatTzAsISOTZ(-390 as TzMinutes), '-06:30');
+      assertEquals(util.formatTzAsISOTZ(150 as TzMinutes), '+02:30');
       assertEquals(util.formatTzAsISOTZ(0 as TzMinutes), 'Z');
     });
   });
@@ -34,17 +34,17 @@ Deno.test('util', async (t) => {
 
     await t.step('-02:00', () => {
       const tz = util.formatTzAsISOTZ(120 as TzMinutes);
-      assertEquals(tz, '-02:00');
+      assertEquals(tz, '+02:00');
     });
 
     await t.step('360', () => {
       const tz = util.formatTzAsISOTZ(360 as TzMinutes);
-      assertEquals(tz, '-06:00');
+      assertEquals(tz, '+06:00');
     });
 
     await t.step('-360', () => {
       const tz = util.formatTzAsISOTZ(-360 as TzMinutes);
-      assertEquals(tz, '+06:00');
+      assertEquals(tz, '-06:00');
     });
   });
 
