@@ -25,7 +25,7 @@ export class Reader {
    *
    * @returns An array of {@link File} instances, one per input file (in input order).
    */
-  async getInfo(files: (FS.FilePath | FS.File)[]): Promise<File[]> {
+  async read(files: (FS.FilePath | FS.File)[]): Promise<File[]> {
     const paths = files.map((f) => (_.isString(f) ? f : f.path));
     const args = ['-j', ...paths];
     const result = await Cmd.runner<Dict>('exiftool', args).dryRun(this.#dryRun).cwd(FS.cwd()).run();

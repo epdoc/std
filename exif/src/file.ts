@@ -6,7 +6,7 @@ import { assert } from '@std/assert';
 import * as ExifDate from './date.ts';
 import type { Camera, FileId, Metadata } from './exif-schema.ts';
 import * as Gps from './gps.ts';
-import type { IDryRun } from './types.ts';
+import type { FileJson, IDryRun } from './types.ts';
 import { parseDuration } from './utils.ts';
 
 const EXIFTOOL_READ_FLAGS = ['-j', '-api', 'QuickTimeUTC=1'];
@@ -78,6 +78,21 @@ export class File {
     const file = new File(metadata.SourceFile, opts);
     file.#metadata = metadata;
     return file;
+  }
+
+  toJSON(): FileJson {
+    return {
+      file: this.path,
+      digitizedAt: this.digitizedAt?.toISOString(),
+      createdAt: this.createdAt?.toISOString(),
+      modifiedAt: this.modifiedAt?.toISOString(),
+      hasTimezone: this.hasTimezone,
+      tzOffset: this.tzOffset,
+      duration: this.duration,
+      camera: this.camera,
+      gps: this.gps,
+      id: this.id,
+    };
   }
 
   /**
