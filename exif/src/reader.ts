@@ -4,7 +4,7 @@ import type { Dict } from '@epdoc/type';
 import { _ } from '@epdoc/type';
 import { File } from './file.ts';
 import type { IDryRun } from './types.ts';
-import { parseExifJson } from './utils.ts';
+import { parseJson } from './utils.ts';
 
 /**
  * Factory for reading EXIF metadata from one or more files in a single
@@ -13,7 +13,7 @@ import { parseExifJson } from './utils.ts';
  * All write operations live on {@link File}; construct or obtain a File and
  * use its setters followed by {@link File.write}.
  */
-export class Exiftool {
+export class Reader {
   #dryRun: boolean;
 
   constructor(opts?: IDryRun) {
@@ -34,7 +34,7 @@ export class Exiftool {
       throw new Error(result.stderr.trim() || `exiftool exited with code ${result.exitCode}`);
     }
 
-    const metadataArray = parseExifJson(result.stdout);
+    const metadataArray = parseJson(result.stdout);
     return metadataArray.map((metadata) => File.fromMetadata(metadata, { dryRun: this.#dryRun }));
   }
 }

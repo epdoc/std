@@ -18,16 +18,17 @@ export type GpsCoordinate = number | string;
 export type GpsLatitudeRef = 'North' | 'South' | 'N' | 'S';
 export type GpsLongitudeRef = 'East' | 'West' | 'E' | 'W';
 
-export type CameraMetadata = {
+export type Camera = {
   make?: string;
   model?: string;
   lensModel?: string;
   software?: string;
   creatorTool?: string;
   serialNumber?: string;
+  makerNotes?: string;
 };
 
-export type ExifToolID = {
+export type FileId = {
   documentId?: string;
   instanceId?: string;
 };
@@ -36,7 +37,7 @@ export type ExifToolID = {
  * The JSON object exiftool emits for one file with `-j`.
  * Fields are the raw EXIF tag names as produced by exiftool.
  */
-export interface ExifToolMediaMetadata {
+export interface Metadata {
   SourceFile: FS.FilePath;
   ExifToolVersion: number;
   FileName: string;

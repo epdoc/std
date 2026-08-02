@@ -1,17 +1,19 @@
-export type DecimalLocation = {
-  lat?: number;
-  lng?: number;
+import { _ } from '@epdoc/type';
+
+export type Location = {
+  lat: number;
+  lng: number;
   alt?: number;
 };
 
-export interface ExifOptions {
+export interface Options {
   /** Number of decimal places for seconds in DMS output. Default is 2. */
   secondPrecision?: number;
 }
 
-export type DMSLat = { dms: string; ref: 'N' | 'S' };
-export type DMSLng = { dms: string; ref: 'E' | 'W' };
-export type DMS = DMSLat | DMSLng;
+export type DmsLat = { dms: string; ref: 'N' | 'S' };
+export type DmsLng = { dms: string; ref: 'E' | 'W' };
+export type Dms = DmsLat | DmsLng;
 
 const DMS_RE =
   /^\s*(\d+(?:\.\d+)?)\s*(?:°|deg(?:rees)?)?\s*,?\s*(\d+(?:\.\d+)?)?\s*(?:'|′|min)?\s*,?\s*(\d+(?:\.\d+)?)?\s*(?:"|″)?\s*([NSEW])?\s*$/i;
@@ -24,14 +26,15 @@ function normalizeRef(ref: string | undefined): string | undefined {
   return ref.trim().toUpperCase().match(REF_RE)?.[1];
 }
 
-export function dms2decimal(raw: string | number | undefined, ref: string | undefined): number | undefined {
+export function parse(raw: string | number | undefined, ref: string | undefined): number | undefined {
   if (raw === undefined || raw === null) return undefined;
+  if (typeof raw === 'number' && isNaN(raw)) return undefined;
 
   const dir = normalizeRef(ref);
   const isNegative = dir === 'S' || dir === 'W';
 
   // 1. Handle numeric types directly
-  if (typeof raw === 'number') {
+  if (_.isNumber(raw)) {
     if (isNaN(raw)) return undefined;
     // Use Math.abs to avoid double-negative issues if raw is already negative
     return (isNegative ? -1 : 1) * Math.abs(raw);
@@ -65,11 +68,11 @@ export function dms2decimal(raw: string | number | undefined, ref: string | unde
 }
 
 /** Helper to format DMS strings for ExifTool writing */
-export function decimalToDms(
+export function toDms(
   decimal: number,
   type: 'lat' | 'lng',
   precision: number,
-): DMS {
+): Dms {
   const isLat = type === 'lat';
   const absVal = Math.abs(decimal);
 
@@ -91,7 +94,7 @@ export function decimalToDms(
   }
 
   const formattedSeconds = seconds.toFixed(precision);
-  const result: DMS = {
+  const result: Dms = {
     dms: `${degrees} deg ${minutes}' ${formattedSeconds}"`,
     ref: isLat ? (decimal < 0 ? 'S' : 'N') : (decimal < 0 ? 'W' : 'E'),
   };

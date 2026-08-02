@@ -1,4 +1,4 @@
-import { assertAlmostEquals, assertEquals } from '@std/assert';
+import { assertAlmostEquals, assertEquals, assertThrows } from '@std/assert';
 import { DateTime } from '@epdoc/datetime';
 import type * as FS from '@epdoc/fs/fs';
 import { File } from '../src/mod.ts';
@@ -33,8 +33,8 @@ Deno.test('File.fromMetadata', async (t) => {
       CreateDate: '2026:07:30 10:00:00',
     }));
     const created = file.createdAt;
-    assertEquals(created?.dateTime.toString().startsWith('2026-07-31T18:00:00'), true);
-    assertEquals(created?.hasTimezone, false);
+    assertEquals(created?.toString().startsWith('2026-07-31T18:00:00'), true);
+    assertEquals(created?.hasTimezone(), false);
   });
 
   await t.step('createdAt detects timezone from OffsetTimeOriginal', () => {
@@ -58,7 +58,7 @@ Deno.test('File.fromMetadata', async (t) => {
       FileModifyDate: '2026:07:31 10:00:00',
     }));
     const modified = file.modifiedAt;
-    assertEquals(modified?.dateTime.toString().startsWith('2026-07-31T12:00:00'), true);
+    assertEquals(modified?.toString().startsWith('2026-07-31T12:00:00'), true);
   });
 
   await t.step('duration parses video duration strings', () => {
@@ -147,6 +147,7 @@ Deno.test('File.camera', async (t) => {
       Software: '17.5',
       CreatorTool: 'Adobe Lightroom',
       SerialNumber: 'ABC123',
+      MakerNote: 'binary-makernote-data',
     }));
     assertEquals(file.camera, {
       make: 'Apple',
@@ -155,7 +156,9 @@ Deno.test('File.camera', async (t) => {
       software: '17.5',
       creatorTool: 'Adobe Lightroom',
       serialNumber: 'ABC123',
+      makerNotes: 'binary-makernote-data',
     });
+    assertEquals(file.makerNotes, 'binary-makernote-data');
   });
 
   await t.step('returns undefined fields when metadata is sparse', () => {
@@ -167,6 +170,7 @@ Deno.test('File.camera', async (t) => {
       software: undefined,
       creatorTool: undefined,
       serialNumber: undefined,
+      makerNotes: undefined,
     });
   });
 
@@ -180,6 +184,12 @@ Deno.test('File.camera', async (t) => {
     const file = File.fromMetadata(meta({}));
     file.camera = {};
     assertEquals(file.dirty, false);
+  });
+
+  await t.step('setter queues MakerNote write', () => {
+    const file = File.fromMetadata(meta({}));
+    file.camera = { makerNotes: 'binary-data' };
+    assertEquals(file.dirty, true);
   });
 });
 
@@ -232,18 +242,31 @@ Deno.test('File.gps', async (t) => {
   });
 
   await t.step('parses string altitude with units', () => {
-    const file = File.fromMetadata(meta({ GPSAltitude: '12.5 m' }));
+    const file = File.fromMetadata(meta({
+      GPSLatitude: 51.5,
+      GPSLongitude: -0.1,
+      GPSAltitude: '12.5 m',
+    }));
     assertEquals(file.gps?.alt, 12.5);
   });
 
   await t.step('parses negative string altitude', () => {
-    const file = File.fromMetadata(meta({ GPSAltitude: '-10 m' }));
+    const file = File.fromMetadata(meta({
+      GPSLatitude: 51.5,
+      GPSLongitude: -0.1,
+      GPSAltitude: '-10 m',
+    }));
     assertEquals(file.gps?.alt, -10);
   });
 
-  await t.step('returns undefined components when GPS tags are missing', () => {
+  await t.step('returns undefined when GPS tags are missing', () => {
     const file = File.fromMetadata(meta({}));
-    assertEquals(file.gps, { lat: undefined, lng: undefined, alt: undefined });
+    assertEquals(file.gps, undefined);
+  });
+
+  await t.step('returns undefined when only latitude is present', () => {
+    const file = File.fromMetadata(meta({ GPSLatitude: 51.5 }));
+    assertEquals(file.gps, undefined);
   });
 });
 
@@ -270,6 +293,12 @@ Deno.test('File.setGPS', async (t) => {
     const file = File.fromMetadata(meta({}));
     file.setGPS({ lat: 51.5072222, lng: -0.1278 });
     assertEquals(file.dirty, true);
+  });
+
+  await t.step('throws when lat or lng is missing', () => {
+    const file = File.fromMetadata(meta({}));
+    assertThrows(() => file.setGPS({ lat: undefined, lng: -0.1278 } as unknown as { lat: number; lng: number }));
+    assertThrows(() => file.setGPS({ lat: 51.5, lng: undefined } as unknown as { lat: number; lng: number }));
   });
 });
 

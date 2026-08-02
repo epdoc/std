@@ -2,8 +2,8 @@
 
 Read and write EXIF metadata via the **exiftool** binary.
 
-A thin wrapper around the industry-standard `exiftool` command-line tool. `Exiftool` is used for bulk reads that create
-one {@link File} per path; {@link File} holds the metadata and provides setters for writing dates, offsets, and
+A thin wrapper around the industry-standard `exiftool` command-line tool. {@link Reader} is used for bulk reads that
+create one {@link File} per path; {@link File} holds the metadata and provides setters for writing dates, offsets, and
 arbitrary tags back to the file.
 
 ## Why exiftool instead of a native JS library?
@@ -39,13 +39,21 @@ apt install exiftool
 
 ## Usage
 
+The recommended import style is:
+
+```ts
+import * as Exif from '@epdoc/exif';
+```
+
+This gives you a clean hierarchy: `Exif.Reader`, `Exif.File`, `Exif.Date.parse`, `Exif.Gps.Location`, etc.
+
 ### Bulk read
 
 ```ts
-import { Exiftool, getMetaDateTime } from '@epdoc/exif';
+import * as Exif from '@epdoc/exif';
 
-const exiftool = new Exiftool();
-const [file] = await exiftool.getInfo(['/path/to/video.mp4']);
+const reader = new Exif.Reader();
+const [file] = await reader.getInfo(['/path/to/video.mp4']);
 
 const meta = await file.getMetadata();
 console.log(meta.CreateDate); // "2026:07:31 18:00:00"
@@ -61,24 +69,27 @@ Exif dates are read in canonical EXIF form (`"YYYY:MM:DD HH:MM:SS"`) so that a m
 from an explicit one. Helpers parse that form and build {@link @epdoc/datetime!DateTime} values.
 
 ```ts
-import { buildExifDateTime, getMetaDateTime, parseExifDateTime } from '@epdoc/exif';
+import * as Exif from '@epdoc/exif';
 
-const parts = parseExifDateTime('2026:07:31 18:00:00.500-06:00');
+const parts = Exif.Date.parse('2026:07:31 18:00:00.500-06:00');
 // { year: 2026, month: 7, day: 31, hour: 18, minute: 0, second: 0, millisecond: 500, tzOffset: '-06:00' }
 
 // DateTime from a base tag + separate sub-second/tz tags:
-const { dateTime, tzOffset, hasTimezone } =
-  buildExifDateTime(meta.SubSecCreateDate ?? meta.CreateDate, meta.SubSecTimeDigitized, meta.OffsetTimeDigitized) ?? {};
+const dateTime = Exif.Date.build(
+  meta.SubSecCreateDate ?? meta.CreateDate,
+  meta.SubSecTimeDigitized,
+  meta.OffsetTimeDigitized,
+);
 
 // Highest-priority date on a metadata object (original -> digitized -> modified):
-const primary = getMetaDateTime(meta);
-if (!primary.hasTimezone) {
+const primary = Exif.Date.getPrimary(meta);
+if (!primary?.hasTimezone()) {
   // timezone was not recorded in the file
 }
 ```
 
-Use {@link parseExifTzOffset} to convert `"-06:00"` to intuitive signed minutes (positive = ahead of UTC) and {@link
-formatExifDateTime} to write components back in exiftool's format.
+Use {@link Exif.Date.parseTzOffset} to convert `"-06:00"` to intuitive signed minutes (positive = ahead of UTC) and
+{@link Exif.Date.format} to write components back in exiftool's format.
 
 ### Write / modify tags
 
@@ -87,9 +98,9 @@ exiftool invocation.
 
 ```ts
 import { DateTime } from '@epdoc/datetime';
-import { File } from '@epdoc/exif';
+import * as Exif from '@epdoc/exif';
 
-const file = new File('/path/to/photo.jpg');
+const file = new Exif.File('/path/to/photo.jpg');
 await file.getMetadata();
 
 // Set creation date and timezone
@@ -123,8 +134,30 @@ await file.write();
 console.log(file.dirty); // false
 ```
 
-`new Exiftool({ dryRun: true })` and `new File(path, { dryRun: true })` log what they would do without invoking the
-binary.
+`new Exif.Reader({ dryRun: true })` and `new Exif.File(path, { dryRun: true })` log what they would do without invoking
+the binary.
+
+### GPS helpers
+
+The {@link Gps} namespace provides DMS/decimal conversion and types:
+
+```ts
+import * as Exif from '@epdoc/exif';
+
+const decimal = Exif.Gps.parse('51 deg 30\' 26.00" N', 'N');
+const dms = Exif.Gps.toDms(51.5074, 'lat', 2);
+
+file.setGPS({ lat: 51.5074, lng: -0.1278, alt: 12.5 });
+```
+
+### MakerNotes
+
+The binary MakerNote block is exposed through {@link File.makerNotes} and included in {@link File.camera}:
+
+```ts
+console.log(file.makerNotes);
+console.log(file.camera.makerNotes);
+```
 
 ## The JSON shape
 

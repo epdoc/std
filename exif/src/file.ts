@@ -3,11 +3,11 @@ import type { DateTime } from '@epdoc/datetime';
 import * as FS from '@epdoc/fs/fs';
 import { _ } from '@epdoc/type';
 import { assert } from '@std/assert';
-import { type ExifDateTimeResult, getCreatedDateTime, getDigitizedDateTime, getModifiedDateTime } from './date.ts';
-import type { CameraMetadata, ExifToolID, ExifToolMediaMetadata } from './exif-schema.ts';
-import * as GPS from './gps.ts';
+import * as ExifDate from './date.ts';
+import type { Camera, FileId, Metadata } from './exif-schema.ts';
+import * as Gps from './gps.ts';
 import type { IDryRun } from './types.ts';
-import { formatExifDateTime, parseExifDuration } from './utils.ts';
+import { parseDuration } from './utils.ts';
 
 const EXIFTOOL_READ_FLAGS = ['-j', '-api', 'QuickTimeUTC=1'];
 
@@ -21,7 +21,7 @@ const EXIFTOOL_READ_FLAGS = ['-j', '-api', 'QuickTimeUTC=1'];
  */
 export class File {
   #file: FS.File;
-  #metadata?: ExifToolMediaMetadata;
+  #metadata?: Metadata;
   #dryRun: boolean;
   #dirty = false;
   #pending = new Map<string, string>();
@@ -39,7 +39,7 @@ export class File {
     return this.#file.path;
   }
 
-  get metadata(): ExifToolMediaMetadata {
+  get metadata(): Metadata {
     assert(this.#metadata, `File ${this.path} has no metadata; call getMetadata() first`);
     return this.#metadata;
   }
@@ -54,7 +54,7 @@ export class File {
    * Dates are read in canonical EXIF form (`YYYY:MM:DD HH:MM:SS`) so that
    * missing timezones can be distinguished from explicit UTC offsets.
    */
-  async getMetadata(opts: { force?: boolean } = {}): Promise<ExifToolMediaMetadata | undefined> {
+  async getMetadata(opts: { force?: boolean } = {}): Promise<Metadata | undefined> {
     if (this.#metadata && !opts.force) return this.#metadata;
 
     const args = [...EXIFTOOL_READ_FLAGS, this.path];
@@ -74,7 +74,7 @@ export class File {
     return this.#metadata;
   }
 
-  static fromMetadata(metadata: ExifToolMediaMetadata, opts?: IDryRun): File {
+  static fromMetadata(metadata: Metadata, opts?: IDryRun): File {
     const file = new File(metadata.SourceFile, opts);
     file.#metadata = metadata;
     return file;
@@ -85,9 +85,8 @@ export class File {
    *
    * Priority: DateTimeOriginal → CreateDate / DateCreated.
    */
-  get createdAt(): ExifDateTimeResult | undefined {
-    if (!this.#metadata) return undefined;
-    return getCreatedDateTime(this.metadata);
+  get createdAt(): DateTime | undefined {
+    return ExifDate.getCreated(this.metadata);
   }
 
   /**
@@ -95,9 +94,8 @@ export class File {
    *
    * Uses CreateDate / DateCreated (with SubSecCreateDate when present).
    */
-  get digitizedAt(): ExifDateTimeResult | undefined {
-    if (!this.#metadata) return undefined;
-    return getDigitizedDateTime(this.metadata);
+  get digitizedAt(): DateTime | undefined {
+    return ExifDate.getDigitized(this.metadata);
   }
 
   /**
@@ -105,9 +103,8 @@ export class File {
    *
    * Priority: ModifyDate → FileModifyDate → FileInodeChangeDate → FileAccessDate.
    */
-  get modifiedAt(): ExifDateTimeResult | undefined {
-    if (!this.#metadata) return undefined;
-    return getModifiedDateTime(this.metadata);
+  get modifiedAt(): DateTime | undefined {
+    return ExifDate.getModified(this.metadata);
   }
 
   /**
@@ -115,7 +112,7 @@ export class File {
    * Falls back to false when no creation date is present.
    */
   get hasTimezone(): boolean {
-    return this.createdAt?.hasTimezone ?? false;
+    return this.createdAt?.hasTimezone() ?? false;
   }
 
   /**
@@ -123,7 +120,7 @@ export class File {
    * Returns `undefined` when there is no creation date or no timezone.
    */
   get tzOffset(): string | undefined {
-    return this.createdAt?.tzOffset;
+    return this.createdAt?.getTzString();
   }
 
   /**
@@ -177,11 +174,10 @@ export class File {
    * The video/media duration in seconds, when available in the metadata.
    */
   get duration(): number | undefined {
-    if (!this.#metadata) return undefined;
-    return parseExifDuration(this.metadata.Duration);
+    return parseDuration(this.metadata.Duration);
   }
 
-  get camera(): CameraMetadata {
+  get camera(): Camera {
     return {
       make: this.metadata?.Make,
       model: this.metadata?.Model,
@@ -189,28 +185,39 @@ export class File {
       software: this.metadata?.Software,
       creatorTool: this.metadata?.CreatorTool,
       serialNumber: this.metadata?.SerialNumber,
+      makerNotes: this.metadata?.MakerNote,
     };
   }
 
-  set camera(value: CameraMetadata) {
+  set camera(value: Camera) {
     if (value.make !== undefined) this.#setTag('Make', value.make);
     if (value.model !== undefined) this.#setTag('Model', value.model);
     if (value.lensModel !== undefined) this.#setTag('LensModel', value.lensModel);
     if (value.software !== undefined) this.#setTag('Software', value.software);
     if (value.creatorTool !== undefined) this.#setTag('CreatorTool', value.creatorTool);
     if (value.serialNumber !== undefined) this.#setTag('SerialNumber', value.serialNumber);
+    if (value.makerNotes !== undefined) this.#setTag('MakerNote', value.makerNotes);
   }
 
-  get gps(): GPS.DecimalLocation | undefined {
-    return {
-      lat: GPS.dms2decimal(this.metadata.GPSLatitude, this.metadata.GPSLatitudeRef),
-      lng: GPS.dms2decimal(this.metadata.GPSLongitude, this.metadata.GPSLongitudeRef),
-      alt: this.metadata?.GPSAltitude !== undefined
-        ? typeof this.metadata.GPSAltitude === 'number'
-          ? this.metadata.GPSAltitude
-          : parseFloat(String(this.metadata.GPSAltitude).replace(/[^-\d.]/g, ''))
-        : undefined,
-    };
+  /**
+   * The binary MakerNote block for the file, when present.
+   */
+  get makerNotes(): string | undefined {
+    return this.metadata?.MakerNote;
+  }
+
+  get gps(): Gps.Location | undefined {
+    const lat = Gps.parse(this.metadata.GPSLatitude, this.metadata.GPSLatitudeRef);
+    const lng = Gps.parse(this.metadata.GPSLongitude, this.metadata.GPSLongitudeRef);
+    if (lat === undefined || lng === undefined) return undefined;
+
+    const alt = this.metadata?.GPSAltitude !== undefined
+      ? _.isNumber(this.metadata.GPSAltitude)
+        ? this.metadata.GPSAltitude
+        : parseFloat(String(this.metadata.GPSAltitude).replace(/[^-\d.]/g, ''))
+      : undefined;
+
+    return { lat, lng, alt };
   }
 
   /**
@@ -219,10 +226,14 @@ export class File {
    * @param location - Object containing lat, lng, and optional alt
    * @param options - Formatting options
    */
-  setGPS(location: GPS.DecimalLocation, options?: GPS.ExifOptions): void {
+  setGPS(location: Gps.Location, options?: Gps.Options): void {
+    if (!_.isNumber(location.lat) || !_.isNumber(location.lng)) {
+      throw new Error('GPS location must include numeric lat and lng');
+    }
+
     const secondPrecision = options?.secondPrecision ?? 2;
-    const latDms: GPS.DMS = GPS.decimalToDms(location.lat!, 'lat', secondPrecision);
-    const lngDms: GPS.DMS = GPS.decimalToDms(location.lng!, 'lng', secondPrecision);
+    const latDms: Gps.Dms = Gps.toDms(location.lat, 'lat', secondPrecision);
+    const lngDms: Gps.Dms = Gps.toDms(location.lng, 'lng', secondPrecision);
 
     this.setTag('GPSLatitude', latDms.dms);
     this.setTag('GPSLatitudeRef', latDms.ref);
@@ -234,8 +245,8 @@ export class File {
     }
   }
 
-  get id(): ExifToolID {
-    const result: ExifToolID = {};
+  get id(): FileId {
+    const result: FileId = {};
     if (this.metadata.DocumentID) result.documentId = this.metadata.DocumentID;
     if (this.metadata.InstanceID) result.instanceId = this.metadata.InstanceID;
     return result;
@@ -301,7 +312,7 @@ export class File {
   }
 
   #setDateTags(dateTag: string, subSecTag: string, offsetTag: string, dt: DateTime): void {
-    this.#setTag(dateTag, formatDateTimeToExif(dt));
+    this.#setTag(dateTag, ExifDate.formatDateTime(dt));
 
     const ms = dt.millisecond;
     this.#setTag(subSecTag, ms > 0 ? String(ms).padStart(3, '0') : '');
@@ -315,22 +326,4 @@ export class File {
       this.#setTag(offsetTag, '');
     }
   }
-}
-
-/**
- * Format a DateTime as exiftool's canonical `YYYY:MM:DD HH:MM:SS` string.
- *
- * - ZonedDateTime uses the wall-clock time in its timezone.
- * - PlainDateTime uses its wall-clock time.
- * - Instant is interpreted as UTC.
- */
-export function formatDateTimeToExif(dt: DateTime): string {
-  return formatExifDateTime({
-    year: dt.year,
-    month: dt.month,
-    day: dt.day,
-    hour: dt.hour,
-    minute: dt.minute,
-    second: dt.second,
-  });
 }
