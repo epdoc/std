@@ -1,4 +1,4 @@
-import { assertEquals } from '@std/assert';
+import { assertAlmostEquals, assertEquals } from '@std/assert';
 import { DateTime } from '@epdoc/datetime';
 import type * as FS from '@epdoc/fs/fs';
 import { File } from '../src/mod.ts';
@@ -135,6 +135,158 @@ Deno.test('File setters and dirty flag', async (t) => {
     const file = File.fromMetadata(meta({}));
     file.setTag('Artist', undefined);
     assertEquals(file.dirty, true);
+  });
+});
+
+Deno.test('File.camera', async (t) => {
+  await t.step('reads camera metadata', () => {
+    const file = File.fromMetadata(meta({
+      Make: 'Apple',
+      Model: 'iPhone 15 Pro',
+      LensModel: 'iPhone 15 Pro back triple camera 6.86mm f/1.78',
+      Software: '17.5',
+      CreatorTool: 'Adobe Lightroom',
+      SerialNumber: 'ABC123',
+    }));
+    assertEquals(file.camera, {
+      make: 'Apple',
+      model: 'iPhone 15 Pro',
+      lensModel: 'iPhone 15 Pro back triple camera 6.86mm f/1.78',
+      software: '17.5',
+      creatorTool: 'Adobe Lightroom',
+      serialNumber: 'ABC123',
+    });
+  });
+
+  await t.step('returns undefined fields when metadata is sparse', () => {
+    const file = File.fromMetadata(meta({ Make: 'Canon' }));
+    assertEquals(file.camera, {
+      make: 'Canon',
+      model: undefined,
+      lensModel: undefined,
+      software: undefined,
+      creatorTool: undefined,
+      serialNumber: undefined,
+    });
+  });
+
+  await t.step('setter queues writes for present fields', () => {
+    const file = File.fromMetadata(meta({}));
+    file.camera = { make: 'Canon', model: 'EOS R5' };
+    assertEquals(file.dirty, true);
+  });
+
+  await t.step('setter skips undefined fields and stays clean for an empty object', () => {
+    const file = File.fromMetadata(meta({}));
+    file.camera = {};
+    assertEquals(file.dirty, false);
+  });
+});
+
+Deno.test('File.gps', async (t) => {
+  await t.step('converts DMS coordinates with single-letter refs to decimal', () => {
+    const file = File.fromMetadata(meta({
+      GPSLatitude: '33 deg 52\' 7.68" S',
+      GPSLatitudeRef: 'S',
+      GPSLongitude: '151 deg 12\' 33.48" W',
+      GPSLongitudeRef: 'W',
+      GPSAltitude: 12.5,
+    }));
+    const gps = file.gps;
+    assertAlmostEquals(gps?.lat!, -33.8688, 0.001);
+    assertAlmostEquals(gps?.lng!, -151.2093, 0.001);
+    assertEquals(gps?.alt, 12.5);
+  });
+
+  await t.step('converts DMS coordinates with long-form refs to decimal', () => {
+    const file = File.fromMetadata(meta({
+      GPSLatitude: '33 deg 52\' 7.68" S',
+      GPSLatitudeRef: 'South',
+      GPSLongitude: '151 deg 12\' 33.48" W',
+      GPSLongitudeRef: 'West',
+    }));
+    const gps = file.gps;
+    assertAlmostEquals(gps?.lat!, -33.8688, 0.001);
+    assertAlmostEquals(gps?.lng!, -151.2093, 0.001);
+  });
+
+  await t.step('handles -n decimal coordinates', () => {
+    const file = File.fromMetadata(meta({
+      GPSLatitude: -33.8688,
+      GPSLatitudeRef: 'S',
+      GPSLongitude: -151.2093,
+      GPSLongitudeRef: 'W',
+      GPSAltitude: 12.5,
+    }));
+    assertEquals(file.gps, { lat: -33.8688, lng: -151.2093, alt: 12.5 });
+  });
+
+  await t.step('parses exiftool default output without refs', () => {
+    const file = File.fromMetadata(meta({
+      GPSLatitude: '33 deg 52\' 7.68"',
+      GPSLongitude: '151 deg 12\' 33.48"',
+    }));
+    const gps = file.gps;
+    assertAlmostEquals(gps?.lat!, 33.8688, 0.001);
+    assertAlmostEquals(gps?.lng!, 151.2093, 0.001);
+  });
+
+  await t.step('parses string altitude with units', () => {
+    const file = File.fromMetadata(meta({ GPSAltitude: '12.5 m' }));
+    assertEquals(file.gps?.alt, 12.5);
+  });
+
+  await t.step('parses negative string altitude', () => {
+    const file = File.fromMetadata(meta({ GPSAltitude: '-10 m' }));
+    assertEquals(file.gps?.alt, -10);
+  });
+
+  await t.step('returns undefined components when GPS tags are missing', () => {
+    const file = File.fromMetadata(meta({}));
+    assertEquals(file.gps, { lat: undefined, lng: undefined, alt: undefined });
+  });
+});
+
+Deno.test('File.setGPS', async (t) => {
+  await t.step('marks the file dirty and queues GPS tags', () => {
+    const file = File.fromMetadata(meta({}));
+    file.setGPS({ lat: 51.5072222, lng: -0.1278, alt: 12.5 });
+    assertEquals(file.dirty, true);
+  });
+
+  await t.step('queues a below-sea-level altitude reference', () => {
+    const file = File.fromMetadata(meta({}));
+    file.setGPS({ lat: 51.5072222, lng: -0.1278, alt: -12.5 });
+    assertEquals(file.dirty, true);
+  });
+
+  await t.step('accepts a second-precision option', () => {
+    const file = File.fromMetadata(meta({}));
+    file.setGPS({ lat: 51.5072222, lng: -0.1278 }, { secondPrecision: 0 });
+    assertEquals(file.dirty, true);
+  });
+
+  await t.step('still queues when altitude is omitted', () => {
+    const file = File.fromMetadata(meta({}));
+    file.setGPS({ lat: 51.5072222, lng: -0.1278 });
+    assertEquals(file.dirty, true);
+  });
+});
+
+Deno.test('File.id', async (t) => {
+  await t.step('returns document and instance IDs', () => {
+    const file = File.fromMetadata(meta({ DocumentID: 'doc-1', InstanceID: 'inst-1' }));
+    assertEquals(file.id, { documentId: 'doc-1', instanceId: 'inst-1' });
+  });
+
+  await t.step('returns only present IDs', () => {
+    const file = File.fromMetadata(meta({ InstanceID: 'inst-1' }));
+    assertEquals(file.id, { instanceId: 'inst-1' });
+  });
+
+  await t.step('returns an empty object when no IDs are present', () => {
+    const file = File.fromMetadata(meta({}));
+    assertEquals(file.id, {});
   });
 });
 

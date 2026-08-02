@@ -13,15 +13,26 @@ export type DMSLat = { dms: string; ref: 'N' | 'S' };
 export type DMSLng = { dms: string; ref: 'E' | 'W' };
 export type DMS = DMSLat | DMSLng;
 
-const DMS_RE = /^\s*(\d+(?:\.\d+)?)(?:[^\d.]+(\d+(?:\.\d+)?))?(?:[^\d.]+(\d+(?:\.\d+)?))?\s*([NSEW])?\s*$/i;
+const DMS_RE =
+  /^\s*(\d+(?:\.\d+)?)\s*(?:°|deg(?:rees)?)?\s*,?\s*(\d+(?:\.\d+)?)?\s*(?:'|′|min)?\s*,?\s*(\d+(?:\.\d+)?)?\s*(?:"|″)?\s*([NSEW])?\s*$/i;
+
+const REF_RE = /^(N|S|E|W)(?:ORTH|OUTH|AST|EST)?$/;
+
+/** Normalize a hemisphere ref (e.g. "South", "WEST", "n") to a single letter. */
+function normalizeRef(ref: string | undefined): string | undefined {
+  if (!ref) return undefined;
+  return ref.trim().toUpperCase().match(REF_RE)?.[1];
+}
 
 export function dms2decimal(raw: string | number | undefined, ref: string | undefined): number | undefined {
   if (raw === undefined || raw === null) return undefined;
 
+  const dir = normalizeRef(ref);
+  const isNegative = dir === 'S' || dir === 'W';
+
   // 1. Handle numeric types directly
   if (typeof raw === 'number') {
     if (isNaN(raw)) return undefined;
-    const isNegative = ref?.toUpperCase() === 'S' || ref?.toUpperCase() === 'W';
     // Use Math.abs to avoid double-negative issues if raw is already negative
     return (isNegative ? -1 : 1) * Math.abs(raw);
   }
@@ -32,7 +43,6 @@ export function dms2decimal(raw: string | number | undefined, ref: string | unde
   // 2. Handle numeric strings directly (e.g., "9.9281" or "-9.9281")
   const numVal = Number(trimmed);
   if (!isNaN(numVal)) {
-    const isNegative = ref?.toUpperCase() === 'S' || ref?.toUpperCase() === 'W';
     return (isNegative ? -1 : 1) * Math.abs(numVal);
   }
 
@@ -43,17 +53,13 @@ export function dms2decimal(raw: string | number | undefined, ref: string | unde
   const deg = parseFloat(m[1] || '0');
   const min = parseFloat(m[2] || '0');
   const sec = parseFloat(m[3] || '0');
-  const embeddedDir = m[4]?.toUpperCase();
+  const embeddedDir = normalizeRef(m[4]);
 
   let dec = deg + min / 60 + sec / 3600;
 
   // Determine direction from ref OR embedded direction in raw string (never both)
-  const dir = ref?.toUpperCase() || embeddedDir;
-  if (dir === 'S' || dir === 'W') {
-    dec = -Math.abs(dec);
-  } else {
-    dec = Math.abs(dec);
-  }
+  const sign = dir ?? embeddedDir;
+  dec = sign === 'S' || sign === 'W' ? -Math.abs(dec) : Math.abs(dec);
 
   return dec;
 }

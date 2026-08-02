@@ -230,7 +230,7 @@ export class File {
     this.setTag('GPSLongitudeRef', lngDms.ref);
     if (_.isNumber(location.alt)) {
       this.setTag('GPSAltitude', Math.abs(location.alt).toString());
-      this.setTag('GPSAltitudeRef', location.alt < 0 ? '1' : '0'); // 0 = Above Sea Level, 1 = Below Sea Level
+      this.setTag('GPSAltitudeRef', location.alt < 0 ? 'Below Sea Level' : 'Above Sea Level');
     }
   }
 
