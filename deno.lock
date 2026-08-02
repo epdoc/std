@@ -143,7 +143,7 @@
       },
       "condition": {
         "dependencies": [
-          "jsr:@epdoc/datetime@^4.2.7",
+          "jsr:@epdoc/datetime@^4.2.8",
           "jsr:@epdoc/type@^2.0.2",
           "jsr:@std/assert@^1.0.19"
         ]
