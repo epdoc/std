@@ -7,6 +7,8 @@
     "jsr:@epdoc/duration@~0.3.22": "0.3.22",
     "jsr:@epdoc/fmt@^1.0.19": "1.0.19",
     "jsr:@epdoc/fs@^1.6.5": "1.6.5",
+    "jsr:@epdoc/terminal@^0.0.15": "0.0.15",
+    "jsr:@epdoc/transform@^2.0.6": "2.0.6",
     "jsr:@epdoc/type@^2.0.2": "2.0.2",
     "jsr:@std/assert@^1.0.19": "1.0.19",
     "jsr:@std/async@^1.5.0": "1.5.0",
@@ -56,6 +58,19 @@
         "jsr:@std/path@^1.1.6",
         "jsr:@std/toml",
         "jsr:@std/yaml"
+      ]
+    },
+    "@epdoc/terminal@0.0.15": {
+      "integrity": "fa6cb986e82b76f15fec572098737c6a519ec8e1158172c6f87a5cd4b463bda1",
+      "dependencies": [
+        "jsr:@std/fmt",
+        "jsr:@std/path@^1.1.6"
+      ]
+    },
+    "@epdoc/transform@2.0.6": {
+      "integrity": "13b43dcaee440e4de8612f9a6f141182202acc059a9cee83740ef3e5848f9cf6",
+      "dependencies": [
+        "jsr:@std/encoding"
       ]
     },
     "@epdoc/type@2.0.0": {
