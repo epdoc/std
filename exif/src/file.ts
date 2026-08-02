@@ -4,7 +4,8 @@ import * as FS from '@epdoc/fs/fs';
 import { _ } from '@epdoc/type';
 import { assert } from '@std/assert';
 import { type ExifDateTimeResult, getCreatedDateTime, getDigitizedDateTime, getModifiedDateTime } from './date.ts';
-import type { ExifToolMediaMetadata } from './exif-schema.ts';
+import type { CameraMetadata, ExifToolID, ExifToolMediaMetadata } from './exif-schema.ts';
+import * as GPS from './gps.ts';
 import type { IDryRun } from './types.ts';
 import { formatExifDateTime, parseExifDuration } from './utils.ts';
 
@@ -110,14 +111,6 @@ export class File {
   }
 
   /**
-   * The video/media duration in seconds, when available in the metadata.
-   */
-  get duration(): number | undefined {
-    if (!this.#metadata) return undefined;
-    return parseExifDuration(this.metadata.Duration);
-  }
-
-  /**
    * True when the primary creation date carries an explicit timezone offset.
    * Falls back to false when no creation date is present.
    */
@@ -178,6 +171,74 @@ export class File {
     this.#setTag('OffsetTimeOriginal', normalized);
     this.#setTag('OffsetTimeDigitized', normalized);
     this.#setTag('OffsetTime', normalized);
+  }
+
+  /**
+   * The video/media duration in seconds, when available in the metadata.
+   */
+  get duration(): number | undefined {
+    if (!this.#metadata) return undefined;
+    return parseExifDuration(this.metadata.Duration);
+  }
+
+  get camera(): CameraMetadata {
+    return {
+      make: this.metadata?.Make,
+      model: this.metadata?.Model,
+      lensModel: this.metadata?.LensModel,
+      software: this.metadata?.Software,
+      creatorTool: this.metadata?.CreatorTool,
+      serialNumber: this.metadata?.SerialNumber,
+    };
+  }
+
+  set camera(value: CameraMetadata) {
+    if (value.make !== undefined) this.#setTag('Make', value.make);
+    if (value.model !== undefined) this.#setTag('Model', value.model);
+    if (value.lensModel !== undefined) this.#setTag('LensModel', value.lensModel);
+    if (value.software !== undefined) this.#setTag('Software', value.software);
+    if (value.creatorTool !== undefined) this.#setTag('CreatorTool', value.creatorTool);
+    if (value.serialNumber !== undefined) this.#setTag('SerialNumber', value.serialNumber);
+  }
+
+  get gps(): GPS.DecimalLocation | undefined {
+    return {
+      lat: GPS.dms2decimal(this.metadata.GPSLatitude, this.metadata.GPSLatitudeRef),
+      lng: GPS.dms2decimal(this.metadata.GPSLongitude, this.metadata.GPSLongitudeRef),
+      alt: this.metadata?.GPSAltitude !== undefined
+        ? typeof this.metadata.GPSAltitude === 'number'
+          ? this.metadata.GPSAltitude
+          : parseFloat(String(this.metadata.GPSAltitude).replace(/[^-\d.]/g, ''))
+        : undefined,
+    };
+  }
+
+  /**
+   * Converts decimal coordinates into the exact tag-value record needed by ExifTool.
+   *
+   * @param location - Object containing lat, lng, and optional alt
+   * @param options - Formatting options
+   */
+  setGPS(location: GPS.DecimalLocation, options?: GPS.ExifOptions): void {
+    const secondPrecision = options?.secondPrecision ?? 2;
+    const latDms: GPS.DMS = GPS.decimalToDms(location.lat!, 'lat', secondPrecision);
+    const lngDms: GPS.DMS = GPS.decimalToDms(location.lng!, 'lng', secondPrecision);
+
+    this.setTag('GPSLatitude', latDms.dms);
+    this.setTag('GPSLatitudeRef', latDms.ref);
+    this.setTag('GPSLongitude', lngDms.dms);
+    this.setTag('GPSLongitudeRef', lngDms.ref);
+    if (_.isNumber(location.alt)) {
+      this.setTag('GPSAltitude', Math.abs(location.alt).toString());
+      this.setTag('GPSAltitudeRef', location.alt < 0 ? '1' : '0'); // 0 = Above Sea Level, 1 = Below Sea Level
+    }
+  }
+
+  get id(): ExifToolID {
+    const result: ExifToolID = {};
+    if (this.metadata.DocumentID) result.documentId = this.metadata.DocumentID;
+    if (this.metadata.InstanceID) result.instanceId = this.metadata.InstanceID;
+    return result;
   }
 
   /**

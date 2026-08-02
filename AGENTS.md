@@ -6,7 +6,7 @@ For universal conventions, load the following skills:
 
 - Deno project conventions: load the `/deno-guidelines` skill
 - **@epdoc/std library API reference**: load the `/epdoc-std` skill — do this before writing any type checks, filesystem
-  code, string manipulation, or date handling
+  code, string manipulation, date handling, process execution, or EXIF metadata handling
 - Library documentation files: load the `/deno-library-docs` skill
 - JSDoc commenting standards: load the `/jsdoc` skill
 - Git workflow and version bumping: load the `/git` skill
@@ -37,11 +37,13 @@ the workspace members. Each package is published to JSR under the `@epdoc` scope
 @epdoc/std/
 ├── deno.json                  # Workspace root; defines workspace members and shared imports
 ├── deno.lock
+├── cmd/                       # @epdoc/cmd
 ├── colors/                    # @epdoc/colors
 ├── condition/                 # @epdoc/condition
 ├── daterange/                 # @epdoc/daterange
 ├── datetime/                  # @epdoc/datetime
 ├── duration/                  # @epdoc/duration
+├── exif/                      # @epdoc/exif
 ├── fmt/                       # @epdoc/fmt
 ├── fs/                        # @epdoc/fs
 ├── progress/                  # @epdoc/progress
@@ -49,7 +51,7 @@ the workspace members. Each package is published to JSR under the `@epdoc` scope
 ├── table/                     # @epdoc/table
 ├── terminal/                  # @epdoc/terminal
 ├── text/                      # @epdoc/text
-├── transform/                  # @epdoc/transform
+├── transform/                 # @epdoc/transform
 └── type/                      # @epdoc/type
 ```
 
@@ -57,11 +59,13 @@ the workspace members. Each package is published to JSR under the `@epdoc` scope
 
 | Package            | Entry Point  | Sub-path Exports                             |
 | ------------------ | ------------ | -------------------------------------------- |
+| `@epdoc/cmd`       | `src/mod.ts` | —                                            |
 | `@epdoc/colors`    | `src/mod.ts` | `./colors`, `./palette`                      |
 | `@epdoc/condition` | `src/mod.ts` | —                                            |
 | `@epdoc/daterange` | `src/mod.ts` | —                                            |
 | `@epdoc/datetime`  | `src/mod.ts` | `./types`                                    |
 | `@epdoc/duration`  | `src/mod.ts` | —                                            |
+| `@epdoc/exif`      | `src/mod.ts` | —                                            |
 | `@epdoc/fmt`       | `src/mod.ts` | `./bool`, `./percent`, `./bytes`, `./uptime` |
 | `@epdoc/fs`        | `src/mod.ts` | `./fs`                                       |
 | `@epdoc/progress`  | `src/mod.ts` | —                                            |
@@ -75,6 +79,17 @@ the workspace members. Each package is published to JSR under the `@epdoc` scope
 ---
 
 ## Package Descriptions and Key Exports
+
+### `@epdoc/cmd`
+
+Fluent wrapper around `Deno.Command` for running external processes with captured or interactive output.
+
+- `runner(command, args?)` / `Runner` — fluent builder with `cwd()`, `env()`, `dryRun()`, `interactive()`, `timeout()`
+- `Result` — typed result with `stdout`, `stderr`, `exitCode`, `json()`, and `orThrow()`
+- `Error` (`CmdError`) — thrown by `orThrow()` with access to the command result
+- `parseLines`, `Stream`, `isStreamTag` — stream and output helpers
+
+Used by `@epdoc/exif` to invoke the `exiftool` binary.
 
 ### `@epdoc/condition`
 
@@ -119,6 +134,17 @@ Date range creation and management, built on `@epdoc/datetime`.
 
 - `DateRange` and related classes (`src/date-ranges.ts`)
 - Type definitions and utility functions
+
+### `@epdoc/exif`
+
+Read and write EXIF metadata via the `exiftool` binary, with `@epdoc/datetime` integration.
+
+- `Exiftool` — factory for bulk reads (`getInfo(paths)` returns `File[]` in one subprocess call)
+- `File` — wraps a single file's metadata and accumulates tag writes via setters + `write()`
+- `createdAt` / `digitizedAt` / `modifiedAt` getters returning `ExifDateTimeResult` (with `hasTimezone`)
+- Date setters (`setCreatedAt`, `setModifiedAt`, `setDigitizedAt`, `setAllDates`) take `DateTime` only
+- `setTag(tag, value)` — arbitrary tag writes (GPS, location, keywords); `undefined` deletes
+- Date helpers: `getMetaDateTime`, `buildExifDateTime`, `parseExifDateTime`, `parseExifTzOffset`, `formatDateTimeToExif`
 
 ### `@epdoc/fmt`
 
@@ -176,10 +202,12 @@ Consistent API response helpers with safe error wrapping.
 ## Cross-Package Dependencies
 
 ```
+@epdoc/cmd        →  @epdoc/type
 @epdoc/condition  →  @epdoc/type, @epdoc/datetime
 @epdoc/daterange  →  @epdoc/datetime, @epdoc/type
 @epdoc/datetime   →  @epdoc/type
 @epdoc/duration   →  @epdoc/type
+@epdoc/exif       →  @epdoc/cmd, @epdoc/datetime, @epdoc/fs, @epdoc/type
 @epdoc/fs         →  (no internal @epdoc deps)
 @epdoc/text       →  @epdoc/type
 @epdoc/transform  →  @epdoc/type

@@ -21,12 +21,21 @@ specific domain and is published independently to JSR.
 
 | Package              | Description                                                            | Location       |
 | -------------------- | ---------------------------------------------------------------------- | -------------- |
+| **@epdoc/cmd**       | Fluent wrapper around Deno.Command for running external processes      | `./cmd/`       |
+| **@epdoc/colors**    | Standardized terminal color palette and utilities                      | `./colors/`    |
+| **@epdoc/condition** | Generic condition evaluation library                                   | `./condition/` |
 | **@epdoc/daterange** | Date range creation and management                                     | `./daterange/` |
 | **@epdoc/datetime**  | Date/time tools                                                        | `./datetime/`  |
 | **@epdoc/duration**  | Duration handling and formatting                                       | `./duration/`  |
+| **@epdoc/exif**      | Read/write EXIF metadata via the exiftool binary                       | `./exif/`      |
+| **@epdoc/fmt**       | Formatting functions for common data types                             | `./fmt/`       |
 | **@epdoc/fs**        | Type-safe filesystem operations (FileSpec, FolderSpec, FileSpecWriter) | `./fs/`        |
+| **@epdoc/progress**  | Progress bar and spinner utilities for terminal output                 | `./progress/`  |
 | **@epdoc/response**  | Consistent API response helpers                                        | `./response/`  |
-| **@epdoc/string**    | Advanced string manipulation utilities                                 | `./string/`    |
+| **@epdoc/table**     | Terminal table formatter with ANSI-aware padding                       | `./table/`     |
+| **@epdoc/terminal**  | Terminal interaction utilities                                         | `./terminal/`  |
+| **@epdoc/text**      | Advanced string manipulation utilities                                 | `./text/`      |
+| **@epdoc/transform** | Deep copying, JSON serialization, and string replacement               | `./transform/` |
 | **@epdoc/type**      | Type guards and runtime type safety utilities                          | `./type/`      |
 
 ## Development Workflow
