@@ -368,6 +368,29 @@ Deno.test('util', async (t) => {
     });
   });
 
+  await t.step('hasTimezone()', async (t) => {
+    await t.step('should return true for ZonedDateTime', () => {
+      const d = DateTime.from('2024-03-15T10:30:00-05:00');
+      assertEquals(d.hasTimezone(), true);
+    });
+
+    await t.step('should return false for Instant', () => {
+      const d = DateTime.from('2024-03-15T10:30:00Z');
+      assertEquals(d.hasTimezone(), false);
+    });
+
+    await t.step('should return false for PlainDateTime', () => {
+      const d = DateTime.fromComponents(2024, 3, 15, 10, 30);
+      assertEquals(d.hasTimezone(), false);
+    });
+
+    await t.step('should return true after setTz', () => {
+      const d = DateTime.fromComponents(2024, 3, 15, 10, 30);
+      d.setTz('America/New_York' as IANATZ);
+      assertEquals(d.hasTimezone(), true);
+    });
+  });
+
   await t.step('epochMilliseconds getter', async (t) => {
     await t.step('should return epoch milliseconds for Instant', () => {
       const d = DateTime.from('2024-03-15T10:30:00.000Z');

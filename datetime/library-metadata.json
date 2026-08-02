@@ -7,6 +7,7 @@
     "DateTime — class wrapping Temporal API with extended formatting and conversion methods",
     "DateTime.from() — factory method to create a DateTime instance",
     "DateTime.tryFrom() — safe factory method returning undefined on invalid input",
+    "DateTime.hasTimezone() — returns true when the value carries an explicit timezone",
     "DateEx — deprecated alias for DateTime",
     "dateEx() — deprecated factory function",
     "util namespace — date utility functions (stringToDate, parseTzString, resolveIANATZ, formatTzAsISOTZ, etc.)"

@@ -1250,6 +1250,29 @@ export class DateTime {
   }
 
   /**
+   * Returns true when the DateTime carries an explicit timezone (i.e. its
+   * internal value is a Temporal.ZonedDateTime). PlainDateTime and Instant
+   * values return false.
+   *
+   * @returns true if a timezone is set, false otherwise.
+   *
+   * @example
+   * ```typescript
+   * const zoned = DateTime.from('2024-03-15T10:30:00-05:00');
+   * console.log(zoned.hasTimezone()); // true
+   *
+   * const plain = DateTime.fromComponents(2024, 3, 15, 10, 30);
+   * console.log(plain.hasTimezone()); // false
+   *
+   * const instant = DateTime.from('2024-03-15T10:30:00Z');
+   * console.log(instant.hasTimezone()); // false
+   * ```
+   */
+  hasTimezone(): boolean {
+    return this._value instanceof Temporal.ZonedDateTime;
+  }
+
+  /**
    * Validate whether the internal Temporal object exists.
    * Throws an error if the DateTime instance has no internal value.
    * @throws Error if the DateTime instance has no internal value
@@ -1258,6 +1281,10 @@ export class DateTime {
     if (!this._value) {
       throw new Error('DateTime instance has no internal value.');
     }
+  }
+
+  diff(dt: DateTime): number {
+    return dt.toInstant().epochMilliseconds - this.toInstant().epochMilliseconds;
   }
 
   /**

@@ -162,6 +162,15 @@
           "jsr:@std/assert@^1.0.19"
         ]
       },
+      "exif": {
+        "dependencies": [
+          "jsr:@epdoc/cmd@~0.3.1",
+          "jsr:@epdoc/datetime@^4.2.6",
+          "jsr:@epdoc/fs@^1.6.4",
+          "jsr:@epdoc/type@^2.0.2",
+          "jsr:@std/assert@^1.0.19"
+        ]
+      },
       "fmt": {
         "dependencies": [
           "jsr:@epdoc/colors@^1.1.2",
