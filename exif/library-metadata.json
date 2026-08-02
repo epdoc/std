@@ -1,0 +1,101 @@
+{
+  "identity": {
+    "name": "@epdoc/exif",
+    "purpose": "Read/write EXIF metadata via the exiftool binary (thin wrapper + schema + DateTime helpers)",
+    "type": "utility",
+    "complexity": "simple"
+  },
+  "quickStart": {
+    "pattern": "new Exiftool() → getInfo(paths) → File.getMetadata(); File setters + write() for updates",
+    "code": "const exiftool = new Exiftool();\nconst [file] = await exiftool.getInfo(['v.mp4']);\nawait file.getMetadata();\nfile.setCreatedAt(DateTime.from('2026-07-31T18:00:00+02:00'));\nawait file.write();"
+  },
+  "exports": [
+    {
+      "name": "Exiftool",
+      "role": "main_entry",
+      "description": "Factory for bulk EXIF reads; returns File instances",
+      "whenToUse": "Reading metadata for one or more files in one invocation"
+    },
+    {
+      "name": "File",
+      "role": "main_entry",
+      "description": "Wraps a single file's EXIF metadata and provides setters/write support",
+      "whenToUse": "Reading or writing tags on a specific file"
+    },
+    {
+      "name": "getMetaDateTime",
+      "role": "helper",
+      "description": "Primary DateTime from a metadata object (original → digitized → modified)",
+      "whenToUse": "Get the recording/creation date of a file"
+    },
+    {
+      "name": "getCreatedDateTime",
+      "role": "helper",
+      "description": "Creation DateTime from a metadata object (DateTimeOriginal → CreateDate / DateCreated)",
+      "whenToUse": "When you specifically need the creation timestamp"
+    },
+    {
+      "name": "getDigitizedDateTime",
+      "role": "helper",
+      "description": "Digitization DateTime from a metadata object (CreateDate / DateCreated)",
+      "whenToUse": "When you specifically need the digitization timestamp"
+    },
+    {
+      "name": "getModifiedDateTime",
+      "role": "helper",
+      "description": "Modification DateTime from a metadata object (ModifyDate → file-system dates)",
+      "whenToUse": "When you specifically need the modification timestamp"
+    },
+    {
+      "name": "buildExifDateTime",
+      "role": "helper",
+      "description": "DateTime from a base date tag + sub-second/tz tags",
+      "whenToUse": "Parsing exiftool date tags into a DateTime"
+    },
+    {
+      "name": "parseExifDateTime",
+      "role": "helper",
+      "description": "Parse exiftool 'YYYY:MM:DD HH:MM:SS' into components",
+      "whenToUse": "Reading the raw date fields"
+    },
+    {
+      "name": "parseExifTzOffset",
+      "role": "helper",
+      "description": "Convert an ISO offset to intuitive signed minutes",
+      "whenToUse": "Displaying or computing with offsets"
+    },
+    {
+      "name": "formatDateTimeToExif",
+      "role": "helper",
+      "description": "Format a DateTime as exiftool's 'YYYY:MM:DD HH:MM:SS'",
+      "whenToUse": "Preparing DateTime values for exiftool write args"
+    },
+    {
+      "name": "formatExifDateTime",
+      "role": "helper",
+      "description": "Format date components into exiftool's canonical form",
+      "whenToUse": "Building exiftool date strings manually"
+    },
+    {
+      "name": "parseExifJson",
+      "role": "helper",
+      "description": "Normalize `exiftool -j` stdout (object or array) to an array",
+      "whenToUse": "Parsing raw exiftool JSON output"
+    },
+    {
+      "name": "ExifToolMediaMetadata",
+      "role": "type",
+      "description": "Typed JSON exiftool emits for one file (precise GPS/duration types)"
+    },
+    {
+      "name": "ExifDateTimeResult",
+      "role": "type",
+      "description": "DateTime parsed from EXIF plus raw milliseconds and timezone info"
+    }
+  ],
+  "patterns": [],
+  "relationships": {
+    "dependsOn": ["@epdoc/cmd", "@epdoc/datetime", "@epdoc/fs", "@epdoc/type"],
+    "usedBy": ["@fstools/exif", "@turl/turl"]
+  }
+}

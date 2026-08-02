@@ -8,7 +8,15 @@
       "*.env.*": "deny"
     },
     "external_directory": {
-      "~/dev/@epdoc/logger/**": "allow"
+      "~/dev/@epdoc/std/**": "allow",
+      "~/dev/@epdoc/logger/**": "allow",
+      "~/dev/@epdoc/dtools/**": "allow",
+      "~/dev/@epdoc/tools/**": "allow",
+      "~/dev/@jpravetz/fstools/**": "allow",
+      "~/dev/@jpravetz/turl/**": "allow",
+      "~/dev/@jpravetz/ask/**": "allow",
+      "/tmp/**": "allow",
+      "/var/folders/**/T/opencode/**": "allow"
     },
     "webfetch": "allow",
     "bash": {
@@ -20,19 +28,38 @@
       "git *": "ask",
       "git status*": "allow",
       "git diff*": "allow",
+      "git log*": "allow",
+      "git show*": "allow",
+      "git blame*": "allow",
+      "git grep*": "allow",
+      "git ls-files*": "allow",
+      "git rev-parse*": "allow",
+      "git describe*": "allow",
+      "git shortlog*": "allow",
+      "git clean*": "deny",
+      "git checkout*": "ask",
+      "git restore*": "ask",
+      "git reset*": "ask",
+      "git revert*": "ask",
+      "git stash*": "ask",
+      "git rm*": "ask",
       "git commit*": "deny",
       "git push*": "deny",
       "git tag*": "deny",
       "dtask audit*": "allow",
       "deno run *": "ask",
+      "deno check *": "allow",
+      "deno lint *": "allow",
+      "deno fmt *": "deny",
+      "deno test *": "allow",
       "deno run *-n*": "allow",
       "deno run *--dry-run*": "allow",
-      "deno test *": "allow",
       "deno task fmt*": "deny",
       "deno task lint*": "allow",
       "deno task check*": "allow",
       "deno task test*": "allow",
-      "deno task *": "ask",
+      "deno task ok*": "deny",
+      "deno task *": "deny",
       "rm -rf *": "deny"
     }
   },
@@ -43,20 +70,42 @@
     "build": {
       "mode": "primary",
       "permission": {
-        "edit": "allow",
+        "edit": {
+          "*": "allow",
+          "~/dev/@epdoc/std/**": "ask",
+          "~/dev/@epdoc/logger/**": "ask",
+          "~/dev/@epdoc/dtools/**": "ask",
+          "~/dev/@epdoc/tools/**": "ask",
+          "~/dev/@jpravetz/fstools/**": "ask",
+          "~/dev/@jpravetz/turl/**": "ask",
+          "~/dev/@jpravetz/ask/**": "ask"
+        },
         "bash": {
           "*": "ask",
           "*>*": "ask",
           "*|*": "ask",
           "rm -rf *": "deny",
           "git *": "allow",
+          "git clean*": "deny",
+          "git checkout*": "ask",
+          "git restore*": "ask",
+          "git reset*": "ask",
+          "git revert*": "ask",
+          "git stash*": "ask",
+          "git rm*": "ask",
           "git commit*": "ask",
           "git push*": "ask",
           "git tag*": "ask",
+          "dtask ok*": "allow",
+          "deno fmt *": "allow",
           "deno run *": "allow",
-          "deno task fmt*": "deny",
+          "deno task fmt*": "allow",
+          "deno check *": "allow",
+          "deno lint *": "allow",
           "deno task lint*": "allow",
-          "deno task *": "allow"
+          "deno task ok": "allow",
+          "deno task *": "allow",
+          "deno compile *": "allow"
         }
       }
     }
