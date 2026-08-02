@@ -3,7 +3,6 @@
   "specifiers": {
     "jsr:@epdoc/cmd@~0.3.1": "0.3.1",
     "jsr:@epdoc/colors@^1.1.3": "1.1.3",
-    "jsr:@epdoc/datetime@^4.2.6": "4.2.6",
     "jsr:@epdoc/datetime@^4.2.7": "4.2.7",
     "jsr:@epdoc/duration@~0.3.22": "0.3.22",
     "jsr:@epdoc/fmt@^1.0.19": "1.0.19",
@@ -33,9 +32,6 @@
       "dependencies": [
         "jsr:@std/fmt"
       ]
-    },
-    "@epdoc/datetime@4.2.6": {
-      "integrity": "f1584062facc340265efa365f0e47156e2e0b18614655ae2ecc5e22db355b2ac"
     },
     "@epdoc/datetime@4.2.7": {
       "integrity": "4776d91837cb200c81ae80d589ad2b7f7fe5c2fdb60f8f759bab5f4bf1a6e52e"
@@ -135,7 +131,7 @@
       },
       "condition": {
         "dependencies": [
-          "jsr:@epdoc/datetime@^4.2.6",
+          "jsr:@epdoc/datetime@^4.2.7",
           "jsr:@epdoc/type@^2.0.2",
           "jsr:@std/assert@^1.0.19",
           "jsr:@std/testing@^1.0.19"
