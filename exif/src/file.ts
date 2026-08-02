@@ -221,6 +221,10 @@ export class File {
     return this.metadata?.MakerNote;
   }
 
+  hasGps(): boolean {
+    return _.isDefined(this.metadata.GPSLatitude) && _.isDefined(this.metadata.GPSLongitude);
+  }
+
   get gps(): Gps.Location | undefined {
     const lat = Gps.parse(this.metadata.GPSLatitude, this.metadata.GPSLatitudeRef);
     const lng = Gps.parse(this.metadata.GPSLongitude, this.metadata.GPSLongitudeRef);
