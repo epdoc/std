@@ -76,6 +76,7 @@ export class SymlinkSpec extends FSSpecBase implements IClonableSpec {
    */
   async chown(uid: FS.UID, gid?: FS.GID): Promise<void> {
     await nfs.lchown(this._f, uid, gid ?? -1);
+    this.clearInfo();
   }
 
   /**
@@ -86,6 +87,7 @@ export class SymlinkSpec extends FSSpecBase implements IClonableSpec {
    */
   async chgrp(gid: FS.GID): Promise<void> {
     await nfs.lchown(this._f, -1, gid);
+    this.clearInfo();
   }
 
   /**
@@ -96,5 +98,6 @@ export class SymlinkSpec extends FSSpecBase implements IClonableSpec {
    */
   async chmod(mode: FS.Mode): Promise<void> {
     await nfs.lchmod(this._f, mode);
+    this.clearInfo();
   }
 }

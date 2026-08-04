@@ -147,6 +147,7 @@ export async function safeCopyFile(
     } catch (err) {
       throw (err instanceof Err.Main) ? err : new Err.Main(String(err), { path: fsDest.path });
     }
+    fsDest.clearInfo();
     if (options.move) {
       await src.remove();
     }

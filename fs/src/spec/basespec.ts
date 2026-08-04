@@ -17,6 +17,7 @@ export abstract class FSSpecBase implements FS.IPath {
   // @ts-ignore this does get initialized
   protected _f: Path;
   protected _info: FileInfo | undefined;
+  protected _infoPartial = false;
   protected _dirEntry: FSEntry | undefined;
 
   // ============================================================================
@@ -95,6 +96,8 @@ export abstract class FSSpecBase implements FS.IPath {
    */
   clearInfo(): void {
     this._info = undefined;
+    this._infoPartial = false;
+    this._dirEntry = undefined;
   }
 
   /**
@@ -106,18 +109,25 @@ export abstract class FSSpecBase implements FS.IPath {
    */
   copyParamsTo(target: FSSpecBase): FSSpecBase {
     target._info = this._info;
+    target._infoPartial = this._infoPartial;
     target._dirEntry = this._dirEntry;
     return target;
   }
 
   /**
    * Sets the directory entry for this file system item, typically when it is
-   * discovered during a directory walk.
+   * discovered during a directory walk. Seeds a partial `_info` from the
+   * entry's type flags so `info.isFile` etc. work synchronously without an
+   * extra `lstat`; `stats()` upgrades to real values on first demand.
    * @param dirEntry - The `FSEntry` object from a directory listing.
    * @returns The current instance for chaining.
    */
   setDirEntry(dirEntry: FSEntry | undefined): this {
     this._dirEntry = dirEntry;
+    if (dirEntry && (!this._info || this._infoPartial)) {
+      this._info = util.entryToFileInfo(dirEntry);
+      this._infoPartial = true;
+    }
     return this;
   }
 
@@ -154,15 +164,17 @@ export abstract class FSSpecBase implements FS.IPath {
    * @returns {Promise<FileInfo | undefined>} A promise that resolves with the file's stats.
    */
   async stats(force = false): Promise<FileInfo | undefined> {
-    if (force || !this._info) {
+    if (force || !this._info || this._infoPartial) {
       try {
         const rawStats = await fs.promises.lstat(this._f);
         this._info = util.statsToFileInfo(rawStats);
+        this._infoPartial = false;
       } catch (err: unknown) {
         if (_.isObject(err) && 'code' in err && err.code === 'ENOENT') {
-          this._info = undefined; // Correctly handle non-existent files
+          this._info = undefined;
+          this._infoPartial = false;
+          this._dirEntry = undefined;
         } else {
-          // For all other errors, throw a classified error
           throw this.asError(err, 'stats');
         }
       }
@@ -180,6 +192,7 @@ export abstract class FSSpecBase implements FS.IPath {
    * @returns a promise with value true if this exists.
    */
   async exists(force = false): Promise<boolean> {
+    if (!force && this._info) return this._info.exists === true;
     const info = await this.stats(force);
     return info?.exists === true;
   }
@@ -194,6 +207,7 @@ export abstract class FSSpecBase implements FS.IPath {
    * @returns {Promise<boolean>} A promise that resolves to true if it is a file.
    */
   async isFile(force = false): Promise<boolean> {
+    if (!force && this._info) return this._info.isFile === true;
     const info = await this.stats(force);
     return info?.isFile === true;
   }
@@ -208,6 +222,7 @@ export abstract class FSSpecBase implements FS.IPath {
    * @returns {Promise<boolean>} A promise that resolves to true if it is a folder.
    */
   async isFolder(force = false): Promise<boolean> {
+    if (!force && this._info) return this._info.isDirectory === true;
     const info = await this.stats(force);
     return info?.isDirectory === true;
   }
@@ -222,6 +237,7 @@ export abstract class FSSpecBase implements FS.IPath {
    * @returns {Promise<boolean>} A promise that resolves to true if it is a directory.
    */
   async isDir(force = false): Promise<boolean> {
+    if (!force && this._info) return this._info.isDirectory === true;
     const info = await this.stats(force);
     return info?.isDirectory === true;
   }
@@ -236,6 +252,7 @@ export abstract class FSSpecBase implements FS.IPath {
    * @returns {Promise<boolean>} A promise that resolves to true if it is a symlink.
    */
   async isSymlink(force = false): Promise<boolean> {
+    if (!force && this._info) return this._info.isSymlink === true;
     const info = await this.stats(force);
     return info?.isSymlink === true;
   }

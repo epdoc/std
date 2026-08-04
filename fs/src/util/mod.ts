@@ -4,7 +4,7 @@
  */
 
 export { fileConflictStrategyType } from './consts.ts';
-export { direntToSpec, statsToFileInfo } from './fileinfo.ts';
+export { direntToSpec, entryToFileInfo, statsToFileInfo } from './fileinfo.ts';
 export * from './resolve-files.ts';
 export * from './resolve-path.ts';
 export * from './resolve-type.ts';

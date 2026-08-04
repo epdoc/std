@@ -219,6 +219,7 @@ export class FSSpec extends FSSpecBase implements IClonableSpec, IRootableSpec {
    */
   async chown(uid: FS.UID, gid?: FS.GID, recursive = false): Promise<void> {
     await nfs.chown(this._f, uid, gid ?? -1);
+    this.clearInfo();
     if (recursive && await this.isFolder()) {
       for await (const entry of walk(new FolderSpec(this._f), {})) {
         await nfs.chown(entry.path, uid, gid ?? -1);
@@ -239,6 +240,7 @@ export class FSSpec extends FSSpecBase implements IClonableSpec, IRootableSpec {
    */
   async chgrp(gid: FS.GID, recursive = false): Promise<void> {
     await nfs.chown(this._f, -1, gid);
+    this.clearInfo();
     if (recursive && await this.isFolder()) {
       for await (const entry of walk(new FolderSpec(this._f), {})) {
         await nfs.chown(entry.path, -1, gid);
@@ -259,6 +261,7 @@ export class FSSpec extends FSSpecBase implements IClonableSpec, IRootableSpec {
    */
   async chmod(mode: FS.Mode, recursive = false): Promise<void> {
     await nfs.chmod(this._f, mode);
+    this.clearInfo();
     if (recursive && await this.isFolder()) {
       for await (const entry of walk(new FolderSpec(this._f), {})) {
         await nfs.chmod(entry.path, mode);

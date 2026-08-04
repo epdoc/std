@@ -715,6 +715,9 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
 
     await Promise.all(jobs);
     this._haveReadFolderContents = true;
+    if (_.isDict(opts.sort) && opts.sort.type === 'size' && this._files.length > 0) {
+      await Promise.all(this._files.map((f) => f.stats()));
+    }
     if (_.isDict(opts.sort)) {
       this.sortChildren(opts.sort);
     }
@@ -780,11 +783,18 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
       });
 
       for await (const entry of entries) {
+        const fsEntry: FS.FSEntry = {
+          path: entry.path as FS.Path,
+          name: entry.name,
+          isFile: entry.isFile,
+          isDirectory: entry.isDirectory,
+          isSymlink: entry.isSymlink,
+        };
         if (entry.isFile) {
-          const file = new FileSpec(entry.path as FS.FilePath);
+          const file = new FileSpec(entry.path as FS.FilePath).setDirEntry(fsEntry) as FileSpec;
           result.push(file);
         } else if (entry.isDirectory && opts.includeDirs !== false) {
-          const folder = new FolderSpec(entry.path as FS.FolderPath);
+          const folder = new FolderSpec(entry.path as FS.FolderPath).setDirEntry(fsEntry) as FolderSpec;
           result.push(folder);
         }
       }
@@ -824,14 +834,18 @@ export class FolderSpec extends FSSpecBase implements ISafeCopyableSpec, IRootab
   }
 
   /**
-   * Sorts the files of this FSItem by size. Run getChildren() first.
+   * Sorts the files of this FSItem by size. Use `getChildren()` first — it
+   * fetches real stats before sorting. When called directly, entries without
+   * cached stats are treated as size 0 and land in a stable position.
    * @returns Array of FSSpecBase objects.
    */
   static sortFilesBySize(items: FSSpecBase[]): FSSpecBase[] {
     return items
       .filter((item) => item instanceof FileSpec)
       .sort((a, b) => {
-        return _.compareValues(a.info as unknown as Dict, b.info as unknown as Dict, 'size');
+        const aSize = a.hasInfo() ? a.info.size : -1;
+        const bSize = b.hasInfo() ? b.info.size : -1;
+        return aSize - bSize;
       });
   }
 

@@ -407,6 +407,56 @@ Deno.test('FileSpec', async (t) => {
         }
       });
     });
+
+    await t.step('Info Cache', async (t) => {
+      const infoFile = new FileSpec(testDir, 'info_test.txt');
+      await infoFile.write('Hello');
+
+      await t.step('info getter populated after stats()', async () => {
+        await infoFile.stats();
+        assert(infoFile.hasInfo());
+        assertEquals(infoFile.info.size, 5);
+      });
+
+      await t.step('write() clears cached info', async () => {
+        await infoFile.stats();
+        assert(infoFile.hasInfo());
+        await infoFile.write('World');
+        assert(!infoFile.hasInfo());
+        const fresh = await infoFile.stats();
+        assertEquals(fresh?.size, 5);
+      });
+
+      await t.step('chmod() clears cached info', async () => {
+        await infoFile.stats();
+        assert(infoFile.hasInfo());
+        const mode = infoFile.info.mode;
+        if (mode !== null) {
+          await infoFile.chmod(mode);
+          assert(!infoFile.hasInfo());
+        }
+      });
+
+      await t.step('setExt() clears cached info', async () => {
+        await infoFile.stats();
+        assert(infoFile.hasInfo());
+        infoFile.setExt('.json');
+        assert(!infoFile.hasInfo());
+      });
+
+      await t.step('hasInfo() returns false before any async accessor', () => {
+        const fresh = new FileSpec(testDir, 'no_info.txt');
+        assert(!fresh.hasInfo());
+      });
+
+      await t.step('isFile() populates info for type checks', async () => {
+        const fresh = new FileSpec(testDir, 'info_test.txt');
+        const result = await fresh.isFile();
+        assert(result);
+        assert(fresh.hasInfo());
+        assertEquals(fresh.info.size, 5);
+      });
+    });
   } finally {
     await testDir.remove({ recursive: true });
   }

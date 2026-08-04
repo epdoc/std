@@ -501,7 +501,7 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
     }
     if (ext !== this.extname) {
       this._f = path.format({ ...path.parse(this._f), base: '', ext: ext }) as FS.FilePath;
-      this._info = undefined;
+      this.clearInfo();
     }
     return this;
   }
@@ -516,7 +516,7 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
   setBasename(val: string): this {
     if (val !== this.basename) {
       this._f = path.format({ dir: this.dirname, name: val, ext: this.extname }) as FS.FilePath;
-      this._info = undefined;
+      this.clearInfo();
     }
     return this;
   }
@@ -898,6 +898,7 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
         await fileHandle.close();
       }
     }
+    this.clearInfo();
     return this;
   }
 
@@ -1038,6 +1039,7 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
         await fileHandle.close();
       }
     }
+    this.clearInfo();
     return this;
   }
 
@@ -1087,6 +1089,7 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
         await fileHandle.close();
       }
     }
+    this.clearInfo();
     return this;
   }
 
@@ -1339,6 +1342,7 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
    */
   async chown(uid: FS.UID, gid?: FS.GID): Promise<void> {
     await nfs.chown(this._f, uid, gid ?? -1);
+    this.clearInfo();
   }
 
   /**
@@ -1353,6 +1357,7 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
    */
   async chgrp(gid: FS.GID): Promise<void> {
     await nfs.chown(this._f, -1, gid);
+    this.clearInfo();
   }
 
   /**
@@ -1367,6 +1372,7 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
    */
   async chmod(mode: FS.Mode): Promise<void> {
     await nfs.chmod(this._f, mode);
+    this.clearInfo();
   }
 
   // ============================================================================
@@ -1549,6 +1555,7 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
       }
       throw e;
     }
+    this.clearInfo();
     return this;
   }
 

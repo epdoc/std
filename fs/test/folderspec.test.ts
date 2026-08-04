@@ -330,6 +330,65 @@ Deno.test('FolderSpec', async (t) => {
         assertEquals(folder.folderName, 'test-folder');
       });
     });
+
+    await t.step('Info Cache', async (t) => {
+      const folder = new FolderSpec(testDir);
+
+      await t.step('getFiles() returns items with partial info populated', async () => {
+        const files = await folder.getFiles();
+        for (const f of files) {
+          assert(f.hasInfo(), `file ${f.filename} should have info`);
+          assert(f.info.isFile, `file ${f.filename} should be a file`);
+        }
+      });
+
+      await t.step('getFolders() returns items with partial info populated', async () => {
+        const folders = await folder.getFolders();
+        for (const f of folders) {
+          assert(f.hasInfo(), `folder ${f.folderName} should have info`);
+          assert(f.info.isDirectory, `folder ${f.folderName} should be a directory`);
+        }
+      });
+
+      await t.step('walk() returns items with partial info populated', async () => {
+        const entries = await folder.walk({ maxDepth: 1 });
+        for (const e of entries) {
+          if (e.path !== folder.path) {
+            assert(e.hasInfo(), `entry ${e.name} should have info`);
+          }
+        }
+      });
+
+      await t.step('isFile() short-circuits on listing entries (no extra stat)', async () => {
+        const [first] = await folder.getFiles();
+        assert(first.hasInfo());
+        const result = await first.isFile();
+        assert(result);
+        assert(first.hasInfo());
+      });
+
+      await t.step('stats() upgrades partial info to full', async () => {
+        const [first] = await folder.getFiles();
+        assert(first.hasInfo());
+        assertEquals(first.info.size, -1);
+        await first.stats();
+        assert(first.hasInfo());
+        assert(first.info.size > 0);
+      });
+    });
+
+    await t.step('Sort By Size', async (t) => {
+      await t.step('getChildren() with sort type size returns correctly sorted', async () => {
+        const folder2 = new FolderSpec(testDir);
+        await folder2.getChildren({ sort: { type: 'size' } });
+        assert(folder2.haveReadFolderContents());
+        assert(folder2.files.length >= 2);
+        // file1.txt (7 bytes) should come before file2.json (15 bytes)
+        const filenames = folder2.files.map((f) => f.filename);
+        assertEquals(filenames[0], 'file1.txt');
+        assertEquals(filenames[1], 'file2.json');
+      });
+    });
   } finally {
     await Deno.remove(testDir, { recursive: true });
   }
