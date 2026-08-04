@@ -3,12 +3,20 @@ import type { DateTime } from '@epdoc/datetime';
 import * as FS from '@epdoc/fs/fs';
 import { _ } from '@epdoc/type';
 import { assert } from '@std/assert';
-import { CAMERA_MODEL_MAP } from './consts.ts';
+import { APP_NORMALIZE_RULES, CAMERA_MODEL_MAP } from './consts.ts';
 import * as ExifDate from './date.ts';
-import type { Camera, FileId, Metadata } from './exif-schema.ts';
+import type { AudioInfo, Camera, FileId, ImageInfo, Metadata, VideoInfo } from './exif-schema.ts';
 import * as Gps from './gps.ts';
 import type { FileJson, IDryRun } from './types.ts';
-import { parseDuration, parseFocalLength } from './utils.ts';
+import {
+  parseBitrate,
+  parseDuration,
+  parseExposureTime,
+  parseFileSize,
+  parseFNumber,
+  parseFocalLength,
+  parseSubjectDistance,
+} from './utils.ts';
 
 export const EXIFTOOL_READ_FLAGS = ['-j', '-struct', '-api', 'QuickTimeUTC=1'];
 
@@ -58,6 +66,10 @@ export class File {
   async getMetadata(opts: { force?: boolean } = {}): Promise<Metadata | undefined> {
     if (this.#metadata && !opts.force) return this.#metadata;
 
+    const isFile = await this.#file.isFile();
+    if (!isFile) {
+      return undefined;
+    }
     const args = [...EXIFTOOL_READ_FLAGS, this.path];
     const result = await this.#cmd(args).run();
 
@@ -82,14 +94,29 @@ export class File {
   }
 
   toJSON(): FileJson {
+    const isVideo = this.#isVideo();
+    const info = this.#file.info;
+    const mimeType = this.metadata.MIMEType;
     return {
-      file: this.path,
+      file: {
+        path: this.path,
+        filename: this.#file.filename as string,
+        createdAt: info.createdAt?.toISOString(),
+        modifiedAt: info.modifiedAt?.toISOString(),
+        size: info.size,
+        type: this.#fileType(),
+        mimeType,
+      },
+      ...(isVideo ? {} : { imageInfo: this.imageInfo }),
+      ...(isVideo ? { video: this.video } : {}),
+      ...(isVideo ? { audio: this.audio } : {}),
       digitizedAt: this.digitizedAt?.toISOString(),
       createdAt: this.createdAt?.toISOString(),
       modifiedAt: this.modifiedAt?.toISOString(),
       hasTimezone: this.hasTimezone,
       tzOffset: this.tzOffset,
       duration: this.duration,
+      application: this.application,
       camera: this.camera,
       gps: this.gps,
       id: this.id,
@@ -223,6 +250,55 @@ export class File {
     }
   }
 
+  get imageInfo(): ImageInfo {
+    const m = this.metadata;
+    const result: ImageInfo = {};
+    if (m.ExifImageWidth !== undefined) result.width = Number(m.ExifImageWidth);
+    if (m.ExifImageHeight !== undefined) result.height = Number(m.ExifImageHeight);
+    if (m.FileSize !== undefined) result.fileSize = parseFileSize(m.FileSize);
+    if (m.MIMEType) result.mimeType = m.MIMEType;
+    if (m.ColorSpace) result.colorSpace = m.ColorSpace;
+    if (m.FNumber !== undefined) result.fNumber = parseFNumber(m.FNumber);
+    if (m.Aperture !== undefined) result.fNumber = result.fNumber ?? parseFNumber(m.Aperture);
+    if (m.ExposureTime !== undefined) result.exposureTime = parseExposureTime(m.ExposureTime);
+    if (m.ISO !== undefined) result.iso = m.ISO;
+    if (m.FocalLength !== undefined) result.focalLength = parseFocalLength(m.FocalLength);
+    if (m.FocalLengthIn35mmFormat !== undefined) result.focalLength35mm = parseFocalLength(m.FocalLengthIn35mmFormat);
+    if (m.SubjectDistance !== undefined) result.subjectDistance = parseSubjectDistance(m.SubjectDistance);
+    return result;
+  }
+
+  get video(): VideoInfo {
+    const m = this.metadata;
+    const result: VideoInfo = {};
+    if (m.ImageWidth !== undefined) result.width = Number(m.ImageWidth);
+    if (m.ImageHeight !== undefined) result.height = Number(m.ImageHeight);
+    if (m.SourceImageWidth !== undefined) result.sourceWidth = Number(m.SourceImageWidth);
+    if (m.SourceImageHeight !== undefined) result.sourceHeight = Number(m.SourceImageHeight);
+    if (m.Duration !== undefined) result.duration = parseDuration(m.Duration);
+    if (m.CompressorID) result.codec = m.CompressorID;
+    if (m.CompressorName) result.codecName = m.CompressorName;
+    if (m.VideoFrameRate !== undefined) result.framerate = m.VideoFrameRate;
+    if (m.BitDepth !== undefined) result.bitDepth = Number(m.BitDepth);
+    if (m.ColorRepresentation) result.colorRepresentation = m.ColorRepresentation;
+    if (m.PixelAspectRatio) result.pixelAspectRatio = m.PixelAspectRatio;
+    if (m.Rotation !== undefined) result.rotation = m.Rotation;
+    if (m.AvgBitrate !== undefined) result.avgBitrate = parseBitrate(m.AvgBitrate);
+    if (m.MaxBitrate !== undefined) result.maxBitrate = parseBitrate(m.MaxBitrate);
+    return result;
+  }
+
+  get audio(): AudioInfo {
+    const m = this.metadata;
+    const result: AudioInfo = {};
+    if (m.AudioFormat) result.format = m.AudioFormat;
+    if (m.AudioChannels !== undefined) result.channels = Number(m.AudioChannels);
+    if (m.AudioSampleRate !== undefined) result.sampleRate = m.AudioSampleRate;
+    if (m.AudioBitsPerSample !== undefined) result.bitsPerSample = Number(m.AudioBitsPerSample);
+    if (m.MediaLanguageCode) result.language = m.MediaLanguageCode;
+    return result;
+  }
+
   /**
    * The binary MakerNote block for the file, when present.
    */
@@ -281,6 +357,23 @@ export class File {
   }
 
   /**
+   * The application that last edited this file, normalized from the Software
+   * or CreatorTool metadata tags against {@link APP_NORMALIZE_RULES}.
+   * Returns the normalized label when a rule matches, the raw Software value
+   * when no rule matches, or `undefined` when no software tag is present.
+   */
+  get application(): string | undefined {
+    const software = this.metadata.Software || this.metadata.CreatorTool;
+    if (!software) return undefined;
+    for (const rule of APP_NORMALIZE_RULES) {
+      if (rule.pattern.test(software)) {
+        return rule.label;
+      }
+    }
+    return software;
+  }
+
+  /**
    * Queue an arbitrary exiftool tag write.
    *
    * Pass `undefined` as the value to delete the tag. This is the extension
@@ -325,6 +418,17 @@ export class File {
     return Cmd.runner<Record<string, unknown>>('exiftool', args).dryRun(this.#dryRun).cwd(FS.cwd());
   }
 
+  #isVideo(): boolean {
+    return this.metadata.MIMEType?.startsWith('video/') ?? false;
+  }
+
+  #fileType(): string {
+    const mime = this.metadata.MIMEType;
+    if (!mime) return 'unknown';
+    const mainType = mime.split('/')[0];
+    return mainType || 'unknown';
+  }
+
   #setTag(tag: string, value: string): void {
     this.#pending.set(tag, value);
     this.#dirty = true;
@@ -332,7 +436,7 @@ export class File {
 
   #normalizeCameraName(): string | undefined {
     const make = this.metadata.Make;
-    const model = this.metadata.Model;
+    const model = this.metadata.Model?.toUpperCase();
     if (make && model && CAMERA_MODEL_MAP[make] && CAMERA_MODEL_MAP[make][model]) {
       return `${make} ${CAMERA_MODEL_MAP[make][model]}`;
     }

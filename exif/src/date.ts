@@ -37,6 +37,7 @@ export function build(
 ): DateTime | undefined {
   const parts = parse(base);
   if (!parts) return undefined;
+  if (parts.year < 1970) return undefined;
 
   let milliseconds = parts.millisecond;
   if (milliseconds === undefined && subSec !== undefined) {
@@ -62,11 +63,14 @@ export function getCreated(meta: Metadata): DateTime | undefined {
   );
   if (original) return original;
 
-  return build(
+  const digitized = build(
     meta.SubSecCreateDate ?? meta.CreateDate ?? meta.DateCreated,
     meta.SubSecTimeDigitized,
     meta.OffsetTimeDigitized,
   );
+  if (digitized) return digitized;
+
+  return build(meta.FileModifyDate);
 }
 
 /**
@@ -79,7 +83,7 @@ export function getDigitized(meta: Metadata): DateTime | undefined {
     meta.SubSecCreateDate ?? meta.CreateDate ?? meta.DateCreated,
     meta.SubSecTimeDigitized,
     meta.OffsetTimeDigitized,
-  );
+  ) ?? build(meta.FileModifyDate);
 }
 
 /**

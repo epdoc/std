@@ -10,12 +10,15 @@ const buildDate = build.build.builtAt;
 const rawArgs = Deno.args;
 const flags: string[] = [];
 const files: FilePath[] = [];
+let showMeta = false;
 
 for (const arg of rawArgs) {
   if (arg === '-v' || arg === '--version') {
     flags.push(arg);
   } else if (arg === '-h' || arg === '--help') {
     flags.push(arg);
+  } else if (arg === '-m' || arg === '--meta') {
+    showMeta = true;
   } else {
     files.push(arg as FilePath);
   }
@@ -32,6 +35,7 @@ if (flags.includes('-h') || flags.includes('--help')) {
   console.log('Options:');
   console.log('  -v, --version  Show version information');
   console.log('  -h, --help     Show this help message');
+  console.log('  -m, --meta     Include raw exiftool metadata in output');
   Deno.exit(0);
 }
 
@@ -43,10 +47,13 @@ if (files.length === 0) {
 const reader = new Reader();
 try {
   const results = await reader.read(files);
-  const output = results.map((file) => ({
-    file: file.toJSON(),
-    metadata: file.metadata,
-  }));
+  const output = results.map((file) => {
+    const result: Record<string, unknown> = { ...file.toJSON() };
+    if (showMeta) {
+      result.metadata = file.metadata;
+    }
+    return result;
+  });
   console.log(JSON.stringify(output, null, 2));
 } catch (err) {
   console.error(err instanceof Error ? err.message : String(err));

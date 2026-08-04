@@ -18,6 +18,45 @@ export type GpsCoordinate = number | string;
 export type GpsLatitudeRef = 'North' | 'South' | 'N' | 'S';
 export type GpsLongitudeRef = 'East' | 'West' | 'E' | 'W';
 
+export type ImageInfo = {
+  width?: number;
+  height?: number;
+  fileSize?: string | number;
+  mimeType?: string;
+  colorSpace?: string;
+  fNumber?: number;
+  exposureTime?: number;
+  iso?: number;
+  focalLength?: number;
+  focalLength35mm?: number;
+  subjectDistance?: number;
+};
+
+export type VideoInfo = {
+  width?: number;
+  height?: number;
+  sourceWidth?: number;
+  sourceHeight?: number;
+  duration?: number;
+  codec?: string;
+  codecName?: string;
+  framerate?: number;
+  bitDepth?: number;
+  colorRepresentation?: string;
+  pixelAspectRatio?: string;
+  rotation?: number;
+  avgBitrate?: number;
+  maxBitrate?: number;
+};
+
+export type AudioInfo = {
+  format?: string;
+  channels?: number;
+  sampleRate?: number;
+  bitsPerSample?: number;
+  language?: string;
+};
+
 export type Camera = {
   name?: string;
   make?: string;
@@ -77,6 +116,14 @@ export interface Metadata {
    */
   Duration?: string | number;
 
+  FileSize?: string | number;
+  FNumber?: number;
+  Aperture?: string | number;
+  ExposureTime?: string | number;
+  ISO?: number;
+  FocalLength?: string | number;
+  SubjectDistance?: string | number;
+
   DateTimeOriginal?: ExifDateTime;
   CreateDate?: ExifDateTime;
   DateCreated?: ExifDateTime;
@@ -102,6 +149,32 @@ export interface Metadata {
 
   DocumentID?: string;
   InstanceID?: string;
+
+  VideoFrameRate?: number;
+  CompressorID?: string;
+  CompressorName?: string;
+  BitDepth?: Integer;
+  ColorRepresentation?: string;
+  PixelAspectRatio?: string;
+  MatrixStructure?: string;
+  Rotation?: number;
+  AvgBitrate?: string | number;
+  MaxBitrate?: number;
+  AverageBitrate?: number;
+  SourceImageWidth?: Integer;
+  SourceImageHeight?: Integer;
+  GraphicsMode?: string;
+  OpColor?: string;
+
+  AudioFormat?: string;
+  AudioChannels?: Integer;
+  AudioBitsPerSample?: Integer;
+  AudioSampleRate?: number;
+  MediaLanguageCode?: string;
+  TrackVolume?: string;
+  Balance?: number;
+  PreferredVolume?: string;
+  HandlerDescription?: string;
 
   GPSLatitude?: GpsCoordinate;
   GPSLongitude?: GpsCoordinate;
