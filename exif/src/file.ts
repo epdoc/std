@@ -3,11 +3,12 @@ import type { DateTime } from '@epdoc/datetime';
 import * as FS from '@epdoc/fs/fs';
 import { _ } from '@epdoc/type';
 import { assert } from '@std/assert';
+import { CAMERA_MODEL_MAP } from './consts.ts';
 import * as ExifDate from './date.ts';
 import type { Camera, FileId, Metadata } from './exif-schema.ts';
 import * as Gps from './gps.ts';
 import type { FileJson, IDryRun } from './types.ts';
-import { parseDuration } from './utils.ts';
+import { parseDuration, parseFocalLength } from './utils.ts';
 
 export const EXIFTOOL_READ_FLAGS = ['-j', '-struct', '-api', 'QuickTimeUTC=1'];
 
@@ -193,25 +194,33 @@ export class File {
   }
 
   get camera(): Camera {
-    return {
-      make: this.metadata?.Make,
-      model: this.metadata?.Model,
-      lensModel: this.metadata?.LensModel,
-      software: this.metadata?.Software,
-      creatorTool: this.metadata?.CreatorTool,
-      serialNumber: this.metadata?.SerialNumber,
-      makerNotes: this.metadata?.MakerNote,
-    };
+    const m = this.metadata;
+    const result: Camera = {};
+    const name = this.#normalizeCameraName();
+    if (name) result.name = name;
+    if (m.Make) result.make = m.Make;
+    if (name) result.name = name;
+    if (m.Make) result.make = m.Make;
+    if (m.Model) result.model = m.Model;
+    if (m.LensMake) result.lensMake = m.LensMake;
+    if (m.LensModel) result.lensModel = m.LensModel;
+    if (m.SerialNumber) result.serialNumber = m.SerialNumber;
+    if (m.MakerNote) result.makerNotes = m.MakerNote;
+    if (m.FocalLengthIn35mmFormat) result.focalLength35mm = parseFocalLength(m.FocalLengthIn35mmFormat);
+    return result;
   }
 
   set camera(value: Camera) {
     if (value.make !== undefined) this.#setTag('Make', value.make);
     if (value.model !== undefined) this.#setTag('Model', value.model);
+    if (value.lensMake !== undefined) this.#setTag('LensMake', value.lensMake);
     if (value.lensModel !== undefined) this.#setTag('LensModel', value.lensModel);
-    if (value.software !== undefined) this.#setTag('Software', value.software);
-    if (value.creatorTool !== undefined) this.#setTag('CreatorTool', value.creatorTool);
     if (value.serialNumber !== undefined) this.#setTag('SerialNumber', value.serialNumber);
     if (value.makerNotes !== undefined) this.#setTag('MakerNote', value.makerNotes);
+    if (value.focalLength35mm !== undefined) {
+      const formattedNum = Number(value.focalLength35mm.toFixed(1));
+      this.#setTag('FocalLengthIn35mmFormat', `${formattedNum} mm`);
+    }
   }
 
   /**
@@ -319,6 +328,14 @@ export class File {
   #setTag(tag: string, value: string): void {
     this.#pending.set(tag, value);
     this.#dirty = true;
+  }
+
+  #normalizeCameraName(): string | undefined {
+    const make = this.metadata.Make;
+    const model = this.metadata.Model;
+    if (make && model && CAMERA_MODEL_MAP[make] && CAMERA_MODEL_MAP[make][model]) {
+      return `${make} ${CAMERA_MODEL_MAP[make][model]}`;
+    }
   }
 
   #normalizeOffset(offset: string): string {

@@ -1,6 +1,6 @@
-import { assertAlmostEquals, assertEquals, assertThrows } from '@std/assert';
 import { DateTime } from '@epdoc/datetime';
 import type * as FS from '@epdoc/fs/fs';
+import { assertAlmostEquals, assertEquals, assertThrows } from '@std/assert';
 import { File } from '../src/mod.ts';
 
 function sourceFile(path: string): FS.FilePath {
@@ -153,8 +153,6 @@ Deno.test('File.camera', async (t) => {
       make: 'Apple',
       model: 'iPhone 15 Pro',
       lensModel: 'iPhone 15 Pro back triple camera 6.86mm f/1.78',
-      software: '17.5',
-      creatorTool: 'Adobe Lightroom',
       serialNumber: 'ABC123',
       makerNotes: 'binary-makernote-data',
     });
@@ -165,12 +163,6 @@ Deno.test('File.camera', async (t) => {
     const file = File.fromMetadata(meta({ Make: 'Canon' }));
     assertEquals(file.camera, {
       make: 'Canon',
-      model: undefined,
-      lensModel: undefined,
-      software: undefined,
-      creatorTool: undefined,
-      serialNumber: undefined,
-      makerNotes: undefined,
     });
   });
 

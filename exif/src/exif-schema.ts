@@ -19,11 +19,12 @@ export type GpsLatitudeRef = 'North' | 'South' | 'N' | 'S';
 export type GpsLongitudeRef = 'East' | 'West' | 'E' | 'W';
 
 export type Camera = {
+  name?: string;
   make?: string;
   model?: string;
   lensModel?: string;
-  software?: string;
-  creatorTool?: string;
+  lensMake?: string;
+  focalLength35mm?: number;
   serialNumber?: string;
   makerNotes?: string;
 };
@@ -62,7 +63,9 @@ export interface Metadata {
 
   Make?: string;
   Model?: string;
+  LensMake?: string;
   LensModel?: string;
+  FocalLengthIn35mmFormat?: string;
   Software?: string;
   CreatorTool?: string;
   SerialNumber?: string;
