@@ -1,8 +1,8 @@
 {
-  "masterHash": "f69ac4782998a23c4caecf9e80d11569789a4909a71622f495c5167402ae1900",
+  "masterHash": "cc14705ef2b010d881b7217a40e91aefbff30d7a9a49a89a402b953df933dc24",
   "files": {
-    "@epdoc/exif::build/build-info.json": "881edb738e9553021873137950bee03c34050bcd",
-    "@epdoc/exif::deno.json": "66954642c499b51feae66b1feac00dfbf6c6bcc1",
+    "@epdoc/exif::build/build-info.json": "98bf7ad8b569e0e1e83d73b2344e3767b7b80edf",
+    "@epdoc/exif::deno.json": "76e418f3715aca65e5523144f79e36ef669bba56",
     "@epdoc/exif::main.ts": "d3811a50b328b8d2464317a16120d61597507dae",
     "@epdoc/exif::src/date.ts": "8eac584e93294e5852968701c9f94a7addc31968",
     "@epdoc/exif::src/exif-schema.ts": "5fa7f8aac98f486e2f0cace87bed835bc1e2d23e",
@@ -32,5 +32,5 @@
     "@epdoc/exif::src/types.ts": "@epdoc/exif",
     "@epdoc/exif::src/utils.ts": "@epdoc/exif"
   },
-  "timestamp": "2026-08-04T12:21:49.320481934-06:00"
+  "timestamp": "2026-08-04T12:23:29.057738037-06:00"
 }
