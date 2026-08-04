@@ -2,7 +2,7 @@ import * as Cmd from '@epdoc/cmd';
 import * as FS from '@epdoc/fs/fs';
 import type { Dict } from '@epdoc/type';
 import { _ } from '@epdoc/type';
-import { File } from './file.ts';
+import { EXIFTOOL_READ_FLAGS, File } from './file.ts';
 import type { IDryRun } from './types.ts';
 import { parseJson } from './utils.ts';
 
@@ -27,7 +27,7 @@ export class Reader {
    */
   async read(files: (FS.FilePath | FS.File)[]): Promise<File[]> {
     const paths = files.map((f) => (_.isString(f) ? f : f.path));
-    const args = ['-j', ...paths];
+    const args = [...EXIFTOOL_READ_FLAGS, ...paths];
     const result = await Cmd.runner<Dict>('exiftool', args).dryRun(this.#dryRun).cwd(FS.cwd()).run();
 
     if (result.exitCode !== 0 && !result.stdout) {

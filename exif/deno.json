@@ -1,17 +1,51 @@
 {
   "name": "@epdoc/exif",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "Read and write EXIF metadata via the exiftool binary",
   "exports": {
     ".": "./src/mod.ts"
   },
   "publish": {
+    "bin": {
+      "exit": "./main.ts"
+    },
     "include": [
       "src",
       "deno.json",
       "README.md",
       "library-metadata.json"
     ]
+  },
+  "compile": {
+    "include": [
+      "./src",
+      "./build/build-info.json"
+    ],
+    "permissions": {
+      "read": true,
+      "write": true,
+      "env": {
+        "allow": [
+          "HOME",
+          "XDG_CONFIG_HOME",
+          "XDG_CACHE_HOME",
+          "NO_COLOR",
+          "HTTP_PROXY",
+          "HTTPS_PROXY",
+          "NO_PROXY",
+          "NODE_DEBUG_NATIVE",
+          "DENO_TRACE_PERMISSIONS",
+          "NODE_DISABLE_COMPILE_CACHE",
+          "NODE_COMPILE_CACHE_PORTABLE",
+          "NODE_COMPILE_CACHE"
+        ]
+      },
+      "sys": true,
+      "net": false,
+      "run": [
+        "exiftool"
+      ]
+    }
   },
   "tasks": {
     "fmt": "deno fmt src test *.json",

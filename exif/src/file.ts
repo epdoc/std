@@ -9,7 +9,7 @@ import * as Gps from './gps.ts';
 import type { FileJson, IDryRun } from './types.ts';
 import { parseDuration } from './utils.ts';
 
-const EXIFTOOL_READ_FLAGS = ['-j', '-api', 'QuickTimeUTC=1'];
+export const EXIFTOOL_READ_FLAGS = ['-j', '-struct', '-api', 'QuickTimeUTC=1'];
 
 /**
  * Wrapper around a single media file and its EXIF metadata.

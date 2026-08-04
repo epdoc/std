@@ -1,0 +1,36 @@
+{
+  "masterHash": "f69ac4782998a23c4caecf9e80d11569789a4909a71622f495c5167402ae1900",
+  "files": {
+    "@epdoc/exif::build/build-info.json": "881edb738e9553021873137950bee03c34050bcd",
+    "@epdoc/exif::deno.json": "66954642c499b51feae66b1feac00dfbf6c6bcc1",
+    "@epdoc/exif::main.ts": "d3811a50b328b8d2464317a16120d61597507dae",
+    "@epdoc/exif::src/date.ts": "8eac584e93294e5852968701c9f94a7addc31968",
+    "@epdoc/exif::src/exif-schema.ts": "5fa7f8aac98f486e2f0cace87bed835bc1e2d23e",
+    "@epdoc/exif::src/file.ts": "cb7ab5b31259fdceca39d6e58bd563a70fe77796",
+    "@epdoc/exif::src/gps.ts": "c080d3da4fd85b716ef21c58b2d645c124c45fdb",
+    "@epdoc/exif::src/mod.ts": "5aa30fe1c2081ccf6abd2b03200ddd494a5cd3b2",
+    "@epdoc/exif::src/reader.ts": "32a53a50ec980a46f57794ca079807b9d42cb09e",
+    "@epdoc/exif::src/types.ts": "387a527b1fb7aed1eee25e31805b2db59914d237",
+    "@epdoc/exif::src/utils.ts": "5bd556ae49adae09f57215ec9cecc61dbde7c020"
+  },
+  "dependencies": {
+    "@epdoc/cmd": "jsr:@epdoc/cmd@^0.3.1",
+    "@epdoc/datetime": "jsr:@epdoc/datetime@^4.2.8",
+    "@epdoc/type": "jsr:@epdoc/type@^2.0.2",
+    "@std/assert": "jsr:@std/assert@^1.0.19"
+  },
+  "fileOrigins": {
+    "@epdoc/exif::build/build-info.json": "@epdoc/exif",
+    "@epdoc/exif::deno.json": "@epdoc/exif",
+    "@epdoc/exif::main.ts": "@epdoc/exif",
+    "@epdoc/exif::src/date.ts": "@epdoc/exif",
+    "@epdoc/exif::src/exif-schema.ts": "@epdoc/exif",
+    "@epdoc/exif::src/file.ts": "@epdoc/exif",
+    "@epdoc/exif::src/gps.ts": "@epdoc/exif",
+    "@epdoc/exif::src/mod.ts": "@epdoc/exif",
+    "@epdoc/exif::src/reader.ts": "@epdoc/exif",
+    "@epdoc/exif::src/types.ts": "@epdoc/exif",
+    "@epdoc/exif::src/utils.ts": "@epdoc/exif"
+  },
+  "timestamp": "2026-08-04T12:21:49.320481934-06:00"
+}
