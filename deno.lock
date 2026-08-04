@@ -5,6 +5,7 @@
     "jsr:@epdoc/colors@^1.1.3": "1.1.3",
     "jsr:@epdoc/datetime@^4.2.8": "4.2.8",
     "jsr:@epdoc/duration@~0.3.22": "0.3.22",
+    "jsr:@epdoc/fmt@^1.0.19": "1.0.19",
     "jsr:@epdoc/fs@^1.6.8": "1.6.8",
     "jsr:@epdoc/terminal@^0.0.15": "0.0.15",
     "jsr:@epdoc/transform@^2.0.8": "2.0.8",
@@ -40,6 +41,12 @@
     },
     "@epdoc/duration@0.3.22": {
       "integrity": "bf388c84ef857fc79a6c8dcddc34c03a0af9b9872bb308c56809e5cb6eca416c"
+    },
+    "@epdoc/fmt@1.0.19": {
+      "integrity": "6fce6b8799c5bc0d4036062ff3cbd6a60c74e13d7b41d6218d81c8575168593c",
+      "dependencies": [
+        "jsr:@std/fmt"
+      ]
     },
     "@epdoc/fs@1.6.8": {
       "integrity": "b681c961519697bc3cf19b51a39553b746599ef059bea369753d51c4b342c37c",
