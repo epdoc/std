@@ -1,14 +1,11 @@
 {
   "name": "@epdoc/exif",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "description": "Read and write EXIF metadata via the exiftool binary",
   "exports": {
     ".": "./src/mod.ts"
   },
   "publish": {
-    "bin": {
-      "exif": "./main.ts"
-    },
     "include": [
       "src",
       "deno.json",
