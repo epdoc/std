@@ -2,6 +2,7 @@
   "version": "5",
   "specifiers": {
     "jsr:@epdoc/cmd@~0.3.1": "0.3.1",
+    "jsr:@epdoc/colors@^1.1.3": "1.1.3",
     "jsr:@epdoc/datetime@^4.2.8": "4.2.8",
     "jsr:@epdoc/duration@~0.3.22": "0.3.22",
     "jsr:@epdoc/fs@^1.6.9": "1.6.9",
@@ -22,6 +23,12 @@
   "jsr": {
     "@epdoc/cmd@0.3.1": {
       "integrity": "7663f9427fff3e8ff528f8692f41137b19f1ca9857c1b2672ee0f1c1b103848f"
+    },
+    "@epdoc/colors@1.1.3": {
+      "integrity": "8ca629eba888a4b567e09b5f7f3cc49273d06d054af5f2d398a60c23b9b86492",
+      "dependencies": [
+        "jsr:@std/fmt"
+      ]
     },
     "@epdoc/datetime@4.2.7": {
       "integrity": "4776d91837cb200c81ae80d589ad2b7f7fe5c2fdb60f8f759bab5f4bf1a6e52e"
