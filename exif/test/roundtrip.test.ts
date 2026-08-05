@@ -59,13 +59,13 @@ Deno.test({
       await t.step('sets camera tags and reads them back', async () => {
         const work = await copyAsset(tmpDir, 'camera.jpg');
         const file = new File(work.path);
-        file.camera = { make: 'Canon', model: 'EOS R5', lensModel: 'RF 50mm F1.2L' };
+        file.cameraInfo = { make: 'Canon', model: 'EOS R5', lensModel: 'RF 50mm F1.2L' };
         await file.write();
 
         await file.getMetadata();
-        assertEquals(file.camera.make, 'Canon');
-        assertEquals(file.camera.model, 'EOS R5');
-        assertEquals(file.camera.lensModel, 'RF 50mm F1.2L');
+        assertEquals(file.cameraInfo.make, 'Canon');
+        assertEquals(file.cameraInfo.model, 'EOS R5');
+        assertEquals(file.cameraInfo.lensModel, 'RF 50mm F1.2L');
       });
     } finally {
       await Deno.remove(tmpDir, { recursive: true });

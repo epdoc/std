@@ -36,7 +36,7 @@ export class Reader {
 
     const metadataArray = parseJson(result.stdout);
     const results = metadataArray.map((metadata) => File.fromMetadata(metadata, { dryRun: this.#dryRun }));
-    await Promise.all(results.map((f) => f.file.stats()));
+    await Promise.all(results.map((f) => f.fsFile.stats()));
     return results;
   }
 }

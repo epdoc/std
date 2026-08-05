@@ -1,6 +1,5 @@
-import type * as FS from '@epdoc/fs/fs';
-import type * as Schema from './exif-schema.ts';
 import type * as Gps from './gps.ts';
+import type * as Schema from './exif-schema.ts';
 
 /**
  * Options shared by the {@link Reader} and {@link File} classes.
@@ -9,35 +8,31 @@ export interface IDryRun {
   dryRun?: boolean;
 }
 
-export type ISODateString = string; // e.g. "2024-01-01T12:00:00Z"
+export type ISODateString = Schema.ISODateString;
 
 /**
- * Filesystem-level information about the media file, populated from
- * {@link @epdoc/fs!FS.File} stats rather than EXIF metadata.
+ * JSON representation of a File's extracted metadata, nested by section.
+ * Raw exiftool metadata is excluded by default; opt in with
+ * `toJSON({ includeMetadata: true })`.
  */
-export type FileObject = {
-  path: FS.FilePath;
-  filename: string;
-  createdAt?: ISODateString;
-  modifiedAt?: ISODateString;
-  size: number;
-  type: string;
-  mimeType?: string;
+export type FileJson = {
+  file: Schema.File;
+  image?: Schema.Image;
+  video?: Schema.Video;
+  audio?: Schema.Audio;
+  camera?: Schema.Camera;
+  app?: Schema.App;
+  createdAt?: string;
+  digitizedAt?: string;
+  modifiedAt?: string;
+  hasTimezone?: boolean;
+  tzOffset?: string;
+  gps?: Gps.Location;
+  id?: Schema.FileId;
+  metadata?: Schema.Metadata;
 };
 
-export type FileJson = Partial<{
-  file: FileObject;
-  imageInfo: Schema.ImageInfo;
-  video: Schema.VideoInfo;
-  audio: Schema.AudioInfo;
-  digitizedAt: ISODateString;
-  createdAt: ISODateString;
-  modifiedAt: ISODateString;
-  hasTimezone: boolean;
-  tzOffset: string;
-  duration: number;
-  application: string;
-  camera: Schema.Camera;
-  gps: Gps.Location;
-  id: Schema.FileId;
-}>;
+/** Options for {@link File.toJSON}. */
+export interface ToJSONOptions {
+  includeMetadata?: boolean;
+}

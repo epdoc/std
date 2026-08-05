@@ -215,6 +215,17 @@ export function parseFileSize(input: unknown): number | undefined {
  * @param input - Raw bitrate from EXIF.
  * @returns Numeric bitrate in bps, or undefined if unparseable.
  */
+/**
+ * Converts a value to a finite number, returning undefined for null/undefined
+ * or NaN results. Used by section defs to coerce Integer-branded or string
+ * EXIF values to plain number.
+ */
+export function toNumber(value: unknown): number | undefined {
+  if (value === undefined || value === null) return undefined;
+  const n = Number(value);
+  return isNaN(n) ? undefined : n;
+}
+
 export function parseBitrate(input: unknown): number | undefined {
   if (typeof input === 'number') {
     return Number.isFinite(input) && input >= 0 ? input : undefined;
