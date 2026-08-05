@@ -1,0 +1,1288 @@
+{
+  "version": 2,
+  "nodes": {
+    "file:///Users/jpravetz/dev/@epdoc/std/text/src/mod.ts": {
+      "symbols": [
+        {
+          "name": "wrap",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/text/src/text.ts",
+                "line": 15,
+                "col": 0,
+                "byteIndex": 334
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Wraps a string into an array of lines, each no longer than `maxWidth`.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "text",
+                    "doc": "The string to wrap."
+                  },
+                  {
+                    "kind": "param",
+                    "name": "maxWidth",
+                    "doc": "Maximum line length (default 80)."
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "An array of wrapped lines."
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "text",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "kind": "assign",
+                    "left": {
+                      "kind": "identifier",
+                      "name": "maxWidth",
+                      "optional": false,
+                      "tsType": {
+                        "repr": "Integer",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "Integer",
+                          "resolution": {
+                            "kind": "import",
+                            "specifier": "@epdoc/type",
+                            "name": "Integer"
+                          }
+                        }
+                      }
+                    },
+                    "right": "[UNSUPPORTED]"
+                  }
+                ],
+                "returnType": {
+                  "kind": "array",
+                  "value": {
+                    "repr": "string",
+                    "kind": "keyword",
+                    "value": "string"
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "pluralize",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/text/src/text.ts",
+                "line": 72,
+                "col": 0,
+                "byteIndex": 1894
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Returns the plural form of a word based on the given count. If the plural\nform is not provided, it defaults to the singular form with an 's' appended.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "word",
+                    "doc": "The singular form of the word."
+                  },
+                  {
+                    "kind": "param",
+                    "name": "count",
+                    "doc": "The count of items."
+                  },
+                  {
+                    "kind": "param",
+                    "name": "pluralForm",
+                    "doc": "The plural form of the word (optional)."
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "The plural or singular form of the word."
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "word",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "kind": "identifier",
+                    "name": "count",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  },
+                  {
+                    "kind": "identifier",
+                    "name": "pluralForm",
+                    "optional": true,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "countLeadingTabs",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/text/src/text.ts",
+                "line": 85,
+                "col": 0,
+                "byteIndex": 2222
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Counts the number of tabs at the beginning of a string.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "text",
+                    "doc": "The string to inspect."
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "The number of leading tabs."
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "text",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "Integer",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeName": "Integer",
+                    "resolution": {
+                      "kind": "import",
+                      "specifier": "@epdoc/type",
+                      "name": "Integer"
+                    }
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "padRight",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/text/src/text.ts",
+                "line": 107,
+                "col": 0,
+                "byteIndex": 2827
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Right-pads a string to a specified length. Truncates if `truncate` is true\nand the string already exceeds the length.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "text",
+                    "doc": "The string to pad."
+                  },
+                  {
+                    "kind": "param",
+                    "name": "length",
+                    "doc": "The desired length."
+                  },
+                  {
+                    "kind": "param",
+                    "name": "char",
+                    "doc": "The padding character (default space)."
+                  },
+                  {
+                    "kind": "param",
+                    "name": "truncate",
+                    "doc": "Whether to truncate if too long (default true)."
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "The padded or truncated string."
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "text",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "kind": "identifier",
+                    "name": "length",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "Integer",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Integer",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "@epdoc/type",
+                          "name": "Integer"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "kind": "assign",
+                    "left": {
+                      "kind": "identifier",
+                      "name": "char",
+                      "optional": false,
+                      "tsType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      }
+                    },
+                    "right": " "
+                  },
+                  {
+                    "kind": "assign",
+                    "left": {
+                      "kind": "identifier",
+                      "name": "truncate",
+                      "optional": false,
+                      "tsType": {
+                        "repr": "boolean",
+                        "kind": "keyword",
+                        "value": "boolean"
+                      }
+                    },
+                    "right": "true"
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "padLeft",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/text/src/text.ts",
+                "line": 129,
+                "col": 0,
+                "byteIndex": 3451
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Left-pads a string to a specified length. Truncates if `truncate` is true\nand the string already exceeds the length.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "text",
+                    "doc": "The string to pad."
+                  },
+                  {
+                    "kind": "param",
+                    "name": "length",
+                    "doc": "The desired length."
+                  },
+                  {
+                    "kind": "param",
+                    "name": "char",
+                    "doc": "The padding character (default space)."
+                  },
+                  {
+                    "kind": "param",
+                    "name": "truncate",
+                    "doc": "Whether to truncate if too long (default true)."
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "The padded or truncated string."
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "text",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "kind": "identifier",
+                    "name": "length",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "Integer",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Integer",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "@epdoc/type",
+                          "name": "Integer"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "kind": "assign",
+                    "left": {
+                      "kind": "identifier",
+                      "name": "char",
+                      "optional": false,
+                      "tsType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      }
+                    },
+                    "right": " "
+                  },
+                  {
+                    "kind": "assign",
+                    "left": {
+                      "kind": "identifier",
+                      "name": "truncate",
+                      "optional": false,
+                      "tsType": {
+                        "repr": "boolean",
+                        "kind": "keyword",
+                        "value": "boolean"
+                      }
+                    },
+                    "right": "true"
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "padCenter",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/text/src/text.ts",
+                "line": 151,
+                "col": 0,
+                "byteIndex": 4081
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Centers a string within a specified length. Truncates if `truncate` is true\nand the string already exceeds the length.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "text",
+                    "doc": "The string to center."
+                  },
+                  {
+                    "kind": "param",
+                    "name": "length",
+                    "doc": "The desired length."
+                  },
+                  {
+                    "kind": "param",
+                    "name": "char",
+                    "doc": "The padding character (default space)."
+                  },
+                  {
+                    "kind": "param",
+                    "name": "truncate",
+                    "doc": "Whether to truncate if too long (default true)."
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "The centered or truncated string."
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "text",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "kind": "identifier",
+                    "name": "length",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "Integer",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Integer",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "@epdoc/type",
+                          "name": "Integer"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "kind": "assign",
+                    "left": {
+                      "kind": "identifier",
+                      "name": "char",
+                      "optional": false,
+                      "tsType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      }
+                    },
+                    "right": " "
+                  },
+                  {
+                    "kind": "assign",
+                    "left": {
+                      "kind": "identifier",
+                      "name": "truncate",
+                      "optional": false,
+                      "tsType": {
+                        "repr": "boolean",
+                        "kind": "keyword",
+                        "value": "boolean"
+                      }
+                    },
+                    "right": "true"
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "hexEncode",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/text/src/text.ts",
+                "line": 170,
+                "col": 0,
+                "byteIndex": 4575
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Encodes a string into a 16-bit hexadecimal representation.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "text",
+                    "doc": "The string to encode."
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "The hexadecimal encoded string."
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "text",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "createTable",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/text/src/text.ts",
+                "line": 188,
+                "col": 0,
+                "byteIndex": 5137
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Formats an array of strings into rows of aligned columns, fitting within\na maximum width.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "strings",
+                    "doc": "The strings to arrange into columns."
+                  },
+                  {
+                    "kind": "param",
+                    "name": "maxWidth",
+                    "doc": "Maximum total width of a row (default 80)."
+                  },
+                  {
+                    "kind": "param",
+                    "name": "padding",
+                    "doc": "Minimum spaces between columns (default 2)."
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "An array of formatted row strings."
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "strings",
+                    "optional": false,
+                    "tsType": {
+                      "kind": "array",
+                      "value": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      }
+                    }
+                  },
+                  {
+                    "kind": "assign",
+                    "left": {
+                      "kind": "identifier",
+                      "name": "maxWidth",
+                      "optional": false,
+                      "tsType": {
+                        "repr": "Integer",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "Integer",
+                          "resolution": {
+                            "kind": "import",
+                            "specifier": "@epdoc/type",
+                            "name": "Integer"
+                          }
+                        }
+                      }
+                    },
+                    "right": "[UNSUPPORTED]"
+                  },
+                  {
+                    "kind": "assign",
+                    "left": {
+                      "kind": "identifier",
+                      "name": "padding",
+                      "optional": false,
+                      "tsType": {
+                        "repr": "Integer",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "Integer",
+                          "resolution": {
+                            "kind": "import",
+                            "specifier": "@epdoc/type",
+                            "name": "Integer"
+                          }
+                        }
+                      }
+                    },
+                    "right": "[UNSUPPORTED]"
+                  }
+                ],
+                "returnType": {
+                  "kind": "array",
+                  "value": {
+                    "repr": "string",
+                    "kind": "keyword",
+                    "value": "string"
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "msub",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/text/src/mod.ts",
+                "line": 1,
+                "col": 7,
+                "byteIndex": 34
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "tags": [
+                  {
+                    "kind": "module",
+                    "name": "msub\n\nThis module provides a string replacement utility that allows for dynamic\nstring formatting using placeholders. The syntax is similar to ES2015 template\nliterals."
+                  }
+                ]
+              },
+              "kind": "namespace",
+              "def": {
+                "elements": [
+                  {
+                    "name": "ConfigureOptions",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/text/src/msub.ts",
+                          "line": 19,
+                          "col": 0,
+                          "byteIndex": 773
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Options for configuring the MSub instance.",
+                          "tags": [
+                            {
+                              "kind": "unsupported",
+                              "value": "@property {string} [open='${'] - The opening delimiter for placeholders."
+                            },
+                            {
+                              "kind": "unsupported",
+                              "value": "@property {string} [close='}'] - The closing delimiter for placeholders. If not\nspecified, the closing delimiter will be the mirror of brace characters within\nthe opening delimiter."
+                            },
+                            {
+                              "kind": "unsupported",
+                              "value": "@property {boolean} [uppercase=false] - Whether to convert uppercase snake_case keys to camelCase."
+                            },
+                            {
+                              "kind": "unsupported",
+                              "value": "@property {unknown} [format] - Custom format callback for values."
+                            }
+                          ]
+                        },
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "typeLiteral",
+                            "value": {
+                              "properties": [
+                                {
+                                  "name": "open",
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/std/text/src/msub.ts",
+                                    "line": 20,
+                                    "col": 2,
+                                    "byteIndex": 808
+                                  },
+                                  "optional": true,
+                                  "tsType": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                },
+                                {
+                                  "name": "close",
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/std/text/src/msub.ts",
+                                    "line": 21,
+                                    "col": 2,
+                                    "byteIndex": 825
+                                  },
+                                  "optional": true,
+                                  "tsType": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                },
+                                {
+                                  "name": "uppercase",
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/std/text/src/msub.ts",
+                                    "line": 22,
+                                    "col": 2,
+                                    "byteIndex": 843
+                                  },
+                                  "optional": true,
+                                  "tsType": {
+                                    "repr": "boolean",
+                                    "kind": "keyword",
+                                    "value": "boolean"
+                                  }
+                                },
+                                {
+                                  "name": "format",
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/std/text/src/msub.ts",
+                                    "line": 23,
+                                    "col": 2,
+                                    "byteIndex": 866
+                                  },
+                                  "optional": true,
+                                  "tsType": {
+                                    "repr": "unknown",
+                                    "kind": "keyword",
+                                    "value": "unknown"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "SubParam",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/text/src/msub.ts",
+                          "line": 29,
+                          "col": 0,
+                          "byteIndex": 942
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Allowed types for substitution parameters."
+                        },
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "repr": "unknown",
+                            "kind": "keyword",
+                            "value": "unknown"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Param",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/text/src/msub.ts",
+                          "line": 34,
+                          "col": 0,
+                          "byteIndex": 1038
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Allowed types for parameters in the replace method."
+                        },
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "SubParam",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "SubParam",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              },
+                              {
+                                "kind": "array",
+                                "value": {
+                                  "repr": "SubParam",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "SubParam",
+                                    "resolution": {
+                                      "kind": "local"
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "kind": "typeLiteral",
+                                "value": {
+                                  "indexSignatures": [
+                                    {
+                                      "params": [
+                                        {
+                                          "kind": "identifier",
+                                          "name": "key",
+                                          "optional": false,
+                                          "tsType": {
+                                            "repr": "string",
+                                            "kind": "keyword",
+                                            "value": "string"
+                                          }
+                                        }
+                                      ],
+                                      "tsType": {
+                                        "repr": "SubParam",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "SubParam",
+                                          "resolution": {
+                                            "kind": "local"
+                                          }
+                                        }
+                                      },
+                                      "location": {
+                                        "filename": "file:///Users/jpravetz/dev/@epdoc/std/text/src/msub.ts",
+                                        "line": 34,
+                                        "col": 46,
+                                        "byteIndex": 1084
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "FormatCallback",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/text/src/msub.ts",
+                          "line": 39,
+                          "col": 0,
+                          "byteIndex": 1164
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Callback function for formatting values."
+                        },
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "fnOrConstructor",
+                            "value": {
+                              "constructor": false,
+                              "tsType": {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              },
+                              "params": [
+                                {
+                                  "kind": "identifier",
+                                  "name": "val",
+                                  "optional": false,
+                                  "tsType": {
+                                    "repr": "unknown",
+                                    "kind": "keyword",
+                                    "value": "unknown"
+                                  }
+                                },
+                                {
+                                  "kind": "identifier",
+                                  "name": "format",
+                                  "optional": false,
+                                  "tsType": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "MSub",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/text/src/msub.ts",
+                          "line": 260,
+                          "col": 0,
+                          "byteIndex": 8021
+                        },
+                        "declarationKind": "export",
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "repr": "MSubImpl",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "MSubImpl",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "configure",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/text/src/msub.ts",
+                          "line": 274,
+                          "col": 13,
+                          "byteIndex": 8442
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Configures the default singleton MSub instance with options.",
+                          "tags": [
+                            {
+                              "kind": "param",
+                              "name": "options",
+                              "tsType": {
+                                "repr": "ConfigureOptions",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "ConfigureOptions",
+                                  "resolution": {
+                                    "kind": "typeParam"
+                                  }
+                                }
+                              },
+                              "optional": true,
+                              "doc": "Configuration options."
+                            },
+                            {
+                              "kind": "return",
+                              "tsType": {
+                                "repr": "MSub",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "MSub",
+                                  "resolution": {
+                                    "kind": "typeParam"
+                                  }
+                                }
+                              },
+                              "doc": "The configured singleton MSub instance."
+                            },
+                            {
+                              "kind": "example",
+                              "doc": "```ts\nimport * as msub from '@epdoc/string';\n\nmsub.configure({ open: '{{', close: '}}', uppercase: true });\n```"
+                            }
+                          ]
+                        },
+                        "kind": "function",
+                        "def": {
+                          "params": [
+                            {
+                              "kind": "identifier",
+                              "name": "options",
+                              "optional": true,
+                              "tsType": {
+                                "repr": "ConfigureOptions",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "ConfigureOptions",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            }
+                          ],
+                          "returnType": {
+                            "repr": "MSub",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "MSub",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          },
+                          "hasBody": true
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "replace",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/text/src/msub.ts",
+                          "line": 292,
+                          "col": 13,
+                          "byteIndex": 9009
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Replaces placeholders in a string with provided arguments. Uses the default\nMSub singleton.",
+                          "tags": [
+                            {
+                              "kind": "param",
+                              "name": "s",
+                              "tsType": {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              },
+                              "doc": "The string containing placeholders."
+                            },
+                            {
+                              "kind": "param",
+                              "name": "args",
+                              "tsType": {
+                                "repr": "...Param",
+                                "kind": "unsupported"
+                              },
+                              "doc": "The values to replace the placeholders."
+                            },
+                            {
+                              "kind": "return",
+                              "tsType": {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              },
+                              "doc": "The formatted string."
+                            },
+                            {
+                              "kind": "example",
+                              "doc": "```ts\nimport * as msub from '@epdoc/string';\n\nconst result = msub.replace('Hello, ${name}!', { name: 'World' });\nconsole.log(result); // \"Hello, World!\"\n```"
+                            }
+                          ]
+                        },
+                        "kind": "function",
+                        "def": {
+                          "params": [
+                            {
+                              "kind": "identifier",
+                              "name": "s",
+                              "optional": false,
+                              "tsType": {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              }
+                            },
+                            {
+                              "kind": "rest",
+                              "arg": {
+                                "kind": "identifier",
+                                "name": "args",
+                                "optional": false
+                              },
+                              "tsType": {
+                                "kind": "array",
+                                "value": {
+                                  "repr": "Param",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "Param",
+                                    "resolution": {
+                                      "kind": "local"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          ],
+                          "returnType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          },
+                          "hasBody": true
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "create",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/text/src/msub.ts",
+                          "line": 303,
+                          "col": 0,
+                          "byteIndex": 9382
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Creates a new MSub instance and configures it with options.",
+                          "tags": [
+                            {
+                              "kind": "param",
+                              "name": "options",
+                              "tsType": {
+                                "repr": "ConfigureOptions",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "ConfigureOptions",
+                                  "resolution": {
+                                    "kind": "typeParam"
+                                  }
+                                }
+                              },
+                              "optional": true,
+                              "doc": "Configuration options."
+                            },
+                            {
+                              "kind": "return",
+                              "tsType": {
+                                "repr": "MSub",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "MSub",
+                                  "resolution": {
+                                    "kind": "typeParam"
+                                  }
+                                }
+                              },
+                              "doc": "A new, independently configured MSub instance."
+                            },
+                            {
+                              "kind": "example",
+                              "doc": "const msubInstance = msub.create({ open: '{{', close: '}}' });"
+                            }
+                          ]
+                        },
+                        "kind": "function",
+                        "def": {
+                          "params": [
+                            {
+                              "kind": "identifier",
+                              "name": "options",
+                              "optional": true,
+                              "tsType": {
+                                "repr": "ConfigureOptions",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "ConfigureOptions",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            }
+                          ],
+                          "returnType": {
+                            "repr": "MSub",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "MSub",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          },
+                          "hasBody": true
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

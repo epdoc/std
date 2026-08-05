@@ -1,0 +1,2230 @@
+{
+  "version": 2,
+  "nodes": {
+    "file:///Users/jpravetz/dev/@epdoc/std/condition/src/mod.ts": {
+      "symbols": [
+        {
+          "name": "AndCondition",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/and.ts",
+                "line": 10,
+                "col": 0,
+                "byteIndex": 302
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "A logical AND condition that evaluates a set of sub-conditions.\n\nReturns `true` only if all sub-conditions evaluate to `true`. Uses\nshort-circuit evaluation.\n",
+                "tags": [
+                  {
+                    "kind": "template",
+                    "name": "D",
+                    "doc": "The type of data passed to {@link AndCondition.test}."
+                  }
+                ]
+              },
+              "kind": "class",
+              "def": {
+                "constructors": [
+                  {
+                    "jsDoc": {
+                      "doc": "Creates an AND condition from an array of already-constructed testable\nconditions.",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "conditions",
+                          "doc": "The sub-conditions to evaluate."
+                        },
+                        {
+                          "kind": "param",
+                          "name": "log",
+                          "doc": "Optional logger callback."
+                        }
+                      ]
+                    },
+                    "hasBody": true,
+                    "name": "constructor",
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "conditions",
+                        "optional": false,
+                        "tsType": {
+                          "kind": "array",
+                          "value": {
+                            "repr": "ITestable",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeParams": [
+                                {
+                                  "repr": "D",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "D",
+                                    "resolution": {
+                                      "kind": "typeParam",
+                                      "declaringName": "AndCondition",
+                                      "declaringKind": "class"
+                                    }
+                                  }
+                                }
+                              ],
+                              "typeName": "ITestable",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./types.ts",
+                                "name": "ITestable"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "kind": "identifier",
+                        "name": "log",
+                        "optional": true,
+                        "tsType": {
+                          "repr": "LogFn",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "LogFn",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "./types.ts",
+                              "name": "LogFn"
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/and.ts",
+                      "line": 20,
+                      "col": 2,
+                      "byteIndex": 613
+                    }
+                  }
+                ],
+                "methods": [
+                  {
+                    "name": "test",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "data",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "D",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "D",
+                              "resolution": {
+                                "kind": "typeParam",
+                                "declaringName": "AndCondition",
+                                "declaringKind": "class"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "boolean",
+                        "kind": "keyword",
+                        "value": "boolean"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/and.ts",
+                      "line": 25,
+                      "col": 2,
+                      "byteIndex": 731
+                    }
+                  }
+                ],
+                "implements": [
+                  {
+                    "repr": "ITestable",
+                    "kind": "typeRef",
+                    "value": {
+                      "typeParams": [
+                        {
+                          "repr": "D",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "D",
+                            "resolution": {
+                              "kind": "typeParam",
+                              "declaringName": "AndCondition",
+                              "declaringKind": "class"
+                            }
+                          }
+                        }
+                      ],
+                      "typeName": "ITestable",
+                      "resolution": {
+                        "kind": "import",
+                        "specifier": "./types.ts",
+                        "name": "ITestable"
+                      }
+                    }
+                  }
+                ],
+                "typeParams": [
+                  {
+                    "name": "D"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "BooleanCondition",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/boolean.ts",
+                "line": 10,
+                "col": 0,
+                "byteIndex": 287
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "A condition that always returns a fixed boolean value.\n\nUseful for defaults, fallbacks, or as the base case for an empty condition\nobject.\n",
+                "tags": [
+                  {
+                    "kind": "template",
+                    "name": "D",
+                    "doc": "The type of data passed to {@link BooleanCondition.test}."
+                  }
+                ]
+              },
+              "kind": "class",
+              "def": {
+                "constructors": [
+                  {
+                    "jsDoc": {
+                      "doc": "Creates a boolean condition.",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "value",
+                          "doc": "The constant value to return."
+                        },
+                        {
+                          "kind": "param",
+                          "name": "log",
+                          "doc": "Optional logger callback."
+                        }
+                      ]
+                    },
+                    "hasBody": true,
+                    "name": "constructor",
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "value",
+                        "optional": false,
+                        "tsType": {
+                          "repr": "boolean",
+                          "kind": "keyword",
+                          "value": "boolean"
+                        }
+                      },
+                      {
+                        "kind": "identifier",
+                        "name": "log",
+                        "optional": true,
+                        "tsType": {
+                          "repr": "LogFn",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "LogFn",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "./types.ts",
+                              "name": "LogFn"
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/boolean.ts",
+                      "line": 19,
+                      "col": 2,
+                      "byteIndex": 524
+                    }
+                  }
+                ],
+                "methods": [
+                  {
+                    "name": "test",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "_data",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "D",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "D",
+                              "resolution": {
+                                "kind": "typeParam",
+                                "declaringName": "BooleanCondition",
+                                "declaringKind": "class"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "boolean",
+                        "kind": "keyword",
+                        "value": "boolean"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/boolean.ts",
+                      "line": 24,
+                      "col": 2,
+                      "byteIndex": 620
+                    }
+                  }
+                ],
+                "implements": [
+                  {
+                    "repr": "ITestable",
+                    "kind": "typeRef",
+                    "value": {
+                      "typeParams": [
+                        {
+                          "repr": "D",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "D",
+                            "resolution": {
+                              "kind": "typeParam",
+                              "declaringName": "BooleanCondition",
+                              "declaringKind": "class"
+                            }
+                          }
+                        }
+                      ],
+                      "typeName": "ITestable",
+                      "resolution": {
+                        "kind": "import",
+                        "specifier": "./types.ts",
+                        "name": "ITestable"
+                      }
+                    }
+                  }
+                ],
+                "typeParams": [
+                  {
+                    "name": "D"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "evaluateFieldCondition",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/evaluator.ts",
+                "line": 153,
+                "col": 0,
+                "byteIndex": 6051
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Evaluates an object condition against a data object.\n\nIterates through the fields in `condition`, retrieves the corresponding value\nfrom `data`, and evaluates it using {@link evaluateValueCondition}. Acts as a\nlogical OR, returning `true` as soon as any field matches.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "data",
+                    "doc": "The data object to test."
+                  },
+                  {
+                    "kind": "param",
+                    "name": "condition",
+                    "doc": "The object condition, where keys are field paths and values\nare value conditions."
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "`true` if any field satisfies its condition, otherwise `false`."
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "data",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "Record",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeParams": [
+                          {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          },
+                          {
+                            "repr": "unknown",
+                            "kind": "keyword",
+                            "value": "unknown"
+                          }
+                        ],
+                        "typeName": "Record"
+                      }
+                    }
+                  },
+                  {
+                    "kind": "identifier",
+                    "name": "condition",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "ObjectCondition",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "ObjectCondition",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./types.ts",
+                          "name": "ObjectCondition"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "boolean",
+                  "kind": "keyword",
+                  "value": "boolean"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "evaluateValueCondition",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/evaluator.ts",
+                "line": 18,
+                "col": 0,
+                "byteIndex": 845
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Evaluates if a given value satisfies a declarative value condition.\n\nSupports a wide range of comparisons:\n- **Primitives**: Direct equality checks for strings, numbers, and booleans.\n- **Regular Expressions**: Matches string or number values against a regex.\n- **String Operators**: `eq`, `contains`, `startsWith`, `endsWith`.\n- **Number Operators**: `eq`, `ne`, `gt`, `gte`, `lt`, `lte`.\n- **Date Operators**: `before`, `after`.\n- **Array Operators**: `includes`, `excludes`, `includesAll`, `isEmpty`, `some`.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "value",
+                    "doc": "The actual data value to be tested."
+                  },
+                  {
+                    "kind": "param",
+                    "name": "condition",
+                    "doc": "The declarative condition to test against."
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "`true` if the value satisfies the condition, otherwise `false`."
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "value",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "unknown",
+                      "kind": "keyword",
+                      "value": "unknown"
+                    }
+                  },
+                  {
+                    "kind": "identifier",
+                    "name": "condition",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "ValueCondition",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "ValueCondition",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./types.ts",
+                          "name": "ValueCondition"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "boolean",
+                  "kind": "keyword",
+                  "value": "boolean"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "factory",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/factory.ts",
+                "line": 29,
+                "col": 0,
+                "byteIndex": 1021
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Creates a testable condition instance from a logical condition definition.\n\nHandles boolean constants and the logical combinators `and`, `or`, and `not`.\nDomain-specific field conditions must be constructed by the caller.\n",
+                "tags": [
+                  {
+                    "kind": "template",
+                    "name": "D",
+                    "doc": "The type of data passed to the created condition."
+                  },
+                  {
+                    "kind": "param",
+                    "name": "def",
+                    "doc": "The logical condition definition."
+                  },
+                  {
+                    "kind": "param",
+                    "name": "opts",
+                    "doc": "Optional factory configuration."
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "A testable condition instance."
+                  },
+                  {
+                    "kind": "throws",
+                    "tsType": {
+                      "repr": "Error",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Error",
+                        "resolution": {
+                          "kind": "typeParam"
+                        }
+                      }
+                    },
+                    "doc": "If the definition is not a valid logical condition."
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "def",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "AnyCondition",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "AnyCondition",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./types.ts",
+                          "name": "AnyCondition"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "kind": "identifier",
+                    "name": "opts",
+                    "optional": true,
+                    "tsType": {
+                      "repr": "FactoryOptions",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeParams": [
+                          {
+                            "repr": "D",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "D",
+                              "resolution": {
+                                "kind": "typeParam",
+                                "declaringName": "factory",
+                                "declaringKind": "function"
+                              }
+                            }
+                          }
+                        ],
+                        "typeName": "FactoryOptions",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "ITestable",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeParams": [
+                      {
+                        "repr": "D",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "D",
+                          "resolution": {
+                            "kind": "typeParam",
+                            "declaringName": "factory",
+                            "declaringKind": "function"
+                          }
+                        }
+                      }
+                    ],
+                    "typeName": "ITestable",
+                    "resolution": {
+                      "kind": "import",
+                      "specifier": "./types.ts",
+                      "name": "ITestable"
+                    }
+                  }
+                },
+                "hasBody": true,
+                "typeParams": [
+                  {
+                    "name": "D"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "FactoryOptions",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/factory.ts",
+                "line": 12,
+                "col": 0,
+                "byteIndex": 375
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Options for {@link factory}.\n",
+                "tags": [
+                  {
+                    "kind": "template",
+                    "name": "D",
+                    "doc": "The type of data passed to created conditions."
+                  }
+                ]
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "log",
+                        "jsDoc": {
+                          "doc": "Optional logger callback invoked during evaluation."
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/factory.ts",
+                          "line": 14,
+                          "col": 2,
+                          "byteIndex": 482
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "LogFn",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "LogFn",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "./types.ts",
+                              "name": "LogFn"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "typeParams": [
+                  {
+                    "name": "D",
+                    "default": {
+                      "repr": "unknown",
+                      "kind": "keyword",
+                      "value": "unknown"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "NotCondition",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/not.ts",
+                "line": 7,
+                "col": 0,
+                "byteIndex": 204
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "A logical NOT condition that inverts the result of a sub-condition.\n",
+                "tags": [
+                  {
+                    "kind": "template",
+                    "name": "D",
+                    "doc": "The type of data passed to {@link NotCondition.test}."
+                  }
+                ]
+              },
+              "kind": "class",
+              "def": {
+                "constructors": [
+                  {
+                    "jsDoc": {
+                      "doc": "Creates a NOT condition wrapping another condition.",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "condition",
+                          "doc": "The condition to negate."
+                        },
+                        {
+                          "kind": "param",
+                          "name": "log",
+                          "doc": "Optional logger callback."
+                        }
+                      ]
+                    },
+                    "hasBody": true,
+                    "name": "constructor",
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "condition",
+                        "optional": false,
+                        "tsType": {
+                          "repr": "ITestable",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeParams": [
+                              {
+                                "repr": "D",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "D",
+                                  "resolution": {
+                                    "kind": "typeParam",
+                                    "declaringName": "NotCondition",
+                                    "declaringKind": "class"
+                                  }
+                                }
+                              }
+                            ],
+                            "typeName": "ITestable",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "./types.ts",
+                              "name": "ITestable"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "kind": "identifier",
+                        "name": "log",
+                        "optional": true,
+                        "tsType": {
+                          "repr": "LogFn",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "LogFn",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "./types.ts",
+                              "name": "LogFn"
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/not.ts",
+                      "line": 16,
+                      "col": 2,
+                      "byteIndex": 468
+                    }
+                  }
+                ],
+                "methods": [
+                  {
+                    "name": "test",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "data",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "D",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "D",
+                              "resolution": {
+                                "kind": "typeParam",
+                                "declaringName": "NotCondition",
+                                "declaringKind": "class"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "boolean",
+                        "kind": "keyword",
+                        "value": "boolean"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/not.ts",
+                      "line": 21,
+                      "col": 2,
+                      "byteIndex": 581
+                    }
+                  }
+                ],
+                "implements": [
+                  {
+                    "repr": "ITestable",
+                    "kind": "typeRef",
+                    "value": {
+                      "typeParams": [
+                        {
+                          "repr": "D",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "D",
+                            "resolution": {
+                              "kind": "typeParam",
+                              "declaringName": "NotCondition",
+                              "declaringKind": "class"
+                            }
+                          }
+                        }
+                      ],
+                      "typeName": "ITestable",
+                      "resolution": {
+                        "kind": "import",
+                        "specifier": "./types.ts",
+                        "name": "ITestable"
+                      }
+                    }
+                  }
+                ],
+                "typeParams": [
+                  {
+                    "name": "D"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "OrCondition",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/or.ts",
+                "line": 10,
+                "col": 0,
+                "byteIndex": 295
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "A logical OR condition that evaluates a set of sub-conditions.\n\nReturns `true` if any sub-condition evaluates to `true`. Uses short-circuit\nevaluation.\n",
+                "tags": [
+                  {
+                    "kind": "template",
+                    "name": "D",
+                    "doc": "The type of data passed to {@link OrCondition.test}."
+                  }
+                ]
+              },
+              "kind": "class",
+              "def": {
+                "constructors": [
+                  {
+                    "jsDoc": {
+                      "doc": "Creates an OR condition from an array of already-constructed testable\nconditions.",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "conditions",
+                          "doc": "The sub-conditions to evaluate."
+                        },
+                        {
+                          "kind": "param",
+                          "name": "log",
+                          "doc": "Optional logger callback."
+                        }
+                      ]
+                    },
+                    "hasBody": true,
+                    "name": "constructor",
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "conditions",
+                        "optional": false,
+                        "tsType": {
+                          "kind": "array",
+                          "value": {
+                            "repr": "ITestable",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeParams": [
+                                {
+                                  "repr": "D",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "D",
+                                    "resolution": {
+                                      "kind": "typeParam",
+                                      "declaringName": "OrCondition",
+                                      "declaringKind": "class"
+                                    }
+                                  }
+                                }
+                              ],
+                              "typeName": "ITestable",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./types.ts",
+                                "name": "ITestable"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "kind": "identifier",
+                        "name": "log",
+                        "optional": true,
+                        "tsType": {
+                          "repr": "LogFn",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "LogFn",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "./types.ts",
+                              "name": "LogFn"
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/or.ts",
+                      "line": 20,
+                      "col": 2,
+                      "byteIndex": 604
+                    }
+                  }
+                ],
+                "methods": [
+                  {
+                    "name": "test",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "data",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "D",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "D",
+                              "resolution": {
+                                "kind": "typeParam",
+                                "declaringName": "OrCondition",
+                                "declaringKind": "class"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "boolean",
+                        "kind": "keyword",
+                        "value": "boolean"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/or.ts",
+                      "line": 25,
+                      "col": 2,
+                      "byteIndex": 722
+                    }
+                  }
+                ],
+                "implements": [
+                  {
+                    "repr": "ITestable",
+                    "kind": "typeRef",
+                    "value": {
+                      "typeParams": [
+                        {
+                          "repr": "D",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "D",
+                            "resolution": {
+                              "kind": "typeParam",
+                              "declaringName": "OrCondition",
+                              "declaringKind": "class"
+                            }
+                          }
+                        }
+                      ],
+                      "typeName": "ITestable",
+                      "resolution": {
+                        "kind": "import",
+                        "specifier": "./types.ts",
+                        "name": "ITestable"
+                      }
+                    }
+                  }
+                ],
+                "typeParams": [
+                  {
+                    "name": "D"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "AnyCondition",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                "line": 32,
+                "col": 0,
+                "byteIndex": 973
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "A recursive type for defining logical conditions.\n\nThis type only covers the logical combinators and boolean constants. Domain\npackages (such as `@finsync/condition`) can extend it with their own field\ncondition types."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "union",
+                  "value": [
+                    {
+                      "kind": "typeLiteral",
+                      "value": {
+                        "properties": [
+                          {
+                            "name": "and",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                              "line": 33,
+                              "col": 6,
+                              "byteIndex": 1006
+                            },
+                            "tsType": {
+                              "kind": "array",
+                              "value": {
+                                "repr": "AnyCondition",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "AnyCondition",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "kind": "typeLiteral",
+                      "value": {
+                        "properties": [
+                          {
+                            "name": "or",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                              "line": 34,
+                              "col": 6,
+                              "byteIndex": 1034
+                            },
+                            "tsType": {
+                              "kind": "array",
+                              "value": {
+                                "repr": "AnyCondition",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "AnyCondition",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "kind": "typeLiteral",
+                      "value": {
+                        "properties": [
+                          {
+                            "name": "not",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                              "line": 35,
+                              "col": 6,
+                              "byteIndex": 1061
+                            },
+                            "tsType": {
+                              "repr": "AnyCondition",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "AnyCondition",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "ArrayOperators",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                "line": 85,
+                "col": 0,
+                "byteIndex": 2295
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Operators for testing array values."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "union",
+                  "value": [
+                    {
+                      "kind": "typeLiteral",
+                      "value": {
+                        "properties": [
+                          {
+                            "name": "includes",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                              "line": 86,
+                              "col": 6,
+                              "byteIndex": 2330
+                            },
+                            "tsType": {
+                              "kind": "union",
+                              "value": [
+                                {
+                                  "kind": "array",
+                                  "value": {
+                                    "kind": "parenthesized",
+                                    "value": {
+                                      "kind": "union",
+                                      "value": [
+                                        {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        },
+                                        {
+                                          "repr": "number",
+                                          "kind": "keyword",
+                                          "value": "number"
+                                        }
+                                      ]
+                                    }
+                                  }
+                                },
+                                {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                },
+                                {
+                                  "repr": "RegExp",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "RegExp"
+                                  }
+                                },
+                                {
+                                  "kind": "typeLiteral",
+                                  "value": {
+                                    "properties": [
+                                      {
+                                        "name": "regex",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                                          "line": 86,
+                                          "col": 58,
+                                          "byteIndex": 2382
+                                        },
+                                        "tsType": {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        }
+                                      },
+                                      {
+                                        "name": "flags",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                                          "line": 86,
+                                          "col": 73,
+                                          "byteIndex": 2397
+                                        },
+                                        "optional": true,
+                                        "tsType": {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "kind": "typeLiteral",
+                      "value": {
+                        "properties": [
+                          {
+                            "name": "excludes",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                              "line": 87,
+                              "col": 6,
+                              "byteIndex": 2422
+                            },
+                            "tsType": {
+                              "kind": "union",
+                              "value": [
+                                {
+                                  "kind": "array",
+                                  "value": {
+                                    "kind": "parenthesized",
+                                    "value": {
+                                      "kind": "union",
+                                      "value": [
+                                        {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        },
+                                        {
+                                          "repr": "number",
+                                          "kind": "keyword",
+                                          "value": "number"
+                                        }
+                                      ]
+                                    }
+                                  }
+                                },
+                                {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                },
+                                {
+                                  "repr": "RegExp",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "RegExp"
+                                  }
+                                },
+                                {
+                                  "kind": "typeLiteral",
+                                  "value": {
+                                    "properties": [
+                                      {
+                                        "name": "regex",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                                          "line": 87,
+                                          "col": 58,
+                                          "byteIndex": 2474
+                                        },
+                                        "tsType": {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        }
+                                      },
+                                      {
+                                        "name": "flags",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                                          "line": 87,
+                                          "col": 73,
+                                          "byteIndex": 2489
+                                        },
+                                        "optional": true,
+                                        "tsType": {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "kind": "typeLiteral",
+                      "value": {
+                        "properties": [
+                          {
+                            "name": "includesAll",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                              "line": 88,
+                              "col": 6,
+                              "byteIndex": 2514
+                            },
+                            "tsType": {
+                              "kind": "array",
+                              "value": {
+                                "kind": "parenthesized",
+                                "value": {
+                                  "kind": "union",
+                                  "value": [
+                                    {
+                                      "repr": "string",
+                                      "kind": "keyword",
+                                      "value": "string"
+                                    },
+                                    {
+                                      "repr": "number",
+                                      "kind": "keyword",
+                                      "value": "number"
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "kind": "typeLiteral",
+                      "value": {
+                        "properties": [
+                          {
+                            "name": "isEmpty",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                              "line": 89,
+                              "col": 6,
+                              "byteIndex": 2555
+                            },
+                            "tsType": {
+                              "repr": "boolean",
+                              "kind": "keyword",
+                              "value": "boolean"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "kind": "typeLiteral",
+                      "value": {
+                        "properties": [
+                          {
+                            "name": "some",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                              "line": 90,
+                              "col": 6,
+                              "byteIndex": 2580
+                            },
+                            "tsType": {
+                              "repr": "ObjectCondition",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "ObjectCondition",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "DateOperators",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                "line": 77,
+                "col": 0,
+                "byteIndex": 1979
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Operators for testing date values."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "union",
+                  "value": [
+                    {
+                      "kind": "typeLiteral",
+                      "value": {
+                        "properties": [
+                          {
+                            "name": "before",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                              "line": 78,
+                              "col": 6,
+                              "byteIndex": 2013
+                            },
+                            "tsType": {
+                              "kind": "union",
+                              "value": [
+                                {
+                                  "repr": "Date",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "Date"
+                                  }
+                                },
+                                {
+                                  "repr": "ISODate",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "ISODate",
+                                    "resolution": {
+                                      "kind": "import",
+                                      "specifier": "@epdoc/datetime",
+                                      "name": "ISODate"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "name": "after",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                              "line": 78,
+                              "col": 30,
+                              "byteIndex": 2037
+                            },
+                            "optional": true,
+                            "tsType": {
+                              "kind": "union",
+                              "value": [
+                                {
+                                  "repr": "Date",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "Date"
+                                  }
+                                },
+                                {
+                                  "repr": "ISODate",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "ISODate",
+                                    "resolution": {
+                                      "kind": "import",
+                                      "specifier": "@epdoc/datetime",
+                                      "name": "ISODate"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "kind": "typeLiteral",
+                      "value": {
+                        "properties": [
+                          {
+                            "name": "after",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                              "line": 79,
+                              "col": 6,
+                              "byteIndex": 2068
+                            },
+                            "tsType": {
+                              "kind": "union",
+                              "value": [
+                                {
+                                  "repr": "Date",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "Date"
+                                  }
+                                },
+                                {
+                                  "repr": "ISODate",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "ISODate",
+                                    "resolution": {
+                                      "kind": "import",
+                                      "specifier": "@epdoc/datetime",
+                                      "name": "ISODate"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          {
+                            "name": "before",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                              "line": 79,
+                              "col": 29,
+                              "byteIndex": 2091
+                            },
+                            "optional": true,
+                            "tsType": {
+                              "kind": "union",
+                              "value": [
+                                {
+                                  "repr": "Date",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "Date"
+                                  }
+                                },
+                                {
+                                  "repr": "ISODate",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "ISODate",
+                                    "resolution": {
+                                      "kind": "import",
+                                      "specifier": "@epdoc/datetime",
+                                      "name": "ISODate"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "FieldCondition",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                "line": 41,
+                "col": 0,
+                "byteIndex": 1166
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "A condition that tests one or more fields of a data object."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "repr": "Record",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeParams": [
+                      {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      },
+                      {
+                        "repr": "ValueCondition",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "ValueCondition",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      }
+                    ],
+                    "typeName": "Record"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "ITestable",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                "line": 16,
+                "col": 0,
+                "byteIndex": 493
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "The minimal contract for any object that can evaluate a declarative condition\nagainst a data payload.\n",
+                "tags": [
+                  {
+                    "kind": "template",
+                    "name": "D",
+                    "doc": "The shape of the data passed to {@link ITestable.test}."
+                  }
+                ]
+              },
+              "kind": "interface",
+              "def": {
+                "methods": [
+                  {
+                    "name": "test",
+                    "jsDoc": {
+                      "doc": "Evaluates the condition against the provided data.",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "data",
+                          "doc": "The data payload to test."
+                        },
+                        {
+                          "kind": "return",
+                          "doc": "`true` if the condition is met, otherwise `false`."
+                        }
+                      ]
+                    },
+                    "kind": "method",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                      "line": 22,
+                      "col": 2,
+                      "byteIndex": 705
+                    },
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "data",
+                        "optional": false,
+                        "tsType": {
+                          "repr": "D",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "D",
+                            "resolution": {
+                              "kind": "typeParam",
+                              "declaringName": "ITestable",
+                              "declaringKind": "interface"
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "returnType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    }
+                  }
+                ],
+                "typeParams": [
+                  {
+                    "name": "D"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "LogFn",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                "line": 8,
+                "col": 0,
+                "byteIndex": 259
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "A simple logging callback that receives a single string message.\n\nCondition classes accept an optional logger so callers can observe evaluation\nwithout imposing a specific logging framework."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "fnOrConstructor",
+                  "value": {
+                    "constructor": false,
+                    "tsType": {
+                      "repr": "void",
+                      "kind": "keyword",
+                      "value": "void"
+                    },
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "msg",
+                        "optional": false,
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "NumberOperators",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                "line": 68,
+                "col": 0,
+                "byteIndex": 1789
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Operators for testing numeric values."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "union",
+                  "value": [
+                    {
+                      "kind": "typeLiteral",
+                      "value": {
+                        "properties": [
+                          {
+                            "name": "eq",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                              "line": 69,
+                              "col": 6,
+                              "byteIndex": 1825
+                            },
+                            "tsType": {
+                              "repr": "number",
+                              "kind": "keyword",
+                              "value": "number"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "kind": "typeLiteral",
+                      "value": {
+                        "properties": [
+                          {
+                            "name": "ne",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                              "line": 70,
+                              "col": 6,
+                              "byteIndex": 1844
+                            },
+                            "tsType": {
+                              "repr": "number",
+                              "kind": "keyword",
+                              "value": "number"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "kind": "typeLiteral",
+                      "value": {
+                        "properties": [
+                          {
+                            "name": "gt",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                              "line": 71,
+                              "col": 6,
+                              "byteIndex": 1863
+                            },
+                            "tsType": {
+                              "repr": "number",
+                              "kind": "keyword",
+                              "value": "number"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "kind": "typeLiteral",
+                      "value": {
+                        "properties": [
+                          {
+                            "name": "gte",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                              "line": 72,
+                              "col": 6,
+                              "byteIndex": 1882
+                            },
+                            "tsType": {
+                              "repr": "number",
+                              "kind": "keyword",
+                              "value": "number"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "kind": "typeLiteral",
+                      "value": {
+                        "properties": [
+                          {
+                            "name": "lt",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                              "line": 73,
+                              "col": 6,
+                              "byteIndex": 1902
+                            },
+                            "tsType": {
+                              "repr": "number",
+                              "kind": "keyword",
+                              "value": "number"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "kind": "typeLiteral",
+                      "value": {
+                        "properties": [
+                          {
+                            "name": "lte",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                              "line": 74,
+                              "col": 6,
+                              "byteIndex": 1921
+                            },
+                            "tsType": {
+                              "repr": "number",
+                              "kind": "keyword",
+                              "value": "number"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "ObjectCondition",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                "line": 82,
+                "col": 0,
+                "byteIndex": 2189
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "A condition applied to each property of an object in an array."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "repr": "Record",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeParams": [
+                      {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      },
+                      {
+                        "repr": "ValueCondition",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "ValueCondition",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      }
+                    ],
+                    "typeName": "Record"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "StringOperators",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                "line": 60,
+                "col": 0,
+                "byteIndex": 1578
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Operators for testing string values."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "union",
+                  "value": [
+                    {
+                      "kind": "typeLiteral",
+                      "value": {
+                        "properties": [
+                          {
+                            "name": "eq",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                              "line": 61,
+                              "col": 6,
+                              "byteIndex": 1614
+                            },
+                            "tsType": {
+                              "repr": "string",
+                              "kind": "keyword",
+                              "value": "string"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "kind": "typeLiteral",
+                      "value": {
+                        "properties": [
+                          {
+                            "name": "contains",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                              "line": 62,
+                              "col": 6,
+                              "byteIndex": 1633
+                            },
+                            "tsType": {
+                              "repr": "string",
+                              "kind": "keyword",
+                              "value": "string"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "kind": "typeLiteral",
+                      "value": {
+                        "properties": [
+                          {
+                            "name": "startsWith",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                              "line": 63,
+                              "col": 6,
+                              "byteIndex": 1658
+                            },
+                            "tsType": {
+                              "repr": "string",
+                              "kind": "keyword",
+                              "value": "string"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "kind": "typeLiteral",
+                      "value": {
+                        "properties": [
+                          {
+                            "name": "endsWith",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                              "line": 64,
+                              "col": 6,
+                              "byteIndex": 1685
+                            },
+                            "tsType": {
+                              "repr": "string",
+                              "kind": "keyword",
+                              "value": "string"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "kind": "typeLiteral",
+                      "value": {
+                        "properties": [
+                          {
+                            "name": "regex",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                              "line": 65,
+                              "col": 6,
+                              "byteIndex": 1710
+                            },
+                            "tsType": {
+                              "repr": "string",
+                              "kind": "keyword",
+                              "value": "string"
+                            }
+                          },
+                          {
+                            "name": "flags",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                              "line": 65,
+                              "col": 21,
+                              "byteIndex": 1725
+                            },
+                            "optional": true,
+                            "tsType": {
+                              "repr": "string",
+                              "kind": "keyword",
+                              "value": "string"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "ValueCondition",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/condition/src/types.ts",
+                "line": 49,
+                "col": 0,
+                "byteIndex": 1381
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "A condition describing how a value should be tested.\n\nCan be a primitive for an equality check, or an object for a specific\noperator."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "union",
+                  "value": [
+                    {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    },
+                    {
+                      "repr": "RegExp",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "RegExp"
+                      }
+                    },
+                    {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    },
+                    {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    },
+                    {
+                      "repr": "StringOperators",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "StringOperators",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    },
+                    {
+                      "repr": "NumberOperators",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "NumberOperators",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    },
+                    {
+                      "repr": "DateOperators",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "DateOperators",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    },
+                    {
+                      "repr": "ArrayOperators",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "ArrayOperators",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

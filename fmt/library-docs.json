@@ -1,0 +1,2843 @@
+{
+  "version": 2,
+  "nodes": {
+    "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/mod.ts": {
+      "module_doc": {
+        "tags": [
+          {
+            "kind": "unsupported",
+            "value": "@epdoc/fmt - Factory functions for formatting common data types for display.\n\nProvides color-aware formatter factories for boolean, byte-size, percentage,\nand duration values. Each factory returns a closure that applies formatting\nand optional ANSI coloring. Designed for use with table column formatters\nand message builders.\n"
+          },
+          {
+            "kind": "example",
+            "doc": "```ts\nimport { bool, bytes, percent, uptime } from '@epdoc/fmt';\n\npercent()(0.5);            // \"50.00 %\"\nbytes()(1048576);          // \"1.0 MiB\"\nuptime()(3661);            // \"1h01m01s\"\nbool()(true);              // \"✓\" (green)\n\n// With sub-path imports\nimport { bool } from '@epdoc/fmt/bool';\n```\n"
+          },
+          {
+            "kind": "module",
+            "name": "@epdoc/fmt"
+          }
+        ]
+      },
+      "symbols": [
+        {
+          "name": "bool",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
+                "line": 101,
+                "col": 0,
+                "byteIndex": 3269
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Factory function that creates a boolean formatter.\nRenders boolean values as styled characters or text with configurable presets.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "options",
+                    "doc": "Preset name from {@link BOOL_PRESETS} or custom configuration"
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "A formatter function compatible with Column.formatter\n"
+                  },
+                  {
+                    "kind": "example",
+                    "doc": "```ts\n// Default check preset with green/red coloring\nformatter: formatters.bool()  // \"✓\" / \"✗\"\n\n// Preset name\nformatter: formatters.bool('circleDot')  // \"●\" / \"‧\"\n\n// Custom configuration\nformatter: formatters.bool({ trueChar: 'YES', falseChar: 'no', trueColor: 0x00ff00 })\n```"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "options",
+                    "optional": true,
+                    "tsType": {
+                      "kind": "union",
+                      "value": [
+                        {
+                          "repr": "BoolPreset",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "BoolPreset",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        },
+                        {
+                          "repr": "BoolFormatterOptions",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "BoolFormatterOptions",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "returnType": {
+                  "kind": "fnOrConstructor",
+                  "value": {
+                    "constructor": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    },
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "value",
+                        "optional": false,
+                        "tsType": {
+                          "repr": "unknown",
+                          "kind": "keyword",
+                          "value": "unknown"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "BOOL_PRESETS",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
+                "line": 24,
+                "col": 13,
+                "byteIndex": 826
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Predefined boolean display styles for table columns.\nEach preset specifies distinct characters for true/false values along with their colors.\nAll presets use different characters to ensure compatibility with no-color mode rendering."
+              },
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "check",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
+                          "line": 25,
+                          "col": 2,
+                          "byteIndex": 845
+                        },
+                        "tsType": {
+                          "repr": "BoolFormatterOptions",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "BoolFormatterOptions",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "checkBold",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
+                          "line": 26,
+                          "col": 2,
+                          "byteIndex": 968
+                        },
+                        "tsType": {
+                          "repr": "BoolFormatterOptions",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "BoolFormatterOptions",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "circle",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
+                          "line": 32,
+                          "col": 2,
+                          "byteIndex": 1114
+                        },
+                        "tsType": {
+                          "repr": "BoolFormatterOptions",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "BoolFormatterOptions",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "circleRed",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
+                          "line": 38,
+                          "col": 2,
+                          "byteIndex": 1259
+                        },
+                        "tsType": {
+                          "repr": "BoolFormatterOptions",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "BoolFormatterOptions",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "circleOpenRed",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
+                          "line": 44,
+                          "col": 2,
+                          "byteIndex": 1405
+                        },
+                        "tsType": {
+                          "repr": "BoolFormatterOptions",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "BoolFormatterOptions",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "circleDot",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
+                          "line": 50,
+                          "col": 2,
+                          "byteIndex": 1555
+                        },
+                        "tsType": {
+                          "repr": "BoolFormatterOptions",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "BoolFormatterOptions",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "yesno",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
+                          "line": 56,
+                          "col": 2,
+                          "byteIndex": 1703
+                        },
+                        "tsType": {
+                          "repr": "BoolFormatterOptions",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "BoolFormatterOptions",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "truefalse",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
+                          "line": 62,
+                          "col": 2,
+                          "byteIndex": 1844
+                        },
+                        "tsType": {
+                          "repr": "BoolFormatterOptions",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "BoolFormatterOptions",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "square",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
+                          "line": 68,
+                          "col": 2,
+                          "byteIndex": 1985
+                        },
+                        "tsType": {
+                          "repr": "BoolFormatterOptions",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "BoolFormatterOptions",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "arrow",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
+                          "line": 69,
+                          "col": 2,
+                          "byteIndex": 2101
+                        },
+                        "tsType": {
+                          "repr": "BoolFormatterOptions",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "BoolFormatterOptions",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "toggle",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
+                          "line": 70,
+                          "col": 2,
+                          "byteIndex": 2216
+                        },
+                        "tsType": {
+                          "repr": "BoolFormatterOptions",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "BoolFormatterOptions",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "BoolPreset",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
+                "line": 76,
+                "col": 0,
+                "byteIndex": 2406
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Inferred preset name type from {@link BOOL_PRESETS}."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "typeOperator",
+                  "value": {
+                    "operator": "keyof",
+                    "tsType": {
+                      "repr": "BOOL_PRESETS",
+                      "kind": "typeQuery",
+                      "value": "BOOL_PRESETS"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
+                "line": 78,
+                "col": 13,
+                "byteIndex": 2472
+              },
+              "declarationKind": "export",
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "kind": "mapped",
+                  "value": {
+                    "typeParam": {
+                      "name": "K",
+                      "constraint": {
+                        "kind": "typeOperator",
+                        "value": {
+                          "operator": "keyof",
+                          "tsType": {
+                            "repr": "BOOL_PRESETS",
+                            "kind": "typeQuery",
+                            "value": "BOOL_PRESETS"
+                          }
+                        }
+                      }
+                    },
+                    "tsType": {
+                      "repr": "K",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "K",
+                        "resolution": {
+                          "kind": "typeParam"
+                        }
+                      }
+                    }
+                  }
+                },
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "BoolFormatterOptions",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
+                "line": 6,
+                "col": 0,
+                "byteIndex": 125
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Options for boolean formatter."
+              },
+              "kind": "interface",
+              "def": {
+                "properties": [
+                  {
+                    "name": "trueChar",
+                    "jsDoc": {
+                      "doc": "Character or string to display for truthy values. Default: '✓'"
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
+                      "line": 8,
+                      "col": 2,
+                      "byteIndex": 241
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "name": "falseChar",
+                    "jsDoc": {
+                      "doc": "Character or string to display for falsy values. Default: '✗'"
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
+                      "line": 10,
+                      "col": 2,
+                      "byteIndex": 335
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "name": "trueColor",
+                    "jsDoc": {
+                      "doc": "Hex color for truthy values. Default: 0x51d67c (green)"
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
+                      "line": 12,
+                      "col": 2,
+                      "byteIndex": 421
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  },
+                  {
+                    "name": "falseColor",
+                    "jsDoc": {
+                      "doc": "Hex color for falsy values. Default: 0xef5867 (red)"
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
+                      "line": 14,
+                      "col": 2,
+                      "byteIndex": 504
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  },
+                  {
+                    "name": "bold",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
+                      "line": 15,
+                      "col": 2,
+                      "byteIndex": 527
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    }
+                  },
+                  {
+                    "name": "dim",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
+                      "line": 16,
+                      "col": 2,
+                      "byteIndex": 545
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "BoolPresetName",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/mod.ts",
+                "line": 24,
+                "col": 36,
+                "byteIndex": 820
+              },
+              "declarationKind": "export",
+              "kind": "reference",
+              "def": {
+                "target": {
+                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
+                  "line": 76,
+                  "col": 0,
+                  "byteIndex": 2406
+                }
+              }
+            },
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/mod.ts",
+                "line": 24,
+                "col": 36,
+                "byteIndex": 820
+              },
+              "declarationKind": "export",
+              "kind": "reference",
+              "def": {
+                "target": {
+                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
+                  "line": 78,
+                  "col": 13,
+                  "byteIndex": 2472
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "bytes",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bytes.ts",
+                "line": 29,
+                "col": 0,
+                "byteIndex": 879
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Factory function that creates a byte-size formatter.\nFormats byte values into human-readable binary units (B, KiB, MiB, GiB, etc.).\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "options",
+                    "doc": "Formatting options or number of decimals for backward compat"
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "A formatter function: `(bytes: unknown) => string`\n"
+                  },
+                  {
+                    "kind": "example",
+                    "doc": "```ts\nbytes()(1048576);               // \"1.0 MiB\"\nbytes({ decimals: 0 })(1536);   // \"2 KiB\"\nbytes({ separator: '' })(500);  // \"500B\"\n```"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "options",
+                    "optional": true,
+                    "tsType": {
+                      "kind": "union",
+                      "value": [
+                        {
+                          "repr": "BytesOptions",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "BytesOptions",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        },
+                        {
+                          "repr": "Integer",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "Integer",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "@epdoc/type",
+                              "name": "Integer"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "returnType": {
+                  "kind": "fnOrConstructor",
+                  "value": {
+                    "constructor": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    },
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "bytes",
+                        "optional": false,
+                        "tsType": {
+                          "repr": "unknown",
+                          "kind": "keyword",
+                          "value": "unknown"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "BytesOptions",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bytes.ts",
+                "line": 6,
+                "col": 0,
+                "byteIndex": 146
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Options for configuring the byte-size formatter."
+              },
+              "kind": "interface",
+              "def": {
+                "properties": [
+                  {
+                    "name": "decimals",
+                    "jsDoc": {
+                      "doc": "Number of decimal places (default: 1)"
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bytes.ts",
+                      "line": 8,
+                      "col": 2,
+                      "byteIndex": 227
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "Integer",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Integer",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "@epdoc/type",
+                          "name": "Integer"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "name": "separator",
+                    "jsDoc": {
+                      "doc": "Separator between value and unit (default: ' ')"
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bytes.ts",
+                      "line": 10,
+                      "col": 2,
+                      "byteIndex": 306
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "name": "unitColor",
+                    "jsDoc": {
+                      "doc": "Optional hex color for the unit suffix (e.g., 0x888888)"
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bytes.ts",
+                      "line": 12,
+                      "col": 2,
+                      "byteIndex": 393
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "percent",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/percent.ts",
+                "line": 29,
+                "col": 0,
+                "byteIndex": 871
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Factory function that creates a percentage formatter.\nConverts a ratio (0..1) to a percentage string.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "options",
+                    "doc": "Formatting options or number of decimals for backward compat"
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "A formatter function: `(ratio: unknown) => string`\n"
+                  },
+                  {
+                    "kind": "example",
+                    "doc": "```ts\npercent()(0.5);                    // \"50.00 %\"\npercent({ decimals: 0 })(0.5);     // \"50 %\"\npercent({ separator: '' })(0.5);   // \"50.00%\"\n```"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "options",
+                    "optional": true,
+                    "tsType": {
+                      "kind": "union",
+                      "value": [
+                        {
+                          "repr": "PercentOptions",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "PercentOptions",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        },
+                        {
+                          "repr": "Integer",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "Integer",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "@epdoc/type",
+                              "name": "Integer"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "returnType": {
+                  "kind": "fnOrConstructor",
+                  "value": {
+                    "constructor": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    },
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "ratio",
+                        "optional": false,
+                        "tsType": {
+                          "repr": "unknown",
+                          "kind": "keyword",
+                          "value": "unknown"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "PercentOptions",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/percent.ts",
+                "line": 6,
+                "col": 0,
+                "byteIndex": 147
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Options for configuring the percentage formatter."
+              },
+              "kind": "interface",
+              "def": {
+                "properties": [
+                  {
+                    "name": "decimals",
+                    "jsDoc": {
+                      "doc": "Number of decimal places (default: 2)"
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/percent.ts",
+                      "line": 8,
+                      "col": 2,
+                      "byteIndex": 230
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "Integer",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Integer",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "@epdoc/type",
+                          "name": "Integer"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "name": "separator",
+                    "jsDoc": {
+                      "doc": "Separator between value and percent sign (default: ' ')"
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/percent.ts",
+                      "line": 10,
+                      "col": 2,
+                      "byteIndex": 317
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "name": "unitColor",
+                    "jsDoc": {
+                      "doc": "Optional hex color for the percent sign (e.g., 0x888888)"
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/percent.ts",
+                      "line": 12,
+                      "col": 2,
+                      "byteIndex": 405
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "uptime",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/uptime.ts",
+                "line": 30,
+                "col": 0,
+                "byteIndex": 913
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Factory function that creates an uptime/duration formatter.\nFormats seconds elapsed into compact narrow format using @epdoc/duration.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "options",
+                    "doc": "Formatting options"
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "A formatter function: `(seconds: unknown) => string`\n"
+                  },
+                  {
+                    "kind": "example",
+                    "doc": "```ts\nuptime()(3661);                    // \"1h01m01s\"\nuptime({ separator: ' ' })(3661);  // \"1 h 01 m 01 s\"\nuptime({ units: 2 })(2700090);     // \"31d06h\"\n```"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "options",
+                    "optional": true,
+                    "tsType": {
+                      "repr": "UptimeOptions",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "UptimeOptions",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "returnType": {
+                  "kind": "fnOrConstructor",
+                  "value": {
+                    "constructor": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    },
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "seconds",
+                        "optional": false,
+                        "tsType": {
+                          "repr": "unknown",
+                          "kind": "keyword",
+                          "value": "unknown"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "UptimeOptions",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/uptime.ts",
+                "line": 7,
+                "col": 0,
+                "byteIndex": 196
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Options for configuring the uptime/duration formatter."
+              },
+              "kind": "interface",
+              "def": {
+                "properties": [
+                  {
+                    "name": "separator",
+                    "jsDoc": {
+                      "doc": "Separator between value and unit (default: '')"
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/uptime.ts",
+                      "line": 9,
+                      "col": 2,
+                      "byteIndex": 287
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "name": "unitColor",
+                    "jsDoc": {
+                      "doc": "Optional hex color for unit suffixes (e.g., 0x888888)"
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/uptime.ts",
+                      "line": 11,
+                      "col": 2,
+                      "byteIndex": 372
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  },
+                  {
+                    "name": "units",
+                    "jsDoc": {
+                      "doc": "Number of time units to display (default: 3)"
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/uptime.ts",
+                      "line": 13,
+                      "col": 2,
+                      "byteIndex": 448
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "Integer",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Integer",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "@epdoc/type",
+                          "name": "Integer"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "SuperScript",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                "line": 0,
+                "col": 13,
+                "byteIndex": 13
+              },
+              "declarationKind": "export",
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "kind": "array",
+                  "value": {
+                    "repr": "string",
+                    "kind": "keyword",
+                    "value": "string"
+                  }
+                },
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "SubScript",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                "line": 1,
+                "col": 13,
+                "byteIndex": 109
+              },
+              "declarationKind": "export",
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "kind": "array",
+                  "value": {
+                    "repr": "string",
+                    "kind": "keyword",
+                    "value": "string"
+                  }
+                },
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "SuperScriptLetters",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                "line": 4,
+                "col": 13,
+                "byteIndex": 244
+              },
+              "declarationKind": "export",
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "a",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 5,
+                          "col": 2,
+                          "byteIndex": 269
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "b",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 6,
+                          "col": 2,
+                          "byteIndex": 281
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "c",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 7,
+                          "col": 2,
+                          "byteIndex": 293
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "d",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 8,
+                          "col": 2,
+                          "byteIndex": 305
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "e",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 9,
+                          "col": 2,
+                          "byteIndex": 317
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "f",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 10,
+                          "col": 2,
+                          "byteIndex": 329
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "g",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 11,
+                          "col": 2,
+                          "byteIndex": 341
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "h",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 12,
+                          "col": 2,
+                          "byteIndex": 353
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "i",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 13,
+                          "col": 2,
+                          "byteIndex": 364
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "j",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 14,
+                          "col": 2,
+                          "byteIndex": 376
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "k",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 15,
+                          "col": 2,
+                          "byteIndex": 387
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "l",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 16,
+                          "col": 2,
+                          "byteIndex": 399
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "m",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 17,
+                          "col": 2,
+                          "byteIndex": 410
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "n",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 18,
+                          "col": 2,
+                          "byteIndex": 422
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "o",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 19,
+                          "col": 2,
+                          "byteIndex": 434
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "p",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 20,
+                          "col": 2,
+                          "byteIndex": 446
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "r",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 21,
+                          "col": 2,
+                          "byteIndex": 458
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "s",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 22,
+                          "col": 2,
+                          "byteIndex": 469
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "t",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 23,
+                          "col": 2,
+                          "byteIndex": 480
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "u",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 24,
+                          "col": 2,
+                          "byteIndex": 492
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "v",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 25,
+                          "col": 2,
+                          "byteIndex": 504
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "w",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 26,
+                          "col": 2,
+                          "byteIndex": 516
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "x",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 27,
+                          "col": 2,
+                          "byteIndex": 527
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "y",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 28,
+                          "col": 2,
+                          "byteIndex": 538
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "z",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 29,
+                          "col": 2,
+                          "byteIndex": 549
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Fractions",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                "line": 32,
+                "col": 13,
+                "byteIndex": 576
+              },
+              "declarationKind": "export",
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "repr": "Record",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeParams": [
+                      {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      },
+                      {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      }
+                    ],
+                    "typeName": "Record"
+                  }
+                },
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "MathSymbols",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                "line": 53,
+                "col": 13,
+                "byteIndex": 917
+              },
+              "declarationKind": "export",
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "plusMinus",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 55,
+                          "col": 2,
+                          "byteIndex": 951
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "minusPlus",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 56,
+                          "col": 2,
+                          "byteIndex": 970
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "multiply",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 57,
+                          "col": 2,
+                          "byteIndex": 990
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "divide",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 58,
+                          "col": 2,
+                          "byteIndex": 1008
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "dot",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 59,
+                          "col": 2,
+                          "byteIndex": 1024
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "asterisk",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 60,
+                          "col": 2,
+                          "byteIndex": 1038
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "notEqual",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 63,
+                          "col": 2,
+                          "byteIndex": 1075
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "approx",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 64,
+                          "col": 2,
+                          "byteIndex": 1094
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "congruent",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 65,
+                          "col": 2,
+                          "byteIndex": 1111
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "lessOrEqual",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 66,
+                          "col": 2,
+                          "byteIndex": 1131
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "greaterOrEqual",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 67,
+                          "col": 2,
+                          "byteIndex": 1153
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "element",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 70,
+                          "col": 2,
+                          "byteIndex": 1189
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "notElement",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 71,
+                          "col": 2,
+                          "byteIndex": 1207
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "subset",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 72,
+                          "col": 2,
+                          "byteIndex": 1228
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "superset",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 73,
+                          "col": 2,
+                          "byteIndex": 1245
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "intersection",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 74,
+                          "col": 2,
+                          "byteIndex": 1264
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "union",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 75,
+                          "col": 2,
+                          "byteIndex": 1287
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "empty",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 76,
+                          "col": 2,
+                          "byteIndex": 1303
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "integral",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 79,
+                          "col": 2,
+                          "byteIndex": 1334
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "doubleIntegral",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 80,
+                          "col": 2,
+                          "byteIndex": 1353
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "tripleIntegral",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 81,
+                          "col": 2,
+                          "byteIndex": 1378
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "partial",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 82,
+                          "col": 2,
+                          "byteIndex": 1403
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "nabla",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 83,
+                          "col": 2,
+                          "byteIndex": 1421
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "infinity",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 84,
+                          "col": 2,
+                          "byteIndex": 1437
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "sqrt",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 87,
+                          "col": 2,
+                          "byteIndex": 1468
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "cubeRoot",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 88,
+                          "col": 2,
+                          "byteIndex": 1483
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "fourthRoot",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 89,
+                          "col": 2,
+                          "byteIndex": 1502
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Currency",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                "line": 92,
+                "col": 13,
+                "byteIndex": 1538
+              },
+              "declarationKind": "export",
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "dollar",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 93,
+                          "col": 2,
+                          "byteIndex": 1553
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "cent",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 94,
+                          "col": 2,
+                          "byteIndex": 1568
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "euro",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 95,
+                          "col": 2,
+                          "byteIndex": 1582
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "pound",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 96,
+                          "col": 2,
+                          "byteIndex": 1597
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "yen",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 97,
+                          "col": 2,
+                          "byteIndex": 1612
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "franc",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 98,
+                          "col": 2,
+                          "byteIndex": 1625
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "lira",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 99,
+                          "col": 2,
+                          "byteIndex": 1641
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "rupee",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 100,
+                          "col": 2,
+                          "byteIndex": 1656
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "won",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 101,
+                          "col": 2,
+                          "byteIndex": 1672
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "bitcoin",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 102,
+                          "col": 2,
+                          "byteIndex": 1686
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "peso",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 103,
+                          "col": 2,
+                          "byteIndex": 1704
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "ruble",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 104,
+                          "col": 2,
+                          "byteIndex": 1719
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "shekel",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 105,
+                          "col": 2,
+                          "byteIndex": 1735
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "baht",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 106,
+                          "col": 2,
+                          "byteIndex": 1752
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "tugrik",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/char.ts",
+                          "line": 107,
+                          "col": 2,
+                          "byteIndex": 1767
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "IconType",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                "line": 4,
+                "col": 0,
+                "byteIndex": 127
+              },
+              "declarationKind": "export",
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "repr": "Icon",
+                  "kind": "typeQuery",
+                  "value": "Icon"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Icon",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                "line": 10,
+                "col": 13,
+                "byteIndex": 316
+              },
+              "declarationKind": "export",
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "Circle",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                          "line": 11,
+                          "col": 2,
+                          "byteIndex": 327
+                        },
+                        "tsType": {
+                          "kind": "typeLiteral",
+                          "value": {
+                            "properties": [
+                              {
+                                "name": "open",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                  "line": 12,
+                                  "col": 4,
+                                  "byteIndex": 341
+                                },
+                                "tsType": {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              },
+                              {
+                                "name": "filled",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                  "line": 13,
+                                  "col": 4,
+                                  "byteIndex": 358
+                                },
+                                "tsType": {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              },
+                              {
+                                "name": "dot",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                  "line": 14,
+                                  "col": 4,
+                                  "byteIndex": 377
+                                },
+                                "tsType": {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              },
+                              {
+                                "name": "bullet",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                  "line": 15,
+                                  "col": 4,
+                                  "byteIndex": 393
+                                },
+                                "tsType": {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              },
+                              {
+                                "name": "fisheye",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                  "line": 16,
+                                  "col": 4,
+                                  "byteIndex": 412
+                                },
+                                "tsType": {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              },
+                              {
+                                "name": "bullseye",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                  "line": 17,
+                                  "col": 4,
+                                  "byteIndex": 432
+                                },
+                                "tsType": {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "name": "Check",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                          "line": 19,
+                          "col": 2,
+                          "byteIndex": 456
+                        },
+                        "tsType": {
+                          "kind": "typeLiteral",
+                          "value": {
+                            "properties": [
+                              {
+                                "name": "standard",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                  "line": 20,
+                                  "col": 4,
+                                  "byteIndex": 469
+                                },
+                                "tsType": {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              },
+                              {
+                                "name": "heavy",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                  "line": 21,
+                                  "col": 4,
+                                  "byteIndex": 490
+                                },
+                                "tsType": {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              },
+                              {
+                                "name": "boxOpen",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                  "line": 22,
+                                  "col": 4,
+                                  "byteIndex": 508
+                                },
+                                "tsType": {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "name": "Cross",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                          "line": 24,
+                          "col": 2,
+                          "byteIndex": 531
+                        },
+                        "tsType": {
+                          "kind": "typeLiteral",
+                          "value": {
+                            "properties": [
+                              {
+                                "name": "standard",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                  "line": 25,
+                                  "col": 4,
+                                  "byteIndex": 544
+                                },
+                                "tsType": {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              },
+                              {
+                                "name": "heavy",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                  "line": 26,
+                                  "col": 4,
+                                  "byteIndex": 607
+                                },
+                                "tsType": {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              },
+                              {
+                                "name": "ballot",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                  "line": 27,
+                                  "col": 4,
+                                  "byteIndex": 663
+                                },
+                                "tsType": {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "name": "Arrow",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                          "line": 29,
+                          "col": 2,
+                          "byteIndex": 716
+                        },
+                        "tsType": {
+                          "kind": "typeLiteral",
+                          "value": {
+                            "properties": [
+                              {
+                                "name": "Line",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                  "line": 30,
+                                  "col": 4,
+                                  "byteIndex": 729
+                                },
+                                "tsType": {
+                                  "kind": "typeLiteral",
+                                  "value": {
+                                    "properties": [
+                                      {
+                                        "name": "right",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                          "line": 31,
+                                          "col": 6,
+                                          "byteIndex": 743
+                                        },
+                                        "tsType": {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        }
+                                      },
+                                      {
+                                        "name": "left",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                          "line": 32,
+                                          "col": 6,
+                                          "byteIndex": 763
+                                        },
+                                        "tsType": {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        }
+                                      },
+                                      {
+                                        "name": "up",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                          "line": 33,
+                                          "col": 6,
+                                          "byteIndex": 782
+                                        },
+                                        "tsType": {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        }
+                                      },
+                                      {
+                                        "name": "down",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                          "line": 34,
+                                          "col": 6,
+                                          "byteIndex": 799
+                                        },
+                                        "tsType": {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              },
+                              {
+                                "name": "Double",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                  "line": 36,
+                                  "col": 4,
+                                  "byteIndex": 823
+                                },
+                                "tsType": {
+                                  "kind": "typeLiteral",
+                                  "value": {
+                                    "properties": [
+                                      {
+                                        "name": "right",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                          "line": 37,
+                                          "col": 6,
+                                          "byteIndex": 839
+                                        },
+                                        "tsType": {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        }
+                                      },
+                                      {
+                                        "name": "left",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                          "line": 38,
+                                          "col": 6,
+                                          "byteIndex": 859
+                                        },
+                                        "tsType": {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        }
+                                      },
+                                      {
+                                        "name": "up",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                          "line": 39,
+                                          "col": 6,
+                                          "byteIndex": 878
+                                        },
+                                        "tsType": {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        }
+                                      },
+                                      {
+                                        "name": "down",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                          "line": 40,
+                                          "col": 6,
+                                          "byteIndex": 895
+                                        },
+                                        "tsType": {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              },
+                              {
+                                "name": "Ptr",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                  "line": 42,
+                                  "col": 4,
+                                  "byteIndex": 919
+                                },
+                                "tsType": {
+                                  "kind": "typeLiteral",
+                                  "value": {
+                                    "properties": [
+                                      {
+                                        "name": "right",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                          "line": 43,
+                                          "col": 6,
+                                          "byteIndex": 932
+                                        },
+                                        "tsType": {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        }
+                                      },
+                                      {
+                                        "name": "left",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                          "line": 44,
+                                          "col": 6,
+                                          "byteIndex": 952
+                                        },
+                                        "tsType": {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        }
+                                      },
+                                      {
+                                        "name": "up",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                          "line": 45,
+                                          "col": 6,
+                                          "byteIndex": 971
+                                        },
+                                        "tsType": {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        }
+                                      },
+                                      {
+                                        "name": "down",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                          "line": 46,
+                                          "col": 6,
+                                          "byteIndex": 988
+                                        },
+                                        "tsType": {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "name": "Square",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                          "line": 49,
+                          "col": 2,
+                          "byteIndex": 1015
+                        },
+                        "tsType": {
+                          "kind": "typeLiteral",
+                          "value": {
+                            "properties": [
+                              {
+                                "name": "open",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                  "line": 50,
+                                  "col": 4,
+                                  "byteIndex": 1029
+                                },
+                                "tsType": {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              },
+                              {
+                                "name": "filled",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                  "line": 51,
+                                  "col": 4,
+                                  "byteIndex": 1046
+                                },
+                                "tsType": {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              },
+                              {
+                                "name": "smallOpen",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                  "line": 52,
+                                  "col": 4,
+                                  "byteIndex": 1065
+                                },
+                                "tsType": {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              },
+                              {
+                                "name": "smallFilled",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                  "line": 53,
+                                  "col": 4,
+                                  "byteIndex": 1087
+                                },
+                                "tsType": {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "name": "Alert",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                          "line": 55,
+                          "col": 2,
+                          "byteIndex": 1114
+                        },
+                        "tsType": {
+                          "kind": "typeLiteral",
+                          "value": {
+                            "properties": [
+                              {
+                                "name": "warning",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                  "line": 56,
+                                  "col": 4,
+                                  "byteIndex": 1127
+                                },
+                                "tsType": {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              },
+                              {
+                                "name": "info",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                  "line": 57,
+                                  "col": 4,
+                                  "byteIndex": 1147
+                                },
+                                "tsType": {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              },
+                              {
+                                "name": "star",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                  "line": 58,
+                                  "col": 4,
+                                  "byteIndex": 1164
+                                },
+                                "tsType": {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              },
+                              {
+                                "name": "starOpen",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
+                                  "line": 59,
+                                  "col": 4,
+                                  "byteIndex": 1181
+                                },
+                                "tsType": {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "kind": "const"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

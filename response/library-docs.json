@@ -1,0 +1,2638 @@
+{
+  "version": 2,
+  "nodes": {
+    "file:///Users/jpravetz/dev/@epdoc/std/response/src/mod.ts": {
+      "symbols": [
+        {
+          "name": "Response",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/apires.ts",
+                "line": 10,
+                "col": 0,
+                "byteIndex": 313
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "A generic response wrapper that handles both successful results and errors.",
+                "tags": [
+                  {
+                    "kind": "template",
+                    "name": "T",
+                    "doc": "The type of data contained in a successful response"
+                  },
+                  {
+                    "kind": "experimental"
+                  }
+                ]
+              },
+              "kind": "class",
+              "def": {
+                "properties": [
+                  {
+                    "jsDoc": {
+                      "doc": "Indicates if the response represents a success state"
+                    },
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    },
+                    "name": "ok",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/apires.ts",
+                      "line": 12,
+                      "col": 2,
+                      "byteIndex": 404
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "The response data"
+                    },
+                    "tsType": {
+                      "kind": "union",
+                      "value": [
+                        {
+                          "repr": "T",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "T",
+                            "resolution": {
+                              "kind": "typeParam",
+                              "declaringName": "Response",
+                              "declaringKind": "class"
+                            }
+                          }
+                        },
+                        {
+                          "repr": "undefined",
+                          "kind": "keyword",
+                          "value": "undefined"
+                        }
+                      ]
+                    },
+                    "name": "_data",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/apires.ts",
+                      "line": 14,
+                      "col": 2,
+                      "byteIndex": 453
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Error information if the response failed"
+                    },
+                    "tsType": {
+                      "kind": "union",
+                      "value": [
+                        {
+                          "repr": "Error",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "Error"
+                          }
+                        },
+                        {
+                          "repr": "undefined",
+                          "kind": "keyword",
+                          "value": "undefined"
+                        }
+                      ]
+                    },
+                    "name": "_error",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/apires.ts",
+                      "line": 16,
+                      "col": 2,
+                      "byteIndex": 527
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Internal flag tracking if data has been verified"
+                    },
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    },
+                    "name": "_assertedData",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/apires.ts",
+                      "line": 18,
+                      "col": 2,
+                      "byteIndex": 614
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Internal flag tracking if error has been verified"
+                    },
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    },
+                    "name": "_assertedError",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/apires.ts",
+                      "line": 20,
+                      "col": 2,
+                      "byteIndex": 707
+                    }
+                  }
+                ],
+                "methods": [
+                  {
+                    "jsDoc": {
+                      "doc": "Sets the response data and marks the response as successful.",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "val",
+                          "tsType": {
+                            "repr": "T | undefined | null",
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "T",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "T",
+                                  "resolution": {
+                                    "kind": "typeParam"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "undefined",
+                                "kind": "keyword",
+                                "value": "undefined"
+                              },
+                              {
+                                "repr": "null",
+                                "kind": "keyword",
+                                "value": "null"
+                              }
+                            ]
+                          },
+                          "doc": "The data to set"
+                        },
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "this",
+                            "kind": "this"
+                          },
+                          "doc": "The response instance for chaining"
+                        }
+                      ]
+                    },
+                    "name": "setData",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "val",
+                          "optional": false,
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "T",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "T",
+                                  "resolution": {
+                                    "kind": "typeParam",
+                                    "declaringName": "Response",
+                                    "declaringKind": "class"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "undefined",
+                                "kind": "keyword",
+                                "value": "undefined"
+                              },
+                              {
+                                "repr": "null",
+                                "kind": "keyword",
+                                "value": "null"
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/apires.ts",
+                      "line": 27,
+                      "col": 2,
+                      "byteIndex": 934
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Gets the response data. Must call hasData() first.",
+                      "tags": [
+                        {
+                          "kind": "throws",
+                          "tsType": {
+                            "repr": "Error",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "Error",
+                              "resolution": {
+                                "kind": "typeParam"
+                              }
+                            }
+                          },
+                          "doc": "If hasData() hasn't been called"
+                        },
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "T",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "T",
+                              "resolution": {
+                                "kind": "typeParam"
+                              }
+                            }
+                          },
+                          "doc": "The response data"
+                        }
+                      ]
+                    },
+                    "name": "data",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "T",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "T",
+                          "resolution": {
+                            "kind": "typeParam",
+                            "declaringName": "Response",
+                            "declaringKind": "class"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/apires.ts",
+                      "line": 38,
+                      "col": 2,
+                      "byteIndex": 1226
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Gets the response data without assertion checks.",
+                      "tags": [
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "T | undefined",
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "T",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "T",
+                                  "resolution": {
+                                    "kind": "typeParam"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "undefined",
+                                "kind": "keyword",
+                                "value": "undefined"
+                              }
+                            ]
+                          },
+                          "doc": "The response data or undefined"
+                        }
+                      ]
+                    },
+                    "name": "anyData",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "kind": "union",
+                        "value": [
+                          {
+                            "repr": "T",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "T",
+                              "resolution": {
+                                "kind": "typeParam",
+                                "declaringName": "Response",
+                                "declaringKind": "class"
+                              }
+                            }
+                          },
+                          {
+                            "repr": "undefined",
+                            "kind": "keyword",
+                            "value": "undefined"
+                          }
+                        ]
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/apires.ts",
+                      "line": 47,
+                      "col": 2,
+                      "byteIndex": 1499
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Sets an error and marks the response as failed.",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "val",
+                          "tsType": {
+                            "repr": "unknown",
+                            "kind": "keyword",
+                            "value": "unknown"
+                          },
+                          "doc": "The error to set (string or Error object)"
+                        },
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "this",
+                            "kind": "this"
+                          },
+                          "doc": "The response instance for chaining"
+                        }
+                      ]
+                    },
+                    "name": "setError",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "val",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "unknown",
+                            "kind": "keyword",
+                            "value": "unknown"
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/apires.ts",
+                      "line": 56,
+                      "col": 2,
+                      "byteIndex": 1751
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Gets the error. Must call isError() first.",
+                      "tags": [
+                        {
+                          "kind": "throws",
+                          "tsType": {
+                            "repr": "Error",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "Error",
+                              "resolution": {
+                                "kind": "typeParam"
+                              }
+                            }
+                          },
+                          "doc": "If isError() hasn't been called"
+                        },
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "Error",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "Error",
+                              "resolution": {
+                                "kind": "typeParam"
+                              }
+                            }
+                          },
+                          "doc": "The error object"
+                        }
+                      ]
+                    },
+                    "name": "error",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "Error",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "Error"
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/apires.ts",
+                      "line": 71,
+                      "col": 2,
+                      "byteIndex": 2102
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Checks if the response represents a success state.",
+                      "tags": [
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "boolean",
+                            "kind": "keyword",
+                            "value": "boolean"
+                          },
+                          "doc": "True if the response is successful"
+                        }
+                      ]
+                    },
+                    "name": "isOk",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "boolean",
+                        "kind": "keyword",
+                        "value": "boolean"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/apires.ts",
+                      "line": 80,
+                      "col": 2,
+                      "byteIndex": 2386
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Checks if the response contains data.",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "arg",
+                          "tsType": {
+                            "repr": "string | boolean",
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              },
+                              {
+                                "repr": "boolean",
+                                "kind": "keyword",
+                                "value": "boolean"
+                              }
+                            ]
+                          },
+                          "optional": true,
+                          "doc": "If true or string, sets error if no data"
+                        },
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "boolean",
+                            "kind": "keyword",
+                            "value": "boolean"
+                          },
+                          "doc": "True if response has data"
+                        }
+                      ]
+                    },
+                    "name": "hasData",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "arg",
+                          "optional": true,
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              },
+                              {
+                                "repr": "boolean",
+                                "kind": "keyword",
+                                "value": "boolean"
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "boolean",
+                        "kind": "keyword",
+                        "value": "boolean"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/apires.ts",
+                      "line": 89,
+                      "col": 2,
+                      "byteIndex": 2616
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Checks if this is a successful response with no data.",
+                      "tags": [
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "boolean",
+                            "kind": "keyword",
+                            "value": "boolean"
+                          },
+                          "doc": "True if successful but no data present"
+                        }
+                      ]
+                    },
+                    "name": "isVoid",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "boolean",
+                        "kind": "keyword",
+                        "value": "boolean"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/apires.ts",
+                      "line": 109,
+                      "col": 2,
+                      "byteIndex": 3153
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Checks if the response represents an error state.",
+                      "tags": [
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "boolean",
+                            "kind": "keyword",
+                            "value": "boolean"
+                          },
+                          "doc": "True if the response contains an error"
+                        }
+                      ]
+                    },
+                    "name": "isError",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "boolean",
+                        "kind": "keyword",
+                        "value": "boolean"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/apires.ts",
+                      "line": 117,
+                      "col": 2,
+                      "byteIndex": 3358
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Converts a void (successful but no data) response to an error.",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "s",
+                          "tsType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          },
+                          "default": "'No response data'",
+                          "doc": "The error message"
+                        }
+                      ]
+                    },
+                    "name": "markVoidAsError",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "assign",
+                          "left": {
+                            "kind": "identifier",
+                            "name": "s",
+                            "optional": false,
+                            "tsType": {
+                              "repr": "string",
+                              "kind": "keyword",
+                              "value": "string"
+                            }
+                          },
+                          "right": "NO_RESPONSE_DATA"
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "void",
+                        "kind": "keyword",
+                        "value": "void"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/apires.ts",
+                      "line": 130,
+                      "col": 2,
+                      "byteIndex": 3686
+                    }
+                  }
+                ],
+                "typeParams": [
+                  {
+                    "name": "T"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ApiResponse",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/apires.ts",
+                "line": 143,
+                "col": 0,
+                "byteIndex": 4011
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Extended response class that includes timing information.",
+                "tags": [
+                  {
+                    "kind": "template",
+                    "name": "T",
+                    "doc": "The type of data contained in a successful response"
+                  },
+                  {
+                    "kind": "experimental"
+                  }
+                ]
+              },
+              "kind": "class",
+              "def": {
+                "properties": [
+                  {
+                    "jsDoc": {
+                      "doc": "Start time of the operation"
+                    },
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    },
+                    "name": "t0",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/apires.ts",
+                      "line": 145,
+                      "col": 2,
+                      "byteIndex": 4100
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Duration of the operation in milliseconds"
+                    },
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    },
+                    "name": "duration",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/apires.ts",
+                      "line": 147,
+                      "col": 2,
+                      "byteIndex": 4185
+                    }
+                  }
+                ],
+                "methods": [
+                  {
+                    "jsDoc": {
+                      "doc": "Calculates the duration of the operation.",
+                      "tags": [
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "this",
+                            "kind": "this"
+                          },
+                          "doc": "The response instance for chaining"
+                        }
+                      ]
+                    },
+                    "name": "measure",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/apires.ts",
+                      "line": 153,
+                      "col": 2,
+                      "byteIndex": 4325
+                    }
+                  },
+                  {
+                    "isOverride": true,
+                    "name": "setData",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "val",
+                          "optional": false,
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "T",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "T",
+                                  "resolution": {
+                                    "kind": "typeParam",
+                                    "declaringName": "ApiResponse",
+                                    "declaringKind": "class"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "undefined",
+                                "kind": "keyword",
+                                "value": "undefined"
+                              },
+                              {
+                                "repr": "null",
+                                "kind": "keyword",
+                                "value": "null"
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/apires.ts",
+                      "line": 158,
+                      "col": 2,
+                      "byteIndex": 4416
+                    }
+                  }
+                ],
+                "extends": "Response",
+                "typeParams": [
+                  {
+                    "name": "T"
+                  }
+                ],
+                "superTypeParams": [
+                  {
+                    "repr": "T",
+                    "kind": "typeRef",
+                    "value": {
+                      "typeName": "T",
+                      "resolution": {
+                        "kind": "typeParam",
+                        "declaringName": "ApiResponse",
+                        "declaringKind": "class"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "response",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/apires.ts",
+                "line": 171,
+                "col": 0,
+                "byteIndex": 4741
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Creates a new Response instance.",
+                "tags": [
+                  {
+                    "kind": "template",
+                    "name": "T",
+                    "doc": "The type of data the response will contain"
+                  },
+                  {
+                    "kind": "return",
+                    "tsType": {
+                      "repr": "Response<T>",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeParams": [
+                          {
+                            "repr": "T",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "T",
+                              "resolution": {
+                                "kind": "typeParam"
+                              }
+                            }
+                          }
+                        ],
+                        "typeName": "Response",
+                        "resolution": {
+                          "kind": "typeParam"
+                        }
+                      }
+                    },
+                    "doc": "A new Response instance"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [],
+                "returnType": {
+                  "repr": "Response",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeParams": [
+                      {
+                        "repr": "T",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "T",
+                          "resolution": {
+                            "kind": "typeParam",
+                            "declaringName": "response",
+                            "declaringKind": "function"
+                          }
+                        }
+                      }
+                    ],
+                    "typeName": "Response",
+                    "resolution": {
+                      "kind": "local"
+                    }
+                  }
+                },
+                "hasBody": true,
+                "typeParams": [
+                  {
+                    "name": "T"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "apiResponse",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/apires.ts",
+                "line": 180,
+                "col": 0,
+                "byteIndex": 4978
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Creates a new ApiResponse instance.",
+                "tags": [
+                  {
+                    "kind": "template",
+                    "name": "T",
+                    "doc": "The type of data the response will contain"
+                  },
+                  {
+                    "kind": "return",
+                    "tsType": {
+                      "repr": "ApiResponse<T>",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeParams": [
+                          {
+                            "repr": "T",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "T",
+                              "resolution": {
+                                "kind": "typeParam"
+                              }
+                            }
+                          }
+                        ],
+                        "typeName": "ApiResponse",
+                        "resolution": {
+                          "kind": "typeParam"
+                        }
+                      }
+                    },
+                    "doc": "A new ApiResponse instance"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [],
+                "returnType": {
+                  "repr": "ApiResponse",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeParams": [
+                      {
+                        "repr": "T",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "T",
+                          "resolution": {
+                            "kind": "typeParam",
+                            "declaringName": "apiResponse",
+                            "declaringKind": "function"
+                          }
+                        }
+                      }
+                    ],
+                    "typeName": "ApiResponse",
+                    "resolution": {
+                      "kind": "local"
+                    }
+                  }
+                },
+                "hasBody": true,
+                "typeParams": [
+                  {
+                    "name": "T"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ResponsePromise",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/apires.ts",
+                "line": 185,
+                "col": 0,
+                "byteIndex": 5123
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Type alias for a Promise that resolves to a Response"
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "repr": "Promise",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeParams": [
+                      {
+                        "repr": "Response",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeParams": [
+                            {
+                              "repr": "T",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "T",
+                                "resolution": {
+                                  "kind": "typeParam",
+                                  "declaringName": "ResponsePromise",
+                                  "declaringKind": "typeAlias"
+                                }
+                              }
+                            }
+                          ],
+                          "typeName": "Response",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      }
+                    ],
+                    "typeName": "Promise"
+                  }
+                },
+                "typeParams": [
+                  {
+                    "name": "T"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ApiResponsePromise",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/apires.ts",
+                "line": 187,
+                "col": 0,
+                "byteIndex": 5242
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Type alias for a Promise that resolves to an ApiResponse"
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "repr": "Promise",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeParams": [
+                      {
+                        "repr": "ApiResponse",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeParams": [
+                            {
+                              "repr": "T",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "T",
+                                "resolution": {
+                                  "kind": "typeParam",
+                                  "declaringName": "ApiResponsePromise",
+                                  "declaringKind": "typeAlias"
+                                }
+                              }
+                            }
+                          ],
+                          "typeName": "ApiResponse",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      }
+                    ],
+                    "typeName": "Promise"
+                  }
+                },
+                "typeParams": [
+                  {
+                    "name": "T"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "catchError",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/apires.ts",
+                "line": 195,
+                "col": 0,
+                "byteIndex": 5562
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Wraps a promise in a Response object to handle success/error states.",
+                "tags": [
+                  {
+                    "kind": "template",
+                    "name": "T",
+                    "doc": "The type of data the promise resolves to"
+                  },
+                  {
+                    "kind": "param",
+                    "name": "promise",
+                    "tsType": {
+                      "repr": "Promise<T>",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeParams": [
+                          {
+                            "repr": "T",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "T",
+                              "resolution": {
+                                "kind": "typeParam"
+                              }
+                            }
+                          }
+                        ],
+                        "typeName": "Promise",
+                        "resolution": {
+                          "kind": "typeParam"
+                        }
+                      }
+                    },
+                    "doc": "The promise to wrap"
+                  },
+                  {
+                    "kind": "return",
+                    "tsType": {
+                      "repr": "ResponsePromise<T>",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeParams": [
+                          {
+                            "repr": "T",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "T",
+                              "resolution": {
+                                "kind": "typeParam"
+                              }
+                            }
+                          }
+                        ],
+                        "typeName": "ResponsePromise",
+                        "resolution": {
+                          "kind": "typeParam"
+                        }
+                      }
+                    },
+                    "doc": "A promise that resolves to a Response"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "promise",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "Promise",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeParams": [
+                          {
+                            "repr": "T",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "T",
+                              "resolution": {
+                                "kind": "typeParam",
+                                "declaringName": "catchError",
+                                "declaringKind": "function"
+                              }
+                            }
+                          }
+                        ],
+                        "typeName": "Promise"
+                      }
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "ResponsePromise",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeParams": [
+                      {
+                        "repr": "T",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "T",
+                          "resolution": {
+                            "kind": "typeParam",
+                            "declaringName": "catchError",
+                            "declaringKind": "function"
+                          }
+                        }
+                      }
+                    ],
+                    "typeName": "ResponsePromise",
+                    "resolution": {
+                      "kind": "local"
+                    }
+                  }
+                },
+                "hasBody": true,
+                "typeParams": [
+                  {
+                    "name": "T"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "catchApiError",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/apires.ts",
+                "line": 212,
+                "col": 0,
+                "byteIndex": 6109
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Wraps a promise in an ApiResponse object to handle success/error states with timing.",
+                "tags": [
+                  {
+                    "kind": "template",
+                    "name": "T",
+                    "doc": "The type of data the promise resolves to"
+                  },
+                  {
+                    "kind": "param",
+                    "name": "promise",
+                    "tsType": {
+                      "repr": "Promise<T>",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeParams": [
+                          {
+                            "repr": "T",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "T",
+                              "resolution": {
+                                "kind": "typeParam"
+                              }
+                            }
+                          }
+                        ],
+                        "typeName": "Promise",
+                        "resolution": {
+                          "kind": "typeParam"
+                        }
+                      }
+                    },
+                    "doc": "The promise to wrap"
+                  },
+                  {
+                    "kind": "return",
+                    "tsType": {
+                      "repr": "ApiResponsePromise<T>",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeParams": [
+                          {
+                            "repr": "T",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "T",
+                              "resolution": {
+                                "kind": "typeParam"
+                              }
+                            }
+                          }
+                        ],
+                        "typeName": "ApiResponsePromise",
+                        "resolution": {
+                          "kind": "typeParam"
+                        }
+                      }
+                    },
+                    "doc": "A promise that resolves to an ApiResponse"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "promise",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "Promise",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeParams": [
+                          {
+                            "repr": "T",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "T",
+                              "resolution": {
+                                "kind": "typeParam",
+                                "declaringName": "catchApiError",
+                                "declaringKind": "function"
+                              }
+                            }
+                          }
+                        ],
+                        "typeName": "Promise"
+                      }
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "ApiResponsePromise",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeParams": [
+                      {
+                        "repr": "T",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "T",
+                          "resolution": {
+                            "kind": "typeParam",
+                            "declaringName": "catchApiError",
+                            "declaringKind": "function"
+                          }
+                        }
+                      }
+                    ],
+                    "typeName": "ApiResponsePromise",
+                    "resolution": {
+                      "kind": "local"
+                    }
+                  }
+                },
+                "hasBody": true,
+                "typeParams": [
+                  {
+                    "name": "T"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "catchAsArray",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/mod.ts",
+                "line": 1,
+                "col": 7,
+                "byteIndex": 36
+              },
+              "declarationKind": "export",
+              "kind": "namespace",
+              "def": {
+                "elements": [
+                  {
+                    "name": "Result",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/catch-array.ts",
+                          "line": 6,
+                          "col": 0,
+                          "byteIndex": 174
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Tuple type representing either an error or success response.",
+                          "tags": [
+                            {
+                              "kind": "template",
+                              "name": "T",
+                              "doc": "The type of the successful result"
+                            }
+                          ]
+                        },
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "kind": "tuple",
+                                "value": [
+                                  {
+                                    "repr": "IError",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "IError",
+                                      "resolution": {
+                                        "kind": "import",
+                                        "specifier": "@epdoc/type",
+                                        "name": "IError"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "repr": "null",
+                                    "kind": "keyword",
+                                    "value": "null"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "tuple",
+                                "value": [
+                                  {
+                                    "repr": "null",
+                                    "kind": "keyword",
+                                    "value": "null"
+                                  },
+                                  {
+                                    "repr": "T",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "T",
+                                      "resolution": {
+                                        "kind": "typeParam",
+                                        "declaringName": "Result",
+                                        "declaringKind": "typeAlias"
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          "typeParams": [
+                            {
+                              "name": "T"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "ResultPromise",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/catch-array.ts",
+                          "line": 9,
+                          "col": 0,
+                          "byteIndex": 280
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Promise that resolves to a SafeResponse tuple"
+                        },
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "repr": "Promise",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeParams": [
+                                {
+                                  "repr": "Result",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeParams": [
+                                      {
+                                        "repr": "T",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "T",
+                                          "resolution": {
+                                            "kind": "typeParam",
+                                            "declaringName": "ResultPromise",
+                                            "declaringKind": "typeAlias"
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "typeName": "Result",
+                                    "resolution": {
+                                      "kind": "local"
+                                    }
+                                  }
+                                }
+                              ],
+                              "typeName": "Promise"
+                            }
+                          },
+                          "typeParams": [
+                            {
+                              "name": "T"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "ResultTimed",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/catch-array.ts",
+                          "line": 15,
+                          "col": 0,
+                          "byteIndex": 465
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Tuple type representing either an error or success response with timing.",
+                          "tags": [
+                            {
+                              "kind": "template",
+                              "name": "T",
+                              "doc": "The type of the successful result"
+                            }
+                          ]
+                        },
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "kind": "tuple",
+                                "value": [
+                                  {
+                                    "repr": "IError",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "IError",
+                                      "resolution": {
+                                        "kind": "import",
+                                        "specifier": "@epdoc/type",
+                                        "name": "IError"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "repr": "null",
+                                    "kind": "keyword",
+                                    "value": "null"
+                                  },
+                                  {
+                                    "repr": "number",
+                                    "kind": "keyword",
+                                    "value": "number"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "tuple",
+                                "value": [
+                                  {
+                                    "repr": "null",
+                                    "kind": "keyword",
+                                    "value": "null"
+                                  },
+                                  {
+                                    "repr": "T",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "T",
+                                      "resolution": {
+                                        "kind": "typeParam",
+                                        "declaringName": "ResultTimed",
+                                        "declaringKind": "typeAlias"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "repr": "number",
+                                    "kind": "keyword",
+                                    "value": "number"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          "typeParams": [
+                            {
+                              "name": "T"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "ResultTimedPromise",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/catch-array.ts",
+                          "line": 18,
+                          "col": 0,
+                          "byteIndex": 595
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Promise that resolves to a SafeApiResponse tuple"
+                        },
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "repr": "Promise",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeParams": [
+                                {
+                                  "repr": "ResultTimed",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeParams": [
+                                      {
+                                        "repr": "T",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "T",
+                                          "resolution": {
+                                            "kind": "typeParam",
+                                            "declaringName": "ResultTimedPromise",
+                                            "declaringKind": "typeAlias"
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "typeName": "ResultTimed",
+                                    "resolution": {
+                                      "kind": "local"
+                                    }
+                                  }
+                                }
+                              ],
+                              "typeName": "Promise"
+                            }
+                          },
+                          "typeParams": [
+                            {
+                              "name": "T"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "wrap",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/catch-array.ts",
+                          "line": 36,
+                          "col": 0,
+                          "byteIndex": 1171
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Wraps a promise to handle errors safely without throwing.\nReturns a tuple containing either [error, null] or [null, result].\n",
+                          "tags": [
+                            {
+                              "kind": "template",
+                              "name": "T",
+                              "doc": "The type of the successful result"
+                            },
+                            {
+                              "kind": "param",
+                              "name": "promise",
+                              "tsType": {
+                                "repr": "Promise<T>",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "T",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "T",
+                                        "resolution": {
+                                          "kind": "typeParam"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "typeName": "Promise",
+                                  "resolution": {
+                                    "kind": "typeParam"
+                                  }
+                                }
+                              },
+                              "doc": "The promise to wrap"
+                            },
+                            {
+                              "kind": "return",
+                              "tsType": {
+                                "repr": "ResultPromise<T>",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "T",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "T",
+                                        "resolution": {
+                                          "kind": "typeParam"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "typeName": "ResultPromise",
+                                  "resolution": {
+                                    "kind": "typeParam"
+                                  }
+                                }
+                              },
+                              "doc": "A promise that resolves to a [error, result] tuple\n"
+                            },
+                            {
+                              "kind": "example",
+                              "doc": "const [error, user] = await safe(fetchUser(123));\nif (error) {\n  console.error('Failed to fetch user:', error);\n  return;\n}\nconsole.log('User data:', user);"
+                            }
+                          ]
+                        },
+                        "kind": "function",
+                        "def": {
+                          "params": [
+                            {
+                              "kind": "identifier",
+                              "name": "promise",
+                              "optional": false,
+                              "tsType": {
+                                "repr": "Promise",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "T",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "T",
+                                        "resolution": {
+                                          "kind": "typeParam",
+                                          "declaringName": "wrap",
+                                          "declaringKind": "function"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "typeName": "Promise"
+                                }
+                              }
+                            }
+                          ],
+                          "returnType": {
+                            "repr": "ResultPromise",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeParams": [
+                                {
+                                  "repr": "T",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "T",
+                                    "resolution": {
+                                      "kind": "typeParam",
+                                      "declaringName": "wrap",
+                                      "declaringKind": "function"
+                                    }
+                                  }
+                                }
+                              ],
+                              "typeName": "ResultPromise",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          },
+                          "hasBody": true,
+                          "isAsync": true,
+                          "typeParams": [
+                            {
+                              "name": "T"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "twrap",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/catch-array.ts",
+                          "line": 63,
+                          "col": 0,
+                          "byteIndex": 2044
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Wraps a promise to handle errors safely and measure execution time.\nReturns a tuple containing either [error, null, duration] or [null, result, duration].\n",
+                          "tags": [
+                            {
+                              "kind": "template",
+                              "name": "T",
+                              "doc": "The type of the successful result"
+                            },
+                            {
+                              "kind": "param",
+                              "name": "promise",
+                              "tsType": {
+                                "repr": "Promise<T>",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "T",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "T",
+                                        "resolution": {
+                                          "kind": "typeParam"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "typeName": "Promise",
+                                  "resolution": {
+                                    "kind": "typeParam"
+                                  }
+                                }
+                              },
+                              "doc": "The promise to wrap"
+                            },
+                            {
+                              "kind": "return",
+                              "tsType": {
+                                "repr": "ResultTimedPromise<T>",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "T",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "T",
+                                        "resolution": {
+                                          "kind": "typeParam"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "typeName": "ResultTimedPromise",
+                                  "resolution": {
+                                    "kind": "typeParam"
+                                  }
+                                }
+                              },
+                              "doc": "A promise that resolves to a [error, result, duration] tuple\n"
+                            },
+                            {
+                              "kind": "example",
+                              "doc": "const [error, user, duration] = await safeApi(fetchUser(123));\nif (error) {\n  console.error('Failed to fetch user:', error);\n  console.log('Operation took:', duration, 'ms');\n  return;\n}\nconsole.log('User data:', user);\nconsole.log('Fetch took:', duration, 'ms');"
+                            }
+                          ]
+                        },
+                        "kind": "function",
+                        "def": {
+                          "params": [
+                            {
+                              "kind": "identifier",
+                              "name": "promise",
+                              "optional": false,
+                              "tsType": {
+                                "repr": "Promise",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "T",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "T",
+                                        "resolution": {
+                                          "kind": "typeParam",
+                                          "declaringName": "twrap",
+                                          "declaringKind": "function"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "typeName": "Promise"
+                                }
+                              }
+                            }
+                          ],
+                          "returnType": {
+                            "repr": "ResultTimedPromise",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeParams": [
+                                {
+                                  "repr": "T",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "T",
+                                    "resolution": {
+                                      "kind": "typeParam",
+                                      "declaringName": "twrap",
+                                      "declaringKind": "function"
+                                    }
+                                  }
+                                }
+                              ],
+                              "typeName": "ResultTimedPromise",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          },
+                          "hasBody": true,
+                          "isAsync": true,
+                          "typeParams": [
+                            {
+                              "name": "T"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "catchAsObj",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/mod.ts",
+                "line": 2,
+                "col": 7,
+                "byteIndex": 86
+              },
+              "declarationKind": "export",
+              "kind": "namespace",
+              "def": {
+                "elements": [
+                  {
+                    "name": "Result",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/catch-obj.ts",
+                          "line": 23,
+                          "col": 0,
+                          "byteIndex": 491
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Discriminated union type representing either a successful or failed operation.",
+                          "tags": [
+                            {
+                              "kind": "template",
+                              "name": "T",
+                              "doc": "The type of the successful result data"
+                            }
+                          ]
+                        },
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "Success",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "T",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "T",
+                                        "resolution": {
+                                          "kind": "typeParam",
+                                          "declaringName": "Result",
+                                          "declaringKind": "typeAlias"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "typeName": "Success",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "Failure",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "Failure",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          "typeParams": [
+                            {
+                              "name": "T"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "ResultPromise",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/catch-obj.ts",
+                          "line": 25,
+                          "col": 0,
+                          "byteIndex": 538
+                        },
+                        "declarationKind": "export",
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "repr": "Promise",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeParams": [
+                                {
+                                  "repr": "Result",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeParams": [
+                                      {
+                                        "repr": "T",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "T",
+                                          "resolution": {
+                                            "kind": "typeParam",
+                                            "declaringName": "ResultPromise",
+                                            "declaringKind": "typeAlias"
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "typeName": "Result",
+                                    "resolution": {
+                                      "kind": "local"
+                                    }
+                                  }
+                                }
+                              ],
+                              "typeName": "Promise"
+                            }
+                          },
+                          "typeParams": [
+                            {
+                              "name": "T"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "ResultTimed",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/catch-obj.ts",
+                          "line": 27,
+                          "col": 0,
+                          "byteIndex": 590
+                        },
+                        "declarationKind": "export",
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "intersection",
+                            "value": [
+                              {
+                                "repr": "Result",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "T",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "T",
+                                        "resolution": {
+                                          "kind": "typeParam",
+                                          "declaringName": "ResultTimed",
+                                          "declaringKind": "typeAlias"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "typeName": "Result",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              },
+                              {
+                                "kind": "typeLiteral",
+                                "value": {
+                                  "properties": [
+                                    {
+                                      "name": "duration",
+                                      "location": {
+                                        "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/catch-obj.ts",
+                                        "line": 27,
+                                        "col": 43,
+                                        "byteIndex": 633
+                                      },
+                                      "tsType": {
+                                        "repr": "number",
+                                        "kind": "keyword",
+                                        "value": "number"
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          },
+                          "typeParams": [
+                            {
+                              "name": "T"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "ResultTimedPromise",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/catch-obj.ts",
+                          "line": 29,
+                          "col": 0,
+                          "byteIndex": 654
+                        },
+                        "declarationKind": "export",
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "repr": "Promise",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeParams": [
+                                {
+                                  "repr": "ResultTimed",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeParams": [
+                                      {
+                                        "repr": "T",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "T",
+                                          "resolution": {
+                                            "kind": "typeParam",
+                                            "declaringName": "ResultTimedPromise",
+                                            "declaringKind": "typeAlias"
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "typeName": "ResultTimed",
+                                    "resolution": {
+                                      "kind": "local"
+                                    }
+                                  }
+                                }
+                              ],
+                              "typeName": "Promise"
+                            }
+                          },
+                          "typeParams": [
+                            {
+                              "name": "T"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "wrap",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/catch-obj.ts",
+                          "line": 47,
+                          "col": 0,
+                          "byteIndex": 1264
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Wraps a promise and returns a structured result object containing either data or error.\nNever throws - always returns a Result object.\n",
+                          "tags": [
+                            {
+                              "kind": "template",
+                              "name": "T",
+                              "doc": "The type of the successful result data"
+                            },
+                            {
+                              "kind": "param",
+                              "name": "promise",
+                              "tsType": {
+                                "repr": "Promise<T>",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "T",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "T",
+                                        "resolution": {
+                                          "kind": "typeParam"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "typeName": "Promise",
+                                  "resolution": {
+                                    "kind": "typeParam"
+                                  }
+                                }
+                              },
+                              "doc": "The promise to wrap"
+                            },
+                            {
+                              "kind": "return",
+                              "tsType": {
+                                "repr": "Promise<Result<T>>",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "Result",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeParams": [
+                                          {
+                                            "repr": "T",
+                                            "kind": "typeRef",
+                                            "value": {
+                                              "typeName": "T",
+                                              "resolution": {
+                                                "kind": "typeParam"
+                                              }
+                                            }
+                                          }
+                                        ],
+                                        "typeName": "Result",
+                                        "resolution": {
+                                          "kind": "typeParam"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "typeName": "Promise",
+                                  "resolution": {
+                                    "kind": "typeParam"
+                                  }
+                                }
+                              },
+                              "doc": "A promise that resolves to a Result object\n"
+                            },
+                            {
+                              "kind": "example",
+                              "doc": "const result = await tryCatch(fetchUserData(userId));\nif (result.error) {\n  console.error('Failed to fetch user:', result.error);\n  return;\n}\nconsole.log('User data:', result.data);"
+                            }
+                          ]
+                        },
+                        "kind": "function",
+                        "def": {
+                          "params": [
+                            {
+                              "kind": "identifier",
+                              "name": "promise",
+                              "optional": false,
+                              "tsType": {
+                                "repr": "Promise",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "T",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "T",
+                                        "resolution": {
+                                          "kind": "typeParam",
+                                          "declaringName": "wrap",
+                                          "declaringKind": "function"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "typeName": "Promise"
+                                }
+                              }
+                            }
+                          ],
+                          "returnType": {
+                            "repr": "ResultPromise",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeParams": [
+                                {
+                                  "repr": "T",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "T",
+                                    "resolution": {
+                                      "kind": "typeParam",
+                                      "declaringName": "wrap",
+                                      "declaringKind": "function"
+                                    }
+                                  }
+                                }
+                              ],
+                              "typeName": "ResultPromise",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          },
+                          "hasBody": true,
+                          "isAsync": true,
+                          "typeParams": [
+                            {
+                              "name": "T"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "twrap",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/catch-obj.ts",
+                          "line": 56,
+                          "col": 0,
+                          "byteIndex": 1489
+                        },
+                        "declarationKind": "export",
+                        "kind": "function",
+                        "def": {
+                          "params": [
+                            {
+                              "kind": "identifier",
+                              "name": "promise",
+                              "optional": false,
+                              "tsType": {
+                                "repr": "Promise",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "T",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "T",
+                                        "resolution": {
+                                          "kind": "typeParam",
+                                          "declaringName": "twrap",
+                                          "declaringKind": "function"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "typeName": "Promise"
+                                }
+                              }
+                            }
+                          ],
+                          "returnType": {
+                            "repr": "ResultTimedPromise",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeParams": [
+                                {
+                                  "repr": "T",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "T",
+                                    "resolution": {
+                                      "kind": "typeParam",
+                                      "declaringName": "twrap",
+                                      "declaringKind": "function"
+                                    }
+                                  }
+                                }
+                              ],
+                              "typeName": "ResultTimedPromise",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          },
+                          "hasBody": true,
+                          "isAsync": true,
+                          "typeParams": [
+                            {
+                              "name": "T"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "asResult",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/response/src/catch-obj.ts",
+                          "line": 66,
+                          "col": 0,
+                          "byteIndex": 1820
+                        },
+                        "declarationKind": "export",
+                        "kind": "function",
+                        "def": {
+                          "params": [
+                            {
+                              "kind": "identifier",
+                              "name": "resp",
+                              "optional": false,
+                              "tsType": {
+                                "kind": "union",
+                                "value": [
+                                  {
+                                    "kind": "tuple",
+                                    "value": [
+                                      {
+                                        "repr": "Error",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "Error"
+                                        }
+                                      },
+                                      {
+                                        "repr": "null",
+                                        "kind": "keyword",
+                                        "value": "null"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "tuple",
+                                    "value": [
+                                      {
+                                        "repr": "null",
+                                        "kind": "keyword",
+                                        "value": "null"
+                                      },
+                                      {
+                                        "repr": "T",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "T",
+                                          "resolution": {
+                                            "kind": "typeParam",
+                                            "declaringName": "asResult",
+                                            "declaringKind": "function"
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            }
+                          ],
+                          "returnType": {
+                            "repr": "Result",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeParams": [
+                                {
+                                  "repr": "T",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "T",
+                                    "resolution": {
+                                      "kind": "typeParam",
+                                      "declaringName": "asResult",
+                                      "declaringKind": "function"
+                                    }
+                                  }
+                                }
+                              ],
+                              "typeName": "Result",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          },
+                          "hasBody": true,
+                          "typeParams": [
+                            {
+                              "name": "T"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

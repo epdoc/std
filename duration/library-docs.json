@@ -1,0 +1,1691 @@
+{
+  "version": 2,
+  "nodes": {
+    "file:///Users/jpravetz/dev/@epdoc/std/duration/src/mod.ts": {
+      "module_doc": {
+        "doc": "This module exports the public API for the duration workspace.",
+        "tags": [
+          {
+            "kind": "module"
+          }
+        ]
+      },
+      "symbols": [
+        {
+          "name": "supportedLocales",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/duration/i18n.ts",
+                "line": 71,
+                "col": 13,
+                "byteIndex": 1509
+              },
+              "declarationKind": "export",
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "kind": "array",
+                  "value": {
+                    "repr": "string",
+                    "kind": "keyword",
+                    "value": "string"
+                  }
+                },
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "compareFields",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/utils.ts",
+                "line": 33,
+                "col": 0,
+                "byteIndex": 1056
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Compare two duration fields.",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "a",
+                    "tsType": {
+                      "repr": "Duration.Field",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Duration.Field",
+                        "resolution": {
+                          "kind": "typeParam"
+                        }
+                      }
+                    },
+                    "doc": "The first field."
+                  },
+                  {
+                    "kind": "param",
+                    "name": "b",
+                    "tsType": {
+                      "repr": "Duration.Field",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Duration.Field",
+                        "resolution": {
+                          "kind": "typeParam"
+                        }
+                      }
+                    },
+                    "doc": "The second field."
+                  },
+                  {
+                    "kind": "return",
+                    "tsType": {
+                      "repr": "CompareResult",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "CompareResult",
+                        "resolution": {
+                          "kind": "typeParam"
+                        }
+                      }
+                    },
+                    "doc": "- -1 if a < b, 0 if a === b, 1 if a > b."
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "a",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "Duration.Field",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Duration.Field",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./duration/mod.ts"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "kind": "identifier",
+                    "name": "b",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "Duration.Field",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Duration.Field",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./duration/mod.ts"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "CompareResult",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeName": "CompareResult",
+                    "resolution": {
+                      "kind": "import",
+                      "specifier": "@epdoc/type",
+                      "name": "CompareResult"
+                    }
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "duration",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/utils.ts",
+                "line": 75,
+                "col": 0,
+                "byteIndex": 2365
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Factory function to create a new Duration.Formatter instance.",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "format",
+                    "tsType": {
+                      "repr": "Format.DurationFormatOptions",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Format.DurationFormatOptions",
+                        "resolution": {
+                          "kind": "typeParam"
+                        }
+                      }
+                    },
+                    "doc": "Defines the format."
+                  },
+                  {
+                    "kind": "return",
+                    "tsType": {
+                      "repr": "Duration.Formatter",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Duration.Formatter",
+                        "resolution": {
+                          "kind": "typeParam"
+                        }
+                      }
+                    },
+                    "doc": "A new Duration.Formatter instance."
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "format",
+                    "optional": true,
+                    "tsType": {
+                      "repr": "Format.DurationFormatOptions",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Format.DurationFormatOptions",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./duration/format.ts"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "Duration.Formatter",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeName": "Duration.Formatter",
+                    "resolution": {
+                      "kind": "import",
+                      "specifier": "./duration/mod.ts"
+                    }
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "isEpochMilliseconds",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/utils.ts",
+                "line": 57,
+                "col": 0,
+                "byteIndex": 1766
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Type guard for EpochMilliseconds type.",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "val",
+                    "tsType": {
+                      "repr": "unknown",
+                      "kind": "keyword",
+                      "value": "unknown"
+                    },
+                    "doc": "The value to check."
+                  },
+                  {
+                    "kind": "return",
+                    "tsType": {
+                      "repr": "val is EpochMilliseconds",
+                      "kind": "unsupported"
+                    },
+                    "doc": "- True if the value is a EpochMilliseconds type, false otherwise."
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "val",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "unknown",
+                      "kind": "keyword",
+                      "value": "unknown"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "val is EpochMilliseconds",
+                  "kind": "typePredicate",
+                  "value": {
+                    "param": {
+                      "type": "identifier",
+                      "name": "val"
+                    },
+                    "type": {
+                      "repr": "EpochMilliseconds",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "EpochMilliseconds",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./time-types.ts",
+                          "name": "EpochMilliseconds"
+                        }
+                      }
+                    }
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "isEpochSeconds",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/utils.ts",
+                "line": 66,
+                "col": 0,
+                "byteIndex": 2058
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Type guard for EpochSeconds type.",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "val",
+                    "tsType": {
+                      "repr": "unknown",
+                      "kind": "keyword",
+                      "value": "unknown"
+                    },
+                    "doc": "The value to check."
+                  },
+                  {
+                    "kind": "return",
+                    "tsType": {
+                      "repr": "val is EpochSeconds",
+                      "kind": "unsupported"
+                    },
+                    "doc": "- True if the value is a EpochSeconds type, false otherwise."
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "val",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "unknown",
+                      "kind": "keyword",
+                      "value": "unknown"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "val is EpochSeconds",
+                  "kind": "typePredicate",
+                  "value": {
+                    "param": {
+                      "type": "identifier",
+                      "name": "val"
+                    },
+                    "type": {
+                      "repr": "EpochSeconds",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "EpochSeconds",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./time-types.ts",
+                          "name": "EpochSeconds"
+                        }
+                      }
+                    }
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "isField",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/utils.ts",
+                "line": 15,
+                "col": 0,
+                "byteIndex": 569
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Type guard for Duration.Field type.",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "field",
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    },
+                    "doc": "The value to check."
+                  },
+                  {
+                    "kind": "return",
+                    "tsType": {
+                      "repr": "field is Duration.Field",
+                      "kind": "unsupported"
+                    },
+                    "doc": "- True if the value is a Duration.Field type, false otherwise."
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "field",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "field is Duration.Field",
+                  "kind": "typePredicate",
+                  "value": {
+                    "param": {
+                      "type": "identifier",
+                      "name": "field"
+                    },
+                    "type": {
+                      "repr": "Duration.Field",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Duration.Field",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./duration/mod.ts"
+                        }
+                      }
+                    }
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "isMilliseconds",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/utils.ts",
+                "line": 48,
+                "col": 0,
+                "byteIndex": 1469
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Type guard for Milliseconds type.",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "val",
+                    "tsType": {
+                      "repr": "unknown",
+                      "kind": "keyword",
+                      "value": "unknown"
+                    },
+                    "doc": "The value to check."
+                  },
+                  {
+                    "kind": "return",
+                    "tsType": {
+                      "repr": "val is Milliseconds",
+                      "kind": "unsupported"
+                    },
+                    "doc": "- True if the value is a Milliseconds type, false otherwise."
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "val",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "unknown",
+                      "kind": "keyword",
+                      "value": "unknown"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "val is Milliseconds",
+                  "kind": "typePredicate",
+                  "value": {
+                    "param": {
+                      "type": "identifier",
+                      "name": "val"
+                    },
+                    "type": {
+                      "repr": "Milliseconds",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Milliseconds",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./time-types.ts",
+                          "name": "Milliseconds"
+                        }
+                      }
+                    }
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "humanize",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/humanize/humanize.ts",
+                "line": 30,
+                "col": 0,
+                "byteIndex": 1026
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Converts a duration in milliseconds to a human-readable string.\n\nUses intelligent thresholds to provide contextually appropriate descriptions\nlike \"now\", \"a moment\", \"about 5 minutes\", \"over an hour\", etc.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "ms",
+                    "doc": "Duration in milliseconds (negative values represent past durations)"
+                  },
+                  {
+                    "kind": "param",
+                    "name": "options",
+                    "doc": "Configuration options or legacy boolean for withSuffix"
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "Human-readable duration string\n"
+                  },
+                  {
+                    "kind": "example",
+                    "doc": "```typescript\n// Basic usage\nhumanize(0); // \"now\"\nhumanize(30000); // \"30 seconds\"\nhumanize(300000); // \"about 5 minutes\"\n\n// With suffixes for past/future context\nhumanize(30000, true); // \"in 30 seconds\"\nhumanize(-30000, true); // \"30 seconds ago\"\n\n// Internationalization\nhumanize(30000, { locale: 'fr' }); // \"30 secondes\"\nhumanize(30000, { locale: 'es', withSuffix: true }); // \"en 30 segundos\"\n```"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "ms",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  },
+                  {
+                    "kind": "assign",
+                    "left": {
+                      "kind": "identifier",
+                      "name": "options",
+                      "optional": false,
+                      "tsType": {
+                        "kind": "union",
+                        "value": [
+                          {
+                            "repr": "Humanize.Options",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "Humanize.Options",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./types.ts"
+                              }
+                            }
+                          },
+                          {
+                            "repr": "boolean",
+                            "kind": "keyword",
+                            "value": "boolean"
+                          }
+                        ]
+                      }
+                    },
+                    "right": "[UNSUPPORTED]"
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "Milliseconds",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/time-types.ts",
+                "line": 12,
+                "col": 4,
+                "byteIndex": 443
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Represents a duration in milliseconds.\nThis is a **semantic type alias** for `number` (specifically a non-negative integer),\nprimarily used for **code clarity and hinting**.\nRuntime validation is required to enforce the integer and non-negative constraints.",
+                "tags": [
+                  {
+                    "kind": "typedef",
+                    "name": "Milliseconds",
+                    "tsType": {
+                      "repr": "Integer",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Integer",
+                        "resolution": {
+                          "kind": "typeParam"
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "repr": "Integer",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeName": "Integer",
+                    "resolution": {
+                      "kind": "import",
+                      "specifier": "@epdoc/type",
+                      "name": "Integer"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "HrMilliseconds",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/time-types.ts",
+                "line": 22,
+                "col": 0,
+                "byteIndex": 855
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Represents a duration in high resolution milliseconds, as would be returned\nby performance.now();\nThis is a **semantic type alias** for `number` (specifically a non-negative number),\nprimarily used for **code clarity and hinting**.\nRuntime validation is required to enforce the integer and non-negative constraints.",
+                "tags": [
+                  {
+                    "kind": "typedef",
+                    "name": "HrMilliseconds",
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  }
+                ]
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "repr": "number",
+                  "kind": "keyword",
+                  "value": "number"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "EpochMilliseconds",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/time-types.ts",
+                "line": 31,
+                "col": 0,
+                "byteIndex": 1232
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Represents a duration in milliseconds since the Unix epoch.\nThis is a **semantic type alias** for `number` (specifically a non-negative integer),\nprimarily used for **code clarity and hinting**.\nRuntime validation is required to enforce the integer and non-negative constraints.",
+                "tags": [
+                  {
+                    "kind": "typedef",
+                    "name": "EpochMilliseconds",
+                    "tsType": {
+                      "repr": "Integer",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Integer",
+                        "resolution": {
+                          "kind": "typeParam"
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "repr": "Integer",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeName": "Integer",
+                    "resolution": {
+                      "kind": "import",
+                      "specifier": "@epdoc/type",
+                      "name": "Integer"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "EpochSeconds",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/time-types.ts",
+                "line": 40,
+                "col": 0,
+                "byteIndex": 1603
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Represents a duration in seconds since the Unix epoch.\nThis is a **semantic type alias** for `number` (specifically a non-negative integer),\nprimarily used for **code clarity and hinting**.\nRuntime validation is required to enforce the integer and non-negative constraints.",
+                "tags": [
+                  {
+                    "kind": "typedef",
+                    "name": "EpochSeconds",
+                    "tsType": {
+                      "repr": "Integer",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Integer",
+                        "resolution": {
+                          "kind": "typeParam"
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "repr": "Integer",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeName": "Integer",
+                    "resolution": {
+                      "kind": "import",
+                      "specifier": "@epdoc/type",
+                      "name": "Integer"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Minutes",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/time-types.ts",
+                "line": 48,
+                "col": 0,
+                "byteIndex": 1902
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Represents a duration in minutes.\nThis is a **semantic type alias** for `number` (specifically a positive or negative number),\nprimarily used for **code clarity and hinting**.\nRuntime validation is required to enforce the number constraints."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "repr": "number",
+                  "kind": "keyword",
+                  "value": "number"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Seconds",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/time-types.ts",
+                "line": 55,
+                "col": 0,
+                "byteIndex": 2194
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Represents a duration in seconds.\nThis is a **semantic type alias** for `number` (specifically a positive or negative number),\nprimarily used for **code clarity and hinting**.\nRuntime validation is required to enforce the number constraints."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "repr": "number",
+                  "kind": "keyword",
+                  "value": "number"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "HrSeconds",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/time-types.ts",
+                "line": 62,
+                "col": 0,
+                "byteIndex": 2511
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Represents a duration in high resolution seconds.\nThis is a **semantic type alias** for `number` (specifically a non-negative number),\nprimarily used for **code clarity and hinting**.\nRuntime validation is required to enforce the number and non-negative constraints."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "repr": "number",
+                  "kind": "keyword",
+                  "value": "number"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Time",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/mod.ts",
+                "line": 4,
+                "col": 7,
+                "byteIndex": 92
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "This module exports the public API for the duration workspace.",
+                "tags": [
+                  {
+                    "kind": "module"
+                  }
+                ]
+              },
+              "kind": "namespace",
+              "def": {
+                "elements": [
+                  {
+                    "name": "SECONDS_PER_SOLAR_YEAR",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/consts.ts",
+                          "line": 8,
+                          "col": 13,
+                          "byteIndex": 149
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "The number of seconds in a solar year."
+                        },
+                        "kind": "variable",
+                        "def": {
+                          "kind": "const"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "SECONDS_PER_CALENDAR_YEAR",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/consts.ts",
+                          "line": 9,
+                          "col": 13,
+                          "byteIndex": 225
+                        },
+                        "declarationKind": "export",
+                        "kind": "variable",
+                        "def": {
+                          "tsType": {
+                            "repr": "number",
+                            "kind": "keyword",
+                            "value": "number"
+                          },
+                          "kind": "const"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Measures",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/consts.ts",
+                          "line": 14,
+                          "col": 13,
+                          "byteIndex": 347
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "A record of time measurements in milliseconds."
+                        },
+                        "kind": "variable",
+                        "def": {
+                          "tsType": {
+                            "repr": "Record",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeParams": [
+                                {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                },
+                                {
+                                  "repr": "number",
+                                  "kind": "keyword",
+                                  "value": "number"
+                                }
+                              ],
+                              "typeName": "Record"
+                            }
+                          },
+                          "kind": "const"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Ratios",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/consts.ts",
+                          "line": 31,
+                          "col": 13,
+                          "byteIndex": 777
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "A record of time ratios."
+                        },
+                        "kind": "variable",
+                        "def": {
+                          "tsType": {
+                            "repr": "Record",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeParams": [
+                                {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                },
+                                {
+                                  "repr": "number",
+                                  "kind": "keyword",
+                                  "value": "number"
+                                }
+                              ],
+                              "typeName": "Record"
+                            }
+                          },
+                          "kind": "const"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Format",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/mod.ts",
+                "line": 5,
+                "col": 7,
+                "byteIndex": 129
+              },
+              "declarationKind": "export",
+              "kind": "namespace",
+              "def": {
+                "elements": [
+                  {
+                    "name": "DurationUnitStyle",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/duration/format.ts",
+                          "line": 9,
+                          "col": 0,
+                          "byteIndex": 320
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Styles for Intl.DurationFormat.\nWe redefine narrow and modify the other styles slightly.",
+                          "tags": [
+                            {
+                              "kind": "see",
+                              "doc": "https://tc39.es/proposal-intl-duration-format/#sec-intl-durationformat-constructo"
+                            }
+                          ]
+                        },
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "long",
+                                "kind": "literal",
+                                "value": {
+                                  "kind": "string",
+                                  "string": "long"
+                                }
+                              },
+                              {
+                                "repr": "short",
+                                "kind": "literal",
+                                "value": {
+                                  "kind": "string",
+                                  "string": "short"
+                                }
+                              },
+                              {
+                                "repr": "narrow",
+                                "kind": "literal",
+                                "value": {
+                                  "kind": "string",
+                                  "string": "narrow"
+                                }
+                              },
+                              {
+                                "repr": "digital",
+                                "kind": "literal",
+                                "value": {
+                                  "kind": "string",
+                                  "string": "digital"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "WholeDurationUnitStyle",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/duration/format.ts",
+                          "line": 13,
+                          "col": 0,
+                          "byteIndex": 433
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Options for displaying days."
+                        },
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "long",
+                                "kind": "literal",
+                                "value": {
+                                  "kind": "string",
+                                  "string": "long"
+                                }
+                              },
+                              {
+                                "repr": "short",
+                                "kind": "literal",
+                                "value": {
+                                  "kind": "string",
+                                  "string": "short"
+                                }
+                              },
+                              {
+                                "repr": "narrow",
+                                "kind": "literal",
+                                "value": {
+                                  "kind": "string",
+                                  "string": "narrow"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "FractionalDurationUnitStyle",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/duration/format.ts",
+                          "line": 17,
+                          "col": 0,
+                          "byteIndex": 547
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Options for displaying milliseconds."
+                        },
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "long",
+                                "kind": "literal",
+                                "value": {
+                                  "kind": "string",
+                                  "string": "long"
+                                }
+                              },
+                              {
+                                "repr": "short",
+                                "kind": "literal",
+                                "value": {
+                                  "kind": "string",
+                                  "string": "short"
+                                }
+                              },
+                              {
+                                "repr": "narrow",
+                                "kind": "literal",
+                                "value": {
+                                  "kind": "string",
+                                  "string": "narrow"
+                                }
+                              },
+                              {
+                                "repr": "fractional",
+                                "kind": "literal",
+                                "value": {
+                                  "kind": "string",
+                                  "string": "fractional"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "DurationFormatOptions",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/duration/format.ts",
+                          "line": 50,
+                          "col": 0,
+                          "byteIndex": 1664
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Extended options for Intl.DurationFormat options"
+                        },
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "intersection",
+                            "value": [
+                              {
+                                "repr": "BaseOptions",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "BaseOptions",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "Partial",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "kind": "typeLiteral",
+                                      "value": {
+                                        "properties": [
+                                          {
+                                            "name": "maxDisplay",
+                                            "location": {
+                                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/duration/format.ts",
+                                              "line": 53,
+                                              "col": 4,
+                                              "byteIndex": 1734
+                                            },
+                                            "tsType": {
+                                              "repr": "Field",
+                                              "kind": "typeRef",
+                                              "value": {
+                                                "typeName": "Field",
+                                                "resolution": {
+                                                  "kind": "import",
+                                                  "specifier": "./types.ts",
+                                                  "name": "Field"
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "name": "minDisplay",
+                                            "location": {
+                                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/duration/format.ts",
+                                              "line": 54,
+                                              "col": 4,
+                                              "byteIndex": 1757
+                                            },
+                                            "tsType": {
+                                              "repr": "Field",
+                                              "kind": "typeRef",
+                                              "value": {
+                                                "typeName": "Field",
+                                                "resolution": {
+                                                  "kind": "import",
+                                                  "specifier": "./types.ts",
+                                                  "name": "Field"
+                                                }
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "name": "yearsDaysSeparator",
+                                            "location": {
+                                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/duration/format.ts",
+                                              "line": 55,
+                                              "col": 4,
+                                              "byteIndex": 1780
+                                            },
+                                            "tsType": {
+                                              "kind": "fnOrConstructor",
+                                              "value": {
+                                                "constructor": false,
+                                                "tsType": {
+                                                  "repr": "string",
+                                                  "kind": "keyword",
+                                                  "value": "string"
+                                                },
+                                                "params": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "name": "locale",
+                                                    "optional": false,
+                                                    "tsType": {
+                                                      "repr": "string",
+                                                      "kind": "keyword",
+                                                      "value": "string"
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "name": "daysHoursSeparator",
+                                            "location": {
+                                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/duration/format.ts",
+                                              "line": 56,
+                                              "col": 4,
+                                              "byteIndex": 1832
+                                            },
+                                            "tsType": {
+                                              "kind": "fnOrConstructor",
+                                              "value": {
+                                                "constructor": false,
+                                                "tsType": {
+                                                  "repr": "string",
+                                                  "kind": "keyword",
+                                                  "value": "string"
+                                                },
+                                                "params": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "name": "locale",
+                                                    "optional": false,
+                                                    "tsType": {
+                                                      "repr": "string",
+                                                      "kind": "keyword",
+                                                      "value": "string"
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "name": "secondsUnit",
+                                            "location": {
+                                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/duration/format.ts",
+                                              "line": 57,
+                                              "col": 4,
+                                              "byteIndex": 1884
+                                            },
+                                            "tsType": {
+                                              "kind": "fnOrConstructor",
+                                              "value": {
+                                                "constructor": false,
+                                                "tsType": {
+                                                  "repr": "string",
+                                                  "kind": "keyword",
+                                                  "value": "string"
+                                                },
+                                                "params": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "name": "locale",
+                                                    "optional": false,
+                                                    "tsType": {
+                                                      "repr": "string",
+                                                      "kind": "keyword",
+                                                      "value": "string"
+                                                    }
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "name": "separator",
+                                            "location": {
+                                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/duration/format.ts",
+                                              "line": 58,
+                                              "col": 4,
+                                              "byteIndex": 1929
+                                            },
+                                            "tsType": {
+                                              "repr": "string",
+                                              "kind": "keyword",
+                                              "value": "string"
+                                            }
+                                          },
+                                          {
+                                            "name": "adaptiveDisplay",
+                                            "location": {
+                                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/duration/format.ts",
+                                              "line": 59,
+                                              "col": 4,
+                                              "byteIndex": 1952
+                                            },
+                                            "tsType": {
+                                              "repr": "Intl2.DurationUnitDisplay",
+                                              "kind": "typeRef",
+                                              "value": {
+                                                "typeName": "Intl2.DurationUnitDisplay",
+                                                "resolution": {
+                                                  "kind": "import",
+                                                  "specifier": "./intl.ts"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  ],
+                                  "typeName": "Partial"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Duration",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/mod.ts",
+                "line": 7,
+                "col": 7,
+                "byteIndex": 232
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "This module exports the core classes and types for the duration workspace.",
+                "tags": [
+                  {
+                    "kind": "module"
+                  }
+                ]
+              },
+              "kind": "namespace",
+              "def": {
+                "elements": [
+                  {
+                    "name": "Field",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/duration/types.ts",
+                          "line": 9,
+                          "col": 0,
+                          "byteIndex": 189
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "A type representing the fields of a duration."
+                        },
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "typeOperator",
+                            "value": {
+                              "operator": "keyof",
+                              "tsType": {
+                                "repr": "Time.Measures",
+                                "kind": "typeQuery",
+                                "value": "Time.Measures"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Part",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/duration/types.ts",
+                          "line": 14,
+                          "col": 0,
+                          "byteIndex": 308
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "A type representing a part of a formatted duration string."
+                        },
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "typeLiteral",
+                            "value": {
+                              "properties": [
+                                {
+                                  "name": "type",
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/duration/types.ts",
+                                    "line": 15,
+                                    "col": 2,
+                                    "byteIndex": 331
+                                  },
+                                  "tsType": {
+                                    "kind": "union",
+                                    "value": [
+                                      {
+                                        "repr": "literal",
+                                        "kind": "literal",
+                                        "value": {
+                                          "kind": "string",
+                                          "string": "literal"
+                                        }
+                                      },
+                                      {
+                                        "repr": "integer",
+                                        "kind": "literal",
+                                        "value": {
+                                          "kind": "string",
+                                          "string": "integer"
+                                        }
+                                      },
+                                      {
+                                        "repr": "unit",
+                                        "kind": "literal",
+                                        "value": {
+                                          "kind": "string",
+                                          "string": "unit"
+                                        }
+                                      },
+                                      {
+                                        "repr": "decimal",
+                                        "kind": "literal",
+                                        "value": {
+                                          "kind": "string",
+                                          "string": "decimal"
+                                        }
+                                      },
+                                      {
+                                        "repr": "fraction",
+                                        "kind": "literal",
+                                        "value": {
+                                          "kind": "string",
+                                          "string": "fraction"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                {
+                                  "name": "value",
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/duration/types.ts",
+                                    "line": 16,
+                                    "col": 2,
+                                    "byteIndex": 396
+                                  },
+                                  "tsType": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                },
+                                {
+                                  "name": "unit",
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/duration/types.ts",
+                                    "line": 17,
+                                    "col": 2,
+                                    "byteIndex": 413
+                                  },
+                                  "optional": true,
+                                  "tsType": {
+                                    "repr": "Field",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "Field",
+                                      "resolution": {
+                                        "kind": "local"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Humanize",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/humanize/mod.ts",
+                "line": 1,
+                "col": 7,
+                "byteIndex": 49
+              },
+              "declarationKind": "export",
+              "kind": "namespace",
+              "def": {
+                "elements": [
+                  {
+                    "name": "Options",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/humanize/types.ts",
+                          "line": 3,
+                          "col": 0,
+                          "byteIndex": 45
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Options for the humanize function"
+                        },
+                        "kind": "interface",
+                        "def": {
+                          "properties": [
+                            {
+                              "name": "locale",
+                              "jsDoc": {
+                                "doc": "Locale for internationalization (defaults to 'en')"
+                              },
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/humanize/types.ts",
+                                "line": 5,
+                                "col": 2,
+                                "byteIndex": 134
+                              },
+                              "optional": true,
+                              "tsType": {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              }
+                            },
+                            {
+                              "name": "withSuffix",
+                              "jsDoc": {
+                                "doc": "Whether to add suffix like \"ago\" or \"in\" for past/future context"
+                              },
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/duration/src/humanize/types.ts",
+                                "line": 7,
+                                "col": 2,
+                                "byteIndex": 227
+                              },
+                              "optional": true,
+                              "tsType": {
+                                "repr": "boolean",
+                                "kind": "keyword",
+                                "value": "boolean"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

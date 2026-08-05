@@ -1,0 +1,3583 @@
+{
+  "version": 2,
+  "nodes": {
+    "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/mod.ts": {
+      "symbols": [
+        {
+          "name": "getExitCodeDescription",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/codes.ts",
+                "line": 45,
+                "col": 0,
+                "byteIndex": 3280
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "code",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "ExitCodeInfo",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/codes.ts",
+                "line": 0,
+                "col": 0,
+                "byteIndex": 0
+              },
+              "declarationKind": "export",
+              "kind": "interface",
+              "def": {
+                "properties": [
+                  {
+                    "name": "category",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/codes.ts",
+                      "line": 1,
+                      "col": 2,
+                      "byteIndex": 34
+                    },
+                    "tsType": {
+                      "kind": "union",
+                      "value": [
+                        {
+                          "repr": "Success",
+                          "kind": "literal",
+                          "value": {
+                            "kind": "string",
+                            "string": "Success"
+                          }
+                        },
+                        {
+                          "repr": "Standard",
+                          "kind": "literal",
+                          "value": {
+                            "kind": "string",
+                            "string": "Standard"
+                          }
+                        },
+                        {
+                          "repr": "Signal",
+                          "kind": "literal",
+                          "value": {
+                            "kind": "string",
+                            "string": "Signal"
+                          }
+                        },
+                        {
+                          "repr": "SysExits",
+                          "kind": "literal",
+                          "value": {
+                            "kind": "string",
+                            "string": "SysExits"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "name": "description",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/codes.ts",
+                      "line": 2,
+                      "col": 2,
+                      "byteIndex": 94
+                    },
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Error",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-error.ts",
+                "line": 2,
+                "col": 0,
+                "byteIndex": 51
+              },
+              "declarationKind": "export",
+              "kind": "class",
+              "def": {
+                "constructors": [
+                  {
+                    "hasBody": true,
+                    "name": "constructor",
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "message",
+                        "optional": false,
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "kind": "identifier",
+                        "name": "result",
+                        "optional": false,
+                        "tsType": {
+                          "repr": "CmdResult",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeParams": [
+                              {
+                                "repr": "T",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "T",
+                                  "resolution": {
+                                    "kind": "typeParam",
+                                    "declaringName": "CmdError",
+                                    "declaringKind": "class"
+                                  }
+                                }
+                              }
+                            ],
+                            "typeName": "CmdResult",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "./cmd-result.ts",
+                              "name": "CmdResult"
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-error.ts",
+                      "line": 6,
+                      "col": 2,
+                      "byteIndex": 162
+                    }
+                  }
+                ],
+                "properties": [
+                  {
+                    "tsType": {
+                      "repr": "CmdResult",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeParams": [
+                          {
+                            "repr": "T",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "T",
+                              "resolution": {
+                                "kind": "typeParam",
+                                "declaringName": "CmdError",
+                                "declaringKind": "class"
+                              }
+                            }
+                          }
+                        ],
+                        "typeName": "CmdResult",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./cmd-result.ts",
+                          "name": "CmdResult"
+                        }
+                      }
+                    },
+                    "readonly": true,
+                    "name": "result",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-error.ts",
+                      "line": 3,
+                      "col": 2,
+                      "byteIndex": 101
+                    }
+                  },
+                  {
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    },
+                    "name": "silent",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-error.ts",
+                      "line": 4,
+                      "col": 2,
+                      "byteIndex": 134
+                    }
+                  }
+                ],
+                "methods": [
+                  {
+                    "name": "stdout",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-error.ts",
+                      "line": 12,
+                      "col": 2,
+                      "byteIndex": 327
+                    }
+                  },
+                  {
+                    "name": "stderr",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-error.ts",
+                      "line": 16,
+                      "col": 2,
+                      "byteIndex": 388
+                    }
+                  },
+                  {
+                    "name": "exitCode",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "kind": "union",
+                        "value": [
+                          {
+                            "repr": "number",
+                            "kind": "keyword",
+                            "value": "number"
+                          },
+                          {
+                            "repr": "undefined",
+                            "kind": "keyword",
+                            "value": "undefined"
+                          }
+                        ]
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-error.ts",
+                      "line": 20,
+                      "col": 2,
+                      "byteIndex": 449
+                    }
+                  }
+                ],
+                "extends": "Error",
+                "typeParams": [
+                  {
+                    "name": "T",
+                    "default": {
+                      "repr": "void",
+                      "kind": "keyword",
+                      "value": "void"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Result",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                "line": 7,
+                "col": 0,
+                "byteIndex": 245
+              },
+              "declarationKind": "export",
+              "kind": "class",
+              "def": {
+                "constructors": [
+                  {
+                    "hasBody": true,
+                    "name": "constructor",
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "init",
+                        "optional": true,
+                        "tsType": {
+                          "repr": "Partial",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeParams": [
+                              {
+                                "repr": "Omit",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "CmdResult",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeParams": [
+                                          {
+                                            "repr": "T",
+                                            "kind": "typeRef",
+                                            "value": {
+                                              "typeName": "T",
+                                              "resolution": {
+                                                "kind": "typeParam",
+                                                "declaringName": "CmdResult",
+                                                "declaringKind": "class"
+                                              }
+                                            }
+                                          }
+                                        ],
+                                        "typeName": "CmdResult",
+                                        "resolution": {
+                                          "kind": "local"
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "kind": "union",
+                                      "value": [
+                                        {
+                                          "repr": "stdout",
+                                          "kind": "literal",
+                                          "value": {
+                                            "kind": "string",
+                                            "string": "stdout"
+                                          }
+                                        },
+                                        {
+                                          "repr": "stderr",
+                                          "kind": "literal",
+                                          "value": {
+                                            "kind": "string",
+                                            "string": "stderr"
+                                          }
+                                        },
+                                        {
+                                          "repr": "lines",
+                                          "kind": "literal",
+                                          "value": {
+                                            "kind": "string",
+                                            "string": "lines"
+                                          }
+                                        },
+                                        {
+                                          "repr": "stdoutLines",
+                                          "kind": "literal",
+                                          "value": {
+                                            "kind": "string",
+                                            "string": "stdoutLines"
+                                          }
+                                        },
+                                        {
+                                          "repr": "stderrLines",
+                                          "kind": "literal",
+                                          "value": {
+                                            "kind": "string",
+                                            "string": "stderrLines"
+                                          }
+                                        },
+                                        {
+                                          "repr": "stdoutRaw",
+                                          "kind": "literal",
+                                          "value": {
+                                            "kind": "string",
+                                            "string": "stdoutRaw"
+                                          }
+                                        },
+                                        {
+                                          "repr": "stderrRaw",
+                                          "kind": "literal",
+                                          "value": {
+                                            "kind": "string",
+                                            "string": "stderrRaw"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "typeName": "Omit"
+                                }
+                              }
+                            ],
+                            "typeName": "Partial"
+                          }
+                        }
+                      }
+                    ],
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 24,
+                      "col": 2,
+                      "byteIndex": 763
+                    }
+                  }
+                ],
+                "properties": [
+                  {
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    },
+                    "name": "success",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 9,
+                      "col": 2,
+                      "byteIndex": 331
+                    }
+                  },
+                  {
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    },
+                    "optional": true,
+                    "name": "exitCode",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 10,
+                      "col": 2,
+                      "byteIndex": 359
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "A string that can be used in UI that show the command that was run"
+                    },
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    },
+                    "name": "command",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 12,
+                      "col": 2,
+                      "byteIndex": 456
+                    }
+                  },
+                  {
+                    "tsType": {
+                      "repr": "Milliseconds",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Milliseconds",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./types.ts",
+                          "name": "Milliseconds"
+                        }
+                      }
+                    },
+                    "name": "duration",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 13,
+                      "col": 2,
+                      "byteIndex": 480
+                    }
+                  },
+                  {
+                    "tsType": {
+                      "repr": "Uint8Array",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Uint8Array"
+                      }
+                    },
+                    "optional": true,
+                    "name": "_stdout",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 14,
+                      "col": 2,
+                      "byteIndex": 510
+                    }
+                  },
+                  {
+                    "tsType": {
+                      "repr": "Uint8Array",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Uint8Array"
+                      }
+                    },
+                    "optional": true,
+                    "name": "_stderr",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 15,
+                      "col": 2,
+                      "byteIndex": 534
+                    }
+                  },
+                  {
+                    "tsType": {
+                      "kind": "fnOrConstructor",
+                      "value": {
+                        "constructor": false,
+                        "tsType": {
+                          "repr": "T",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "T",
+                            "resolution": {
+                              "kind": "typeParam",
+                              "declaringName": "CmdResult",
+                              "declaringKind": "class"
+                            }
+                          }
+                        },
+                        "params": [
+                          {
+                            "kind": "identifier",
+                            "name": "result",
+                            "optional": false,
+                            "tsType": {
+                              "repr": "ICmdResult",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "ICmdResult",
+                                "resolution": {
+                                  "kind": "import",
+                                  "specifier": "./types.ts",
+                                  "name": "ICmdResult"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "optional": true,
+                    "name": "_outParser",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 16,
+                      "col": 2,
+                      "byteIndex": 558
+                    }
+                  },
+                  {
+                    "tsType": {
+                      "kind": "fnOrConstructor",
+                      "value": {
+                        "constructor": false,
+                        "tsType": {
+                          "repr": "Error",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "Error"
+                          }
+                        },
+                        "params": [
+                          {
+                            "kind": "identifier",
+                            "name": "result",
+                            "optional": false,
+                            "tsType": {
+                              "repr": "ICmdResult",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "ICmdResult",
+                                "resolution": {
+                                  "kind": "import",
+                                  "specifier": "./types.ts",
+                                  "name": "ICmdResult"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "optional": true,
+                    "name": "_errParser",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 17,
+                      "col": 2,
+                      "byteIndex": 600
+                    }
+                  },
+                  {
+                    "tsType": {
+                      "repr": "Error",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Error"
+                      }
+                    },
+                    "optional": true,
+                    "name": "_parseError",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 18,
+                      "col": 2,
+                      "byteIndex": 646
+                    }
+                  },
+                  {
+                    "tsType": {
+                      "repr": "T",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "T",
+                        "resolution": {
+                          "kind": "typeParam",
+                          "declaringName": "CmdResult",
+                          "declaringKind": "class"
+                        }
+                      }
+                    },
+                    "optional": true,
+                    "name": "data",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 19,
+                      "col": 2,
+                      "byteIndex": 669
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Indicates this was a dry run"
+                    },
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    },
+                    "optional": true,
+                    "name": "dryRun",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 21,
+                      "col": 2,
+                      "byteIndex": 719
+                    }
+                  },
+                  {
+                    "tsType": {
+                      "repr": "CmdError",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeParams": [
+                          {
+                            "repr": "T",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "T",
+                              "resolution": {
+                                "kind": "typeParam",
+                                "declaringName": "CmdResult",
+                                "declaringKind": "class"
+                              }
+                            }
+                          }
+                        ],
+                        "typeName": "CmdError",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./cmd-error.ts",
+                          "name": "CmdError"
+                        }
+                      }
+                    },
+                    "optional": true,
+                    "name": "error",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 22,
+                      "col": 2,
+                      "byteIndex": 739
+                    }
+                  }
+                ],
+                "methods": [
+                  {
+                    "isStatic": true,
+                    "name": "from",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "cmd",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          }
+                        },
+                        {
+                          "kind": "identifier",
+                          "name": "args",
+                          "optional": false,
+                          "tsType": {
+                            "kind": "array",
+                            "value": {
+                              "repr": "string",
+                              "kind": "keyword",
+                              "value": "string"
+                            }
+                          }
+                        },
+                        {
+                          "kind": "identifier",
+                          "name": "opts",
+                          "optional": true,
+                          "tsType": {
+                            "repr": "CmdOptions",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeParams": [
+                                {
+                                  "repr": "T",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "T",
+                                    "resolution": {
+                                      "kind": "typeParam",
+                                      "declaringName": "from",
+                                      "declaringKind": "method"
+                                    }
+                                  }
+                                }
+                              ],
+                              "typeName": "CmdOptions",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./types.ts",
+                                "name": "CmdOptions"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "CmdResult",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeParams": [
+                            {
+                              "repr": "T",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "T",
+                                "resolution": {
+                                  "kind": "typeParam",
+                                  "declaringName": "from",
+                                  "declaringKind": "method"
+                                }
+                              }
+                            }
+                          ],
+                          "typeName": "CmdResult",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      },
+                      "hasBody": true,
+                      "typeParams": [
+                        {
+                          "name": "T",
+                          "default": {
+                            "repr": "void",
+                            "kind": "keyword",
+                            "value": "void"
+                          }
+                        }
+                      ]
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 43,
+                      "col": 2,
+                      "byteIndex": 1324
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Create a successful mock result for testing.\nGeneric types are inferred from the return type expression, avoiding `as` casts.",
+                      "tags": [
+                        {
+                          "kind": "example",
+                          "doc": "Cmd.Result.ok<MyData>(parsedData);"
+                        }
+                      ]
+                    },
+                    "isStatic": true,
+                    "name": "ok",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "data",
+                          "optional": true,
+                          "tsType": {
+                            "repr": "T",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "T",
+                              "resolution": {
+                                "kind": "typeParam",
+                                "declaringName": "ok",
+                                "declaringKind": "method"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "CmdResult",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeParams": [
+                            {
+                              "repr": "T",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "T",
+                                "resolution": {
+                                  "kind": "typeParam",
+                                  "declaringName": "ok",
+                                  "declaringKind": "method"
+                                }
+                              }
+                            }
+                          ],
+                          "typeName": "CmdResult",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      },
+                      "hasBody": true,
+                      "typeParams": [
+                        {
+                          "name": "T",
+                          "default": {
+                            "repr": "void",
+                            "kind": "keyword",
+                            "value": "void"
+                          }
+                        }
+                      ]
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 55,
+                      "col": 2,
+                      "byteIndex": 1758
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Create a failure mock result for testing.",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "code",
+                          "doc": "Simulated exit code (default: undefined, meaning no exit)"
+                        },
+                        {
+                          "kind": "param",
+                          "name": "stderr",
+                          "doc": "Simulated stderr output"
+                        }
+                      ]
+                    },
+                    "isStatic": true,
+                    "name": "fail",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "exitCode",
+                          "optional": true,
+                          "tsType": {
+                            "repr": "number",
+                            "kind": "keyword",
+                            "value": "number"
+                          }
+                        },
+                        {
+                          "kind": "identifier",
+                          "name": "stderr",
+                          "optional": true,
+                          "tsType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "CmdResult",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeParams": [
+                            {
+                              "repr": "T",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "T",
+                                "resolution": {
+                                  "kind": "typeParam",
+                                  "declaringName": "fail",
+                                  "declaringKind": "method"
+                                }
+                              }
+                            }
+                          ],
+                          "typeName": "CmdResult",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      },
+                      "hasBody": true,
+                      "typeParams": [
+                        {
+                          "name": "T",
+                          "default": {
+                            "repr": "void",
+                            "kind": "keyword",
+                            "value": "void"
+                          }
+                        }
+                      ]
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 67,
+                      "col": 2,
+                      "byteIndex": 2101
+                    }
+                  },
+                  {
+                    "name": "asSuccess",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 78,
+                      "col": 2,
+                      "byteIndex": 2399
+                    }
+                  },
+                  {
+                    "name": "setExitCode",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "code",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "number",
+                            "kind": "keyword",
+                            "value": "number"
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 84,
+                      "col": 2,
+                      "byteIndex": 2518
+                    }
+                  },
+                  {
+                    "name": "exitDescription",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "kind": "union",
+                        "value": [
+                          {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          },
+                          {
+                            "repr": "undefined",
+                            "kind": "keyword",
+                            "value": "undefined"
+                          }
+                        ]
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 91,
+                      "col": 2,
+                      "byteIndex": 2683
+                    }
+                  },
+                  {
+                    "name": "err",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "CmdError",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeParams": [
+                            {
+                              "repr": "T",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "T",
+                                "resolution": {
+                                  "kind": "typeParam",
+                                  "declaringName": "CmdResult",
+                                  "declaringKind": "class"
+                                }
+                              }
+                            }
+                          ],
+                          "typeName": "CmdError",
+                          "resolution": {
+                            "kind": "import",
+                            "specifier": "./cmd-error.ts",
+                            "name": "CmdError"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 95,
+                      "col": 2,
+                      "byteIndex": 2826
+                    }
+                  },
+                  {
+                    "name": "setStdout",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "value",
+                          "optional": false,
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "Uint8Array",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "Uint8Array"
+                                }
+                              },
+                              {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 100,
+                      "col": 2,
+                      "byteIndex": 2949
+                    }
+                  },
+                  {
+                    "name": "setStderr",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "value",
+                          "optional": false,
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "Uint8Array",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "Uint8Array"
+                                }
+                              },
+                              {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 105,
+                      "col": 2,
+                      "byteIndex": 3097
+                    }
+                  },
+                  {
+                    "name": "applyParsers",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 110,
+                      "col": 2,
+                      "byteIndex": 3245
+                    }
+                  },
+                  {
+                    "name": "stdout",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 120,
+                      "col": 2,
+                      "byteIndex": 3490
+                    }
+                  },
+                  {
+                    "name": "stderr",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 125,
+                      "col": 2,
+                      "byteIndex": 3595
+                    }
+                  },
+                  {
+                    "name": "stdoutRaw",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "kind": "union",
+                        "value": [
+                          {
+                            "repr": "Uint8Array",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "Uint8Array"
+                            }
+                          },
+                          {
+                            "repr": "undefined",
+                            "kind": "keyword",
+                            "value": "undefined"
+                          }
+                        ]
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 130,
+                      "col": 2,
+                      "byteIndex": 3700
+                    }
+                  },
+                  {
+                    "name": "stderrRaw",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "kind": "union",
+                        "value": [
+                          {
+                            "repr": "Uint8Array",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "Uint8Array"
+                            }
+                          },
+                          {
+                            "repr": "undefined",
+                            "kind": "keyword",
+                            "value": "undefined"
+                          }
+                        ]
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 134,
+                      "col": 2,
+                      "byteIndex": 3774
+                    }
+                  },
+                  {
+                    "name": "stdoutLines",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "kind": "array",
+                        "value": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 138,
+                      "col": 2,
+                      "byteIndex": 3848
+                    }
+                  },
+                  {
+                    "name": "stderrLines",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "kind": "array",
+                        "value": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 144,
+                      "col": 2,
+                      "byteIndex": 4016
+                    }
+                  },
+                  {
+                    "name": "json",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "D",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "D",
+                          "resolution": {
+                            "kind": "typeParam",
+                            "declaringName": "json",
+                            "declaringKind": "method"
+                          }
+                        }
+                      },
+                      "hasBody": true,
+                      "typeParams": [
+                        {
+                          "name": "D"
+                        }
+                      ]
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 150,
+                      "col": 2,
+                      "byteIndex": 4184
+                    }
+                  }
+                ],
+                "implements": [
+                  {
+                    "repr": "ICmdResult",
+                    "kind": "typeRef",
+                    "value": {
+                      "typeName": "ICmdResult",
+                      "resolution": {
+                        "kind": "import",
+                        "specifier": "./types.ts",
+                        "name": "ICmdResult"
+                      }
+                    }
+                  }
+                ],
+                "typeParams": [
+                  {
+                    "name": "T",
+                    "default": {
+                      "repr": "void",
+                      "kind": "keyword",
+                      "value": "void"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Runner",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                "line": 9,
+                "col": 0,
+                "byteIndex": 358
+              },
+              "declarationKind": "export",
+              "kind": "class",
+              "def": {
+                "constructors": [
+                  {
+                    "hasBody": true,
+                    "name": "constructor",
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "cmd",
+                        "optional": false,
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "kind": "identifier",
+                        "name": "args",
+                        "optional": true,
+                        "tsType": {
+                          "kind": "union",
+                          "value": [
+                            {
+                              "repr": "string",
+                              "kind": "keyword",
+                              "value": "string"
+                            },
+                            {
+                              "kind": "array",
+                              "value": {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "kind": "identifier",
+                        "name": "opts",
+                        "optional": true,
+                        "tsType": {
+                          "repr": "CmdOptions",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeParams": [
+                              {
+                                "repr": "T",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "T",
+                                  "resolution": {
+                                    "kind": "typeParam",
+                                    "declaringName": "CmdRunner",
+                                    "declaringKind": "class"
+                                  }
+                                }
+                              }
+                            ],
+                            "typeName": "CmdOptions",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "./types.ts",
+                              "name": "CmdOptions"
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                      "line": 15,
+                      "col": 2,
+                      "byteIndex": 566
+                    }
+                  }
+                ],
+                "methods": [
+                  {
+                    "isStatic": true,
+                    "name": "from",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "cmd",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          }
+                        },
+                        {
+                          "kind": "identifier",
+                          "name": "args",
+                          "optional": true,
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              },
+                              {
+                                "kind": "array",
+                                "value": {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "kind": "identifier",
+                          "name": "opts",
+                          "optional": true,
+                          "tsType": {
+                            "repr": "CmdOptions",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeParams": [
+                                {
+                                  "repr": "T",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "T",
+                                    "resolution": {
+                                      "kind": "typeParam",
+                                      "declaringName": "from",
+                                      "declaringKind": "method"
+                                    }
+                                  }
+                                }
+                              ],
+                              "typeName": "CmdOptions",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./types.ts",
+                                "name": "CmdOptions"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "CmdRunner",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeParams": [
+                            {
+                              "repr": "T",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "T",
+                                "resolution": {
+                                  "kind": "typeParam",
+                                  "declaringName": "from",
+                                  "declaringKind": "method"
+                                }
+                              }
+                            }
+                          ],
+                          "typeName": "CmdRunner",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      },
+                      "hasBody": true,
+                      "typeParams": [
+                        {
+                          "name": "T"
+                        }
+                      ]
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                      "line": 21,
+                      "col": 2,
+                      "byteIndex": 767
+                    }
+                  },
+                  {
+                    "name": "cwd",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "path",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                      "line": 25,
+                      "col": 2,
+                      "byteIndex": 912
+                    }
+                  },
+                  {
+                    "name": "args",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "args",
+                          "optional": false,
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              },
+                              {
+                                "kind": "array",
+                                "value": {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                      "line": 30,
+                      "col": 2,
+                      "byteIndex": 989
+                    }
+                  },
+                  {
+                    "name": "env",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "vars",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "Record",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeParams": [
+                                {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                },
+                                {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              ],
+                              "typeName": "Record"
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                      "line": 35,
+                      "col": 2,
+                      "byteIndex": 1093
+                    }
+                  },
+                  {
+                    "name": "clearEnv",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "value",
+                          "optional": true,
+                          "tsType": {
+                            "repr": "boolean",
+                            "kind": "keyword",
+                            "value": "boolean"
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                      "line": 40,
+                      "col": 2,
+                      "byteIndex": 1212
+                    }
+                  },
+                  {
+                    "name": "dryRun",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "value",
+                          "optional": true,
+                          "tsType": {
+                            "repr": "boolean",
+                            "kind": "keyword",
+                            "value": "boolean"
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                      "line": 45,
+                      "col": 2,
+                      "byteIndex": 1311
+                    }
+                  },
+                  {
+                    "name": "timeout",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "ms",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "Milliseconds",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "Milliseconds",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./types.ts",
+                                "name": "Milliseconds"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                      "line": 50,
+                      "col": 2,
+                      "byteIndex": 1400
+                    }
+                  },
+                  {
+                    "name": "stdin",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "value",
+                          "optional": false,
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              },
+                              {
+                                "repr": "Uint8Array",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "Uint8Array"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                      "line": 55,
+                      "col": 2,
+                      "byteIndex": 1487
+                    }
+                  },
+                  {
+                    "name": "interactive",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "assign",
+                          "left": {
+                            "kind": "identifier",
+                            "name": "value",
+                            "optional": false,
+                            "tsType": {
+                              "repr": "boolean",
+                              "kind": "keyword",
+                              "value": "boolean"
+                            }
+                          },
+                          "right": "true"
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                      "line": 60,
+                      "col": 2,
+                      "byteIndex": 1583
+                    }
+                  },
+                  {
+                    "name": "signal",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "abortSignal",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "AbortSignal",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "AbortSignal"
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                      "line": 65,
+                      "col": 2,
+                      "byteIndex": 1688
+                    }
+                  },
+                  {
+                    "name": "uid",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "value",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "number",
+                            "kind": "keyword",
+                            "value": "number"
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                      "line": 70,
+                      "col": 2,
+                      "byteIndex": 1790
+                    }
+                  },
+                  {
+                    "name": "gid",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "value",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "number",
+                            "kind": "keyword",
+                            "value": "number"
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                      "line": 75,
+                      "col": 2,
+                      "byteIndex": 1869
+                    }
+                  },
+                  {
+                    "name": "silent",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "assign",
+                          "left": {
+                            "kind": "identifier",
+                            "name": "value",
+                            "optional": false,
+                            "tsType": {
+                              "repr": "boolean",
+                              "kind": "keyword",
+                              "value": "boolean"
+                            }
+                          },
+                          "right": "true"
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                      "line": 80,
+                      "col": 2,
+                      "byteIndex": 1948
+                    }
+                  },
+                  {
+                    "name": "outParser",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "parser",
+                          "optional": false,
+                          "tsType": {
+                            "kind": "fnOrConstructor",
+                            "value": {
+                              "constructor": false,
+                              "tsType": {
+                                "repr": "R",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "R",
+                                  "resolution": {
+                                    "kind": "typeParam",
+                                    "declaringName": "outParser",
+                                    "declaringKind": "method"
+                                  }
+                                }
+                              },
+                              "params": [
+                                {
+                                  "kind": "identifier",
+                                  "name": "data",
+                                  "optional": false,
+                                  "tsType": {
+                                    "repr": "ICmdResult",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "ICmdResult",
+                                      "resolution": {
+                                        "kind": "import",
+                                        "specifier": "./types.ts",
+                                        "name": "ICmdResult"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "CmdRunner",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeParams": [
+                            {
+                              "repr": "R",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "R",
+                                "resolution": {
+                                  "kind": "typeParam",
+                                  "declaringName": "outParser",
+                                  "declaringKind": "method"
+                                }
+                              }
+                            }
+                          ],
+                          "typeName": "CmdRunner",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      },
+                      "hasBody": true,
+                      "typeParams": [
+                        {
+                          "name": "R"
+                        }
+                      ]
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                      "line": 85,
+                      "col": 2,
+                      "byteIndex": 2041
+                    }
+                  },
+                  {
+                    "name": "errParser",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "parser",
+                          "optional": false,
+                          "tsType": {
+                            "kind": "fnOrConstructor",
+                            "value": {
+                              "constructor": false,
+                              "tsType": {
+                                "repr": "Error",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "Error"
+                                }
+                              },
+                              "params": [
+                                {
+                                  "kind": "identifier",
+                                  "name": "result",
+                                  "optional": false,
+                                  "tsType": {
+                                    "repr": "ICmdResult",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "ICmdResult",
+                                      "resolution": {
+                                        "kind": "import",
+                                        "specifier": "./types.ts",
+                                        "name": "ICmdResult"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "CmdRunner",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeParams": [
+                            {
+                              "repr": "T",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "T",
+                                "resolution": {
+                                  "kind": "typeParam",
+                                  "declaringName": "CmdRunner",
+                                  "declaringKind": "class"
+                                }
+                              }
+                            }
+                          ],
+                          "typeName": "CmdRunner",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                      "line": 90,
+                      "col": 2,
+                      "byteIndex": 2227
+                    }
+                  },
+                  {
+                    "name": "outAsLines",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "assign",
+                          "left": {
+                            "kind": "identifier",
+                            "name": "streams",
+                            "optional": false,
+                            "tsType": {
+                              "kind": "union",
+                              "value": [
+                                {
+                                  "repr": "StreamTag",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "StreamTag",
+                                    "resolution": {
+                                      "kind": "import",
+                                      "specifier": "./types.ts",
+                                      "name": "StreamTag"
+                                    }
+                                  }
+                                },
+                                {
+                                  "kind": "array",
+                                  "value": {
+                                    "repr": "StreamTag",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "StreamTag",
+                                      "resolution": {
+                                        "kind": "import",
+                                        "specifier": "./types.ts",
+                                        "name": "StreamTag"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "right": "[Stream.stdout]"
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "CmdRunner",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeParams": [
+                            {
+                              "kind": "array",
+                              "value": {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              }
+                            }
+                          ],
+                          "typeName": "CmdRunner",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                      "line": 95,
+                      "col": 2,
+                      "byteIndex": 2351
+                    }
+                  },
+                  {
+                    "name": "outAsString",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "assign",
+                          "left": {
+                            "kind": "identifier",
+                            "name": "streams",
+                            "optional": false,
+                            "tsType": {
+                              "kind": "union",
+                              "value": [
+                                {
+                                  "repr": "StreamTag",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "StreamTag",
+                                    "resolution": {
+                                      "kind": "import",
+                                      "specifier": "./types.ts",
+                                      "name": "StreamTag"
+                                    }
+                                  }
+                                },
+                                {
+                                  "kind": "array",
+                                  "value": {
+                                    "repr": "StreamTag",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "StreamTag",
+                                      "resolution": {
+                                        "kind": "import",
+                                        "specifier": "./types.ts",
+                                        "name": "StreamTag"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "right": "[Stream.stdout]"
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "CmdRunner",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeParams": [
+                            {
+                              "repr": "string",
+                              "kind": "keyword",
+                              "value": "string"
+                            }
+                          ],
+                          "typeName": "CmdRunner",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                      "line": 107,
+                      "col": 2,
+                      "byteIndex": 2790
+                    }
+                  },
+                  {
+                    "name": "outJson",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "assign",
+                          "left": {
+                            "kind": "identifier",
+                            "name": "stm",
+                            "optional": false,
+                            "tsType": {
+                              "repr": "StreamTag",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "StreamTag",
+                                "resolution": {
+                                  "kind": "import",
+                                  "specifier": "./types.ts",
+                                  "name": "StreamTag"
+                                }
+                              }
+                            }
+                          },
+                          "right": "[Stream.stdout]"
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "CmdRunner",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeParams": [
+                            {
+                              "repr": "Record",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeParams": [
+                                  {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  },
+                                  {
+                                    "repr": "unknown",
+                                    "kind": "keyword",
+                                    "value": "unknown"
+                                  }
+                                ],
+                                "typeName": "Record"
+                              }
+                            }
+                          ],
+                          "typeName": "CmdRunner",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                      "line": 119,
+                      "col": 2,
+                      "byteIndex": 3211
+                    }
+                  },
+                  {
+                    "name": "options",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "opts",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "Partial",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeParams": [
+                                {
+                                  "repr": "CmdOptions",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeParams": [
+                                      {
+                                        "repr": "T",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "T",
+                                          "resolution": {
+                                            "kind": "typeParam",
+                                            "declaringName": "CmdRunner",
+                                            "declaringKind": "class"
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "typeName": "CmdOptions",
+                                    "resolution": {
+                                      "kind": "import",
+                                      "specifier": "./types.ts",
+                                      "name": "CmdOptions"
+                                    }
+                                  }
+                                }
+                              ],
+                              "typeName": "Partial"
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                      "line": 124,
+                      "col": 2,
+                      "byteIndex": 3471
+                    }
+                  },
+                  {
+                    "name": "opts",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "CmdOptions",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeParams": [
+                            {
+                              "repr": "T",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "T",
+                                "resolution": {
+                                  "kind": "typeParam",
+                                  "declaringName": "CmdRunner",
+                                  "declaringKind": "class"
+                                }
+                              }
+                            }
+                          ],
+                          "typeName": "CmdOptions",
+                          "resolution": {
+                            "kind": "import",
+                            "specifier": "./types.ts",
+                            "name": "CmdOptions"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                      "line": 129,
+                      "col": 2,
+                      "byteIndex": 3578
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Testing helper: read-only access to the configured command arguments."
+                    },
+                    "name": "commandArgs",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "kind": "typeOperator",
+                        "value": {
+                          "operator": "readonly",
+                          "tsType": {
+                            "kind": "array",
+                            "value": {
+                              "repr": "string",
+                              "kind": "keyword",
+                              "value": "string"
+                            }
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                      "line": 134,
+                      "col": 2,
+                      "byteIndex": 3722
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Testing helper: snapshot the current args, command name, and opts without executing.\nUseful for asserting what a runner WOULD run in a test."
+                    },
+                    "name": "toRecord",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "kind": "typeLiteral",
+                        "value": {
+                          "properties": [
+                            {
+                              "name": "command",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                                "line": 142,
+                                "col": 16,
+                                "byteIndex": 3968
+                              },
+                              "tsType": {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              }
+                            },
+                            {
+                              "name": "args",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                                "line": 142,
+                                "col": 33,
+                                "byteIndex": 3985
+                              },
+                              "tsType": {
+                                "kind": "array",
+                                "value": {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              }
+                            },
+                            {
+                              "name": "opts",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                                "line": 142,
+                                "col": 49,
+                                "byteIndex": 4001
+                              },
+                              "tsType": {
+                                "repr": "CmdOptions",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "CmdOptions",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "./types.ts",
+                                    "name": "CmdOptions"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                      "line": 142,
+                      "col": 2,
+                      "byteIndex": 3954
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Testing helper: register a callback invoked after each `run()` or `orThrow()` call.\nReceives the command name, args, opts, and result — letting tests record every invocation.\n\nIn dry-run mode, `result` is a mock success; in real execution it carries the actual output."
+                    },
+                    "name": "onRun",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "fn",
+                          "optional": false,
+                          "tsType": {
+                            "kind": "fnOrConstructor",
+                            "value": {
+                              "constructor": false,
+                              "tsType": {
+                                "repr": "void",
+                                "kind": "keyword",
+                                "value": "void"
+                              },
+                              "params": [
+                                {
+                                  "kind": "identifier",
+                                  "name": "record",
+                                  "optional": false,
+                                  "tsType": {
+                                    "kind": "typeLiteral",
+                                    "value": {
+                                      "properties": [
+                                        {
+                                          "name": "command",
+                                          "location": {
+                                            "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                                            "line": 152,
+                                            "col": 23,
+                                            "byteIndex": 4435
+                                          },
+                                          "tsType": {
+                                            "repr": "string",
+                                            "kind": "keyword",
+                                            "value": "string"
+                                          }
+                                        },
+                                        {
+                                          "name": "args",
+                                          "location": {
+                                            "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                                            "line": 152,
+                                            "col": 40,
+                                            "byteIndex": 4452
+                                          },
+                                          "tsType": {
+                                            "kind": "array",
+                                            "value": {
+                                              "repr": "string",
+                                              "kind": "keyword",
+                                              "value": "string"
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "name": "opts",
+                                          "location": {
+                                            "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                                            "line": 152,
+                                            "col": 56,
+                                            "byteIndex": 4468
+                                          },
+                                          "tsType": {
+                                            "repr": "CmdOptions",
+                                            "kind": "typeRef",
+                                            "value": {
+                                              "typeName": "CmdOptions",
+                                              "resolution": {
+                                                "kind": "import",
+                                                "specifier": "./types.ts",
+                                                "name": "CmdOptions"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "name": "result",
+                                          "location": {
+                                            "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                                            "line": 152,
+                                            "col": 74,
+                                            "byteIndex": 4486
+                                          },
+                                          "tsType": {
+                                            "repr": "CmdResult",
+                                            "kind": "typeRef",
+                                            "value": {
+                                              "typeParams": [
+                                                {
+                                                  "repr": "T",
+                                                  "kind": "typeRef",
+                                                  "value": {
+                                                    "typeName": "T",
+                                                    "resolution": {
+                                                      "kind": "typeParam",
+                                                      "declaringName": "CmdRunner",
+                                                      "declaringKind": "class"
+                                                    }
+                                                  }
+                                                }
+                                              ],
+                                              "typeName": "CmdResult",
+                                              "resolution": {
+                                                "kind": "import",
+                                                "specifier": "./cmd-result.ts",
+                                                "name": "CmdResult"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                      "line": 152,
+                      "col": 2,
+                      "byteIndex": 4414
+                    }
+                  },
+                  {
+                    "name": "toString",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                      "line": 157,
+                      "col": 2,
+                      "byteIndex": 4573
+                    }
+                  },
+                  {
+                    "name": "run",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "Promise",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeParams": [
+                            {
+                              "repr": "CmdResult",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeParams": [
+                                  {
+                                    "repr": "T",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "T",
+                                      "resolution": {
+                                        "kind": "typeParam",
+                                        "declaringName": "CmdRunner",
+                                        "declaringKind": "class"
+                                      }
+                                    }
+                                  }
+                                ],
+                                "typeName": "CmdResult",
+                                "resolution": {
+                                  "kind": "import",
+                                  "specifier": "./cmd-result.ts",
+                                  "name": "CmdResult"
+                                }
+                              }
+                            }
+                          ],
+                          "typeName": "Promise"
+                        }
+                      },
+                      "hasBody": true,
+                      "isAsync": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                      "line": 161,
+                      "col": 2,
+                      "byteIndex": 4650
+                    }
+                  },
+                  {
+                    "name": "orThrow",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "Promise",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeParams": [
+                            {
+                              "repr": "T",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "T",
+                                "resolution": {
+                                  "kind": "typeParam",
+                                  "declaringName": "CmdRunner",
+                                  "declaringKind": "class"
+                                }
+                              }
+                            }
+                          ],
+                          "typeName": "Promise"
+                        }
+                      },
+                      "hasBody": true,
+                      "isAsync": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                      "line": 238,
+                      "col": 2,
+                      "byteIndex": 7179
+                    }
+                  }
+                ],
+                "typeParams": [
+                  {
+                    "name": "T",
+                    "default": {
+                      "repr": "void",
+                      "kind": "keyword",
+                      "value": "void"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "runner",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                "line": 328,
+                "col": 0,
+                "byteIndex": 9798
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "command",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "kind": "identifier",
+                    "name": "args",
+                    "optional": true,
+                    "tsType": {
+                      "kind": "union",
+                      "value": [
+                        {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        },
+                        {
+                          "kind": "array",
+                          "value": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "kind": "identifier",
+                    "name": "opts",
+                    "optional": true,
+                    "tsType": {
+                      "repr": "CmdOptions",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeParams": [
+                          {
+                            "repr": "T",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "T",
+                              "resolution": {
+                                "kind": "typeParam",
+                                "declaringName": "run",
+                                "declaringKind": "function"
+                              }
+                            }
+                          }
+                        ],
+                        "typeName": "CmdOptions",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./types.ts",
+                          "name": "CmdOptions"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "CmdRunner",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeParams": [
+                      {
+                        "repr": "T",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "T",
+                          "resolution": {
+                            "kind": "typeParam",
+                            "declaringName": "run",
+                            "declaringKind": "function"
+                          }
+                        }
+                      }
+                    ],
+                    "typeName": "CmdRunner",
+                    "resolution": {
+                      "kind": "local"
+                    }
+                  }
+                },
+                "hasBody": true,
+                "typeParams": [
+                  {
+                    "name": "T"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "parseLines",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/parse.ts",
+                "line": 0,
+                "col": 0,
+                "byteIndex": 0
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "data",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "kind": "array",
+                  "value": {
+                    "repr": "string",
+                    "kind": "keyword",
+                    "value": "string"
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "isStreamTag",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                "line": 31,
+                "col": 0,
+                "byteIndex": 723
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "value",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "unknown",
+                      "kind": "keyword",
+                      "value": "unknown"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "value is StreamTag",
+                  "kind": "typePredicate",
+                  "value": {
+                    "param": {
+                      "type": "identifier",
+                      "name": "value"
+                    },
+                    "type": {
+                      "repr": "StreamTag",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "StreamTag",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    }
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "Stream",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                "line": 25,
+                "col": 13,
+                "byteIndex": 538
+              },
+              "declarationKind": "export",
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "stdout",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                          "line": 26,
+                          "col": 2,
+                          "byteIndex": 551
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "stderr",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                          "line": 27,
+                          "col": 2,
+                          "byteIndex": 571
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Options",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                "line": 2,
+                "col": 0,
+                "byteIndex": 36
+              },
+              "declarationKind": "export",
+              "kind": "interface",
+              "def": {
+                "properties": [
+                  {
+                    "name": "cwd",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                      "line": 3,
+                      "col": 2,
+                      "byteIndex": 81
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "name": "env",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                      "line": 4,
+                      "col": 2,
+                      "byteIndex": 97
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "Record",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeParams": [
+                          {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          },
+                          {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          }
+                        ],
+                        "typeName": "Record"
+                      }
+                    }
+                  },
+                  {
+                    "name": "clearEnv",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                      "line": 5,
+                      "col": 2,
+                      "byteIndex": 129
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    }
+                  },
+                  {
+                    "name": "dryRun",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                      "line": 6,
+                      "col": 2,
+                      "byteIndex": 151
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    }
+                  },
+                  {
+                    "name": "timeout",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                      "line": 7,
+                      "col": 2,
+                      "byteIndex": 171
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "Milliseconds",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Milliseconds",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "name": "stdin",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                      "line": 8,
+                      "col": 2,
+                      "byteIndex": 197
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "kind": "union",
+                      "value": [
+                        {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        },
+                        {
+                          "repr": "Uint8Array",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "Uint8Array"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "name": "interactive",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                      "line": 9,
+                      "col": 2,
+                      "byteIndex": 228
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    }
+                  },
+                  {
+                    "name": "signal",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                      "line": 10,
+                      "col": 2,
+                      "byteIndex": 253
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "AbortSignal",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "AbortSignal"
+                      }
+                    }
+                  },
+                  {
+                    "name": "uid",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                      "line": 11,
+                      "col": 2,
+                      "byteIndex": 277
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  },
+                  {
+                    "name": "gid",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                      "line": 12,
+                      "col": 2,
+                      "byteIndex": 293
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  },
+                  {
+                    "name": "silent",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                      "line": 13,
+                      "col": 2,
+                      "byteIndex": 309
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    }
+                  },
+                  {
+                    "name": "outParser",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                      "line": 14,
+                      "col": 2,
+                      "byteIndex": 329
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "kind": "fnOrConstructor",
+                      "value": {
+                        "constructor": false,
+                        "tsType": {
+                          "repr": "T",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "T",
+                            "resolution": {
+                              "kind": "typeParam",
+                              "declaringName": "CmdOptions",
+                              "declaringKind": "interface"
+                            }
+                          }
+                        },
+                        "params": [
+                          {
+                            "kind": "identifier",
+                            "name": "result",
+                            "optional": false,
+                            "tsType": {
+                              "repr": "ICmdResult",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "ICmdResult",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "name": "errParser",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                      "line": 15,
+                      "col": 2,
+                      "byteIndex": 370
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "kind": "fnOrConstructor",
+                      "value": {
+                        "constructor": false,
+                        "tsType": {
+                          "repr": "Error",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "Error"
+                          }
+                        },
+                        "params": [
+                          {
+                            "kind": "identifier",
+                            "name": "result",
+                            "optional": false,
+                            "tsType": {
+                              "repr": "ICmdResult",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "ICmdResult",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ],
+                "typeParams": [
+                  {
+                    "name": "T",
+                    "default": {
+                      "repr": "unknown",
+                      "kind": "keyword",
+                      "value": "unknown"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "IResult",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                "line": 18,
+                "col": 0,
+                "byteIndex": 416
+              },
+              "declarationKind": "export",
+              "kind": "interface",
+              "def": {
+                "properties": [
+                  {
+                    "name": "stdout",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                      "line": 19,
+                      "col": 2,
+                      "byteIndex": 448
+                    },
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "name": "stderr",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                      "line": 20,
+                      "col": 2,
+                      "byteIndex": 466
+                    },
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "name": "command",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                      "line": 21,
+                      "col": 2,
+                      "byteIndex": 484
+                    },
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "name": "exitCode",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                      "line": 22,
+                      "col": 2,
+                      "byteIndex": 503
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Milliseconds",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                "line": 0,
+                "col": 0,
+                "byteIndex": 0
+              },
+              "declarationKind": "export",
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "repr": "number",
+                  "kind": "keyword",
+                  "value": "number"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "StreamTag",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                "line": 29,
+                "col": 0,
+                "byteIndex": 601
+              },
+              "declarationKind": "export",
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "indexedAccess",
+                  "value": {
+                    "objType": {
+                      "repr": "Stream",
+                      "kind": "typeQuery",
+                      "value": "Stream"
+                    },
+                    "indexType": {
+                      "kind": "typeOperator",
+                      "value": {
+                        "operator": "keyof",
+                        "tsType": {
+                          "repr": "Stream",
+                          "kind": "typeQuery",
+                          "value": "Stream"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

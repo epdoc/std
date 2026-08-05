@@ -1,0 +1,1840 @@
+{
+  "version": 2,
+  "nodes": {
+    "file:///Users/jpravetz/dev/@epdoc/std/progress/src/mod.ts": {
+      "symbols": [
+        {
+          "name": "Line",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/line.ts",
+                "line": 81,
+                "col": 0,
+                "byteIndex": 2929
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "A reusable terminal progress indicator that supports spinner, bounce,\nhorizontal progress bar, and vertical fill modes.\n\nThis class provides visual feedback for long-running operations in terminal\napplications. It supports four modes:\n- **Spinner mode**: Looping character animation for indeterminate progress\n- **Bounce mode**: Back-and-forth animation for indeterminate progress\n  (e.g. bouncing ball or sliding block indicator)\n- **Horizontal bar mode**: For determinate progress with fine-grained\n  fractional display using partial block characters\n- **Vertical fill mode**: For single-character vertical fill display\n\nAll output is written to stderr to avoid interfering with stdout data. The\ndisplay color is configurable via the `color` option and defaults to red.\nThe indicator automatically clears itself when stopped.\n",
+                "tags": [
+                  {
+                    "kind": "example",
+                    "doc": "Spinner mode for unknown duration tasks\n```ts\nconst progress = new ProgressLine({ type: 'spinner', index: 'braille', color: 'cyan' });\nprogress.start('Connecting to server...');\nawait connectToServer();\nprogress.stop('Connected!');\n```\n"
+                  },
+                  {
+                    "kind": "example",
+                    "doc": "Bounce mode for thinking/waiting indicators\n```ts\nconst progress = new ProgressLine({ type: 'bounce', index: 'comet', color: 'purple' });\nprogress.start('Thinking...');\nawait processRequest();\nprogress.stop('Done!');\n```\n"
+                  },
+                  {
+                    "kind": "example",
+                    "doc": "Horizontal progress bar for known amount of work\n```ts\nconst totalFiles = 20;\nconst progress = new ProgressLine({ type: 'horizontal', total: totalFiles, width: 15, color: 0x20D020 });\nprogress.start('Downloading files...');\nfor (let i = 0; i <= totalFiles; i++) {\n  progress.update(`Downloading file ${i}/${totalFiles}...`, i);\n  await downloadFile(i);\n}\nprogress.stop('Download complete!');\n```\n"
+                  },
+                  {
+                    "kind": "example",
+                    "doc": "Vertical fill indicator\n```ts\nconst progress = new ProgressLine({ type: 'vertical', total: 100, color: 'green' });\nprogress.start('Volume level');\nfor (let i = 0; i <= 100; i++) {\n  progress.update(`Volume: ${i}%`, i);\n}\nprogress.stop('Done!');\n```"
+                  }
+                ]
+              },
+              "kind": "class",
+              "def": {
+                "constructors": [
+                  {
+                    "hasBody": true,
+                    "name": "constructor",
+                    "params": [
+                      {
+                        "kind": "assign",
+                        "left": {
+                          "kind": "identifier",
+                          "name": "options",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "Progress.LineOptions",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "Progress.LineOptions",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./types.ts"
+                              }
+                            }
+                          }
+                        },
+                        "right": "[UNSUPPORTED]"
+                      }
+                    ],
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/line.ts",
+                      "line": 90,
+                      "col": 2,
+                      "byteIndex": 3172
+                    }
+                  }
+                ],
+                "methods": [
+                  {
+                    "name": "color",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "color",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "Progress.Color",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "Progress.Color",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./types.ts"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/line.ts",
+                      "line": 101,
+                      "col": 2,
+                      "byteIndex": 3569
+                    }
+                  },
+                  {
+                    "name": "bar",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "assign",
+                          "left": {
+                            "kind": "identifier",
+                            "name": "total",
+                            "optional": false,
+                            "tsType": {
+                              "repr": "number",
+                              "kind": "keyword",
+                              "value": "number"
+                            }
+                          },
+                          "right": "1"
+                        },
+                        {
+                          "kind": "assign",
+                          "left": {
+                            "kind": "identifier",
+                            "name": "width",
+                            "optional": false,
+                            "tsType": {
+                              "repr": "Integer",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "Integer",
+                                "resolution": {
+                                  "kind": "import",
+                                  "specifier": "@epdoc/type",
+                                  "name": "Integer"
+                                }
+                              }
+                            }
+                          },
+                          "right": "10"
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/line.ts",
+                      "line": 106,
+                      "col": 2,
+                      "byteIndex": 3669
+                    }
+                  },
+                  {
+                    "name": "battery",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "assign",
+                          "left": {
+                            "kind": "identifier",
+                            "name": "total",
+                            "optional": false,
+                            "tsType": {
+                              "repr": "number",
+                              "kind": "keyword",
+                              "value": "number"
+                            }
+                          },
+                          "right": "1"
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/line.ts",
+                      "line": 111,
+                      "col": 2,
+                      "byteIndex": 3817
+                    }
+                  },
+                  {
+                    "name": "spinner",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "type",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "Progress.Spinner",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "Progress.Spinner",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./types.ts"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/line.ts",
+                      "line": 116,
+                      "col": 2,
+                      "byteIndex": 3932
+                    }
+                  },
+                  {
+                    "name": "comet",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/line.ts",
+                      "line": 121,
+                      "col": 2,
+                      "byteIndex": 4050
+                    }
+                  },
+                  {
+                    "name": "bouncyBall",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/line.ts",
+                      "line": 126,
+                      "col": 2,
+                      "byteIndex": 4146
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Start showing the progress indicator.\n\nIf the progress line is already active, it will be stopped and restarted.\nIn spinner and bounce modes, an animation interval is started that cycles\nthrough frames every 80ms.\n\nVisual options (total, width, color) are configured exclusively through the\nconstructor. Use separate {@link ProgressLine} instances for different modes.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "message",
+                          "doc": "The status message to display next to the indicator\n"
+                        },
+                        {
+                          "kind": "example",
+                          "doc": "```ts\nconst spinner = new ProgressLine({ type: 'spinner', index: 0 });\nspinner.start('Loading...');\n\nconst bouncer = new ProgressLine({ type: 'bounce', index: 1, color: 'purple' });\nbouncer.start('Thinking...');\n\nconst bar = new ProgressLine({ type: 'horizontal', total: 100, width: 20 });\nbar.start('Processing...');\n```"
+                        }
+                      ]
+                    },
+                    "name": "start",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "message",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "void",
+                        "kind": "keyword",
+                        "value": "void"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/line.ts",
+                      "line": 155,
+                      "col": 2,
+                      "byteIndex": 5133
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Update the status message and/or progress value.\n\nIn horizontal bar mode, the progress value is used to calculate the visual\nfill level. When the number of total units exceeds the bar width, partial\nblock characters (▏▎▍▌▋▊▉) are used to show fractional progress at 1/8\ncharacter resolution.\n\nIn vertical fill mode, the progress value maps to one of nine vertical\nblock characters (▁▂▃▄▅▆▇█) representing fill level.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "message",
+                          "doc": "The new status message to display"
+                        },
+                        {
+                          "kind": "param",
+                          "name": "progress",
+                          "optional": true,
+                          "doc": "Current progress value. This value is divided by the\ntotal and used to determine the visual fill level. Only applies to\nhorizontal and vertical modes.\n"
+                        },
+                        {
+                          "kind": "example",
+                          "doc": "```ts\nconst progress = new ProgressLine({ type: 'horizontal', total: 100, width: 20 });\nprogress.start('Downloading...');\n\n// Update message only\nprogress.update('Still downloading...');\n\n// Update both message and progress\nprogress.update('Downloading 50%...', 50);\n```"
+                        }
+                      ]
+                    },
+                    "name": "update",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "message",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          }
+                        },
+                        {
+                          "kind": "identifier",
+                          "name": "progress",
+                          "optional": true,
+                          "tsType": {
+                            "repr": "number",
+                            "kind": "keyword",
+                            "value": "number"
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "void",
+                        "kind": "keyword",
+                        "value": "void"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/line.ts",
+                      "line": 212,
+                      "col": 2,
+                      "byteIndex": 7042
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Stop the progress indicator and optionally display a final message.\n\nThis method clears the current line (removing the spinner or progress bar)\nand optionally writes a final message to stderr. If no message is provided,\nthe line is simply cleared without any output.\n\nAny active animation interval is stopped when this method is called.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "finalMessage",
+                          "optional": true,
+                          "doc": "Optional final message to display. The progress\nindicator is cleared before this message is shown.\n"
+                        },
+                        {
+                          "kind": "example",
+                          "doc": "```ts\nconst progress = new ProgressLine({ type: 'spinner', index: 0 });\nprogress.start('Working...');\n// ... do work ...\n\n// Stop without a message\nprogress.stop();\n\n// Or stop with a completion message\nprogress.stop('All tasks completed!');\n```"
+                        }
+                      ]
+                    },
+                    "name": "stop",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "finalMessage",
+                          "optional": true,
+                          "tsType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "void",
+                        "kind": "keyword",
+                        "value": "void"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/line.ts",
+                      "line": 248,
+                      "col": 2,
+                      "byteIndex": 8122
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Render the current frame to stderr.\n\nIn spinner and bounce modes, displays the current frame character with the\nmessage. In horizontal bar mode, calculates and displays the filled portion\nof the bar using full blocks (█), partial blocks (▏▎▍▌▋▊▉) for fractional\nprogress, and uncolored empty blocks (░) for the remaining space. In\nvertical fill mode, displays a single block character at the appropriate\nfill level.\n",
+                      "tags": [
+                        {
+                          "kind": "private"
+                        }
+                      ]
+                    },
+                    "accessibility": "private",
+                    "name": "render",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "void",
+                        "kind": "keyword",
+                        "value": "void"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/line.ts",
+                      "line": 295,
+                      "col": 2,
+                      "byteIndex": 9664
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Clear the current line on stderr.\n\nUses ANSI escape codes to clear from the cursor position to the end\nof the line, effectively removing the progress indicator.\n",
+                      "tags": [
+                        {
+                          "kind": "private"
+                        }
+                      ]
+                    },
+                    "accessibility": "private",
+                    "name": "clearLine",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "void",
+                        "kind": "keyword",
+                        "value": "void"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/line.ts",
+                      "line": 353,
+                      "col": 2,
+                      "byteIndex": 12314
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Check if this progress line is currently active.\n\nReturns true after `start()` has been called and before `stop()` is called."
+                    },
+                    "name": "isActive",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "boolean",
+                        "kind": "keyword",
+                        "value": "boolean"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/line.ts",
+                      "line": 362,
+                      "col": 2,
+                      "byteIndex": 12556
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "blocks",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/consts.ts",
+                "line": 0,
+                "col": 13,
+                "byteIndex": 13
+              },
+              "declarationKind": "export",
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "spinner",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/consts.ts",
+                          "line": 7,
+                          "col": 2,
+                          "byteIndex": 303
+                        },
+                        "tsType": {
+                          "kind": "typeLiteral",
+                          "value": {
+                            "properties": [
+                              {
+                                "name": "braille",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/consts.ts",
+                                  "line": 9,
+                                  "col": 4,
+                                  "byteIndex": 363
+                                },
+                                "tsType": {
+                                  "kind": "array",
+                                  "value": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                }
+                              },
+                              {
+                                "name": "brailleCircle",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/consts.ts",
+                                  "line": 10,
+                                  "col": 4,
+                                  "byteIndex": 455
+                                },
+                                "tsType": {
+                                  "kind": "array",
+                                  "value": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                }
+                              },
+                              {
+                                "name": "brailleDots",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/consts.ts",
+                                  "line": 11,
+                                  "col": 4,
+                                  "byteIndex": 546
+                                },
+                                "tsType": {
+                                  "kind": "array",
+                                  "value": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                }
+                              },
+                              {
+                                "name": "circles",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/consts.ts",
+                                  "line": 14,
+                                  "col": 4,
+                                  "byteIndex": 664
+                                },
+                                "tsType": {
+                                  "kind": "array",
+                                  "value": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                }
+                              },
+                              {
+                                "name": "circles8",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/consts.ts",
+                                  "line": 15,
+                                  "col": 4,
+                                  "byteIndex": 714
+                                },
+                                "tsType": {
+                                  "kind": "array",
+                                  "value": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                }
+                              },
+                              {
+                                "name": "quadrants",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/consts.ts",
+                                  "line": 16,
+                                  "col": 4,
+                                  "byteIndex": 786
+                                },
+                                "tsType": {
+                                  "kind": "array",
+                                  "value": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                }
+                              },
+                              {
+                                "name": "boxDraw",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/consts.ts",
+                                  "line": 19,
+                                  "col": 4,
+                                  "byteIndex": 875
+                                },
+                                "tsType": {
+                                  "kind": "array",
+                                  "value": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                }
+                              },
+                              {
+                                "name": "boxCorners",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/consts.ts",
+                                  "line": 20,
+                                  "col": 4,
+                                  "byteIndex": 946
+                                },
+                                "tsType": {
+                                  "kind": "array",
+                                  "value": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                }
+                              },
+                              {
+                                "name": "ascii",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/consts.ts",
+                                  "line": 23,
+                                  "col": 4,
+                                  "byteIndex": 1032
+                                },
+                                "tsType": {
+                                  "kind": "array",
+                                  "value": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                }
+                              },
+                              {
+                                "name": "asciiDots",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/consts.ts",
+                                  "line": 24,
+                                  "col": 4,
+                                  "byteIndex": 1073
+                                },
+                                "tsType": {
+                                  "kind": "array",
+                                  "value": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                }
+                              },
+                              {
+                                "name": "blocks",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/consts.ts",
+                                  "line": 27,
+                                  "col": 4,
+                                  "byteIndex": 1160
+                                },
+                                "tsType": {
+                                  "kind": "array",
+                                  "value": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                }
+                              },
+                              {
+                                "name": "growingBlocks",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/consts.ts",
+                                  "line": 28,
+                                  "col": 4,
+                                  "byteIndex": 1223
+                                },
+                                "tsType": {
+                                  "kind": "array",
+                                  "value": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                }
+                              },
+                              {
+                                "name": "thickBlocks",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/consts.ts",
+                                  "line": 29,
+                                  "col": 4,
+                                  "byteIndex": 1356
+                                },
+                                "tsType": {
+                                  "kind": "array",
+                                  "value": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                }
+                              },
+                              {
+                                "name": "bouncingBlocks",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/consts.ts",
+                                  "line": 30,
+                                  "col": 4,
+                                  "byteIndex": 1459
+                                },
+                                "tsType": {
+                                  "kind": "array",
+                                  "value": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                }
+                              },
+                              {
+                                "name": "triangles",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/consts.ts",
+                                  "line": 33,
+                                  "col": 4,
+                                  "byteIndex": 1545
+                                },
+                                "tsType": {
+                                  "kind": "array",
+                                  "value": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                }
+                              },
+                              {
+                                "name": "arrows",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/consts.ts",
+                                  "line": 34,
+                                  "col": 4,
+                                  "byteIndex": 1590
+                                },
+                                "tsType": {
+                                  "kind": "array",
+                                  "value": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "name": "bounce",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/consts.ts",
+                          "line": 36,
+                          "col": 2,
+                          "byteIndex": 1670
+                        },
+                        "tsType": {
+                          "kind": "typeLiteral",
+                          "value": {
+                            "properties": [
+                              {
+                                "name": "ball",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/consts.ts",
+                                  "line": 37,
+                                  "col": 4,
+                                  "byteIndex": 1684
+                                },
+                                "tsType": {
+                                  "kind": "array",
+                                  "value": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                }
+                              },
+                              {
+                                "name": "comet",
+                                "location": {
+                                  "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/consts.ts",
+                                  "line": 49,
+                                  "col": 4,
+                                  "byteIndex": 1903
+                                },
+                                "tsType": {
+                                  "kind": "array",
+                                  "value": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "name": "horizontal",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/consts.ts",
+                          "line": 78,
+                          "col": 2,
+                          "byteIndex": 2674
+                        },
+                        "tsType": {
+                          "kind": "array",
+                          "value": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          }
+                        }
+                      },
+                      {
+                        "name": "vertical",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/consts.ts",
+                          "line": 79,
+                          "col": 2,
+                          "byteIndex": 2743
+                        },
+                        "tsType": {
+                          "kind": "array",
+                          "value": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "defaultColor",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/consts.ts",
+                "line": 82,
+                "col": 13,
+                "byteIndex": 2842
+              },
+              "declarationKind": "export",
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "repr": "13639712",
+                  "kind": "literal",
+                  "value": {
+                    "kind": "number",
+                    "number": 13639712.0
+                  }
+                },
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "favSpinners",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/consts.ts",
+                "line": 83,
+                "col": 13,
+                "byteIndex": 2880
+              },
+              "declarationKind": "export",
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "kind": "array",
+                  "value": {
+                    "repr": "string",
+                    "kind": "keyword",
+                    "value": "string"
+                  }
+                },
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "colorMap",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/consts.ts",
+                "line": 91,
+                "col": 13,
+                "byteIndex": 3196
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "A map of named colors to their hexadecimal RGB values.\n\nUse these names as the `color` option in {@link ProgressLineOptions} for\nconvenient color selection without specifying hex values directly."
+              },
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "repr": "Record",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeParams": [
+                      {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      },
+                      {
+                        "repr": "number",
+                        "kind": "keyword",
+                        "value": "number"
+                      }
+                    ],
+                    "typeName": "Record"
+                  }
+                },
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "isSpinnerType",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/guards.ts",
+                "line": 4,
+                "col": 0,
+                "byteIndex": 117
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "val",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "unknown",
+                      "kind": "keyword",
+                      "value": "unknown"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "val is Progress.Spinner",
+                  "kind": "typePredicate",
+                  "value": {
+                    "param": {
+                      "type": "identifier",
+                      "name": "val"
+                    },
+                    "type": {
+                      "repr": "Progress.Spinner",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Progress.Spinner",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./types.ts"
+                        }
+                      }
+                    }
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "isBounceType",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/guards.ts",
+                "line": 7,
+                "col": 0,
+                "byteIndex": 247
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "val",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "unknown",
+                      "kind": "keyword",
+                      "value": "unknown"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "val is Progress.Bounce",
+                  "kind": "typePredicate",
+                  "value": {
+                    "param": {
+                      "type": "identifier",
+                      "name": "val"
+                    },
+                    "type": {
+                      "repr": "Progress.Bounce",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Progress.Bounce",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./types.ts"
+                        }
+                      }
+                    }
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "isSpinner",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/guards.ts",
+                "line": 11,
+                "col": 0,
+                "byteIndex": 375
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "val",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "unknown",
+                      "kind": "keyword",
+                      "value": "unknown"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "val is Progress.SpinnerOptions",
+                  "kind": "typePredicate",
+                  "value": {
+                    "param": {
+                      "type": "identifier",
+                      "name": "val"
+                    },
+                    "type": {
+                      "repr": "Progress.SpinnerOptions",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Progress.SpinnerOptions",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./types.ts"
+                        }
+                      }
+                    }
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "isBounce",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/guards.ts",
+                "line": 14,
+                "col": 0,
+                "byteIndex": 529
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "val",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "unknown",
+                      "kind": "keyword",
+                      "value": "unknown"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "val is Progress.BounceOptions",
+                  "kind": "typePredicate",
+                  "value": {
+                    "param": {
+                      "type": "identifier",
+                      "name": "val"
+                    },
+                    "type": {
+                      "repr": "Progress.BounceOptions",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Progress.BounceOptions",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./types.ts"
+                        }
+                      }
+                    }
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "isHorizontal",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/guards.ts",
+                "line": 17,
+                "col": 0,
+                "byteIndex": 679
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "val",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "unknown",
+                      "kind": "keyword",
+                      "value": "unknown"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "val is Progress.HorizontalOptions",
+                  "kind": "typePredicate",
+                  "value": {
+                    "param": {
+                      "type": "identifier",
+                      "name": "val"
+                    },
+                    "type": {
+                      "repr": "Progress.HorizontalOptions",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Progress.HorizontalOptions",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./types.ts"
+                        }
+                      }
+                    }
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "isVertical",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/guards.ts",
+                "line": 20,
+                "col": 0,
+                "byteIndex": 868
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "val",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "unknown",
+                      "kind": "keyword",
+                      "value": "unknown"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "val is Progress.VerticalOptions",
+                  "kind": "typePredicate",
+                  "value": {
+                    "param": {
+                      "type": "identifier",
+                      "name": "val"
+                    },
+                    "type": {
+                      "repr": "Progress.VerticalOptions",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Progress.VerticalOptions",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./types.ts"
+                        }
+                      }
+                    }
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "Color",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/types.ts",
+                "line": 10,
+                "col": 0,
+                "byteIndex": 367
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "A color value specified as either a hex number (e.g. `0xD02020`) or a named\ncolor string (e.g. `'red'`, `'green'`, `'cyan'`).\n\nSupported named colors: `red`, `green`, `blue`, `yellow`, `cyan`, `magenta`,\n`white`, `black`, `orange`, `gray`/`grey`, `purple`."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "union",
+                  "value": [
+                    {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    },
+                    {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mode",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/types.ts",
+                "line": 12,
+                "col": 0,
+                "byteIndex": 405
+              },
+              "declarationKind": "export",
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "typeOperator",
+                  "value": {
+                    "operator": "keyof",
+                    "tsType": {
+                      "repr": "blocks",
+                      "kind": "typeQuery",
+                      "value": "blocks"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Spinner",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/types.ts",
+                "line": 13,
+                "col": 0,
+                "byteIndex": 445
+              },
+              "declarationKind": "export",
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "typeOperator",
+                  "value": {
+                    "operator": "keyof",
+                    "tsType": {
+                      "repr": "blocks.spinner",
+                      "kind": "typeQuery",
+                      "value": "blocks.spinner"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bounce",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/types.ts",
+                "line": 14,
+                "col": 0,
+                "byteIndex": 496
+              },
+              "declarationKind": "export",
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "typeOperator",
+                  "value": {
+                    "operator": "keyof",
+                    "tsType": {
+                      "repr": "blocks.bounce",
+                      "kind": "typeQuery",
+                      "value": "blocks.bounce"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "BaseOptions",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/types.ts",
+                "line": 19,
+                "col": 0,
+                "byteIndex": 605
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Base options shared by all progress line modes."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "color",
+                        "jsDoc": {
+                          "doc": "The display color for the progress indicator. Defaults to red (`0xD02020`)."
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/types.ts",
+                          "line": 21,
+                          "col": 2,
+                          "byteIndex": 720
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "Color",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "Color",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "SpinnerOptions",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/types.ts",
+                "line": 24,
+                "col": 0,
+                "byteIndex": 739
+              },
+              "declarationKind": "export",
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "intersection",
+                  "value": [
+                    {
+                      "repr": "BaseOptions",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "BaseOptions",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "typeLiteral",
+                      "value": {
+                        "properties": [
+                          {
+                            "name": "type",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/types.ts",
+                              "line": 24,
+                              "col": 45,
+                              "byteIndex": 784
+                            },
+                            "tsType": {
+                              "repr": "spinner",
+                              "kind": "literal",
+                              "value": {
+                                "kind": "string",
+                                "string": "spinner"
+                              }
+                            }
+                          },
+                          {
+                            "name": "index",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/types.ts",
+                              "line": 24,
+                              "col": 62,
+                              "byteIndex": 801
+                            },
+                            "tsType": {
+                              "repr": "Spinner",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "Spinner",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "BounceOptions",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/types.ts",
+                "line": 25,
+                "col": 0,
+                "byteIndex": 819
+              },
+              "declarationKind": "export",
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "intersection",
+                  "value": [
+                    {
+                      "repr": "BaseOptions",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "BaseOptions",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "typeLiteral",
+                      "value": {
+                        "properties": [
+                          {
+                            "name": "type",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/types.ts",
+                              "line": 25,
+                              "col": 44,
+                              "byteIndex": 863
+                            },
+                            "tsType": {
+                              "repr": "bounce",
+                              "kind": "literal",
+                              "value": {
+                                "kind": "string",
+                                "string": "bounce"
+                              }
+                            }
+                          },
+                          {
+                            "name": "index",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/types.ts",
+                              "line": 25,
+                              "col": 60,
+                              "byteIndex": 879
+                            },
+                            "tsType": {
+                              "repr": "Bounce",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "Bounce",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "HorizontalOptions",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/types.ts",
+                "line": 26,
+                "col": 0,
+                "byteIndex": 896
+              },
+              "declarationKind": "export",
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "intersection",
+                  "value": [
+                    {
+                      "repr": "BaseOptions",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "BaseOptions",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "typeLiteral",
+                      "value": {
+                        "properties": [
+                          {
+                            "name": "type",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/types.ts",
+                              "line": 26,
+                              "col": 48,
+                              "byteIndex": 944
+                            },
+                            "tsType": {
+                              "repr": "horizontal",
+                              "kind": "literal",
+                              "value": {
+                                "kind": "string",
+                                "string": "horizontal"
+                              }
+                            }
+                          },
+                          {
+                            "name": "total",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/types.ts",
+                              "line": 26,
+                              "col": 68,
+                              "byteIndex": 964
+                            },
+                            "tsType": {
+                              "repr": "number",
+                              "kind": "keyword",
+                              "value": "number"
+                            }
+                          },
+                          {
+                            "name": "width",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/types.ts",
+                              "line": 26,
+                              "col": 83,
+                              "byteIndex": 979
+                            },
+                            "tsType": {
+                              "repr": "Integer",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "Integer",
+                                "resolution": {
+                                  "kind": "import",
+                                  "specifier": "@epdoc/type",
+                                  "name": "Integer"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "VerticalOptions",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/types.ts",
+                "line": 27,
+                "col": 0,
+                "byteIndex": 997
+              },
+              "declarationKind": "export",
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "intersection",
+                  "value": [
+                    {
+                      "repr": "BaseOptions",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "BaseOptions",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "typeLiteral",
+                      "value": {
+                        "properties": [
+                          {
+                            "name": "type",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/types.ts",
+                              "line": 27,
+                              "col": 46,
+                              "byteIndex": 1043
+                            },
+                            "tsType": {
+                              "repr": "vertical",
+                              "kind": "literal",
+                              "value": {
+                                "kind": "string",
+                                "string": "vertical"
+                              }
+                            }
+                          },
+                          {
+                            "name": "total",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/types.ts",
+                              "line": 27,
+                              "col": 64,
+                              "byteIndex": 1061
+                            },
+                            "tsType": {
+                              "repr": "number",
+                              "kind": "keyword",
+                              "value": "number"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "LineOptions",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/progress/src/types.ts",
+                "line": 29,
+                "col": 0,
+                "byteIndex": 1079
+              },
+              "declarationKind": "export",
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "union",
+                  "value": [
+                    {
+                      "repr": "SpinnerOptions",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "SpinnerOptions",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    },
+                    {
+                      "repr": "BounceOptions",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "BounceOptions",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    },
+                    {
+                      "repr": "HorizontalOptions",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "HorizontalOptions",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    },
+                    {
+                      "repr": "VerticalOptions",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "VerticalOptions",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

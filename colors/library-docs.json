@@ -1,0 +1,2968 @@
+{
+  "version": 2,
+  "nodes": {
+    "file:///Users/jpravetz/dev/@epdoc/std/colors/src/mod.ts": {
+      "module_doc": {
+        "tags": [
+          {
+            "kind": "unsupported",
+            "value": "@epdoc/colors\n\nA standardized terminal color API and curated palette for CLI applications,\ndesigned to be flexible and type-safe.\n"
+          },
+          {
+            "kind": "module"
+          }
+        ]
+      },
+      "symbols": [
+        {
+          "name": "black",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 4,
+                "col": 13,
+                "byteIndex": 174
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "charcoal",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 5,
+                "col": 13,
+                "byteIndex": 243
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "slate",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 6,
+                "col": 13,
+                "byteIndex": 318
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "steel",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 7,
+                "col": 13,
+                "byteIndex": 387
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "gray",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 8,
+                "col": 13,
+                "byteIndex": 456
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "cream",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 9,
+                "col": 13,
+                "byteIndex": 523
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "white",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 10,
+                "col": 13,
+                "byteIndex": 592
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "crimson",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 11,
+                "col": 13,
+                "byteIndex": 661
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "red",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 12,
+                "col": 13,
+                "byteIndex": 734
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "coral",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 13,
+                "col": 13,
+                "byteIndex": 799
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "rose",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 14,
+                "col": 13,
+                "byteIndex": 868
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "pink",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 15,
+                "col": 13,
+                "byteIndex": 935
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "terracotta",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 16,
+                "col": 13,
+                "byteIndex": 1002
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "rust",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 17,
+                "col": 13,
+                "byteIndex": 1081
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "orange",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 18,
+                "col": 13,
+                "byteIndex": 1148
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "amber",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 19,
+                "col": 13,
+                "byteIndex": 1219
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "gold",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 20,
+                "col": 13,
+                "byteIndex": 1288
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "yellow",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 21,
+                "col": 13,
+                "byteIndex": 1355
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "lemon",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 22,
+                "col": 13,
+                "byteIndex": 1426
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "lime",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 23,
+                "col": 13,
+                "byteIndex": 1495
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "green",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 24,
+                "col": 13,
+                "byteIndex": 1562
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "mint",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 25,
+                "col": 13,
+                "byteIndex": 1631
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "teal",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 26,
+                "col": 13,
+                "byteIndex": 1698
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "sage",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 27,
+                "col": 13,
+                "byteIndex": 1765
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "olive",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 28,
+                "col": 13,
+                "byteIndex": 1832
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "moss",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 29,
+                "col": 13,
+                "byteIndex": 1901
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "navy",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 30,
+                "col": 13,
+                "byteIndex": 1968
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "blue",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 31,
+                "col": 13,
+                "byteIndex": 2035
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "sky",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 32,
+                "col": 13,
+                "byteIndex": 2102
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "cyan",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 33,
+                "col": 13,
+                "byteIndex": 2167
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "indigo",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 34,
+                "col": 13,
+                "byteIndex": 2234
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "violet",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 35,
+                "col": 13,
+                "byteIndex": 2305
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "purple",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 36,
+                "col": 13,
+                "byteIndex": 2376
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "lavender",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 37,
+                "col": 13,
+                "byteIndex": 2447
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "lilac",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 38,
+                "col": 13,
+                "byteIndex": 2522
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "magenta",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 39,
+                "col": 13,
+                "byteIndex": 2591
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "wheat",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 40,
+                "col": 13,
+                "byteIndex": 2664
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "sand",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 41,
+                "col": 13,
+                "byteIndex": 2733
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "tan",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 42,
+                "col": 13,
+                "byteIndex": 2800
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "peru",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 43,
+                "col": 13,
+                "byteIndex": 2865
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "ochre",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 44,
+                "col": 13,
+                "byteIndex": 2932
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "bronze",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 45,
+                "col": 13,
+                "byteIndex": 3001
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "camel",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 46,
+                "col": 13,
+                "byteIndex": 3072
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "sienna",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 47,
+                "col": 13,
+                "byteIndex": 3141
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "copper",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 48,
+                "col": 13,
+                "byteIndex": 3212
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "terra",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 49,
+                "col": 13,
+                "byteIndex": 3283
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "taupe",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 50,
+                "col": 13,
+                "byteIndex": 3352
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "stone",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 51,
+                "col": 13,
+                "byteIndex": 3421
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "brown",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 52,
+                "col": 13,
+                "byteIndex": 3490
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "russet",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 53,
+                "col": 13,
+                "byteIndex": 3559
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "greige",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 54,
+                "col": 13,
+                "byteIndex": 3630
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "umber",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 55,
+                "col": 13,
+                "byteIndex": 3701
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "peat",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colors.gen.ts",
+                "line": 56,
+                "col": 13,
+                "byteIndex": 3770
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "StyleFn",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                "line": 14,
+                "col": 0,
+                "byteIndex": 421
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "A function that wraps text with ANSI styling. Compatible with all functions\nfrom `@std/fmt/colors` (e.g. `bold`, `rgb24`, `dim`, `green`).\n",
+                "tags": [
+                  {
+                    "kind": "example",
+                    "doc": "```ts\nimport { bold, rgb24 } from '@std/fmt/colors';\n\nconst headerStyle: StyleFn = (s) => bold(rgb24(s, 0x58d1eb));\nconst greenText: StyleFn = (s) => rgb24(s, 0x51d67c);\n```"
+                  }
+                ]
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "fnOrConstructor",
+                  "value": {
+                    "constructor": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    },
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "text",
+                        "optional": false,
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Def",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                "line": 35,
+                "col": 0,
+                "byteIndex": 933
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "A color specification that can define foreground and/or background colors,\nwith optional bold or dim weight.\n",
+                "tags": [
+                  {
+                    "kind": "example",
+                    "doc": "```ts\n// Background only\nconst bgRed: Def = { bg: 0xff0000 };\n\n// Foreground only\nconst fgGreen: Def = { fg: 0x00ff00 };\n\n// Both foreground and background\nconst whiteOnRed: Def = { fg: 0xffffff, bg: 0xff0000 };\n\n// Bold foreground\nconst boldGreen: Def = { fg: 0x51d67c, bold: true };\n```"
+                  }
+                ]
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "fg",
+                        "jsDoc": {
+                          "doc": "Foreground (text) color as a hex number (e.g., 0x51d67c)"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 37,
+                          "col": 2,
+                          "byteIndex": 1021
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "bg",
+                        "jsDoc": {
+                          "doc": "Background color as a hex number (e.g., 0x1a1a2e)"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 39,
+                          "col": 2,
+                          "byteIndex": 1095
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "bold",
+                        "jsDoc": {
+                          "doc": "Apply bold (bright) weight to the text"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 41,
+                          "col": 2,
+                          "byteIndex": 1158
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "boolean",
+                          "kind": "keyword",
+                          "value": "boolean"
+                        }
+                      },
+                      {
+                        "name": "dim",
+                        "jsDoc": {
+                          "doc": "Apply dim (reduced intensity) to the text"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 43,
+                          "col": 2,
+                          "byteIndex": 1227
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "boolean",
+                          "kind": "keyword",
+                          "value": "boolean"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Spec",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                "line": 70,
+                "col": 0,
+                "byteIndex": 1955
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Flexible color/style specification.\n\n- **`StyleFn`** — Full control with custom ANSI styling (bold, italic, etc.)\n- **`number`** — Shorthand for foreground color (most common case)\n- **`Def`** — Explicit foreground and/or background colors with bold/dim weight\n",
+                "tags": [
+                  {
+                    "kind": "example",
+                    "doc": "```ts\nimport { bold, rgb24 } from '@std/fmt/colors';\n\n// Foreground color shorthand (most common)\nconst redText: Spec = 0xff0000;\n\n// Background color\nconst bgBlue: Spec = { bg: 0x0000ff };\n\n// Bold foreground\nconst boldGreen: Spec = { fg: 0x51d67c, bold: true };\n\n// Full control with StyleFn\nconst styledText: Spec = (s) => bold(italic(rgb24(s, 0x58d1eb)));\n```"
+                  }
+                ]
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "union",
+                  "value": [
+                    {
+                      "repr": "StyleFn",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "StyleFn",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    },
+                    {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    },
+                    {
+                      "repr": "Def",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Def",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "toStyleFn",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                "line": 88,
+                "col": 0,
+                "byteIndex": 2527
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Converts a {@link Spec} into a {@link StyleFn}.\n\n- `StyleFn` — returned as-is\n- `number` — wrapped as `rgb24(text, n)` (foreground shorthand)\n- `Def` — applies `fg`/`bg` via `rgb24`/`bgRgb24`, then applies `bold`/`dim` if set\n",
+                "tags": [
+                  {
+                    "kind": "example",
+                    "doc": "```ts\nimport { Color } from '@epdoc/colors';\n\nconst fn = Color.toStyleFn(Color.palette.cyan);  // number → fg fn\nconst fn2 = Color.toStyleFn({ fg: 0xffffff, bg: 0x1a1a2e });\nconst fn3 = Color.toStyleFn({ fg: 0x51d67c, bold: true });\n```"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "spec",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "Spec",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Spec",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "StyleFn",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeName": "StyleFn",
+                    "resolution": {
+                      "kind": "local"
+                    }
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "apply",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                "line": 116,
+                "col": 0,
+                "byteIndex": 3424
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Applies a {@link Spec} to a string, returning the styled result.\nConvenience wrapper over {@link toStyleFn}.\n",
+                "tags": [
+                  {
+                    "kind": "example",
+                    "doc": "```ts\nimport { apply, palette } from '@epdoc/colors';\nimport { underline } from '@std/fmt/colors';\n\nconst styled = apply('hello', palette.gold);\nconst styled2 = apply('world', { fg: 0xffffff, bg: 0x1a1a2e });\nconst styled3 = apply('bold!', { fg: 0x51d67c, bold: true });\nconst styled4 = underline(apply('hello', palette.cyan));\n```"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "text",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "kind": "identifier",
+                    "name": "spec",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "Spec",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Spec",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "palette",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                "line": 124,
+                "col": 13,
+                "byteIndex": 3669
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "A curated collection of hex color constants.\nIncludes basic colors, earth tones, and neutrals suitable for CLI applications."
+              },
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "black",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 126,
+                          "col": 2,
+                          "byteIndex": 3697
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "charcoal",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 127,
+                          "col": 2,
+                          "byteIndex": 3716
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "slate",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 128,
+                          "col": 2,
+                          "byteIndex": 3738
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "steel",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 129,
+                          "col": 2,
+                          "byteIndex": 3757
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "gray",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 130,
+                          "col": 2,
+                          "byteIndex": 3789
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "cream",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 131,
+                          "col": 2,
+                          "byteIndex": 3807
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "white",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 132,
+                          "col": 2,
+                          "byteIndex": 3826
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "crimson",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 135,
+                          "col": 2,
+                          "byteIndex": 3856
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "red",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 136,
+                          "col": 2,
+                          "byteIndex": 3877
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "coral",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 137,
+                          "col": 2,
+                          "byteIndex": 3894
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "rose",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 138,
+                          "col": 2,
+                          "byteIndex": 3913
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "pink",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 139,
+                          "col": 2,
+                          "byteIndex": 3931
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "terracotta",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 140,
+                          "col": 2,
+                          "byteIndex": 3949
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "rust",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 141,
+                          "col": 2,
+                          "byteIndex": 3973
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "orange",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 144,
+                          "col": 2,
+                          "byteIndex": 4015
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "amber",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 145,
+                          "col": 2,
+                          "byteIndex": 4035
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "gold",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 146,
+                          "col": 2,
+                          "byteIndex": 4054
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "yellow",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 147,
+                          "col": 2,
+                          "byteIndex": 4072
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "lemon",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 148,
+                          "col": 2,
+                          "byteIndex": 4092
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "lime",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 151,
+                          "col": 2,
+                          "byteIndex": 4124
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "green",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 152,
+                          "col": 2,
+                          "byteIndex": 4142
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "mint",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 153,
+                          "col": 2,
+                          "byteIndex": 4161
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "teal",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 154,
+                          "col": 2,
+                          "byteIndex": 4179
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "sage",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 155,
+                          "col": 2,
+                          "byteIndex": 4197
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "olive",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 156,
+                          "col": 2,
+                          "byteIndex": 4215
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "moss",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 157,
+                          "col": 2,
+                          "byteIndex": 4234
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "navy",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 160,
+                          "col": 2,
+                          "byteIndex": 4264
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "blue",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 161,
+                          "col": 2,
+                          "byteIndex": 4282
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "sky",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 162,
+                          "col": 2,
+                          "byteIndex": 4300
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "cyan",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 163,
+                          "col": 2,
+                          "byteIndex": 4317
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "indigo",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 166,
+                          "col": 2,
+                          "byteIndex": 4349
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "violet",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 167,
+                          "col": 2,
+                          "byteIndex": 4369
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "purple",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 168,
+                          "col": 2,
+                          "byteIndex": 4389
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "lavender",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 169,
+                          "col": 2,
+                          "byteIndex": 4409
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "lilac",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 170,
+                          "col": 2,
+                          "byteIndex": 4431
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "magenta",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 171,
+                          "col": 2,
+                          "byteIndex": 4450
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "wheat",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 174,
+                          "col": 2,
+                          "byteIndex": 4521
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "sand",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 175,
+                          "col": 2,
+                          "byteIndex": 4540
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "tan",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 176,
+                          "col": 2,
+                          "byteIndex": 4558
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "peru",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 177,
+                          "col": 2,
+                          "byteIndex": 4575
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "ochre",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 178,
+                          "col": 2,
+                          "byteIndex": 4593
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "bronze",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 179,
+                          "col": 2,
+                          "byteIndex": 4612
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "camel",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 180,
+                          "col": 2,
+                          "byteIndex": 4632
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "sienna",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 181,
+                          "col": 2,
+                          "byteIndex": 4651
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "copper",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 182,
+                          "col": 2,
+                          "byteIndex": 4671
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "terra",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 183,
+                          "col": 2,
+                          "byteIndex": 4691
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "taupe",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 184,
+                          "col": 2,
+                          "byteIndex": 4710
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "stone",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 185,
+                          "col": 2,
+                          "byteIndex": 4729
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "brown",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 186,
+                          "col": 2,
+                          "byteIndex": 4748
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "russet",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 187,
+                          "col": 2,
+                          "byteIndex": 4767
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "greige",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 188,
+                          "col": 2,
+                          "byteIndex": 4787
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "umber",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 189,
+                          "col": 2,
+                          "byteIndex": 4807
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "peat",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/colors/src/colorspec.ts",
+                          "line": 190,
+                          "col": 2,
+                          "byteIndex": 4826
+                        },
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "kind": "const"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

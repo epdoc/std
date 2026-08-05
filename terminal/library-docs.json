@@ -1,0 +1,2244 @@
+{
+  "version": 2,
+  "nodes": {
+    "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/mod.ts": {
+      "imports": [
+        {
+          "importedName": "keysModule",
+          "src": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/keys.ts"
+        },
+        {
+          "importedName": "pagerModule",
+          "src": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/pager.ts"
+        },
+        {
+          "importedName": "promptModule",
+          "src": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/prompt.ts"
+        },
+        {
+          "importedName": "screenModule",
+          "src": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/screen.ts"
+        }
+      ],
+      "symbols": [
+        {
+          "name": "keys",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/mod.ts",
+                "line": 37,
+                "col": 13,
+                "byteIndex": 983
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Keys namespace for key input handling"
+              },
+              "kind": "variable",
+              "def": {
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "pager",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/mod.ts",
+                "line": 40,
+                "col": 13,
+                "byteIndex": 1054
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Pager namespace for pagination"
+              },
+              "kind": "variable",
+              "def": {
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "prompt",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/mod.ts",
+                "line": 43,
+                "col": 13,
+                "byteIndex": 1128
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Prompt namespace for user input"
+              },
+              "kind": "variable",
+              "def": {
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "screen",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/mod.ts",
+                "line": 46,
+                "col": 13,
+                "byteIndex": 1210
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Screen namespace for terminal control"
+              },
+              "kind": "variable",
+              "def": {
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Keys",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/keys.ts",
+                "line": 33,
+                "col": 13,
+                "byteIndex": 901
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Key codes for common terminal input.\n\nContains string representations of terminal key codes including:\n- Basic keys: SPACE, ENTER, ESC, TAB\n- Arrow keys: UP, DOWN, LEFT, RIGHT\n- Navigation: PAGE_UP, PAGE_DOWN, HOME, END\n- Control sequences: CTRL_C, CTRL_D, CTRL_R\n- Editing: BACKSPACE, DELETE"
+              },
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "SPACE",
+                        "jsDoc": {
+                          "doc": "Space bar"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/keys.ts",
+                          "line": 35,
+                          "col": 2,
+                          "byteIndex": 931
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "ENTER",
+                        "jsDoc": {
+                          "doc": "Enter/Return key"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/keys.ts",
+                          "line": 37,
+                          "col": 2,
+                          "byteIndex": 971
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "NEWLINE",
+                        "jsDoc": {
+                          "doc": "Newline"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/keys.ts",
+                          "line": 39,
+                          "col": 2,
+                          "byteIndex": 1003
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "ESC",
+                        "jsDoc": {
+                          "doc": "Escape key"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/keys.ts",
+                          "line": 41,
+                          "col": 2,
+                          "byteIndex": 1040
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "CTRL_C",
+                        "jsDoc": {
+                          "doc": "Ctrl+C"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/keys.ts",
+                          "line": 43,
+                          "col": 2,
+                          "byteIndex": 1071
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "CTRL_D",
+                        "jsDoc": {
+                          "doc": "Ctrl+D (EOF)"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/keys.ts",
+                          "line": 45,
+                          "col": 2,
+                          "byteIndex": 1111
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "CTRL_R",
+                        "jsDoc": {
+                          "doc": "Ctrl+R"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/keys.ts",
+                          "line": 47,
+                          "col": 2,
+                          "byteIndex": 1145
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "BACKSPACE",
+                        "jsDoc": {
+                          "doc": "Backspace"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/keys.ts",
+                          "line": 49,
+                          "col": 2,
+                          "byteIndex": 1182
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "DELETE",
+                        "jsDoc": {
+                          "doc": "Delete"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/keys.ts",
+                          "line": 51,
+                          "col": 2,
+                          "byteIndex": 1219
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "TAB",
+                        "jsDoc": {
+                          "doc": "Tab"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/keys.ts",
+                          "line": 53,
+                          "col": 2,
+                          "byteIndex": 1250
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "UP",
+                        "jsDoc": {
+                          "doc": "Up arrow"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/keys.ts",
+                          "line": 55,
+                          "col": 2,
+                          "byteIndex": 1281
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "DOWN",
+                        "jsDoc": {
+                          "doc": "Down arrow"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/keys.ts",
+                          "line": 57,
+                          "col": 2,
+                          "byteIndex": 1317
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "RIGHT",
+                        "jsDoc": {
+                          "doc": "Right arrow"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/keys.ts",
+                          "line": 59,
+                          "col": 2,
+                          "byteIndex": 1356
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "LEFT",
+                        "jsDoc": {
+                          "doc": "Left arrow"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/keys.ts",
+                          "line": 61,
+                          "col": 2,
+                          "byteIndex": 1395
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "PAGE_UP",
+                        "jsDoc": {
+                          "doc": "Page Up"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/keys.ts",
+                          "line": 63,
+                          "col": 2,
+                          "byteIndex": 1430
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "PAGE_DOWN",
+                        "jsDoc": {
+                          "doc": "Page Down"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/keys.ts",
+                          "line": 65,
+                          "col": 2,
+                          "byteIndex": 1471
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "HOME",
+                        "jsDoc": {
+                          "doc": "Home"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/keys.ts",
+                          "line": 67,
+                          "col": 2,
+                          "byteIndex": 1509
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "END",
+                        "jsDoc": {
+                          "doc": "End"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/keys.ts",
+                          "line": 69,
+                          "col": 2,
+                          "byteIndex": 1540
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "Q",
+                        "jsDoc": {
+                          "doc": "q key"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/keys.ts",
+                          "line": 71,
+                          "col": 2,
+                          "byteIndex": 1572
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "Q_UPPER",
+                        "jsDoc": {
+                          "doc": "Q key (uppercase)"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/keys.ts",
+                          "line": 73,
+                          "col": 2,
+                          "byteIndex": 1609
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "KeyValue",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/keys.ts",
+                "line": 81,
+                "col": 0,
+                "byteIndex": 1789
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Type representing all possible key values from the Keys constant.\n\nThis is a union type of all key code strings defined in {@link Keys}."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "indexedAccess",
+                  "value": {
+                    "objType": {
+                      "repr": "Keys",
+                      "kind": "typeQuery",
+                      "value": "Keys"
+                    },
+                    "indexType": {
+                      "kind": "typeOperator",
+                      "value": {
+                        "operator": "keyof",
+                        "tsType": {
+                          "repr": "Keys",
+                          "kind": "typeQuery",
+                          "value": "Keys"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "readKey",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/keys.ts",
+                "line": 105,
+                "col": 0,
+                "byteIndex": 2478
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Read a single keypress from stdin.\n\nSets the terminal to raw mode, reads a single keypress or escape sequence,\nand then restores the terminal to normal mode. Returns `undefined` if\nstdin is not a TTY or when EOF is reached.\n\nSupports regular characters, control characters, and escape sequences\nfor arrow keys and special keys.\n",
+                "tags": [
+                  {
+                    "kind": "return",
+                    "doc": "The key code/sequence that was pressed, or undefined if not a TTY or EOF\n"
+                  },
+                  {
+                    "kind": "example",
+                    "doc": "```typescript\nconst key = await readKey();\nif (key === Keys.UP) {\n  moveSelectionUp();\n} else if (key === Keys.ENTER) {\n  confirmSelection();\n}\n```"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [],
+                "returnType": {
+                  "repr": "Promise",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeParams": [
+                      {
+                        "kind": "union",
+                        "value": [
+                          {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          },
+                          {
+                            "repr": "undefined",
+                            "kind": "keyword",
+                            "value": "undefined"
+                          }
+                        ]
+                      }
+                    ],
+                    "typeName": "Promise"
+                  }
+                },
+                "hasBody": true,
+                "isAsync": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "isQuit",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/keys.ts",
+                "line": 143,
+                "col": 0,
+                "byteIndex": 3219
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Check if a key is a quit command.\n\nRecognizes 'q', 'Q', and Ctrl+C as quit signals.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "key",
+                    "doc": "The key code to check"
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "True if the key represents a quit command\n"
+                  },
+                  {
+                    "kind": "example",
+                    "doc": "```typescript\nconst key = await readKey();\nif (isQuit(key)) {\n  console.log('Goodbye!');\n  process.exit(0);\n}\n```"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "key",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "boolean",
+                  "kind": "keyword",
+                  "value": "boolean"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "isNextPage",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/keys.ts",
+                "line": 164,
+                "col": 0,
+                "byteIndex": 3711
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Check if a key is a \"next page\" command.\n\nRecognizes space bar and Page Down key as next page commands.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "key",
+                    "doc": "The key code to check"
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "True if the key represents a next page command\n"
+                  },
+                  {
+                    "kind": "example",
+                    "doc": "```typescript\nconst key = await readKey();\nif (isNextPage(key)) {\n  currentPage++;\n  showPage(currentPage);\n}\n```"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "key",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "boolean",
+                  "kind": "keyword",
+                  "value": "boolean"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "isPreviousPage",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/keys.ts",
+                "line": 185,
+                "col": 0,
+                "byteIndex": 4214
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Check if a key is a \"previous page\" command.\n\nRecognizes the Page Up key as a previous page command.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "key",
+                    "doc": "The key code to check"
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "True if the key represents a previous page command\n"
+                  },
+                  {
+                    "kind": "example",
+                    "doc": "```typescript\nconst key = await readKey();\nif (isPreviousPage(key) && currentPage > 0) {\n  currentPage--;\n  showPage(currentPage);\n}\n```"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "key",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "boolean",
+                  "kind": "keyword",
+                  "value": "boolean"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "PagerOptions",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/pager.ts",
+                "line": 36,
+                "col": 0,
+                "byteIndex": 1128
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Options for configuring the pager behavior."
+              },
+              "kind": "interface",
+              "def": {
+                "properties": [
+                  {
+                    "name": "pageSize",
+                    "jsDoc": {
+                      "doc": "Number of lines per page (default: terminal height - 2 for status line)"
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/pager.ts",
+                      "line": 38,
+                      "col": 2,
+                      "byteIndex": 1243
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  },
+                  {
+                    "name": "showLineNumbers",
+                    "jsDoc": {
+                      "doc": "Show line numbers on the left (default: false)"
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/pager.ts",
+                      "line": 40,
+                      "col": 2,
+                      "byteIndex": 1320
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    }
+                  },
+                  {
+                    "name": "showStatus",
+                    "jsDoc": {
+                      "doc": "Show a status line at bottom with page info (default: true)"
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/pager.ts",
+                      "line": 42,
+                      "col": 2,
+                      "byteIndex": 1418
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    }
+                  },
+                  {
+                    "name": "prompt",
+                    "jsDoc": {
+                      "doc": "Custom prompt text shown in status line (default: \"Press space for more, q to quit\")"
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/pager.ts",
+                      "line": 44,
+                      "col": 2,
+                      "byteIndex": 1536
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "name": "startPage",
+                    "jsDoc": {
+                      "doc": "Starting page index, 0-based (default: 0)"
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/pager.ts",
+                      "line": 46,
+                      "col": 2,
+                      "byteIndex": 1606
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  },
+                  {
+                    "name": "clearScreen",
+                    "jsDoc": {
+                      "doc": "Clear screen before displaying each page (default: true). When false, content scrolls naturally and status line is not shown on the last page."
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/pager.ts",
+                      "line": 48,
+                      "col": 2,
+                      "byteIndex": 1780
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    }
+                  },
+                  {
+                    "name": "statusColor",
+                    "jsDoc": {
+                      "doc": "RGB color for the status line (default: 0x666666 - gray)"
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/pager.ts",
+                      "line": 50,
+                      "col": 2,
+                      "byteIndex": 1871
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PagerResult",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/pager.ts",
+                "line": 56,
+                "col": 0,
+                "byteIndex": 1951
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Result returned after pagination completes."
+              },
+              "kind": "interface",
+              "def": {
+                "properties": [
+                  {
+                    "name": "quit",
+                    "jsDoc": {
+                      "doc": "Whether the user quit before reaching the end"
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/pager.ts",
+                      "line": 58,
+                      "col": 2,
+                      "byteIndex": 2039
+                    },
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    }
+                  },
+                  {
+                    "name": "lastPage",
+                    "jsDoc": {
+                      "doc": "Index of the last page that was displayed (0-based)"
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/pager.ts",
+                      "line": 60,
+                      "col": 2,
+                      "byteIndex": 2117
+                    },
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  },
+                  {
+                    "name": "totalPages",
+                    "jsDoc": {
+                      "doc": "Total number of pages in the content"
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/pager.ts",
+                      "line": 62,
+                      "col": 2,
+                      "byteIndex": 2183
+                    },
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "display",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/pager.ts",
+                "line": 84,
+                "col": 0,
+                "byteIndex": 2667
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Display content with interactive pagination.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "lines",
+                    "doc": "Array of lines to display"
+                  },
+                  {
+                    "kind": "param",
+                    "name": "options",
+                    "doc": "Pager options"
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "PagerResult with completion status\n"
+                  },
+                  {
+                    "kind": "example",
+                    "doc": "```typescript\nimport { pager } from '@epdoc/terminal/pager';\n\nconst lines = ['Line 1', 'Line 2', 'Line 3', ...];\nconst result = await pager.display(lines, { pageSize: 20 });\n\nif (result.quit) {\n  console.log('User quit early');\n}\n```"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "lines",
+                    "optional": false,
+                    "tsType": {
+                      "kind": "array",
+                      "value": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      }
+                    }
+                  },
+                  {
+                    "kind": "assign",
+                    "left": {
+                      "kind": "identifier",
+                      "name": "options",
+                      "optional": false,
+                      "tsType": {
+                        "repr": "PagerOptions",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "PagerOptions",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      }
+                    },
+                    "right": "[UNSUPPORTED]"
+                  }
+                ],
+                "returnType": {
+                  "repr": "Promise",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeParams": [
+                      {
+                        "repr": "PagerResult",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "PagerResult",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      }
+                    ],
+                    "typeName": "Promise"
+                  }
+                },
+                "hasBody": true,
+                "isAsync": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "autoDisplay",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/pager.ts",
+                "line": 197,
+                "col": 0,
+                "byteIndex": 5837
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Simple non-interactive paginated display.\nShows content page by page with a delay, no user interaction.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "lines",
+                    "doc": "Array of lines to display"
+                  },
+                  {
+                    "kind": "param",
+                    "name": "options",
+                    "doc": "Options including delay between pages"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "lines",
+                    "optional": false,
+                    "tsType": {
+                      "kind": "array",
+                      "value": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      }
+                    }
+                  },
+                  {
+                    "kind": "assign",
+                    "left": {
+                      "kind": "identifier",
+                      "name": "options",
+                      "optional": false,
+                      "tsType": {
+                        "kind": "typeLiteral",
+                        "value": {
+                          "properties": [
+                            {
+                              "name": "pageSize",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/pager.ts",
+                                "line": 200,
+                                "col": 4,
+                                "byteIndex": 5908
+                              },
+                              "optional": true,
+                              "tsType": {
+                                "repr": "number",
+                                "kind": "keyword",
+                                "value": "number"
+                              }
+                            },
+                            {
+                              "name": "delayMs",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/pager.ts",
+                                "line": 201,
+                                "col": 4,
+                                "byteIndex": 5931
+                              },
+                              "optional": true,
+                              "tsType": {
+                                "repr": "number",
+                                "kind": "keyword",
+                                "value": "number"
+                              }
+                            },
+                            {
+                              "name": "showStatus",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/pager.ts",
+                                "line": 202,
+                                "col": 4,
+                                "byteIndex": 5953
+                              },
+                              "optional": true,
+                              "tsType": {
+                                "repr": "boolean",
+                                "kind": "keyword",
+                                "value": "boolean"
+                              }
+                            },
+                            {
+                              "name": "clearScreen",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/pager.ts",
+                                "line": 203,
+                                "col": 4,
+                                "byteIndex": 5979
+                              },
+                              "optional": true,
+                              "tsType": {
+                                "repr": "boolean",
+                                "kind": "keyword",
+                                "value": "boolean"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "right": "[UNSUPPORTED]"
+                  }
+                ],
+                "returnType": {
+                  "repr": "Promise",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeParams": [
+                      {
+                        "repr": "void",
+                        "kind": "keyword",
+                        "value": "void"
+                      }
+                    ],
+                    "typeName": "Promise"
+                  }
+                },
+                "hasBody": true,
+                "isAsync": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "PromptOptions",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/prompt.ts",
+                "line": 23,
+                "col": 0,
+                "byteIndex": 589
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Options for promptUser function"
+              },
+              "kind": "interface",
+              "def": {
+                "properties": [
+                  {
+                    "name": "abortKeyword",
+                    "jsDoc": {
+                      "doc": "Keyword that triggers abort (case-insensitive). If matched, returns empty string."
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/prompt.ts",
+                      "line": 25,
+                      "col": 2,
+                      "byteIndex": 715
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "name": "bufferSize",
+                    "jsDoc": {
+                      "doc": "Maximum buffer size for input in bytes. Default: 1024"
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/prompt.ts",
+                      "line": 27,
+                      "col": 2,
+                      "byteIndex": 803
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "promptUser",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/prompt.ts",
+                "line": 63,
+                "col": 0,
+                "byteIndex": 1898
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Prompt the user for line-based input via stdin.\n\nWrites the message to stdout, then reads a line from stdin and returns\nthe trimmed result. Handles EOF gracefully by returning an empty string.\n\nThe abort keyword feature allows users to cancel an operation by typing\na specific word (case-insensitive). When the abort keyword is matched,\nan empty string is returned, which can be checked to exit early.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "message",
+                    "doc": "The prompt message to display to the user"
+                  },
+                  {
+                    "kind": "param",
+                    "name": "opts",
+                    "doc": "Optional configuration for the prompt behavior"
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "The user's input (trimmed), or empty string if EOF or abort keyword detected\n"
+                  },
+                  {
+                    "kind": "example",
+                    "doc": "```typescript\nconst answer = await promptUser('Are you sure? (yes/no):');\nif (answer.toLowerCase() === 'yes') {\n  // Proceed with action\n}\n```\n"
+                  },
+                  {
+                    "kind": "example",
+                    "doc": "With abort keyword\n```typescript\nconst input = await promptUser('Press Enter to continue (type \"abort\" to cancel):', {\n  abortKeyword: 'abort'\n});\nif (!input) {\n  console.log('Aborted');\n  return;\n}\n```"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "message",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "kind": "assign",
+                    "left": {
+                      "kind": "identifier",
+                      "name": "opts",
+                      "optional": false,
+                      "tsType": {
+                        "repr": "PromptOptions",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "PromptOptions",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      }
+                    },
+                    "right": "[UNSUPPORTED]"
+                  }
+                ],
+                "returnType": {
+                  "repr": "Promise",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeParams": [
+                      {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      }
+                    ],
+                    "typeName": "Promise"
+                  }
+                },
+                "hasBody": true,
+                "isAsync": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "TerminalSize",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/screen.ts",
+                "line": 33,
+                "col": 0,
+                "byteIndex": 884
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Terminal size information with column and row counts.\n\nRepresents the dimensions of the terminal window, typically obtained via\n{@link getTerminalSize}. Returns safe defaults (80x24) when not in a TTY."
+              },
+              "kind": "interface",
+              "def": {
+                "properties": [
+                  {
+                    "name": "columns",
+                    "jsDoc": {
+                      "doc": "Number of columns (characters wide)"
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/screen.ts",
+                      "line": 35,
+                      "col": 2,
+                      "byteIndex": 963
+                    },
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  },
+                  {
+                    "name": "rows",
+                    "jsDoc": {
+                      "doc": "Number of rows (lines tall)"
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/screen.ts",
+                      "line": 37,
+                      "col": 2,
+                      "byteIndex": 1019
+                    },
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "getTerminalSize",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/screen.ts",
+                "line": 48,
+                "col": 0,
+                "byteIndex": 1282
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Get the current terminal size.\n\nUses `Deno.consoleSize()` to get the actual terminal dimensions.\nReturns safe defaults (80 columns × 24 rows) when not running in a TTY.\n",
+                "tags": [
+                  {
+                    "kind": "return",
+                    "doc": "Terminal dimensions with columns and rows"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [],
+                "returnType": {
+                  "repr": "TerminalSize",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeName": "TerminalSize",
+                    "resolution": {
+                      "kind": "local"
+                    }
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "clearScreen",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/screen.ts",
+                "line": 63,
+                "col": 0,
+                "byteIndex": 1648
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Clear the entire terminal screen and move cursor to top-left.\n\nUses ANSI escape sequence ESC[2J (clear entire screen) followed by\nESC[H (move cursor to position 0,0)."
+              },
+              "kind": "function",
+              "def": {
+                "params": [],
+                "returnType": {
+                  "repr": "void",
+                  "kind": "keyword",
+                  "value": "void"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "clearLine",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/screen.ts",
+                "line": 73,
+                "col": 0,
+                "byteIndex": 1955
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Clear the current line from cursor position to end.\n\nUses ANSI escape sequence ESC[K (erase in line, from cursor to end)."
+              },
+              "kind": "function",
+              "def": {
+                "params": [],
+                "returnType": {
+                  "repr": "void",
+                  "kind": "keyword",
+                  "value": "void"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "clearEntireLine",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/screen.ts",
+                "line": 83,
+                "col": 0,
+                "byteIndex": 2192
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Clear the entire current line.\n\nUses ANSI escape sequence ESC[2K (erase entire line).\nCursor position is not changed."
+              },
+              "kind": "function",
+              "def": {
+                "params": [],
+                "returnType": {
+                  "repr": "void",
+                  "kind": "keyword",
+                  "value": "void"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "moveToLineStart",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/screen.ts",
+                "line": 92,
+                "col": 0,
+                "byteIndex": 2420
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Move cursor to beginning of current line.\n\nUses carriage return character (\\r) to move to start of line."
+              },
+              "kind": "function",
+              "def": {
+                "params": [],
+                "returnType": {
+                  "repr": "void",
+                  "kind": "keyword",
+                  "value": "void"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "moveUp",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/screen.ts",
+                "line": 101,
+                "col": 0,
+                "byteIndex": 2618
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Move cursor up N lines.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "lines",
+                    "doc": "Number of lines to move up (default: 1)"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "assign",
+                    "left": {
+                      "kind": "identifier",
+                      "name": "lines",
+                      "optional": false,
+                      "tsType": {
+                        "repr": "number",
+                        "kind": "keyword",
+                        "value": "number"
+                      }
+                    },
+                    "right": "1"
+                  }
+                ],
+                "returnType": {
+                  "repr": "void",
+                  "kind": "keyword",
+                  "value": "void"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "moveDown",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/screen.ts",
+                "line": 110,
+                "col": 0,
+                "byteIndex": 2832
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Move cursor down N lines.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "lines",
+                    "doc": "Number of lines to move down (default: 1)"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "assign",
+                    "left": {
+                      "kind": "identifier",
+                      "name": "lines",
+                      "optional": false,
+                      "tsType": {
+                        "repr": "number",
+                        "kind": "keyword",
+                        "value": "number"
+                      }
+                    },
+                    "right": "1"
+                  }
+                ],
+                "returnType": {
+                  "repr": "void",
+                  "kind": "keyword",
+                  "value": "void"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "moveTo",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/screen.ts",
+                "line": 120,
+                "col": 0,
+                "byteIndex": 3088
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Move cursor to specific position (1-indexed).\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "row",
+                    "doc": "Row number (1 is top)"
+                  },
+                  {
+                    "kind": "param",
+                    "name": "col",
+                    "doc": "Column number (1 is left)"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "row",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  },
+                  {
+                    "kind": "identifier",
+                    "name": "col",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "void",
+                  "kind": "keyword",
+                  "value": "void"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "hideCursor",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/screen.ts",
+                "line": 130,
+                "col": 0,
+                "byteIndex": 3361
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Hide the cursor.\n\nUses ANSI escape sequence ESC[?25l to hide the cursor.\nCall {@link showCursor} to restore visibility."
+              },
+              "kind": "function",
+              "def": {
+                "params": [],
+                "returnType": {
+                  "repr": "void",
+                  "kind": "keyword",
+                  "value": "void"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "showCursor",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/screen.ts",
+                "line": 140,
+                "col": 0,
+                "byteIndex": 3620
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Show the cursor.\n\nUses ANSI escape sequence ESC[?25h to show the cursor.\nTypically used after {@link hideCursor} to restore visibility."
+              },
+              "kind": "function",
+              "def": {
+                "params": [],
+                "returnType": {
+                  "repr": "void",
+                  "kind": "keyword",
+                  "value": "void"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "writeSync",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/screen.ts",
+                "line": 151,
+                "col": 0,
+                "byteIndex": 3889
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Write a string to stdout synchronously.\n\nEncodes the string to UTF-8 and writes it using `Deno.stdout.writeSync()`.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "s",
+                    "doc": "String to write"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "void",
+                  "kind": "keyword",
+                  "value": "void"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "write",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/screen.ts",
+                "line": 162,
+                "col": 0,
+                "byteIndex": 4153
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Write a string to stdout asynchronously.\n\nEncodes the string to UTF-8 and writes it using `Deno.stdout.write()`.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "s",
+                    "doc": "String to write"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "Promise",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeParams": [
+                      {
+                        "repr": "void",
+                        "kind": "keyword",
+                        "value": "void"
+                      }
+                    ],
+                    "typeName": "Promise"
+                  }
+                },
+                "hasBody": true,
+                "isAsync": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "newline",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/screen.ts",
+                "line": 171,
+                "col": 0,
+                "byteIndex": 4377
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Write newline characters to stdout.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "count",
+                    "doc": "Number of newlines to write (default: 1)"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "assign",
+                    "left": {
+                      "kind": "identifier",
+                      "name": "count",
+                      "optional": false,
+                      "tsType": {
+                        "repr": "number",
+                        "kind": "keyword",
+                        "value": "number"
+                      }
+                    },
+                    "right": "1"
+                  }
+                ],
+                "returnType": {
+                  "repr": "void",
+                  "kind": "keyword",
+                  "value": "void"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "stripAnsi",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/screen.ts",
+                "line": 191,
+                "col": 0,
+                "byteIndex": 5014
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Strip ANSI escape codes from a string.\n\nRemoves all ANSI escape sequences (e.g., color codes like `\\x1b[31m`)\nto get the raw text content.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "str",
+                    "doc": "String that may contain ANSI escape codes"
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "String with ANSI codes removed\n"
+                  },
+                  {
+                    "kind": "example",
+                    "doc": "```typescript\nconst plain = stripAnsi('\\x1b[31mred\\x1b[0m text'); // \"red text\"\n```"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "str",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "visualLength",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/screen.ts",
+                "line": 210,
+                "col": 0,
+                "byteIndex": 5517
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Get the visual length of a string (excluding ANSI codes).\n\nCalculates the number of visible characters by stripping ANSI escape\ncodes before counting.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "str",
+                    "doc": "String that may contain ANSI escape codes"
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "Number of visible characters\n"
+                  },
+                  {
+                    "kind": "example",
+                    "doc": "```typescript\nconst len = visualLength('\\x1b[31mred\\x1b[0m'); // 3\n```"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "str",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "number",
+                  "kind": "keyword",
+                  "value": "number"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "visualTruncate",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/screen.ts",
+                "line": 231,
+                "col": 0,
+                "byteIndex": 6241
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Truncate a string to a specific visual width, respecting ANSI codes.\n\nTruncates the string to fit within the specified visual width while\npreserving any ANSI escape codes. Adds an ellipsis character (…) at\nthe truncation point. Returns the original string if it already fits.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "str",
+                    "doc": "String that may contain ANSI escape codes"
+                  },
+                  {
+                    "kind": "param",
+                    "name": "maxWidth",
+                    "doc": "Maximum visual width allowed"
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "Truncated string with ellipsis\n"
+                  },
+                  {
+                    "kind": "example",
+                    "doc": "```typescript\nconst truncated = visualTruncate('\\x1b[31mlong red text\\x1b[0m', 8);\n// Returns: \"\\x1b[31mlong re…\\x1b[0m\" (8 visible chars + ellipsis)\n```"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "str",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "kind": "identifier",
+                    "name": "maxWidth",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "padVisual",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/screen.ts",
+                "line": 289,
+                "col": 0,
+                "byteIndex": 7870
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Pad a string to a visual width, respecting ANSI escape codes.\n\nPads the string to reach the target visual width while preserving any\nANSI escape codes. By default, pads on the right (left-aligned).\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "str",
+                    "doc": "The string to pad (may contain ANSI escape codes)"
+                  },
+                  {
+                    "kind": "param",
+                    "name": "width",
+                    "doc": "Target visual width (visible characters)"
+                  },
+                  {
+                    "kind": "param",
+                    "name": "align",
+                    "doc": "Alignment direction: 'left' (default) pads on right,\n'center' splits padding on both sides, 'right' pads on left"
+                  },
+                  {
+                    "kind": "param",
+                    "name": "char",
+                    "doc": "Padding character (default: space)"
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "Padded string\n"
+                  },
+                  {
+                    "kind": "example",
+                    "doc": "```typescript\n// Left-aligned (default)\npadVisual('hello', 10);              // \"hello     \"\n\n// Center-aligned\npadVisual('hello', 10, 'center');    // \"  hello   \"\n\n// Right-aligned\npadVisual('hello', 10, 'right');     // \"     hello\"\n\n// Works with ANSI codes\npadVisual('\\x1b[31mhi\\x1b[0m', 6);   // \"\\x1b[31mhi\\x1b[0m    \"\n```"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "str",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "kind": "identifier",
+                    "name": "width",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  },
+                  {
+                    "kind": "assign",
+                    "left": {
+                      "kind": "identifier",
+                      "name": "align",
+                      "optional": false,
+                      "tsType": {
+                        "kind": "union",
+                        "value": [
+                          {
+                            "repr": "left",
+                            "kind": "literal",
+                            "value": {
+                              "kind": "string",
+                              "string": "left"
+                            }
+                          },
+                          {
+                            "repr": "center",
+                            "kind": "literal",
+                            "value": {
+                              "kind": "string",
+                              "string": "center"
+                            }
+                          },
+                          {
+                            "repr": "right",
+                            "kind": "literal",
+                            "value": {
+                              "kind": "string",
+                              "string": "right"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "right": "left"
+                  },
+                  {
+                    "kind": "assign",
+                    "left": {
+                      "kind": "identifier",
+                      "name": "char",
+                      "optional": false,
+                      "tsType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      }
+                    },
+                    "right": " "
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "patternToRegex",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/terminal/src/utils.ts",
+                "line": 6,
+                "col": 0,
+                "byteIndex": 120
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "pattern",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "RegExp",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeName": "RegExp"
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

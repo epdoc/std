@@ -1,0 +1,3632 @@
+{
+  "version": 2,
+  "nodes": {
+    "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/mod.ts": {
+      "module_doc": {
+        "tags": [
+          {
+            "kind": "module",
+            "name": "This module exports the public API for the @epdoc/daterange package.\n\nThe daterange package provides utilities for working with date ranges using\nTemporal.Instant for modern, timezone-aware date handling.\n"
+          },
+          {
+            "kind": "example",
+            "doc": "```ts\nimport { DateRanges, DateRange, parseRelativeTime, dateList } from '@epdoc/daterange';\n\n// Parse relative time\nconst oneDayAgo = parseRelativeTime('1d');\n\n// Create a single date range\nconst range = new DateRange('1d', 'now');\n\n// Create a collection of ranges from a string\nconst ranges = DateRanges.parse('2024-2025,1d-now');\n\n// Check if an instant is in any range\nif (ranges.contains(Temporal.Now.instant())) {\n  console.log('Now is in range');\n}\n```"
+          }
+        ]
+      },
+      "symbols": [
+        {
+          "name": "DateRanges",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-ranges.ts",
+                "line": 14,
+                "col": 0,
+                "byteIndex": 441
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Represents a collection of date ranges."
+              },
+              "kind": "class",
+              "def": {
+                "constructors": [
+                  {
+                    "accessibility": "private",
+                    "hasBody": true,
+                    "name": "constructor",
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "ranges",
+                        "optional": false,
+                        "tsType": {
+                          "kind": "array",
+                          "value": {
+                            "repr": "DateRange",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "DateRange",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./date-range.ts",
+                                "name": "DateRange"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-ranges.ts",
+                      "line": 17,
+                      "col": 2,
+                      "byteIndex": 539
+                    }
+                  }
+                ],
+                "properties": [
+                  {
+                    "tsType": {
+                      "kind": "array",
+                      "value": {
+                        "repr": "DateRange",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "DateRange",
+                          "resolution": {
+                            "kind": "import",
+                            "specifier": "./date-range.ts",
+                            "name": "DateRange"
+                          }
+                        }
+                      }
+                    },
+                    "readonly": true,
+                    "name": "_ranges",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-ranges.ts",
+                      "line": 15,
+                      "col": 2,
+                      "byteIndex": 500
+                    }
+                  }
+                ],
+                "methods": [
+                  {
+                    "name": "clear",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "void",
+                        "kind": "keyword",
+                        "value": "void"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-ranges.ts",
+                      "line": 21,
+                      "col": 2,
+                      "byteIndex": 616
+                    }
+                  },
+                  {
+                    "name": "clone",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "DateRanges",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "DateRanges",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-ranges.ts",
+                      "line": 25,
+                      "col": 2,
+                      "byteIndex": 662
+                    }
+                  },
+                  {
+                    "name": "ranges",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "kind": "typeOperator",
+                        "value": {
+                          "operator": "readonly",
+                          "tsType": {
+                            "kind": "array",
+                            "value": {
+                              "repr": "DateRange",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "DateRange",
+                                "resolution": {
+                                  "kind": "import",
+                                  "specifier": "./date-range.ts",
+                                  "name": "DateRange"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-ranges.ts",
+                      "line": 29,
+                      "col": 2,
+                      "byteIndex": 787
+                    }
+                  },
+                  {
+                    "name": "isSingle",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "boolean",
+                        "kind": "keyword",
+                        "value": "boolean"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-ranges.ts",
+                      "line": 33,
+                      "col": 2,
+                      "byteIndex": 856
+                    }
+                  },
+                  {
+                    "name": "add",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "range",
+                          "optional": false,
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "DateRange",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "DateRange",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "./date-range.ts",
+                                    "name": "DateRange"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "DateRangeDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "DateRangeDef",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "./types.ts",
+                                    "name": "DateRangeDef"
+                                  }
+                                }
+                              },
+                              {
+                                "kind": "array",
+                                "value": {
+                                  "repr": "DateRangeDef",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "DateRangeDef",
+                                    "resolution": {
+                                      "kind": "import",
+                                      "specifier": "./types.ts",
+                                      "name": "DateRangeDef"
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "DateRanges",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "DateRanges",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "DateRanges",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "DateRanges",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-ranges.ts",
+                      "line": 37,
+                      "col": 2,
+                      "byteIndex": 927
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Merges overlapping or adjacent ranges in the collection. Ranges that are within `msTolerance`\nmilliseconds of each other will also be merged. We allow this because in some of our scenarios\nwe create date ranges that go up to the before time minus 1 ms, to ensure we do not round the\ndate incorrectly.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "msTolerance",
+                          "doc": "The maximum gap in milliseconds between ranges to consider them for\nmerging (default: 10ms)"
+                        },
+                        {
+                          "kind": "return",
+                          "doc": "A new DateRanges instance with merged ranges"
+                        }
+                      ]
+                    },
+                    "name": "merge",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "assign",
+                          "left": {
+                            "kind": "identifier",
+                            "name": "msTolerance",
+                            "optional": false,
+                            "tsType": {
+                              "repr": "number",
+                              "kind": "keyword",
+                              "value": "number"
+                            }
+                          },
+                          "right": "10"
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "DateRanges",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "DateRanges",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-ranges.ts",
+                      "line": 52,
+                      "col": 2,
+                      "byteIndex": 1639
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Checks if a given DateTime (or convertible value) is within any range."
+                    },
+                    "name": "contains",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "dt",
+                          "optional": false,
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "DateTime",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "DateTime",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "@epdoc/datetime",
+                                    "name": "DateTime"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "Date",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "Date"
+                                }
+                              },
+                              {
+                                "repr": "Temporal.Instant",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "Temporal.Instant"
+                                }
+                              },
+                              {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "boolean",
+                        "kind": "keyword",
+                        "value": "boolean"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-ranges.ts",
+                      "line": 75,
+                      "col": 2,
+                      "byteIndex": 2292
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Returns the `after` DateTime if there is exactly one range with a non-min after."
+                    },
+                    "name": "hasOneAfterDate",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "kind": "union",
+                        "value": [
+                          {
+                            "repr": "DateTime",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "DateTime",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "@epdoc/datetime",
+                                "name": "DateTime"
+                              }
+                            }
+                          },
+                          {
+                            "repr": "undefined",
+                            "kind": "keyword",
+                            "value": "undefined"
+                          }
+                        ]
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-ranges.ts",
+                      "line": 84,
+                      "col": 2,
+                      "byteIndex": 2633
+                    }
+                  },
+                  {
+                    "name": "hasRanges",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "boolean",
+                        "kind": "keyword",
+                        "value": "boolean"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-ranges.ts",
+                      "line": 91,
+                      "col": 2,
+                      "byteIndex": 2821
+                    }
+                  },
+                  {
+                    "isStatic": true,
+                    "name": "from",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "arg",
+                          "optional": false,
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "DateRangeDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "DateRangeDef",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "./types.ts",
+                                    "name": "DateRangeDef"
+                                  }
+                                }
+                              },
+                              {
+                                "kind": "array",
+                                "value": {
+                                  "repr": "DateRangeDef",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "DateRangeDef",
+                                    "resolution": {
+                                      "kind": "import",
+                                      "specifier": "./types.ts",
+                                      "name": "DateRangeDef"
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              },
+                              {
+                                "kind": "array",
+                                "value": {
+                                  "repr": "DateRange",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "DateRange",
+                                    "resolution": {
+                                      "kind": "import",
+                                      "specifier": "./date-range.ts",
+                                      "name": "DateRange"
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "DateRanges",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "DateRanges",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "DateRanges",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "DateRanges",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-ranges.ts",
+                      "line": 95,
+                      "col": 2,
+                      "byteIndex": 2893
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Populates from an array of DateRangeDef objects (DateTime values)."
+                    },
+                    "isStatic": true,
+                    "name": "fromDef",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "def",
+                          "optional": true,
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "DateRangeDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "DateRangeDef",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "./types.ts",
+                                    "name": "DateRangeDef"
+                                  }
+                                }
+                              },
+                              {
+                                "kind": "array",
+                                "value": {
+                                  "repr": "DateRangeDef",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "DateRangeDef",
+                                    "resolution": {
+                                      "kind": "import",
+                                      "specifier": "./types.ts",
+                                      "name": "DateRangeDef"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "DateRanges",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "DateRanges",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-ranges.ts",
+                      "line": 108,
+                      "col": 2,
+                      "byteIndex": 3370
+                    }
+                  },
+                  {
+                    "name": "setDef",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "def",
+                          "optional": true,
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "DateRangeDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "DateRangeDef",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "./types.ts",
+                                    "name": "DateRangeDef"
+                                  }
+                                }
+                              },
+                              {
+                                "kind": "array",
+                                "value": {
+                                  "repr": "DateRangeDef",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "DateRangeDef",
+                                    "resolution": {
+                                      "kind": "import",
+                                      "specifier": "./types.ts",
+                                      "name": "DateRangeDef"
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-ranges.ts",
+                      "line": 119,
+                      "col": 2,
+                      "byteIndex": 3696
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Converts a string representation of date ranges into a DateRanges object.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "val",
+                          "doc": "A string containing date ranges separated by commas"
+                        },
+                        {
+                          "kind": "param",
+                          "name": "options",
+                          "doc": "Parse options"
+                        },
+                        {
+                          "kind": "return",
+                          "doc": "A DateRanges object"
+                        },
+                        {
+                          "kind": "see",
+                          "doc": "dateList for the parsing logic"
+                        }
+                      ]
+                    },
+                    "isStatic": true,
+                    "name": "fromCliString",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "val",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          }
+                        },
+                        {
+                          "kind": "identifier",
+                          "name": "options",
+                          "optional": true,
+                          "tsType": {
+                            "repr": "DateRangeParseOptions",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "DateRangeParseOptions",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./types.ts",
+                                "name": "DateRangeParseOptions"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "DateRanges",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "DateRanges",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-ranges.ts",
+                      "line": 139,
+                      "col": 2,
+                      "byteIndex": 4285
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Populates from an array of DateRangeJSON objects (ISO string values). Any data that is invalid\nor unparseable will be skipped, but valid entries will still be included.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "json",
+                          "doc": "An array of DateRangeJSON objects"
+                        }
+                      ]
+                    },
+                    "isStatic": true,
+                    "name": "fromJSON",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "json",
+                          "optional": true,
+                          "tsType": {
+                            "kind": "array",
+                            "value": {
+                              "repr": "DateRangeJSON",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "DateRangeJSON",
+                                "resolution": {
+                                  "kind": "import",
+                                  "specifier": "./types.ts",
+                                  "name": "DateRangeJSON"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "DateRanges",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "DateRanges",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-ranges.ts",
+                      "line": 149,
+                      "col": 2,
+                      "byteIndex": 4677
+                    }
+                  },
+                  {
+                    "name": "toJSON",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "kind": "array",
+                        "value": {
+                          "repr": "DateRangeJSON",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "DateRangeJSON",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "./types.ts",
+                              "name": "DateRangeJSON"
+                            }
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-ranges.ts",
+                      "line": 163,
+                      "col": 2,
+                      "byteIndex": 5162
+                    }
+                  },
+                  {
+                    "isStatic": true,
+                    "name": "parse",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "input",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          }
+                        },
+                        {
+                          "kind": "identifier",
+                          "name": "options",
+                          "optional": true,
+                          "tsType": {
+                            "repr": "DateRangeParseOptions",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "DateRangeParseOptions",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./types.ts",
+                                "name": "DateRangeParseOptions"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "DateRanges",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "DateRanges",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-ranges.ts",
+                      "line": 167,
+                      "col": 2,
+                      "byteIndex": 5245
+                    }
+                  },
+                  {
+                    "name": "toCompactString",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-ranges.ts",
+                      "line": 171,
+                      "col": 2,
+                      "byteIndex": 5380
+                    }
+                  },
+                  {
+                    "name": "toISOInterval",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "kind": "array",
+                        "value": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-ranges.ts",
+                      "line": 175,
+                      "col": 2,
+                      "byteIndex": 5482
+                    }
+                  },
+                  {
+                    "name": "toString",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-ranges.ts",
+                      "line": 179,
+                      "col": 2,
+                      "byteIndex": 5572
+                    }
+                  },
+                  {
+                    "name": "[Symbol.iterator]",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "Iterator",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeParams": [
+                            {
+                              "repr": "DateRange",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "DateRange",
+                                "resolution": {
+                                  "kind": "import",
+                                  "specifier": "./date-range.ts",
+                                  "name": "DateRange"
+                                }
+                              }
+                            }
+                          ],
+                          "typeName": "Iterator"
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-ranges.ts",
+                      "line": 192,
+                      "col": 2,
+                      "byteIndex": 6115
+                    }
+                  }
+                ],
+                "implements": [
+                  {
+                    "repr": "Iterable",
+                    "kind": "typeRef",
+                    "value": {
+                      "typeParams": [
+                        {
+                          "repr": "DateRange",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "DateRange",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "./date-range.ts",
+                              "name": "DateRange"
+                            }
+                          }
+                        }
+                      ],
+                      "typeName": "Iterable"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DateRange",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-range.ts",
+                "line": 19,
+                "col": 0,
+                "byteIndex": 642
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Represents a single date range with `after` (start) and `before` (end) DateTime values.\nBoth boundaries are inclusive when checking containment."
+              },
+              "kind": "class",
+              "def": {
+                "constructors": [
+                  {
+                    "jsDoc": {
+                      "doc": "The constructor is now \"Dumb\" and Private.\nIt performs no logic; it only receives validated data."
+                    },
+                    "accessibility": "private",
+                    "hasBody": true,
+                    "name": "constructor",
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "after",
+                        "optional": false,
+                        "tsType": {
+                          "repr": "DateTime",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "DateTime",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "@epdoc/datetime",
+                              "name": "DateTime"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "kind": "identifier",
+                        "name": "before",
+                        "optional": false,
+                        "tsType": {
+                          "repr": "DateTime",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "DateTime",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "@epdoc/datetime",
+                              "name": "DateTime"
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-range.ts",
+                      "line": 29,
+                      "col": 2,
+                      "byteIndex": 1019
+                    }
+                  }
+                ],
+                "properties": [
+                  {
+                    "jsDoc": {
+                      "doc": "Start of the range (inclusive). DateTime.min() represents the beginning of time."
+                    },
+                    "tsType": {
+                      "repr": "DateTime",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "DateTime",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "@epdoc/datetime",
+                          "name": "DateTime"
+                        }
+                      }
+                    },
+                    "readonly": true,
+                    "name": "after",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-range.ts",
+                      "line": 21,
+                      "col": 2,
+                      "byteIndex": 759
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "End of the range (inclusive). DateTime.max() represents the end of time."
+                    },
+                    "tsType": {
+                      "repr": "DateTime",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "DateTime",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "@epdoc/datetime",
+                          "name": "DateTime"
+                        }
+                      }
+                    },
+                    "readonly": true,
+                    "name": "before",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-range.ts",
+                      "line": 23,
+                      "col": 2,
+                      "byteIndex": 869
+                    }
+                  }
+                ],
+                "methods": [
+                  {
+                    "jsDoc": {
+                      "doc": "The 'Standard' way to create a range from raw values."
+                    },
+                    "isStatic": true,
+                    "name": "from",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "after",
+                          "optional": true,
+                          "tsType": {
+                            "repr": "DateTime",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "DateTime",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "@epdoc/datetime",
+                                "name": "DateTime"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "kind": "identifier",
+                          "name": "before",
+                          "optional": true,
+                          "tsType": {
+                            "repr": "DateTime",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "DateTime",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "@epdoc/datetime",
+                                "name": "DateTime"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "DateRange",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "DateRange",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-range.ts",
+                      "line": 37,
+                      "col": 2,
+                      "byteIndex": 1204
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Specialized factory for the definition object."
+                    },
+                    "isStatic": true,
+                    "name": "fromDef",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "def",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "DateRangeDef",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "DateRangeDef",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./types.ts",
+                                "name": "DateRangeDef"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "DateRange",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "DateRange",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-range.ts",
+                      "line": 47,
+                      "col": 2,
+                      "byteIndex": 1423
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Clone factory to create a new instance from an existing one."
+                    },
+                    "isStatic": true,
+                    "name": "fromRange",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "other",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "DateRange",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "DateRange",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "DateRange",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "DateRange",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-range.ts",
+                      "line": 60,
+                      "col": 2,
+                      "byteIndex": 1775
+                    }
+                  },
+                  {
+                    "isStatic": true,
+                    "name": "fromISO",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "after",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          }
+                        },
+                        {
+                          "kind": "identifier",
+                          "name": "before",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "kind": "union",
+                        "value": [
+                          {
+                            "repr": "DateRange",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "DateRange",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          },
+                          {
+                            "repr": "undefined",
+                            "kind": "keyword",
+                            "value": "undefined"
+                          }
+                        ]
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-range.ts",
+                      "line": 64,
+                      "col": 2,
+                      "byteIndex": 1883
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Creates a DateRange from relative time strings (e.g. '1d', 'now').\nReturns undefined if either string cannot be parsed."
+                    },
+                    "isStatic": true,
+                    "name": "fromRelative",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "after",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          }
+                        },
+                        {
+                          "kind": "identifier",
+                          "name": "before",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "kind": "union",
+                        "value": [
+                          {
+                            "repr": "DateRange",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "DateRange",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          },
+                          {
+                            "repr": "undefined",
+                            "kind": "keyword",
+                            "value": "undefined"
+                          }
+                        ]
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-range.ts",
+                      "line": 76,
+                      "col": 2,
+                      "byteIndex": 2340
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Checks if this range contains the given DateTime (or value convertible to DateTime).\nBoth boundaries are inclusive."
+                    },
+                    "name": "contains",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "dt",
+                          "optional": false,
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "DateTime",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "DateTime",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "@epdoc/datetime",
+                                    "name": "DateTime"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "Date",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "Date"
+                                }
+                              },
+                              {
+                                "repr": "Temporal.Instant",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "Temporal.Instant"
+                                }
+                              },
+                              {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "boolean",
+                        "kind": "keyword",
+                        "value": "boolean"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-range.ts",
+                      "line": 87,
+                      "col": 2,
+                      "byteIndex": 2711
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Checks if this range overlaps with another range."
+                    },
+                    "name": "overlaps",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "other",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "DateRange",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "DateRange",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "kind": "assign",
+                          "left": {
+                            "kind": "identifier",
+                            "name": "msTolerance",
+                            "optional": false,
+                            "tsType": {
+                              "repr": "number",
+                              "kind": "keyword",
+                              "value": "number"
+                            }
+                          },
+                          "right": "0"
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "boolean",
+                        "kind": "keyword",
+                        "value": "boolean"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-range.ts",
+                      "line": 96,
+                      "col": 2,
+                      "byteIndex": 3040
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Returns the intersection of this range and another, or null if they don't overlap."
+                    },
+                    "name": "intersect",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "other",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "DateRange",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "DateRange",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "kind": "union",
+                        "value": [
+                          {
+                            "repr": "DateRange",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "DateRange",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          },
+                          {
+                            "repr": "null",
+                            "kind": "keyword",
+                            "value": "null"
+                          }
+                        ]
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-range.ts",
+                      "line": 104,
+                      "col": 2,
+                      "byteIndex": 3381
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Returns the union of this range and another.\nIf they overlap or touch, returns a single merged DateRange.\nIf they don't overlap, returns an array of both ranges."
+                    },
+                    "name": "union",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "other",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "DateRange",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "DateRange",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "kind": "assign",
+                          "left": {
+                            "kind": "identifier",
+                            "name": "msTolerance",
+                            "optional": false,
+                            "tsType": {
+                              "repr": "number",
+                              "kind": "keyword",
+                              "value": "number"
+                            }
+                          },
+                          "right": "10"
+                        }
+                      ],
+                      "returnType": {
+                        "kind": "union",
+                        "value": [
+                          {
+                            "repr": "DateRange",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "DateRange",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          },
+                          {
+                            "kind": "array",
+                            "value": {
+                              "repr": "DateRange",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "DateRange",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-range.ts",
+                      "line": 116,
+                      "col": 2,
+                      "byteIndex": 3884
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Returns the duration of the range in milliseconds."
+                    },
+                    "name": "duration",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "number",
+                        "kind": "keyword",
+                        "value": "number"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-range.ts",
+                      "line": 126,
+                      "col": 2,
+                      "byteIndex": 4317
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Iterates over DateTime values within the range at the given interval."
+                    },
+                    "name": "iterate",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "unit",
+                          "optional": false,
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "hour",
+                                "kind": "literal",
+                                "value": {
+                                  "kind": "string",
+                                  "string": "hour"
+                                }
+                              },
+                              {
+                                "repr": "day",
+                                "kind": "literal",
+                                "value": {
+                                  "kind": "string",
+                                  "string": "day"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "Generator",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeParams": [
+                            {
+                              "repr": "DateTime",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "DateTime",
+                                "resolution": {
+                                  "kind": "import",
+                                  "specifier": "@epdoc/datetime",
+                                  "name": "DateTime"
+                                }
+                              }
+                            }
+                          ],
+                          "typeName": "Generator"
+                        }
+                      },
+                      "hasBody": true,
+                      "isGenerator": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-range.ts",
+                      "line": 133,
+                      "col": 2,
+                      "byteIndex": 4505
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Converts to a JSON-serializable object using ISO strings."
+                    },
+                    "name": "toJSON",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "DateRangeJSON",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "DateRangeJSON",
+                          "resolution": {
+                            "kind": "import",
+                            "specifier": "./types.ts",
+                            "name": "DateRangeJSON"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-range.ts",
+                      "line": 144,
+                      "col": 2,
+                      "byteIndex": 4823
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Converts to a compact string format (local time).\nShows YYYYMMDD when time is at day boundaries, otherwise YYYYMMDDHHmmss."
+                    },
+                    "name": "toCompactString",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-range.ts",
+                      "line": 155,
+                      "col": 2,
+                      "byteIndex": 5245
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Converts to ISO 8601 interval format (e.g. \"2024-01-01T00:00:00Z/2024-01-31T23:59:59Z\").\nOpen-ended boundaries are represented as \"..\"."
+                    },
+                    "name": "toISOInterval",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/date-range.ts",
+                      "line": 175,
+                      "col": 2,
+                      "byteIndex": 6153
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "parseRelativeTime",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/relative-time.ts",
+                "line": 35,
+                "col": 0,
+                "byteIndex": 1018
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Parses a relative time string and returns a DateTime.\n\nSupported formats:\n- Single/combined units: \"1d\", \"2h30m\", \"1y6d\"\n- Negative (future): \"-1d\", \"-2h30m\"\n- Keywords: \"now\", \"today\", \"yesterday\", \"tomorrow\", \"startOfDay\", \"endOfDay\"\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "input",
+                    "doc": "The relative time string to parse"
+                  },
+                  {
+                    "kind": "param",
+                    "name": "reference",
+                    "doc": "Reference DateTime (defaults to current time)"
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "A DateTime, or undefined if the input cannot be parsed"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "input",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "kind": "identifier",
+                    "name": "reference",
+                    "optional": true,
+                    "tsType": {
+                      "repr": "DateTime",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "DateTime",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "@epdoc/datetime",
+                          "name": "DateTime"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "returnType": {
+                  "kind": "union",
+                  "value": [
+                    {
+                      "repr": "DateTime",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "DateTime",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "@epdoc/datetime",
+                          "name": "DateTime"
+                        }
+                      }
+                    },
+                    {
+                      "repr": "undefined",
+                      "kind": "keyword",
+                      "value": "undefined"
+                    }
+                  ]
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "dateList",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/util.ts",
+                "line": 128,
+                "col": 0,
+                "byteIndex": 4780
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Converts a string representation of date ranges into an array of DateRangeDef objects.\n\nThis function supports various date string formats, range specifications, and relative time strings.\n\nSupported single date formats (all in local timezone):\n- `YYYY`: Represents the entire year. `after` is Jan 1st, `before` is Jan 1st of the next year.\n- `YYYYMM`: Represents the entire month. `after` is the 1st day, `before` is the 1st of next month.\n- `YYYYMMDD`: Represents the entire day. `after` is start of day, `before` is end of day (inclusive).\n- `YYYYMMDDhh`, `YYYYMMDDhhmm`, `YYYYMMDDhhmmss`: Precise point in time.\n\nRelative time formats:\n- `1d`, `2h`, `30m`, `10s`: Relative to reference time (past)\n- `-1h`, `-30m`: Future relative to reference time\n- `now`: Current instant\n- `today`, `yesterday`, `tomorrow`: Start of day\n- Combined: `1d12h30m`\n\nSupported range formats (separated by '-'):\n- `start-end`: Both can be any format above\n- `start-`: Open-ended range (before = end of time)\n- `-end`: Open-ended range (after = beginning of time)\n\nMultiple ranges can be comma-separated (e.g., \"2025,202601-202603,1d-now\").\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "val",
+                    "doc": "A string containing date ranges separated by commas"
+                  },
+                  {
+                    "kind": "param",
+                    "name": "options",
+                    "doc": "Parse options including reference instant, inclusiveEnd flag, and defaultHour"
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "An array of DateRangeDef objects with Temporal.Instant values"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "val",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "kind": "assign",
+                    "left": {
+                      "kind": "identifier",
+                      "name": "options",
+                      "optional": false,
+                      "tsType": {
+                        "repr": "DateRangeParseOptions",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "DateRangeParseOptions",
+                          "resolution": {
+                            "kind": "import",
+                            "specifier": "./types.ts",
+                            "name": "DateRangeParseOptions"
+                          }
+                        }
+                      }
+                    },
+                    "right": "[UNSUPPORTED]"
+                  }
+                ],
+                "returnType": {
+                  "kind": "array",
+                  "value": {
+                    "repr": "DateRangeDef",
+                    "kind": "typeRef",
+                    "value": {
+                      "typeName": "DateRangeDef",
+                      "resolution": {
+                        "kind": "import",
+                        "specifier": "./types.ts",
+                        "name": "DateRangeDef"
+                      }
+                    }
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "dateRanges",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/util.ts",
+                "line": 228,
+                "col": 0,
+                "byteIndex": 8098
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Converts a string representation of date ranges into a DateRanges object.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "val",
+                    "doc": "A string containing date ranges separated by commas"
+                  },
+                  {
+                    "kind": "param",
+                    "name": "options",
+                    "doc": "Parse options"
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "A DateRanges object"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "val",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "kind": "assign",
+                    "left": {
+                      "kind": "identifier",
+                      "name": "options",
+                      "optional": false,
+                      "tsType": {
+                        "repr": "DateRangeParseOptions",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "DateRangeParseOptions",
+                          "resolution": {
+                            "kind": "import",
+                            "specifier": "./types.ts",
+                            "name": "DateRangeParseOptions"
+                          }
+                        }
+                      }
+                    },
+                    "right": "[UNSUPPORTED]"
+                  }
+                ],
+                "returnType": {
+                  "repr": "DateRanges",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeName": "DateRanges",
+                    "resolution": {
+                      "kind": "import",
+                      "specifier": "./date-ranges.ts",
+                      "name": "DateRanges"
+                    }
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "dateStringToDate",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/util.ts",
+                "line": 247,
+                "col": 0,
+                "byteIndex": 8658
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "tags": [
+                  {
+                    "kind": "deprecated",
+                    "doc": "Use dateStringToInstant instead"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "kind": "assign",
+                    "left": {
+                      "kind": "identifier",
+                      "name": "h",
+                      "optional": false,
+                      "tsType": {
+                        "repr": "Integer",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "Integer",
+                          "resolution": {
+                            "kind": "import",
+                            "specifier": "@epdoc/type",
+                            "name": "Integer"
+                          }
+                        }
+                      }
+                    },
+                    "right": "0"
+                  }
+                ],
+                "returnType": {
+                  "repr": "Date",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeName": "Date"
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "dateStringToInstant",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/util.ts",
+                "line": 23,
+                "col": 0,
+                "byteIndex": 684
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Converts a compact date string to a DateTime in local time.\n\nSupported formats:\n- `YYYY`, `YYYYMM`, `YYYYMMDD`\n- `YYYYMMDDhh`, `YYYYMMDDhhmm`, `YYYYMMDDhhmmss`\n\nAll times are interpreted in the local timezone."
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "kind": "assign",
+                    "left": {
+                      "kind": "identifier",
+                      "name": "h",
+                      "optional": false,
+                      "tsType": {
+                        "repr": "Integer",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "Integer",
+                          "resolution": {
+                            "kind": "import",
+                            "specifier": "@epdoc/type",
+                            "name": "Integer"
+                          }
+                        }
+                      }
+                    },
+                    "right": "0"
+                  }
+                ],
+                "returnType": {
+                  "repr": "DateTime",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeName": "DateTime",
+                    "resolution": {
+                      "kind": "import",
+                      "specifier": "@epdoc/datetime",
+                      "name": "DateTime"
+                    }
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "INSTANT_MAX",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/types.ts",
+                "line": 220,
+                "col": 13,
+                "byteIndex": 7675
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Maximum representable instant (approximately +275760-09-13T00:00:00Z).\nThis represents the latest possible instant that can be represented\nusing Temporal.Instant epoch milliseconds."
+              },
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "repr": "Temporal.Instant",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeName": "Temporal.Instant"
+                  }
+                },
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "INSTANT_MIN",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/types.ts",
+                "line": 213,
+                "col": 13,
+                "byteIndex": 7371
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Minimum representable instant (approximately -271821-04-20T00:00:00Z).\nThis represents the earliest possible instant that can be represented\nusing Temporal.Instant epoch milliseconds."
+              },
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "repr": "Temporal.Instant",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeName": "Temporal.Instant"
+                  }
+                },
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "DateRangeDef",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/types.ts",
+                "line": 28,
+                "col": 0,
+                "byteIndex": 714
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Represents a date range definition with optional after (start) and before (end) instants.\n\nBoth boundaries are inclusive when checking if a date falls within the range.\n",
+                "tags": [
+                  {
+                    "kind": "example",
+                    "doc": "```ts\n// Last 24 hours\nconst last24h: DateRangeDef = {\n  after: Temporal.Now.instant().subtract({ hours: 24 }),\n  before: Temporal.Now.instant()\n};\n\n// All time after a specific date\nconst since2024: DateRangeDef = {\n  after: Temporal.Instant.from('2024-01-01T00:00:00Z')\n};\n```"
+                  }
+                ]
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "after",
+                        "jsDoc": {
+                          "doc": "The start of the range (inclusive). If undefined, range extends to the beginning of time."
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/types.ts",
+                          "line": 30,
+                          "col": 2,
+                          "byteIndex": 844
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "DateTime",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "DateTime",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "@epdoc/datetime",
+                              "name": "DateTime"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "before",
+                        "jsDoc": {
+                          "doc": "The end of the range (inclusive). If undefined, range extends to the end of time."
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/types.ts",
+                          "line": 32,
+                          "col": 2,
+                          "byteIndex": 955
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "DateTime",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "DateTime",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "@epdoc/datetime",
+                              "name": "DateTime"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "DateRangeJSON",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/types.ts",
+                "line": 47,
+                "col": 0,
+                "byteIndex": 1232
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "JSON-serializable representation of a date range.\nUses ISO 8601 format strings for serialization.\n",
+                "tags": [
+                  {
+                    "kind": "example",
+                    "doc": "```ts\nconst json: DateRangeJSON = {\n  after: '2024-01-15T10:30:00Z',\n  before: '2024-01-20T18:00:00Z'\n};\n```"
+                  }
+                ]
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "after",
+                        "jsDoc": {
+                          "doc": "ISO 8601 formatted instant string for the start of the range"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/types.ts",
+                          "line": 49,
+                          "col": 2,
+                          "byteIndex": 1334
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "ISODateInstant",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "ISODateInstant",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "@epdoc/datetime",
+                              "name": "ISODateInstant"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "before",
+                        "jsDoc": {
+                          "doc": "ISO 8601 formatted instant string for the end of the range"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/types.ts",
+                          "line": 51,
+                          "col": 2,
+                          "byteIndex": 1428
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "ISODateInstant",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "ISODateInstant",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "@epdoc/datetime",
+                              "name": "ISODateInstant"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "DateRangeParseOptions",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/types.ts",
+                "line": 57,
+                "col": 0,
+                "byteIndex": 1508
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Options for parsing date range strings."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "reference",
+                        "jsDoc": {
+                          "doc": "Reference instant for relative time calculations (default: now)"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/types.ts",
+                          "line": 59,
+                          "col": 2,
+                          "byteIndex": 1621
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "DateTime",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "DateTime",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "@epdoc/datetime",
+                              "name": "DateTime"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "inclusiveEnd",
+                        "jsDoc": {
+                          "doc": "Whether to make end dates inclusive by setting to 23:59:59.999 (default: true)"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/types.ts",
+                          "line": 61,
+                          "col": 2,
+                          "byteIndex": 1733
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "boolean",
+                          "kind": "keyword",
+                          "value": "boolean"
+                        }
+                      },
+                      {
+                        "name": "defaultHour",
+                        "jsDoc": {
+                          "doc": "Default hour to use for day-only dates (0-23, default: 0)"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/types.ts",
+                          "line": 63,
+                          "col": 2,
+                          "byteIndex": 1826
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "isDateRangeDef",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/types.ts",
+                "line": 69,
+                "col": 0,
+                "byteIndex": 1919
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Type guard to check if a value is a valid DateRangeDef."
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "obj",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "unknown",
+                      "kind": "keyword",
+                      "value": "unknown"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "obj is DateRangeDef",
+                  "kind": "typePredicate",
+                  "value": {
+                    "param": {
+                      "type": "identifier",
+                      "name": "obj"
+                    },
+                    "type": {
+                      "repr": "DateRangeDef",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "DateRangeDef",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    }
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "buildDateHelp",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                "line": 76,
+                "col": 0,
+                "byteIndex": 2027
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Appends colorized date range help text to any compatible MsgBuilder.\n\nKeeps `@epdoc/daterange` free of a logger dependency — the caller supplies\ntheir own builder instance.\n",
+                "tags": [
+                  {
+                    "kind": "example",
+                    "doc": "```ts\nhelpText(): string {\n  const msg = new CustomMsgBuilder();\n  msg.h1('\\nDate Range Formats\\n');\n  buildDateHelp(msg);\n  return msg.format();\n}\n```"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "msg",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "T",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "T",
+                        "resolution": {
+                          "kind": "typeParam",
+                          "declaringName": "buildDateHelp",
+                          "declaringKind": "function"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "T",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeName": "T",
+                    "resolution": {
+                      "kind": "typeParam",
+                      "declaringName": "buildDateHelp",
+                      "declaringKind": "function"
+                    }
+                  }
+                },
+                "hasBody": true,
+                "typeParams": [
+                  {
+                    "name": "T",
+                    "constraint": {
+                      "repr": "DateHelpBuilder",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "DateHelpBuilder",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "dateOptionDef",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                "line": 142,
+                "col": 13,
+                "byteIndex": 4618
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "`-d, --date <date-range>` — parses to `DateRanges`.\nAccepts any combination of absolute, relative, and comma-separated ranges."
+              },
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "short",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 143,
+                          "col": 2,
+                          "byteIndex": 4638
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "name",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 144,
+                          "col": 2,
+                          "byteIndex": 4652
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "params",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 145,
+                          "col": 2,
+                          "byteIndex": 4668
+                        },
+                        "tsType": {
+                          "repr": "<date-range>",
+                          "kind": "literal",
+                          "value": {
+                            "kind": "string",
+                            "string": "<date-range>"
+                          }
+                        }
+                      },
+                      {
+                        "name": "description",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 146,
+                          "col": 2,
+                          "byteIndex": 4703
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "argParser",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 147,
+                          "col": 2,
+                          "byteIndex": 4777
+                        }
+                      },
+                      {
+                        "name": "help",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 148,
+                          "col": 2,
+                          "byteIndex": 4802
+                        }
+                      }
+                    ]
+                  }
+                },
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "dateRangeOptionDefs",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                "line": 228,
+                "col": 13,
+                "byteIndex": 7279
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Ready-to-use `CliApp.OptionDefMap` fragment with all date range options.\nSpread into your own `optionDefs` and remove any you don't need."
+              },
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "date",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 229,
+                          "col": 2,
+                          "byteIndex": 7305
+                        }
+                      },
+                      {
+                        "name": "range",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 230,
+                          "col": 2,
+                          "byteIndex": 7328
+                        }
+                      },
+                      {
+                        "name": "ranges",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 231,
+                          "col": 2,
+                          "byteIndex": 7353
+                        }
+                      },
+                      {
+                        "name": "since",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 232,
+                          "col": 2,
+                          "byteIndex": 7380
+                        }
+                      },
+                      {
+                        "name": "until",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 233,
+                          "col": 2,
+                          "byteIndex": 7405
+                        }
+                      },
+                      {
+                        "name": "window",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 234,
+                          "col": 2,
+                          "byteIndex": 7430
+                        }
+                      }
+                    ]
+                  }
+                },
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "isDateRanges",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                "line": 240,
+                "col": 0,
+                "byteIndex": 7538
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Type guard to check if a value is a `DateRanges` instance."
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "val",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "unknown",
+                      "kind": "keyword",
+                      "value": "unknown"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "val is DateRanges",
+                  "kind": "typePredicate",
+                  "value": {
+                    "param": {
+                      "type": "identifier",
+                      "name": "val"
+                    },
+                    "type": {
+                      "repr": "DateRanges",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "DateRanges",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./mod.ts",
+                          "name": "DateRanges"
+                        }
+                      }
+                    }
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "rangeOptionDef",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                "line": 155,
+                "col": 13,
+                "byteIndex": 4981
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "`-r, --range <date-range>` — parses a **single** date range to `DateRange`.\nThrows if the input resolves to more than one range."
+              },
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "short",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 156,
+                          "col": 2,
+                          "byteIndex": 5002
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "name",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 157,
+                          "col": 2,
+                          "byteIndex": 5016
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "params",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 158,
+                          "col": 2,
+                          "byteIndex": 5033
+                        },
+                        "tsType": {
+                          "repr": "<date-range>",
+                          "kind": "literal",
+                          "value": {
+                            "kind": "string",
+                            "string": "<date-range>"
+                          }
+                        }
+                      },
+                      {
+                        "name": "description",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 159,
+                          "col": 2,
+                          "byteIndex": 5068
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "argParser",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 160,
+                          "col": 2,
+                          "byteIndex": 5139
+                        },
+                        "tsType": {
+                          "kind": "fnOrConstructor",
+                          "value": {
+                            "constructor": false,
+                            "tsType": {
+                              "repr": "DateRange",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "DateRange",
+                                "resolution": {
+                                  "kind": "import",
+                                  "specifier": "./mod.ts",
+                                  "name": "DateRange"
+                                }
+                              }
+                            },
+                            "params": [
+                              {
+                                "kind": "identifier",
+                                "name": "val",
+                                "optional": false,
+                                "tsType": {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "name": "help",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 165,
+                          "col": 2,
+                          "byteIndex": 5363
+                        }
+                      }
+                    ]
+                  }
+                },
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "rangesOptionDef",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                "line": 172,
+                "col": 13,
+                "byteIndex": 5552
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "`-R, --ranges <date-ranges>` — parses comma-separated ranges to `DateRanges`.\nIdentical to `dateOptionDef` but uses `-R`/`--ranges` flags."
+              },
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "short",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 173,
+                          "col": 2,
+                          "byteIndex": 5574
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "name",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 174,
+                          "col": 2,
+                          "byteIndex": 5588
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "params",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 175,
+                          "col": 2,
+                          "byteIndex": 5606
+                        },
+                        "tsType": {
+                          "repr": "<date-ranges>",
+                          "kind": "literal",
+                          "value": {
+                            "kind": "string",
+                            "string": "<date-ranges>"
+                          }
+                        }
+                      },
+                      {
+                        "name": "description",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 176,
+                          "col": 2,
+                          "byteIndex": 5642
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "argParser",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 177,
+                          "col": 2,
+                          "byteIndex": 5723
+                        }
+                      },
+                      {
+                        "name": "help",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 178,
+                          "col": 2,
+                          "byteIndex": 5748
+                        }
+                      }
+                    ]
+                  }
+                },
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "sinceOptionDef",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                "line": 185,
+                "col": 13,
+                "byteIndex": 5938
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "`-s, --since <date>` — parses a start boundary to `DateTime`.\nCombine with `untilOptionDef` to build a `DateRange` in your command handler."
+              },
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "short",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 186,
+                          "col": 2,
+                          "byteIndex": 5959
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "name",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 187,
+                          "col": 2,
+                          "byteIndex": 5973
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "params",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 188,
+                          "col": 2,
+                          "byteIndex": 5990
+                        },
+                        "tsType": {
+                          "repr": "<date>",
+                          "kind": "literal",
+                          "value": {
+                            "kind": "string",
+                            "string": "<date>"
+                          }
+                        }
+                      },
+                      {
+                        "name": "description",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 189,
+                          "col": 2,
+                          "byteIndex": 6019
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "argParser",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 190,
+                          "col": 2,
+                          "byteIndex": 6096
+                        }
+                      }
+                    ]
+                  }
+                },
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "untilOptionDef",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                "line": 197,
+                "col": 13,
+                "byteIndex": 6316
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "`-u, --until <date>` — parses an end boundary to `DateTime`. Defaults to `now`.\nCombine with `sinceOptionDef` to build a `DateRange` in your command handler."
+              },
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "short",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 198,
+                          "col": 2,
+                          "byteIndex": 6337
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "name",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 199,
+                          "col": 2,
+                          "byteIndex": 6351
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "params",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 200,
+                          "col": 2,
+                          "byteIndex": 6368
+                        },
+                        "tsType": {
+                          "repr": "<date>",
+                          "kind": "literal",
+                          "value": {
+                            "kind": "string",
+                            "string": "<date>"
+                          }
+                        }
+                      },
+                      {
+                        "name": "description",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 201,
+                          "col": 2,
+                          "byteIndex": 6397
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "defVal",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 202,
+                          "col": 2,
+                          "byteIndex": 6470
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "argParser",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 203,
+                          "col": 2,
+                          "byteIndex": 6487
+                        }
+                      }
+                    ]
+                  }
+                },
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "windowOptionDef",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                "line": 212,
+                "col": 13,
+                "byteIndex": 6755
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "`-w, --window <duration>` — parses a lookback duration to a `DateRange` ending now.\nConvenience alternative to using `--since` + `--until`.\n",
+                "tags": [
+                  {
+                    "kind": "example",
+                    "doc": "`--window 7d` → DateRange from 7 days ago to now"
+                  }
+                ]
+              },
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "short",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 213,
+                          "col": 2,
+                          "byteIndex": 6777
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "name",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 214,
+                          "col": 2,
+                          "byteIndex": 6791
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "params",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 215,
+                          "col": 2,
+                          "byteIndex": 6809
+                        },
+                        "tsType": {
+                          "repr": "<duration>",
+                          "kind": "literal",
+                          "value": {
+                            "kind": "string",
+                            "string": "<duration>"
+                          }
+                        }
+                      },
+                      {
+                        "name": "description",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 216,
+                          "col": 2,
+                          "byteIndex": 6842
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "argParser",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 217,
+                          "col": 2,
+                          "byteIndex": 6908
+                        },
+                        "tsType": {
+                          "kind": "fnOrConstructor",
+                          "value": {
+                            "constructor": false,
+                            "tsType": {
+                              "repr": "DateRange",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "DateRange",
+                                "resolution": {
+                                  "kind": "import",
+                                  "specifier": "./mod.ts",
+                                  "name": "DateRange"
+                                }
+                              }
+                            },
+                            "params": [
+                              {
+                                "kind": "identifier",
+                                "name": "val",
+                                "optional": false,
+                                "tsType": {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "DateHelpBuilder",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                "line": 52,
+                "col": 0,
+                "byteIndex": 1434
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Minimal interface for the builder methods used by `buildDateHelp`.\nCompatible with `ConsoleMsgBuilder` and any subclass — no dependency on\n`@epdoc/logger` required in this package."
+              },
+              "kind": "interface",
+              "def": {
+                "methods": [
+                  {
+                    "name": "h2",
+                    "kind": "method",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                      "line": 53,
+                      "col": 2,
+                      "byteIndex": 1471
+                    },
+                    "params": [
+                      {
+                        "kind": "rest",
+                        "arg": {
+                          "kind": "identifier",
+                          "name": "args",
+                          "optional": false
+                        },
+                        "tsType": {
+                          "kind": "array",
+                          "value": {
+                            "repr": "unknown",
+                            "kind": "keyword",
+                            "value": "unknown"
+                          }
+                        }
+                      }
+                    ],
+                    "returnType": {
+                      "repr": "this",
+                      "kind": "this"
+                    }
+                  },
+                  {
+                    "name": "label",
+                    "kind": "method",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                      "line": 54,
+                      "col": 2,
+                      "byteIndex": 1503
+                    },
+                    "params": [
+                      {
+                        "kind": "rest",
+                        "arg": {
+                          "kind": "identifier",
+                          "name": "args",
+                          "optional": false
+                        },
+                        "tsType": {
+                          "kind": "array",
+                          "value": {
+                            "repr": "unknown",
+                            "kind": "keyword",
+                            "value": "unknown"
+                          }
+                        }
+                      }
+                    ],
+                    "returnType": {
+                      "repr": "this",
+                      "kind": "this"
+                    }
+                  },
+                  {
+                    "name": "value",
+                    "kind": "method",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                      "line": 55,
+                      "col": 2,
+                      "byteIndex": 1538
+                    },
+                    "params": [
+                      {
+                        "kind": "rest",
+                        "arg": {
+                          "kind": "identifier",
+                          "name": "args",
+                          "optional": false
+                        },
+                        "tsType": {
+                          "kind": "array",
+                          "value": {
+                            "repr": "unknown",
+                            "kind": "keyword",
+                            "value": "unknown"
+                          }
+                        }
+                      }
+                    ],
+                    "returnType": {
+                      "repr": "this",
+                      "kind": "this"
+                    }
+                  },
+                  {
+                    "name": "text",
+                    "kind": "method",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                      "line": 56,
+                      "col": 2,
+                      "byteIndex": 1573
+                    },
+                    "params": [
+                      {
+                        "kind": "rest",
+                        "arg": {
+                          "kind": "identifier",
+                          "name": "args",
+                          "optional": false
+                        },
+                        "tsType": {
+                          "kind": "array",
+                          "value": {
+                            "repr": "unknown",
+                            "kind": "keyword",
+                            "value": "unknown"
+                          }
+                        }
+                      }
+                    ],
+                    "returnType": {
+                      "repr": "this",
+                      "kind": "this"
+                    }
+                  },
+                  {
+                    "name": "code",
+                    "kind": "method",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                      "line": 57,
+                      "col": 2,
+                      "byteIndex": 1607
+                    },
+                    "params": [
+                      {
+                        "kind": "rest",
+                        "arg": {
+                          "kind": "identifier",
+                          "name": "args",
+                          "optional": false
+                        },
+                        "tsType": {
+                          "kind": "array",
+                          "value": {
+                            "repr": "unknown",
+                            "kind": "keyword",
+                            "value": "unknown"
+                          }
+                        }
+                      }
+                    ],
+                    "returnType": {
+                      "repr": "this",
+                      "kind": "this"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,2473 @@
+{
+  "version": 2,
+  "nodes": {
+    "file:///Users/jpravetz/dev/@epdoc/std/transform/src/mod.ts": {
+      "symbols": [
+        {
+          "name": "msubLite",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/utils.ts",
+                "line": 15,
+                "col": 0,
+                "byteIndex": 624
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Performs string substitution similar to JavaScript template strings.\nReplaces all occurrences of `${key}` (or custom delimiters) in `s` with values from `replace`.\nDoes not use eval, so is safe for user input.\n\nThis is the simple built-in msub that only handles string values.\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "s",
+                    "doc": "The input string."
+                  },
+                  {
+                    "kind": "param",
+                    "name": "replace",
+                    "doc": "The dictionary of string replacements."
+                  },
+                  {
+                    "kind": "param",
+                    "name": "pre",
+                    "doc": "The prefix for a placeholder (default: '${')."
+                  },
+                  {
+                    "kind": "param",
+                    "name": "post",
+                    "doc": "The suffix for a placeholder (default: '}')."
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "The substituted string."
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "s",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "kind": "assign",
+                    "left": {
+                      "kind": "identifier",
+                      "name": "replace",
+                      "optional": false,
+                      "tsType": {
+                        "repr": "Record",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeParams": [
+                            {
+                              "repr": "string",
+                              "kind": "keyword",
+                              "value": "string"
+                            },
+                            {
+                              "repr": "string",
+                              "kind": "keyword",
+                              "value": "string"
+                            }
+                          ],
+                          "typeName": "Record"
+                        }
+                      }
+                    },
+                    "right": "[UNSUPPORTED]"
+                  },
+                  {
+                    "kind": "assign",
+                    "left": {
+                      "kind": "identifier",
+                      "name": "pre",
+                      "optional": false,
+                      "tsType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      }
+                    },
+                    "right": "${"
+                  },
+                  {
+                    "kind": "assign",
+                    "left": {
+                      "kind": "identifier",
+                      "name": "post",
+                      "optional": false,
+                      "tsType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      }
+                    },
+                    "right": "}"
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "Deep",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/mod.ts",
+                "line": 0,
+                "col": 7,
+                "byteIndex": 7
+              },
+              "declarationKind": "export",
+              "kind": "namespace",
+              "def": {
+                "elements": [
+                  {
+                    "name": "hasSimpleReplacements",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/deep/deeputils.ts",
+                          "line": 8,
+                          "col": 0,
+                          "byteIndex": 294
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Type guard that checks whether `opts.replace` contains only string values\nand no custom `msubFn` — i.e., simple string-for-string substitution."
+                        },
+                        "kind": "function",
+                        "def": {
+                          "params": [
+                            {
+                              "kind": "identifier",
+                              "name": "opts",
+                              "optional": false,
+                              "tsType": {
+                                "repr": "Deep.CopyOpts",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "Deep.CopyOpts",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "./types.ts"
+                                  }
+                                }
+                              }
+                            }
+                          ],
+                          "returnType": {
+                            "repr": "opts is ",
+                            "kind": "typePredicate",
+                            "value": {
+                              "param": {
+                                "type": "identifier",
+                                "name": "opts"
+                              },
+                              "type": {
+                                "kind": "intersection",
+                                "value": [
+                                  {
+                                    "repr": "Deep.CopyCommonOpts",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "Deep.CopyCommonOpts",
+                                      "resolution": {
+                                        "kind": "import",
+                                        "specifier": "./types.ts"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "kind": "typeLiteral",
+                                    "value": {
+                                      "properties": [
+                                        {
+                                          "name": "replace",
+                                          "location": {
+                                            "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/deep/deeputils.ts",
+                                            "line": 10,
+                                            "col": 35,
+                                            "byteIndex": 391
+                                          },
+                                          "tsType": {
+                                            "repr": "Record",
+                                            "kind": "typeRef",
+                                            "value": {
+                                              "typeParams": [
+                                                {
+                                                  "repr": "string",
+                                                  "kind": "keyword",
+                                                  "value": "string"
+                                                },
+                                                {
+                                                  "repr": "string",
+                                                  "kind": "keyword",
+                                                  "value": "string"
+                                                }
+                                              ],
+                                              "typeName": "Record"
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "name": "msubFn",
+                                          "location": {
+                                            "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/deep/deeputils.ts",
+                                            "line": 10,
+                                            "col": 68,
+                                            "byteIndex": 424
+                                          },
+                                          "optional": true,
+                                          "tsType": {
+                                            "repr": "never",
+                                            "kind": "keyword",
+                                            "value": "never"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          "hasBody": true
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "hasComplexReplacements",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/deep/deeputils.ts",
+                          "line": 20,
+                          "col": 0,
+                          "byteIndex": 698
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Type guard that checks whether `opts` includes a custom `msubFn` for\nadvanced replacement where values are not plain strings."
+                        },
+                        "kind": "function",
+                        "def": {
+                          "params": [
+                            {
+                              "kind": "identifier",
+                              "name": "opts",
+                              "optional": false,
+                              "tsType": {
+                                "repr": "Deep.CopyOpts",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "Deep.CopyOpts",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "./types.ts"
+                                  }
+                                }
+                              }
+                            }
+                          ],
+                          "returnType": {
+                            "repr": "opts is ",
+                            "kind": "typePredicate",
+                            "value": {
+                              "param": {
+                                "type": "identifier",
+                                "name": "opts"
+                              },
+                              "type": {
+                                "kind": "intersection",
+                                "value": [
+                                  {
+                                    "repr": "Deep.CopyCommonOpts",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "Deep.CopyCommonOpts",
+                                      "resolution": {
+                                        "kind": "import",
+                                        "specifier": "./types.ts"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "kind": "typeLiteral",
+                                    "value": {
+                                      "properties": [
+                                        {
+                                          "name": "replace",
+                                          "location": {
+                                            "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/deep/deeputils.ts",
+                                            "line": 22,
+                                            "col": 35,
+                                            "byteIndex": 796
+                                          },
+                                          "tsType": {
+                                            "repr": "Record",
+                                            "kind": "typeRef",
+                                            "value": {
+                                              "typeParams": [
+                                                {
+                                                  "repr": "string",
+                                                  "kind": "keyword",
+                                                  "value": "string"
+                                                },
+                                                {
+                                                  "repr": "unknown",
+                                                  "kind": "keyword",
+                                                  "value": "unknown"
+                                                }
+                                              ],
+                                              "typeName": "Record"
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "name": "msubFn",
+                                          "location": {
+                                            "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/deep/deeputils.ts",
+                                            "line": 22,
+                                            "col": 69,
+                                            "byteIndex": 830
+                                          },
+                                          "tsType": {
+                                            "repr": "Deep.MSubFn",
+                                            "kind": "typeRef",
+                                            "value": {
+                                              "typeName": "Deep.MSubFn",
+                                              "resolution": {
+                                                "kind": "import",
+                                                "specifier": "./types.ts"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          "hasBody": true
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "processStringWithReplacements",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/deep/deeputils.ts",
+                          "line": 35,
+                          "col": 0,
+                          "byteIndex": 1295
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Core string processing used by both Json.serialize and Json.deserialize.\n\nDelegates to the custom `msubFn` when provided, otherwise falls back to\nthe built-in `msubLite` for simple string replacements. Throws when\nthe replacement config is invalid — specifically, when `replace` contains\nnon-string values but no custom handler is supplied."
+                        },
+                        "kind": "function",
+                        "def": {
+                          "params": [
+                            {
+                              "kind": "identifier",
+                              "name": "str",
+                              "optional": false,
+                              "tsType": {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              }
+                            },
+                            {
+                              "kind": "identifier",
+                              "name": "options",
+                              "optional": false,
+                              "tsType": {
+                                "repr": "Deep.CopyOpts",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "Deep.CopyOpts",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "./types.ts"
+                                  }
+                                }
+                              }
+                            }
+                          ],
+                          "returnType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          },
+                          "hasBody": true
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "CopyOpts",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/deep/types.ts",
+                          "line": 16,
+                          "col": 0,
+                          "byteIndex": 483
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Options controlling deep-copy behaviour and string replacement.\n\nThis is a discriminated union ensuring type safety:\n- No `replace` → no substitutions (default)\n- `replace` with all string values → simple built-in msubLite\n- `replace` with any non-string value → requires a custom `msubFn`\n",
+                          "tags": [
+                            {
+                              "kind": "example",
+                              "doc": "```ts\n// Simple\n{ replace: { name: 'Alice' } }\n// Advanced\n{ replace: { now: new Date() }, msubFn: (s, r) => replace(s, r) }\n```"
+                            }
+                          ]
+                        },
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "intersection",
+                            "value": [
+                              {
+                                "repr": "CopyCommonOpts",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "CopyCommonOpts",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              },
+                              {
+                                "kind": "parenthesized",
+                                "value": {
+                                  "kind": "union",
+                                  "value": [
+                                    {
+                                      "kind": "typeLiteral",
+                                      "value": {
+                                        "properties": [
+                                          {
+                                            "name": "replace",
+                                            "location": {
+                                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/deep/types.ts",
+                                              "line": 19,
+                                              "col": 8,
+                                              "byteIndex": 539
+                                            },
+                                            "optional": true,
+                                            "tsType": {
+                                              "repr": "never",
+                                              "kind": "keyword",
+                                              "value": "never"
+                                            }
+                                          },
+                                          {
+                                            "name": "msubFn",
+                                            "location": {
+                                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/deep/types.ts",
+                                              "line": 19,
+                                              "col": 25,
+                                              "byteIndex": 556
+                                            },
+                                            "optional": true,
+                                            "tsType": {
+                                              "repr": "never",
+                                              "kind": "keyword",
+                                              "value": "never"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "kind": "typeLiteral",
+                                      "value": {
+                                        "properties": [
+                                          {
+                                            "name": "replace",
+                                            "location": {
+                                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/deep/types.ts",
+                                              "line": 20,
+                                              "col": 8,
+                                              "byteIndex": 581
+                                            },
+                                            "tsType": {
+                                              "repr": "Record",
+                                              "kind": "typeRef",
+                                              "value": {
+                                                "typeParams": [
+                                                  {
+                                                    "repr": "string",
+                                                    "kind": "keyword",
+                                                    "value": "string"
+                                                  },
+                                                  {
+                                                    "repr": "string",
+                                                    "kind": "keyword",
+                                                    "value": "string"
+                                                  }
+                                                ],
+                                                "typeName": "Record"
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "name": "msubFn",
+                                            "location": {
+                                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/deep/types.ts",
+                                              "line": 20,
+                                              "col": 41,
+                                              "byteIndex": 614
+                                            },
+                                            "optional": true,
+                                            "tsType": {
+                                              "repr": "never",
+                                              "kind": "keyword",
+                                              "value": "never"
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "kind": "typeLiteral",
+                                      "value": {
+                                        "properties": [
+                                          {
+                                            "name": "replace",
+                                            "location": {
+                                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/deep/types.ts",
+                                              "line": 21,
+                                              "col": 8,
+                                              "byteIndex": 639
+                                            },
+                                            "tsType": {
+                                              "repr": "Record",
+                                              "kind": "typeRef",
+                                              "value": {
+                                                "typeParams": [
+                                                  {
+                                                    "repr": "string",
+                                                    "kind": "keyword",
+                                                    "value": "string"
+                                                  },
+                                                  {
+                                                    "repr": "unknown",
+                                                    "kind": "keyword",
+                                                    "value": "unknown"
+                                                  }
+                                                ],
+                                                "typeName": "Record"
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "name": "msubFn",
+                                            "location": {
+                                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/deep/types.ts",
+                                              "line": 21,
+                                              "col": 42,
+                                              "byteIndex": 673
+                                            },
+                                            "tsType": {
+                                              "repr": "MSubFn",
+                                              "kind": "typeRef",
+                                              "value": {
+                                                "typeName": "MSubFn",
+                                                "resolution": {
+                                                  "kind": "local"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "CopyCommonOpts",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/deep/types.ts",
+                          "line": 27,
+                          "col": 0,
+                          "byteIndex": 752
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Options shared across all CopyOpts variants."
+                        },
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "typeLiteral",
+                            "value": {
+                              "properties": [
+                                {
+                                  "name": "pre",
+                                  "jsDoc": {
+                                    "doc": "Opening delimiter for placeholders (default: '${')."
+                                  },
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/deep/types.ts",
+                                    "line": 29,
+                                    "col": 2,
+                                    "byteIndex": 846
+                                  },
+                                  "optional": true,
+                                  "tsType": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                },
+                                {
+                                  "name": "post",
+                                  "jsDoc": {
+                                    "doc": "Closing delimiter for placeholders (default: '}')."
+                                  },
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/deep/types.ts",
+                                    "line": 31,
+                                    "col": 2,
+                                    "byteIndex": 922
+                                  },
+                                  "optional": true,
+                                  "tsType": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "MSubFn",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/deep/types.ts",
+                          "line": 38,
+                          "col": 0,
+                          "byteIndex": 1073
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Signature for custom string-replacement functions.\nUsed with advanced replacement where values are not plain strings."
+                        },
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "fnOrConstructor",
+                            "value": {
+                              "constructor": false,
+                              "tsType": {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              },
+                              "params": [
+                                {
+                                  "kind": "identifier",
+                                  "name": "s",
+                                  "optional": false,
+                                  "tsType": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                },
+                                {
+                                  "kind": "identifier",
+                                  "name": "replace",
+                                  "optional": false,
+                                  "tsType": {
+                                    "repr": "Record",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeParams": [
+                                        {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        },
+                                        {
+                                          "repr": "unknown",
+                                          "kind": "keyword",
+                                          "value": "unknown"
+                                        }
+                                      ],
+                                      "typeName": "Record"
+                                    }
+                                  }
+                                },
+                                {
+                                  "kind": "identifier",
+                                  "name": "pre",
+                                  "optional": true,
+                                  "tsType": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                },
+                                {
+                                  "kind": "identifier",
+                                  "name": "post",
+                                  "optional": true,
+                                  "tsType": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Json",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/mod.ts",
+                "line": 1,
+                "col": 7,
+                "byteIndex": 46
+              },
+              "declarationKind": "export",
+              "kind": "namespace",
+              "def": {
+                "elements": [
+                  {
+                    "name": "isEncodedValue",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/deserialize.ts",
+                          "line": 60,
+                          "col": 0,
+                          "byteIndex": 2009
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Checks whether a plain object carries a `__filter` property, indicating it\nwas produced by the serializer's encode step."
+                        },
+                        "kind": "function",
+                        "def": {
+                          "params": [
+                            {
+                              "kind": "identifier",
+                              "name": "val",
+                              "optional": false,
+                              "tsType": {
+                                "repr": "unknown",
+                                "kind": "keyword",
+                                "value": "unknown"
+                              }
+                            }
+                          ],
+                          "returnType": {
+                            "repr": "val is Json.EncodedValue",
+                            "kind": "typePredicate",
+                            "value": {
+                              "param": {
+                                "type": "identifier",
+                                "name": "val"
+                              },
+                              "type": {
+                                "repr": "Json.EncodedValue",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "Json.EncodedValue",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "./types.ts"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "hasBody": true
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "createDeserializerReviver",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/deserialize.ts",
+                          "line": 77,
+                          "col": 0,
+                          "byteIndex": 2716
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Creates a JSON.parse reviver function that can restore `__filter`-wrapped\ntypes, detect RegExp shapes, convert ISO strings to Temporal, and perform\nstring substitution.\n\nOptions are read from `opts`:\n- `decode` — restore `__filter` envelopes (must match `encode: true` on serialization)\n- `autoTemporal` — convert ISO 8601 strings to Temporal types\n- `autoRegExp` — detect `{ regex, flags }` shapes and rebuild RegExp\n- `replace` / `pre` / `post` / `msubFn` — string substitution"
+                        },
+                        "kind": "function",
+                        "def": {
+                          "params": [
+                            {
+                              "kind": "identifier",
+                              "name": "opts",
+                              "optional": false,
+                              "tsType": {
+                                "kind": "intersection",
+                                "value": [
+                                  {
+                                    "repr": "Deep.CopyOpts",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "Deep.CopyOpts",
+                                      "resolution": {
+                                        "kind": "import",
+                                        "specifier": "../deep/mod.ts"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "repr": "Json.IAutoTemporal",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "Json.IAutoTemporal",
+                                      "resolution": {
+                                        "kind": "import",
+                                        "specifier": "./types.ts"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "repr": "Json.IDecode",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "Json.IDecode",
+                                      "resolution": {
+                                        "kind": "import",
+                                        "specifier": "./types.ts"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "repr": "Json.IAutoRegExp",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "Json.IAutoRegExp",
+                                      "resolution": {
+                                        "kind": "import",
+                                        "specifier": "./types.ts"
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ],
+                          "returnType": {
+                            "repr": "JsonReviver",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "JsonReviver",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          },
+                          "hasBody": true
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "deserialize",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/deserialize.ts",
+                          "line": 148,
+                          "col": 0,
+                          "byteIndex": 4952
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Deserializes a JSON string, restoring `__filter`-encoded special types\nand performing optional string replacement and Temporal conversion.\n\nSupports:\n- Temporal.Instant, ZonedDateTime, PlainDateTime (from `__filter`)\n- Uint8Array (decoded from ASCII85)\n- Set, Map, RegExp\n- ISO string → Temporal conversion (`autoTemporal`)\n- String substitution (`replace`)\n",
+                          "tags": [
+                            {
+                              "kind": "param",
+                              "name": "json",
+                              "doc": "The JSON string to parse."
+                            },
+                            {
+                              "kind": "param",
+                              "name": "opts",
+                              "optional": true,
+                              "doc": "Deserialisation options:\n- `decode` — restore encoded types (must match `encode: true` on serialization)\n- `autoTemporal` — auto-convert ISO strings to Temporal types\n- `autoRegExp` — detect `{ regex, flags }` shapes and rebuild RegExp\n- `stripComments` — strip JSONC-style comments before parsing\n- `replace` — string substitution config (see {@link Deep.CopyOpts})"
+                            },
+                            {
+                              "kind": "return",
+                              "doc": "The deserialized value with original types restored.\n"
+                            },
+                            {
+                              "kind": "example",
+                              "doc": "```ts\nJson.deserialize('{\"__filter\":\"Set\",\"data\":[1,2]}', { decode: true });\n// → Set { 1, 2 }\n```\n"
+                            },
+                            {
+                              "kind": "example",
+                              "doc": "```ts\nJson.deserialize('{\"time\":\"2024-01-15T12:30:45Z\"}', { autoTemporal: true });\n// → { time: Temporal.Instant.from('...') }\n```\n"
+                            },
+                            {
+                              "kind": "example",
+                              "doc": "```ts\nJson.deserialize('{\"msg\":\"Hello ${name}!\"}', { replace: { name: 'World' } });\n// → { msg: \"Hello World!\" }\n```"
+                            }
+                          ]
+                        },
+                        "kind": "function",
+                        "def": {
+                          "params": [
+                            {
+                              "kind": "identifier",
+                              "name": "json",
+                              "optional": false,
+                              "tsType": {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              }
+                            },
+                            {
+                              "kind": "assign",
+                              "left": {
+                                "kind": "identifier",
+                                "name": "opts",
+                                "optional": false,
+                                "tsType": {
+                                  "repr": "Json.DeserializeOpts",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "Json.DeserializeOpts",
+                                    "resolution": {
+                                      "kind": "import",
+                                      "specifier": "./types.ts"
+                                    }
+                                  }
+                                }
+                              },
+                              "right": "[UNSUPPORTED]"
+                            }
+                          ],
+                          "returnType": {
+                            "repr": "T",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "T",
+                              "resolution": {
+                                "kind": "typeParam",
+                                "declaringName": "deserialize",
+                                "declaringKind": "function"
+                              }
+                            }
+                          },
+                          "hasBody": true,
+                          "typeParams": [
+                            {
+                              "name": "T",
+                              "default": {
+                                "repr": "unknown",
+                                "kind": "keyword",
+                                "value": "unknown"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "isJsonReviver",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/guards.ts",
+                          "line": 5,
+                          "col": 0,
+                          "byteIndex": 129
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Type guard to check if a given value is a valid StrictJsonReviver function."
+                        },
+                        "kind": "function",
+                        "def": {
+                          "params": [
+                            {
+                              "kind": "identifier",
+                              "name": "fn",
+                              "optional": false,
+                              "tsType": {
+                                "repr": "unknown",
+                                "kind": "keyword",
+                                "value": "unknown"
+                              }
+                            }
+                          ],
+                          "returnType": {
+                            "repr": "fn is Json.Reviver",
+                            "kind": "typePredicate",
+                            "value": {
+                              "param": {
+                                "type": "identifier",
+                                "name": "fn"
+                              },
+                              "type": {
+                                "repr": "Json.Reviver",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "Json.Reviver",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "./types.ts"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "hasBody": true
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "serialize",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/serialize.ts",
+                          "line": 99,
+                          "col": 0,
+                          "byteIndex": 3300
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Serializes a JavaScript value to a JSON string, with optional type encoding\nand string replacement.\n\nWhen `encode: true` is set, special types — Uint8Array (ASCII85), Set, Map,\nand RegExp — are wrapped in a `__filter` envelope so they can be faithfully\nrestored by {@link deserialize} with `decode: true`.\n\nTemporal types (Instant, ZonedDateTime, PlainDateTime) are handled\nautomatically via a pre-processing step and do not require `encode: true`.\n",
+                          "tags": [
+                            {
+                              "kind": "param",
+                              "name": "value",
+                              "doc": "The value to serialize."
+                            },
+                            {
+                              "kind": "param",
+                              "name": "options",
+                              "optional": true,
+                              "doc": "Serialization options:\n- `encode` — wrap special types in `__filter` (default: false)\n- `autoRegExp` — serialize RegExp as `{ regex, flags }` (default: false)\n- `replace` — string substitution config (see {@link Deep.CopyOpts})"
+                            },
+                            {
+                              "kind": "param",
+                              "name": "space",
+                              "optional": true,
+                              "doc": "JSON.stringify formatting parameter."
+                            },
+                            {
+                              "kind": "return",
+                              "doc": "The serialized JSON string.\n"
+                            },
+                            {
+                              "kind": "example",
+                              "doc": "```ts\nJson.serialize({ data: new Set([1, 2]) }, { encode: true });\n// → '{\"data\":{\"__filter\":\"Set\",\"data\":[1,2]}}'\n```\n"
+                            },
+                            {
+                              "kind": "example",
+                              "doc": "```ts\nJson.serialize({ msg: 'Hello ${name}!' }, { replace: { name: 'World' } });\n// → '{\"msg\":\"Hello World!\"}'\n```"
+                            }
+                          ]
+                        },
+                        "kind": "function",
+                        "def": {
+                          "params": [
+                            {
+                              "kind": "identifier",
+                              "name": "value",
+                              "optional": false,
+                              "tsType": {
+                                "repr": "unknown",
+                                "kind": "keyword",
+                                "value": "unknown"
+                              }
+                            },
+                            {
+                              "kind": "identifier",
+                              "name": "options",
+                              "optional": true,
+                              "tsType": {
+                                "repr": "Json.SerializeOpts",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "Json.SerializeOpts",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "./types.ts"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "kind": "identifier",
+                              "name": "space",
+                              "optional": true,
+                              "tsType": {
+                                "kind": "union",
+                                "value": [
+                                  {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  },
+                                  {
+                                    "repr": "number",
+                                    "kind": "keyword",
+                                    "value": "number"
+                                  }
+                                ]
+                              }
+                            }
+                          ],
+                          "returnType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          },
+                          "hasBody": true
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "DeserializerReviverOptions",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                          "line": 2,
+                          "col": 0,
+                          "byteIndex": 48
+                        },
+                        "declarationKind": "export",
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "intersection",
+                            "value": [
+                              {
+                                "repr": "Deep.CopyOpts",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "Deep.CopyOpts",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "../deep/types.ts"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "IAutoTemporal",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "IAutoTemporal",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "IDecode",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "IDecode",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "IAutoRegExp",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "IAutoRegExp",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "IAutoTemporal",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                          "line": 11,
+                          "col": 0,
+                          "byteIndex": 500
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "When true, ISO 8601 date-time strings encountered during deserialization will be converted to the\nappropriate Temporal type (ZonedDateTime, PlainDateTime, or Instant) via {@link asTemporal},\nrather than left as plain strings. Setting autoDateTime will convert to an @epdoc/datetime\nDateTime wrapper for the temporal.",
+                          "tags": [
+                            {
+                              "kind": "unsupported",
+                              "value": "@default false"
+                            }
+                          ]
+                        },
+                        "kind": "interface",
+                        "def": {
+                          "properties": [
+                            {
+                              "name": "autoTemporal",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                "line": 12,
+                                "col": 2,
+                                "byteIndex": 535
+                              },
+                              "optional": true,
+                              "tsType": {
+                                "repr": "boolean",
+                                "kind": "keyword",
+                                "value": "boolean"
+                              }
+                            },
+                            {
+                              "name": "autoDateTime",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                "line": 13,
+                                "col": 2,
+                                "byteIndex": 561
+                              },
+                              "optional": true,
+                              "tsType": {
+                                "repr": "boolean",
+                                "kind": "keyword",
+                                "value": "boolean"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "IAutoRegExp",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                          "line": 15,
+                          "col": 0,
+                          "byteIndex": 587
+                        },
+                        "declarationKind": "export",
+                        "kind": "interface",
+                        "def": {
+                          "properties": [
+                            {
+                              "name": "autoRegExp",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                "line": 16,
+                                "col": 2,
+                                "byteIndex": 620
+                              },
+                              "optional": true,
+                              "tsType": {
+                                "repr": "boolean",
+                                "kind": "keyword",
+                                "value": "boolean"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "StripCommentsOpts",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                          "line": 19,
+                          "col": 0,
+                          "byteIndex": 645
+                        },
+                        "declarationKind": "export",
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "typeLiteral",
+                            "value": {
+                              "properties": [
+                                {
+                                  "name": "whitespace",
+                                  "jsDoc": {
+                                    "doc": "If true, whitespace characters in comments will be replaced with a single space.\nIf false, comments will be removed without replacing them with spaces.\nDefaults to true."
+                                  },
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                    "line": 25,
+                                    "col": 2,
+                                    "byteIndex": 878
+                                  },
+                                  "optional": true,
+                                  "tsType": {
+                                    "repr": "boolean",
+                                    "kind": "keyword",
+                                    "value": "boolean"
+                                  }
+                                },
+                                {
+                                  "name": "trailingCommas",
+                                  "jsDoc": {
+                                    "doc": "If true, trailing commas in arrays and objects will be removed.\nDefaults to false."
+                                  },
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                    "line": 31,
+                                    "col": 2,
+                                    "byteIndex": 1008
+                                  },
+                                  "optional": true,
+                                  "tsType": {
+                                    "repr": "boolean",
+                                    "kind": "keyword",
+                                    "value": "boolean"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "IStripComments",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                          "line": 34,
+                          "col": 0,
+                          "byteIndex": 1038
+                        },
+                        "declarationKind": "export",
+                        "kind": "interface",
+                        "def": {
+                          "properties": [
+                            {
+                              "name": "stripComments",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                "line": 35,
+                                "col": 2,
+                                "byteIndex": 1074
+                              },
+                              "optional": true,
+                              "tsType": {
+                                "kind": "union",
+                                "value": [
+                                  {
+                                    "repr": "boolean",
+                                    "kind": "keyword",
+                                    "value": "boolean"
+                                  },
+                                  {
+                                    "repr": "StripCommentsOpts",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "StripCommentsOpts",
+                                      "resolution": {
+                                        "kind": "local"
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "SerializeOpts",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                          "line": 38,
+                          "col": 0,
+                          "byteIndex": 1122
+                        },
+                        "declarationKind": "export",
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "intersection",
+                            "value": [
+                              {
+                                "repr": "IReplacer",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "IReplacer",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "Deep.CopyOpts",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "Deep.CopyOpts",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "../deep/types.ts"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "IEncode",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "IEncode",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "IAutoRegExp",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "IAutoRegExp",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "DeserializeOpts",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                          "line": 44,
+                          "col": 0,
+                          "byteIndex": 1212
+                        },
+                        "declarationKind": "export",
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "kind": "parenthesized",
+                                "value": {
+                                  "kind": "intersection",
+                                  "value": [
+                                    {
+                                      "kind": "typeLiteral",
+                                      "value": {
+                                        "properties": [
+                                          {
+                                            "name": "reviver",
+                                            "location": {
+                                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                              "line": 45,
+                                              "col": 7,
+                                              "byteIndex": 1249
+                                            },
+                                            "tsType": {
+                                              "repr": "Reviver",
+                                              "kind": "typeRef",
+                                              "value": {
+                                                "typeName": "Reviver",
+                                                "resolution": {
+                                                  "kind": "local"
+                                                }
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "repr": "IStripComments",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "IStripComments",
+                                        "resolution": {
+                                          "kind": "local"
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "kind": "parenthesized",
+                                "value": {
+                                  "kind": "intersection",
+                                  "value": [
+                                    {
+                                      "kind": "typeLiteral",
+                                      "value": {
+                                        "properties": [
+                                          {
+                                            "name": "reviver",
+                                            "location": {
+                                              "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                              "line": 47,
+                                              "col": 8,
+                                              "byteIndex": 1300
+                                            },
+                                            "optional": true,
+                                            "tsType": {
+                                              "kind": "union",
+                                              "value": [
+                                                {
+                                                  "repr": "undefined",
+                                                  "kind": "keyword",
+                                                  "value": "undefined"
+                                                },
+                                                {
+                                                  "repr": "false",
+                                                  "kind": "literal",
+                                                  "value": {
+                                                    "kind": "boolean",
+                                                    "boolean": false
+                                                  }
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "repr": "Deep.CopyOpts",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "Deep.CopyOpts",
+                                        "resolution": {
+                                          "kind": "import",
+                                          "specifier": "../deep/types.ts"
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "repr": "IStripComments",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "IStripComments",
+                                        "resolution": {
+                                          "kind": "local"
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "repr": "IAutoTemporal",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "IAutoTemporal",
+                                        "resolution": {
+                                          "kind": "local"
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "repr": "IDecode",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "IDecode",
+                                        "resolution": {
+                                          "kind": "local"
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "repr": "IAutoRegExp",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "IAutoRegExp",
+                                        "resolution": {
+                                          "kind": "local"
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "IDecode",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                          "line": 58,
+                          "col": 0,
+                          "byteIndex": 1524
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "When true, look for __filter key in JSON and decode according to the __filter value"
+                        },
+                        "kind": "interface",
+                        "def": {
+                          "properties": [
+                            {
+                              "name": "decode",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                "line": 59,
+                                "col": 2,
+                                "byteIndex": 1553
+                              },
+                              "optional": true,
+                              "tsType": {
+                                "repr": "boolean",
+                                "kind": "keyword",
+                                "value": "boolean"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "IEncode",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                          "line": 64,
+                          "col": 0,
+                          "byteIndex": 1672
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "When true, create __filter in JSON for Set, Map, Temporal datetimes, RegExp, UInt8Array"
+                        },
+                        "kind": "interface",
+                        "def": {
+                          "properties": [
+                            {
+                              "name": "encode",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                "line": 65,
+                                "col": 2,
+                                "byteIndex": 1701
+                              },
+                              "optional": true,
+                              "tsType": {
+                                "repr": "boolean",
+                                "kind": "keyword",
+                                "value": "boolean"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "IDetectRegExp",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                          "line": 68,
+                          "col": 0,
+                          "byteIndex": 1722
+                        },
+                        "declarationKind": "export",
+                        "kind": "interface",
+                        "def": {
+                          "properties": [
+                            {
+                              "name": "detectRegExp",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                "line": 69,
+                                "col": 2,
+                                "byteIndex": 1757
+                              },
+                              "optional": true,
+                              "tsType": {
+                                "repr": "boolean",
+                                "kind": "keyword",
+                                "value": "boolean"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "IIncludeUrl",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                          "line": 71,
+                          "col": 0,
+                          "byteIndex": 1783
+                        },
+                        "declarationKind": "export",
+                        "kind": "interface",
+                        "def": {
+                          "properties": [
+                            {
+                              "name": "includeUrl",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                "line": 72,
+                                "col": 2,
+                                "byteIndex": 1816
+                              },
+                              "optional": true,
+                              "tsType": {
+                                "repr": "boolean",
+                                "kind": "keyword",
+                                "value": "boolean"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "EncodedValue",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                          "line": 75,
+                          "col": 0,
+                          "byteIndex": 1841
+                        },
+                        "declarationKind": "export",
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "kind": "typeLiteral",
+                                "value": {
+                                  "properties": [
+                                    {
+                                      "name": "__filter",
+                                      "location": {
+                                        "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                        "line": 76,
+                                        "col": 6,
+                                        "byteIndex": 1874
+                                      },
+                                      "tsType": {
+                                        "repr": "Instant",
+                                        "kind": "literal",
+                                        "value": {
+                                          "kind": "string",
+                                          "string": "Instant"
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "name": "data",
+                                      "location": {
+                                        "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                        "line": 76,
+                                        "col": 27,
+                                        "byteIndex": 1895
+                                      },
+                                      "tsType": {
+                                        "repr": "string",
+                                        "kind": "keyword",
+                                        "value": "string"
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "kind": "typeLiteral",
+                                "value": {
+                                  "properties": [
+                                    {
+                                      "name": "__filter",
+                                      "location": {
+                                        "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                        "line": 77,
+                                        "col": 6,
+                                        "byteIndex": 1916
+                                      },
+                                      "tsType": {
+                                        "repr": "ZonedDateTime",
+                                        "kind": "literal",
+                                        "value": {
+                                          "kind": "string",
+                                          "string": "ZonedDateTime"
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "name": "data",
+                                      "location": {
+                                        "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                        "line": 77,
+                                        "col": 33,
+                                        "byteIndex": 1943
+                                      },
+                                      "tsType": {
+                                        "repr": "string",
+                                        "kind": "keyword",
+                                        "value": "string"
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "kind": "typeLiteral",
+                                "value": {
+                                  "properties": [
+                                    {
+                                      "name": "__filter",
+                                      "location": {
+                                        "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                        "line": 78,
+                                        "col": 6,
+                                        "byteIndex": 1964
+                                      },
+                                      "tsType": {
+                                        "repr": "PlainDateTime",
+                                        "kind": "literal",
+                                        "value": {
+                                          "kind": "string",
+                                          "string": "PlainDateTime"
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "name": "data",
+                                      "location": {
+                                        "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                        "line": 78,
+                                        "col": 33,
+                                        "byteIndex": 1991
+                                      },
+                                      "tsType": {
+                                        "repr": "string",
+                                        "kind": "keyword",
+                                        "value": "string"
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "kind": "typeLiteral",
+                                "value": {
+                                  "properties": [
+                                    {
+                                      "name": "__filter",
+                                      "location": {
+                                        "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                        "line": 79,
+                                        "col": 6,
+                                        "byteIndex": 2012
+                                      },
+                                      "tsType": {
+                                        "repr": "RegExp",
+                                        "kind": "literal",
+                                        "value": {
+                                          "kind": "string",
+                                          "string": "RegExp"
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "name": "regex",
+                                      "location": {
+                                        "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                        "line": 79,
+                                        "col": 26,
+                                        "byteIndex": 2032
+                                      },
+                                      "tsType": {
+                                        "repr": "string",
+                                        "kind": "keyword",
+                                        "value": "string"
+                                      }
+                                    },
+                                    {
+                                      "name": "flags",
+                                      "location": {
+                                        "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                        "line": 79,
+                                        "col": 41,
+                                        "byteIndex": 2047
+                                      },
+                                      "optional": true,
+                                      "tsType": {
+                                        "repr": "string",
+                                        "kind": "keyword",
+                                        "value": "string"
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "kind": "typeLiteral",
+                                "value": {
+                                  "properties": [
+                                    {
+                                      "name": "__filter",
+                                      "location": {
+                                        "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                        "line": 80,
+                                        "col": 6,
+                                        "byteIndex": 2070
+                                      },
+                                      "tsType": {
+                                        "repr": "Set",
+                                        "kind": "literal",
+                                        "value": {
+                                          "kind": "string",
+                                          "string": "Set"
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "name": "data",
+                                      "location": {
+                                        "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                        "line": 80,
+                                        "col": 23,
+                                        "byteIndex": 2087
+                                      },
+                                      "tsType": {
+                                        "kind": "array",
+                                        "value": {
+                                          "repr": "unknown",
+                                          "kind": "keyword",
+                                          "value": "unknown"
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "kind": "typeLiteral",
+                                "value": {
+                                  "properties": [
+                                    {
+                                      "name": "__filter",
+                                      "location": {
+                                        "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                        "line": 81,
+                                        "col": 6,
+                                        "byteIndex": 2111
+                                      },
+                                      "tsType": {
+                                        "repr": "Map",
+                                        "kind": "literal",
+                                        "value": {
+                                          "kind": "string",
+                                          "string": "Map"
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "name": "data",
+                                      "location": {
+                                        "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                        "line": 81,
+                                        "col": 23,
+                                        "byteIndex": 2128
+                                      },
+                                      "tsType": {
+                                        "kind": "array",
+                                        "value": {
+                                          "kind": "tuple",
+                                          "value": [
+                                            {
+                                              "repr": "unknown",
+                                              "kind": "keyword",
+                                              "value": "unknown"
+                                            },
+                                            {
+                                              "repr": "unknown",
+                                              "kind": "keyword",
+                                              "value": "unknown"
+                                            }
+                                          ]
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              {
+                                "kind": "typeLiteral",
+                                "value": {
+                                  "properties": [
+                                    {
+                                      "name": "__filter",
+                                      "location": {
+                                        "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                        "line": 82,
+                                        "col": 6,
+                                        "byteIndex": 2163
+                                      },
+                                      "tsType": {
+                                        "kind": "union",
+                                        "value": [
+                                          {
+                                            "repr": "ASCII85Decode",
+                                            "kind": "literal",
+                                            "value": {
+                                              "kind": "string",
+                                              "string": "ASCII85Decode"
+                                            }
+                                          },
+                                          {
+                                            "kind": "array",
+                                            "value": {
+                                              "repr": "ASCII85Decode",
+                                              "kind": "literal",
+                                              "value": {
+                                                "kind": "string",
+                                                "string": "ASCII85Decode"
+                                              }
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "name": "data",
+                                      "location": {
+                                        "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                        "line": 82,
+                                        "col": 53,
+                                        "byteIndex": 2210
+                                      },
+                                      "tsType": {
+                                        "repr": "string",
+                                        "kind": "keyword",
+                                        "value": "string"
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Replacer",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                          "line": 84,
+                          "col": 0,
+                          "byteIndex": 2227
+                        },
+                        "declarationKind": "export",
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "ReplacerFn",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "ReplacerFn",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "ReplacerArray",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "ReplacerArray",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "ReplacerFn",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                          "line": 85,
+                          "col": 0,
+                          "byteIndex": 2278
+                        },
+                        "declarationKind": "export",
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "fnOrConstructor",
+                            "value": {
+                              "constructor": false,
+                              "tsType": {
+                                "repr": "unknown",
+                                "kind": "keyword",
+                                "value": "unknown"
+                              },
+                              "params": [
+                                {
+                                  "kind": "identifier",
+                                  "name": "this",
+                                  "optional": false,
+                                  "tsType": {
+                                    "repr": "unknown",
+                                    "kind": "keyword",
+                                    "value": "unknown"
+                                  }
+                                },
+                                {
+                                  "kind": "identifier",
+                                  "name": "key",
+                                  "optional": false,
+                                  "tsType": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                },
+                                {
+                                  "kind": "identifier",
+                                  "name": "value",
+                                  "optional": false,
+                                  "tsType": {
+                                    "repr": "unknown",
+                                    "kind": "keyword",
+                                    "value": "unknown"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "ReplacerArray",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                          "line": 86,
+                          "col": 0,
+                          "byteIndex": 2360
+                        },
+                        "declarationKind": "export",
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "Array",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "kind": "union",
+                                      "value": [
+                                        {
+                                          "repr": "number",
+                                          "kind": "keyword",
+                                          "value": "number"
+                                        },
+                                        {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "typeName": "Array"
+                                }
+                              },
+                              {
+                                "repr": "undefined",
+                                "kind": "keyword",
+                                "value": "undefined"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "IReplacer",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                          "line": 93,
+                          "col": 0,
+                          "byteIndex": 2613
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "A replacer function or array of property names passed to `JSON.stringify()`.\nControls which values are included in the JSON output.\nIf provided, Deep.CopyOpts is ignored."
+                        },
+                        "kind": "interface",
+                        "def": {
+                          "properties": [
+                            {
+                              "name": "replacer",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                "line": 94,
+                                "col": 2,
+                                "byteIndex": 2644
+                              },
+                              "optional": true,
+                              "tsType": {
+                                "kind": "union",
+                                "value": [
+                                  {
+                                    "repr": "ReplacerFn",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "ReplacerFn",
+                                      "resolution": {
+                                        "kind": "local"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "repr": "ReplacerArray",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "ReplacerArray",
+                                      "resolution": {
+                                        "kind": "local"
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Reviver",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                          "line": 98,
+                          "col": 0,
+                          "byteIndex": 2767
+                        },
+                        "declarationKind": "export",
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "fnOrConstructor",
+                            "value": {
+                              "constructor": false,
+                              "tsType": {
+                                "repr": "unknown",
+                                "kind": "keyword",
+                                "value": "unknown"
+                              },
+                              "params": [
+                                {
+                                  "kind": "identifier",
+                                  "name": "this",
+                                  "optional": false,
+                                  "tsType": {
+                                    "repr": "unknown",
+                                    "kind": "keyword",
+                                    "value": "unknown"
+                                  }
+                                },
+                                {
+                                  "kind": "identifier",
+                                  "name": "key",
+                                  "optional": false,
+                                  "tsType": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                },
+                                {
+                                  "kind": "identifier",
+                                  "name": "value",
+                                  "optional": false,
+                                  "tsType": {
+                                    "repr": "unknown",
+                                    "kind": "keyword",
+                                    "value": "unknown"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "IReviver",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                          "line": 100,
+                          "col": 0,
+                          "byteIndex": 2847
+                        },
+                        "declarationKind": "export",
+                        "kind": "interface",
+                        "def": {
+                          "properties": [
+                            {
+                              "name": "reviver",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/transform/src/json/types.ts",
+                                "line": 101,
+                                "col": 2,
+                                "byteIndex": 2877
+                              },
+                              "optional": true,
+                              "tsType": {
+                                "repr": "Reviver",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "Reviver",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
