@@ -1,4 +1,4 @@
-export const APP_NORMALIZE_RULES: { pattern: RegExp; label: string }[] = [
+export const APP_NORMALIZE_RULES: { pattern: RegExp; label: string | undefined }[] = [
   { pattern: /^Adobe Photoshop Camera Raw /i, label: 'Adobe Camera Raw' },
   { pattern: /^Adobe Lightroom /i, label: 'Adobe Lightroom' },
   { pattern: /^Adobe Photoshop Express /i, label: 'Adobe Photoshop Express' },
@@ -6,7 +6,7 @@ export const APP_NORMALIZE_RULES: { pattern: RegExp; label: string }[] = [
   { pattern: /^Snapseed /i, label: 'Snapseed' },
   { pattern: /^Google /i, label: 'Google' },
   { pattern: /^Picasa /i, label: 'Picasa' },
-  { pattern: /^HDR\+/i, label: 'HDR+' },
+  { pattern: /^HDR\+/i, label: undefined },
 ];
 
 export const CAMERA_MODEL_MAP: Record<string, Record<string, string>> = {

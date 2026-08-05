@@ -1,5 +1,9 @@
+import { _ } from '@epdoc/type';
+import type { VideoRes } from './collections.ts';
 import { APP_NORMALIZE_RULES, CAMERA_MODEL_MAP } from './consts.ts';
 import type { Metadata } from './metadata.ts';
+
+export const CODEC_AUDIO_UNKNOWN = 'Unknown Audio Codec';
 
 // ============================================================================
 // Normalization helpers (moved from file.ts so defs can use them)
@@ -52,7 +56,7 @@ export function audioCodec(meta: Metadata): string | undefined {
     meta.AudioFormat ??
     meta.AudioCodec ??
     meta.AudioEncoding;
-  if (!raw) return 'Unknown Audio Codec';
+  if (!raw) return CODEC_AUDIO_UNKNOWN;
 
   // Matroska / ISO Identifiers & Common Strings
   if (/OPUS|A_OPUS/i.test(raw)) return 'Opus';
@@ -69,4 +73,34 @@ export function audioCodec(meta: Metadata): string | undefined {
 
   // Return original trimmed string if no standard regex pattern matched
   return raw;
+}
+
+export function videoResolution(meta: Metadata): VideoRes | undefined {
+  const w = _.isDefined(meta.ImageWidth) ? meta.ImageWidth : meta.SourceImageWidth;
+  const h = _.isDefined(meta.ImageHeight) ? meta.ImageHeight : meta.SourceImageHeight;
+  if (!w || !h) return undefined;
+  const width = _.asInt(w);
+  const height = _.asInt(h);
+
+  // Check height range (accounting for cropped letterboxes)
+  if (h >= 2000 || w >= 3800) {
+    return { tag: '4K', width, height, isCropped: height < 2160 };
+  }
+  if (h >= 1350 || w >= 2500) {
+    return { tag: '1440p', width, height, isCropped: height < 1440 };
+  }
+  if (h >= 960 || w >= 1800) {
+    return { tag: '1080p', width, height, isCropped: height < 1080 };
+  }
+  if (h) {
+    return { tag: '720p', width, height, isCropped: height < 720 };
+  }
+  if (h >= 500 || w >= 900) {
+    return { tag: '576p', width, height, isCropped: height < 576 };
+  }
+  if (h) {
+    return { tag: '480p', width, height, isCropped: height < 480 };
+  }
+
+  return { tag: 'SD', width, height, isCropped: false };
 }

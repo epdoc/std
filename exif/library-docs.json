@@ -4,579 +4,14 @@
     "file:///Users/jpravetz/dev/@epdoc/std/exif/src/mod.ts": {
       "symbols": [
         {
-          "name": "App",
-          "declarations": [
-            {
-              "location": {
-                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                "line": 253,
-                "col": 13,
-                "byteIndex": 10215
-              },
-              "declarationKind": "export",
-              "kind": "variable",
-              "def": {
-                "tsType": {
-                  "repr": "AppDef",
-                  "kind": "typeRef",
-                  "value": {
-                    "typeName": "AppDef",
-                    "resolution": {
-                      "kind": "local"
-                    }
-                  }
-                },
-                "kind": "const"
-              }
-            },
-            {
-              "location": {
-                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                "line": 260,
-                "col": 0,
-                "byteIndex": 10397
-              },
-              "declarationKind": "export",
-              "kind": "typeAlias",
-              "def": {
-                "tsType": {
-                  "repr": "InfoResult",
-                  "kind": "typeRef",
-                  "value": {
-                    "typeParams": [
-                      {
-                        "repr": "App",
-                        "kind": "typeQuery",
-                        "value": "App"
-                      }
-                    ],
-                    "typeName": "InfoResult",
-                    "resolution": {
-                      "kind": "local"
-                    }
-                  }
-                }
-              }
-            }
-          ]
-        },
-        {
-          "name": "Audio",
-          "declarations": [
-            {
-              "location": {
-                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                "line": 209,
-                "col": 13,
-                "byteIndex": 8510
-              },
-              "declarationKind": "export",
-              "kind": "variable",
-              "def": {
-                "tsType": {
-                  "repr": "AudioDef",
-                  "kind": "typeRef",
-                  "value": {
-                    "typeName": "AudioDef",
-                    "resolution": {
-                      "kind": "local"
-                    }
-                  }
-                },
-                "kind": "const"
-              }
-            },
-            {
-              "location": {
-                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                "line": 221,
-                "col": 0,
-                "byteIndex": 9190
-              },
-              "declarationKind": "export",
-              "kind": "typeAlias",
-              "def": {
-                "tsType": {
-                  "repr": "InfoResult",
-                  "kind": "typeRef",
-                  "value": {
-                    "typeParams": [
-                      {
-                        "repr": "Audio",
-                        "kind": "typeQuery",
-                        "value": "Audio"
-                      }
-                    ],
-                    "typeName": "InfoResult",
-                    "resolution": {
-                      "kind": "local"
-                    }
-                  }
-                }
-              }
-            }
-          ]
-        },
-        {
-          "name": "Camera",
-          "declarations": [
-            {
-              "location": {
-                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                "line": 234,
-                "col": 13,
-                "byteIndex": 9537
-              },
-              "declarationKind": "export",
-              "kind": "variable",
-              "def": {
-                "tsType": {
-                  "repr": "CameraDef",
-                  "kind": "typeRef",
-                  "value": {
-                    "typeName": "CameraDef",
-                    "resolution": {
-                      "kind": "local"
-                    }
-                  }
-                },
-                "kind": "const"
-              }
-            },
-            {
-              "location": {
-                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                "line": 247,
-                "col": 0,
-                "byteIndex": 10072
-              },
-              "declarationKind": "export",
-              "kind": "typeAlias",
-              "def": {
-                "tsType": {
-                  "repr": "InfoResult",
-                  "kind": "typeRef",
-                  "value": {
-                    "typeParams": [
-                      {
-                        "repr": "Camera",
-                        "kind": "typeQuery",
-                        "value": "Camera"
-                      }
-                    ],
-                    "typeName": "InfoResult",
-                    "resolution": {
-                      "kind": "local"
-                    }
-                  }
-                }
-              }
-            }
-          ]
-        },
-        {
-          "name": "ExifInfo",
-          "declarations": [
-            {
-              "location": {
-                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                "line": 289,
-                "col": 13,
-                "byteIndex": 11191
-              },
-              "declarationKind": "export",
-              "jsDoc": {
-                "doc": "Grouping of all section consts plus enumeration/formatting utilities.\n\n```ts\nconst rows = ExifInfo.list(ExifInfo.camera, fsFile, metadata);\n// rows: [{ key: 'name', label: 'Camera', value: '...', display: '...' }, ...]\n```"
-              },
-              "kind": "variable",
-              "def": {
-                "tsType": {
-                  "kind": "typeLiteral",
-                  "value": {
-                    "methods": [
-                      {
-                        "name": "keys",
-                        "kind": "method",
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 296,
-                          "col": 2,
-                          "byteIndex": 11339
-                        },
-                        "params": [
-                          {
-                            "kind": "identifier",
-                            "name": "section",
-                            "optional": false,
-                            "tsType": {
-                              "repr": "InfoSection",
-                              "kind": "typeRef",
-                              "value": {
-                                "typeName": "InfoSection",
-                                "resolution": {
-                                  "kind": "local"
-                                }
-                              }
-                            }
-                          }
-                        ],
-                        "returnType": {
-                          "kind": "array",
-                          "value": {
-                            "repr": "string",
-                            "kind": "keyword",
-                            "value": "string"
-                          }
-                        }
-                      },
-                      {
-                        "name": "labels",
-                        "kind": "method",
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 297,
-                          "col": 2,
-                          "byteIndex": 11379
-                        },
-                        "params": [
-                          {
-                            "kind": "identifier",
-                            "name": "section",
-                            "optional": false,
-                            "tsType": {
-                              "repr": "InfoSection",
-                              "kind": "typeRef",
-                              "value": {
-                                "typeName": "InfoSection",
-                                "resolution": {
-                                  "kind": "local"
-                                }
-                              }
-                            }
-                          }
-                        ],
-                        "returnType": {
-                          "kind": "array",
-                          "value": {
-                            "repr": "string",
-                            "kind": "keyword",
-                            "value": "string"
-                          }
-                        }
-                      },
-                      {
-                        "name": "list",
-                        "kind": "method",
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 298,
-                          "col": 2,
-                          "byteIndex": 11421
-                        },
-                        "params": [
-                          {
-                            "kind": "identifier",
-                            "name": "section",
-                            "optional": false,
-                            "tsType": {
-                              "repr": "InfoSection",
-                              "kind": "typeRef",
-                              "value": {
-                                "typeName": "InfoSection",
-                                "resolution": {
-                                  "kind": "local"
-                                }
-                              }
-                            }
-                          },
-                          {
-                            "kind": "identifier",
-                            "name": "fs",
-                            "optional": false,
-                            "tsType": {
-                              "repr": "FS.File",
-                              "kind": "typeRef",
-                              "value": {
-                                "typeName": "FS.File",
-                                "resolution": {
-                                  "kind": "import",
-                                  "specifier": "@epdoc/fs/fs"
-                                }
-                              }
-                            }
-                          },
-                          {
-                            "kind": "identifier",
-                            "name": "meta",
-                            "optional": false,
-                            "tsType": {
-                              "repr": "Metadata",
-                              "kind": "typeRef",
-                              "value": {
-                                "typeName": "Metadata",
-                                "resolution": {
-                                  "kind": "import",
-                                  "specifier": "./metadata.ts",
-                                  "name": "Metadata"
-                                }
-                              }
-                            }
-                          },
-                          {
-                            "kind": "identifier",
-                            "name": "mode",
-                            "optional": true,
-                            "tsType": {
-                              "kind": "union",
-                              "value": [
-                                {
-                                  "repr": "value",
-                                  "kind": "literal",
-                                  "value": {
-                                    "kind": "string",
-                                    "string": "value"
-                                  }
-                                },
-                                {
-                                  "repr": "json",
-                                  "kind": "literal",
-                                  "value": {
-                                    "kind": "string",
-                                    "string": "json"
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        ],
-                        "returnType": {
-                          "kind": "array",
-                          "value": {
-                            "repr": "InfoRow",
-                            "kind": "typeRef",
-                            "value": {
-                              "typeName": "InfoRow",
-                              "resolution": {
-                                "kind": "local"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    ],
-                    "properties": [
-                      {
-                        "name": "file",
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 290,
-                          "col": 2,
-                          "byteIndex": 11205
-                        },
-                        "tsType": {
-                          "repr": "File",
-                          "kind": "typeQuery",
-                          "value": "File"
-                        }
-                      },
-                      {
-                        "name": "image",
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 291,
-                          "col": 2,
-                          "byteIndex": 11226
-                        },
-                        "tsType": {
-                          "repr": "Image",
-                          "kind": "typeQuery",
-                          "value": "Image"
-                        }
-                      },
-                      {
-                        "name": "video",
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 292,
-                          "col": 2,
-                          "byteIndex": 11249
-                        },
-                        "tsType": {
-                          "repr": "Video",
-                          "kind": "typeQuery",
-                          "value": "Video"
-                        }
-                      },
-                      {
-                        "name": "audio",
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 293,
-                          "col": 2,
-                          "byteIndex": 11272
-                        },
-                        "tsType": {
-                          "repr": "Audio",
-                          "kind": "typeQuery",
-                          "value": "Audio"
-                        }
-                      },
-                      {
-                        "name": "camera",
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 294,
-                          "col": 2,
-                          "byteIndex": 11295
-                        },
-                        "tsType": {
-                          "repr": "Camera",
-                          "kind": "typeQuery",
-                          "value": "Camera"
-                        }
-                      },
-                      {
-                        "name": "app",
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 295,
-                          "col": 2,
-                          "byteIndex": 11320
-                        },
-                        "tsType": {
-                          "repr": "App",
-                          "kind": "typeQuery",
-                          "value": "App"
-                        }
-                      }
-                    ]
-                  }
-                },
-                "kind": "const"
-              }
-            }
-          ]
-        },
-        {
-          "name": "FileId",
-          "declarations": [
-            {
-              "location": {
-                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                "line": 262,
-                "col": 0,
-                "byteIndex": 10440
-              },
-              "declarationKind": "export",
-              "kind": "typeAlias",
-              "def": {
-                "tsType": {
-                  "kind": "typeLiteral",
-                  "value": {
-                    "properties": [
-                      {
-                        "name": "documentId",
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 263,
-                          "col": 2,
-                          "byteIndex": 10465
-                        },
-                        "optional": true,
-                        "tsType": {
-                          "repr": "string",
-                          "kind": "keyword",
-                          "value": "string"
-                        }
-                      },
-                      {
-                        "name": "instanceId",
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 264,
-                          "col": 2,
-                          "byteIndex": 10488
-                        },
-                        "optional": true,
-                        "tsType": {
-                          "repr": "string",
-                          "kind": "keyword",
-                          "value": "string"
-                        }
-                      }
-                    ]
-                  }
-                }
-              }
-            }
-          ]
-        },
-        {
-          "name": "Video",
-          "declarations": [
-            {
-              "location": {
-                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                "line": 178,
-                "col": 13,
-                "byteIndex": 6780
-              },
-              "declarationKind": "export",
-              "kind": "variable",
-              "def": {
-                "tsType": {
-                  "repr": "VideoDef",
-                  "kind": "typeRef",
-                  "value": {
-                    "typeName": "VideoDef",
-                    "resolution": {
-                      "kind": "local"
-                    }
-                  }
-                },
-                "kind": "const"
-              }
-            },
-            {
-              "location": {
-                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                "line": 198,
-                "col": 0,
-                "byteIndex": 8223
-              },
-              "declarationKind": "export",
-              "kind": "typeAlias",
-              "def": {
-                "tsType": {
-                  "repr": "InfoResult",
-                  "kind": "typeRef",
-                  "value": {
-                    "typeParams": [
-                      {
-                        "repr": "Video",
-                        "kind": "typeQuery",
-                        "value": "Video"
-                      }
-                    ],
-                    "typeName": "InfoResult",
-                    "resolution": {
-                      "kind": "local"
-                    }
-                  }
-                }
-              }
-            }
-          ]
-        },
-        {
           "name": "File",
           "declarations": [
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                "line": 30,
+                "line": 23,
                 "col": 0,
-                "byteIndex": 1064
+                "byteIndex": 974
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -641,9 +76,9 @@
                     ],
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 37,
+                      "line": 30,
                       "col": 2,
-                      "byteIndex": 1209
+                      "byteIndex": 1119
                     }
                   }
                 ],
@@ -668,9 +103,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 42,
+                      "line": 35,
                       "col": 2,
-                      "byteIndex": 1381
+                      "byteIndex": 1291
                     }
                   },
                   {
@@ -693,9 +128,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 46,
+                      "line": 39,
                       "col": 2,
-                      "byteIndex": 1437
+                      "byteIndex": 1347
                     }
                   },
                   {
@@ -719,9 +154,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 50,
+                      "line": 43,
                       "col": 2,
-                      "byteIndex": 1500
+                      "byteIndex": 1410
                     }
                   },
                   {
@@ -738,9 +173,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 55,
+                      "line": 48,
                       "col": 2,
-                      "byteIndex": 1652
+                      "byteIndex": 1562
                     }
                   },
                   {
@@ -765,9 +200,9 @@
                                     "name": "force",
                                     "location": {
                                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                                      "line": 65,
+                                      "line": 58,
                                       "col": 28,
-                                      "byteIndex": 1947
+                                      "byteIndex": 1857
                                     },
                                     "optional": true,
                                     "tsType": {
@@ -819,9 +254,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 65,
+                      "line": 58,
                       "col": 2,
-                      "byteIndex": 1921
+                      "byteIndex": 1831
                     }
                   },
                   {
@@ -879,9 +314,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 89,
+                      "line": 82,
                       "col": 2,
-                      "byteIndex": 2650
+                      "byteIndex": 2560
                     }
                   },
                   {
@@ -901,9 +336,9 @@
                                   "name": "metadata",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                                    "line": 99,
+                                    "line": 92,
                                     "col": 15,
-                                    "byteIndex": 3045
+                                    "byteIndex": 2955
                                   },
                                   "tsType": {
                                     "repr": "boolean",
@@ -932,9 +367,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 99,
+                      "line": 92,
                       "col": 2,
-                      "byteIndex": 3032
+                      "byteIndex": 2942
                     }
                   },
                   {
@@ -957,9 +392,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 124,
+                      "line": 123,
                       "col": 2,
-                      "byteIndex": 3826
+                      "byteIndex": 3939
                     }
                   },
                   {
@@ -982,9 +417,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 128,
+                      "line": 127,
                       "col": 2,
-                      "byteIndex": 3917
+                      "byteIndex": 4037
                     }
                   },
                   {
@@ -1007,9 +442,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 132,
+                      "line": 131,
                       "col": 2,
-                      "byteIndex": 4011
+                      "byteIndex": 4138
                     }
                   },
                   {
@@ -1032,9 +467,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 136,
+                      "line": 140,
                       "col": 2,
-                      "byteIndex": 4105
+                      "byteIndex": 4497
                     }
                   },
                   {
@@ -1057,9 +492,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 140,
+                      "line": 144,
                       "col": 2,
-                      "byteIndex": 4199
+                      "byteIndex": 4598
                     }
                   },
                   {
@@ -1093,9 +528,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 144,
+                      "line": 148,
                       "col": 2,
-                      "byteIndex": 4296
+                      "byteIndex": 4702
                     }
                   },
                   {
@@ -1118,9 +553,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 157,
+                      "line": 161,
                       "col": 2,
-                      "byteIndex": 5008
+                      "byteIndex": 5414
                     }
                   },
                   {
@@ -1134,30 +569,39 @@
                         {
                           "kind": "identifier",
                           "name": "opts",
-                          "optional": true,
+                          "optional": false,
                           "tsType": {
-                            "repr": "ToJSONOptions",
-                            "kind": "typeRef",
+                            "kind": "typeLiteral",
                             "value": {
-                              "typeName": "ToJSONOptions",
-                              "resolution": {
-                                "kind": "import",
-                                "specifier": "./types.ts",
-                                "name": "ToJSONOptions"
-                              }
+                              "properties": [
+                                {
+                                  "name": "metadata",
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
+                                    "line": 171,
+                                    "col": 17,
+                                    "byteIndex": 5736
+                                  },
+                                  "tsType": {
+                                    "repr": "boolean",
+                                    "kind": "keyword",
+                                    "value": "boolean"
+                                  }
+                                }
+                              ]
                             }
                           }
                         }
                       ],
                       "returnType": {
-                        "repr": "FileJson",
+                        "repr": "FileInfo",
                         "kind": "typeRef",
                         "value": {
-                          "typeName": "FileJson",
+                          "typeName": "FileInfo",
                           "resolution": {
                             "kind": "import",
                             "specifier": "./types.ts",
-                            "name": "FileJson"
+                            "name": "FileInfo"
                           }
                         }
                       },
@@ -1165,9 +609,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 167,
+                      "line": 171,
                       "col": 2,
-                      "byteIndex": 5308
+                      "byteIndex": 5721
                     }
                   },
                   {
@@ -1204,9 +648,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 199,
+                      "line": 180,
                       "col": 2,
-                      "byteIndex": 6511
+                      "byteIndex": 5944
                     }
                   },
                   {
@@ -1243,9 +687,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 208,
+                      "line": 189,
                       "col": 2,
-                      "byteIndex": 6736
+                      "byteIndex": 6169
                     }
                   },
                   {
@@ -1282,9 +726,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 217,
+                      "line": 198,
                       "col": 2,
-                      "byteIndex": 7005
+                      "byteIndex": 6438
                     }
                   },
                   {
@@ -1304,9 +748,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 225,
+                      "line": 206,
                       "col": 2,
-                      "byteIndex": 7250
+                      "byteIndex": 6683
                     }
                   },
                   {
@@ -1336,41 +780,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 233,
+                      "line": 214,
                       "col": 2,
-                      "byteIndex": 7495
-                    }
-                  },
-                  {
-                    "jsDoc": {
-                      "doc": "The video/media duration in seconds, when available in the metadata."
-                    },
-                    "name": "duration",
-                    "kind": "getter",
-                    "functionDef": {
-                      "params": [],
-                      "returnType": {
-                        "kind": "union",
-                        "value": [
-                          {
-                            "repr": "number",
-                            "kind": "keyword",
-                            "value": "number"
-                          },
-                          {
-                            "repr": "undefined",
-                            "kind": "keyword",
-                            "value": "undefined"
-                          }
-                        ]
-                      },
-                      "hasBody": true
-                    },
-                    "location": {
-                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 240,
-                      "col": 2,
-                      "byteIndex": 7667
+                      "byteIndex": 6928
                     }
                   },
                   {
@@ -1408,9 +820,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 251,
+                      "line": 225,
                       "col": 2,
-                      "byteIndex": 8017
+                      "byteIndex": 7288
                     }
                   },
                   {
@@ -1448,9 +860,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 258,
+                      "line": 232,
                       "col": 2,
-                      "byteIndex": 8257
+                      "byteIndex": 7528
                     }
                   },
                   {
@@ -1488,9 +900,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 266,
+                      "line": 240,
                       "col": 2,
-                      "byteIndex": 8494
+                      "byteIndex": 7765
                     }
                   },
                   {
@@ -1528,9 +940,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 273,
+                      "line": 247,
                       "col": 2,
-                      "byteIndex": 8696
+                      "byteIndex": 7967
                     }
                   },
                   {
@@ -1561,9 +973,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 282,
+                      "line": 256,
                       "col": 2,
-                      "byteIndex": 9104
+                      "byteIndex": 8375
                     }
                   },
                   {
@@ -1580,9 +992,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 293,
+                      "line": 267,
                       "col": 2,
-                      "byteIndex": 9530
+                      "byteIndex": 8801
                     }
                   },
                   {
@@ -1615,9 +1027,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 297,
+                      "line": 271,
                       "col": 2,
-                      "byteIndex": 9651
+                      "byteIndex": 8922
                     }
                   },
                   {
@@ -1670,9 +1082,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 314,
+                      "line": 288,
                       "col": 2,
-                      "byteIndex": 10300
+                      "byteIndex": 9571
                     }
                   },
                   {
@@ -1695,9 +1107,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 337,
+                      "line": 311,
                       "col": 2,
-                      "byteIndex": 11297
+                      "byteIndex": 10568
                     }
                   },
                   {
@@ -1727,9 +1139,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 351,
+                      "line": 325,
                       "col": 2,
-                      "byteIndex": 11800
+                      "byteIndex": 11071
                     }
                   },
                   {
@@ -1780,9 +1192,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 366,
+                      "line": 340,
                       "col": 2,
-                      "byteIndex": 12305
+                      "byteIndex": 11576
                     }
                   },
                   {
@@ -1812,9 +1224,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 381,
+                      "line": 355,
                       "col": 2,
-                      "byteIndex": 12720
+                      "byteIndex": 11991
                     }
                   }
                 ]
@@ -2042,12 +1454,33 @@
                         }
                       },
                       {
-                        "name": "image",
+                        "name": "gps",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
                           "line": 42,
                           "col": 2,
                           "byteIndex": 991
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "Gps.Location",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "Gps.Location",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "./gps.ts"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "image",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
+                          "line": 43,
+                          "col": 2,
+                          "byteIndex": 1013
                         },
                         "optional": true,
                         "tsType": {
@@ -2066,9 +1499,9 @@
                         "name": "video",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 43,
+                          "line": 44,
                           "col": 2,
-                          "byteIndex": 1015
+                          "byteIndex": 1037
                         },
                         "optional": true,
                         "tsType": {
@@ -2087,9 +1520,9 @@
                         "name": "audio",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 44,
+                          "line": 45,
                           "col": 2,
-                          "byteIndex": 1039
+                          "byteIndex": 1061
                         },
                         "optional": true,
                         "tsType": {
@@ -2108,9 +1541,9 @@
                         "name": "metadata",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 45,
+                          "line": 46,
                           "col": 2,
-                          "byteIndex": 1063
+                          "byteIndex": 1085
                         },
                         "optional": true,
                         "tsType": {
@@ -4360,6 +3793,3190 @@
           ]
         },
         {
+          "name": "Def",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/mod.ts",
+                "line": 0,
+                "col": 7,
+                "byteIndex": 7
+              },
+              "declarationKind": "export",
+              "kind": "namespace",
+              "def": {
+                "elements": [
+                  {
+                    "name": "JsonValue",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 13,
+                          "col": 0,
+                          "byteIndex": 611
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "A JSON-safe value (no Date, no undefined, etc.)."
+                        },
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              },
+                              {
+                                "repr": "number",
+                                "kind": "keyword",
+                                "value": "number"
+                              },
+                              {
+                                "repr": "boolean",
+                                "kind": "keyword",
+                                "value": "boolean"
+                              },
+                              {
+                                "repr": "null",
+                                "kind": "keyword",
+                                "value": "null"
+                              },
+                              {
+                                "kind": "array",
+                                "value": {
+                                  "repr": "JsonValue",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "JsonValue",
+                                    "resolution": {
+                                      "kind": "local"
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "kind": "typeLiteral",
+                                "value": {
+                                  "indexSignatures": [
+                                    {
+                                      "params": [
+                                        {
+                                          "kind": "identifier",
+                                          "name": "key",
+                                          "optional": false,
+                                          "tsType": {
+                                            "repr": "string",
+                                            "kind": "keyword",
+                                            "value": "string"
+                                          }
+                                        }
+                                      ],
+                                      "tsType": {
+                                        "repr": "JsonValue",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "JsonValue",
+                                          "resolution": {
+                                            "kind": "local"
+                                          }
+                                        }
+                                      },
+                                      "location": {
+                                        "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                        "line": 13,
+                                        "col": 75,
+                                        "byteIndex": 686
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "InfoDef",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 22,
+                          "col": 0,
+                          "byteIndex": 1012
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "A single property definition in a section const.\n\n`value` is the primary extractor; `json` is the JSON-serializable variant\n(e.g. DateTime → ISO string). `title` overrides the auto-generated display\nlabel; `asTitle` formats the value for display (defaults to `String(v)`)."
+                        },
+                        "kind": "interface",
+                        "def": {
+                          "properties": [
+                            {
+                              "name": "value",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 23,
+                                "col": 2,
+                                "byteIndex": 1061
+                              },
+                              "tsType": {
+                                "kind": "fnOrConstructor",
+                                "value": {
+                                  "constructor": false,
+                                  "tsType": {
+                                    "kind": "union",
+                                    "value": [
+                                      {
+                                        "repr": "T",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "T",
+                                          "resolution": {
+                                            "kind": "typeParam",
+                                            "declaringName": "InfoDef",
+                                            "declaringKind": "interface"
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "repr": "undefined",
+                                        "kind": "keyword",
+                                        "value": "undefined"
+                                      }
+                                    ]
+                                  },
+                                  "params": [
+                                    {
+                                      "kind": "identifier",
+                                      "name": "fs",
+                                      "optional": false,
+                                      "tsType": {
+                                        "repr": "FS.File",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "FS.File",
+                                          "resolution": {
+                                            "kind": "import",
+                                            "specifier": "@epdoc/fs/fs"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "kind": "identifier",
+                                      "name": "meta",
+                                      "optional": false,
+                                      "tsType": {
+                                        "repr": "Metadata",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "Metadata",
+                                          "resolution": {
+                                            "kind": "import",
+                                            "specifier": "./metadata.ts",
+                                            "name": "Metadata"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "name": "json",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 24,
+                                "col": 2,
+                                "byteIndex": 1118
+                              },
+                              "optional": true,
+                              "tsType": {
+                                "kind": "fnOrConstructor",
+                                "value": {
+                                  "constructor": false,
+                                  "tsType": {
+                                    "kind": "union",
+                                    "value": [
+                                      {
+                                        "repr": "JsonValue",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "JsonValue",
+                                          "resolution": {
+                                            "kind": "local"
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "repr": "undefined",
+                                        "kind": "keyword",
+                                        "value": "undefined"
+                                      }
+                                    ]
+                                  },
+                                  "params": [
+                                    {
+                                      "kind": "identifier",
+                                      "name": "fs",
+                                      "optional": false,
+                                      "tsType": {
+                                        "repr": "FS.File",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "FS.File",
+                                          "resolution": {
+                                            "kind": "import",
+                                            "specifier": "@epdoc/fs/fs"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "kind": "identifier",
+                                      "name": "meta",
+                                      "optional": false,
+                                      "tsType": {
+                                        "repr": "Metadata",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "Metadata",
+                                          "resolution": {
+                                            "kind": "import",
+                                            "specifier": "./metadata.ts",
+                                            "name": "Metadata"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "name": "format",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 25,
+                                "col": 2,
+                                "byteIndex": 1183
+                              },
+                              "optional": true,
+                              "tsType": {
+                                "kind": "fnOrConstructor",
+                                "value": {
+                                  "constructor": false,
+                                  "tsType": {
+                                    "kind": "union",
+                                    "value": [
+                                      {
+                                        "repr": "F",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "F",
+                                          "resolution": {
+                                            "kind": "typeParam",
+                                            "declaringName": "InfoDef",
+                                            "declaringKind": "interface"
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "repr": "undefined",
+                                        "kind": "keyword",
+                                        "value": "undefined"
+                                      }
+                                    ]
+                                  },
+                                  "params": [
+                                    {
+                                      "kind": "identifier",
+                                      "name": "fs",
+                                      "optional": false,
+                                      "tsType": {
+                                        "repr": "FS.File",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "FS.File",
+                                          "resolution": {
+                                            "kind": "import",
+                                            "specifier": "@epdoc/fs/fs"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "kind": "identifier",
+                                      "name": "meta",
+                                      "optional": false,
+                                      "tsType": {
+                                        "repr": "Metadata",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "Metadata",
+                                          "resolution": {
+                                            "kind": "import",
+                                            "specifier": "./metadata.ts",
+                                            "name": "Metadata"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "name": "title",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 26,
+                                "col": 2,
+                                "byteIndex": 1242
+                              },
+                              "optional": true,
+                              "tsType": {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              }
+                            },
+                            {
+                              "name": "asTitle",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 27,
+                                "col": 2,
+                                "byteIndex": 1260
+                              },
+                              "optional": true,
+                              "tsType": {
+                                "kind": "fnOrConstructor",
+                                "value": {
+                                  "constructor": false,
+                                  "tsType": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  },
+                                  "params": [
+                                    {
+                                      "kind": "identifier",
+                                      "name": "value",
+                                      "optional": false,
+                                      "tsType": {
+                                        "repr": "unknown",
+                                        "kind": "keyword",
+                                        "value": "unknown"
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          ],
+                          "typeParams": [
+                            {
+                              "name": "T",
+                              "default": {
+                                "repr": "unknown",
+                                "kind": "keyword",
+                                "value": "unknown"
+                              }
+                            },
+                            {
+                              "name": "F",
+                              "default": {
+                                "repr": "T",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "T",
+                                  "resolution": {
+                                    "kind": "typeParam",
+                                    "declaringName": "InfoDef",
+                                    "declaringKind": "interface"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "InfoSection",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 31,
+                          "col": 0,
+                          "byteIndex": 1346
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "A section is a name→InfoDef record."
+                        },
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "repr": "Record",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeParams": [
+                                {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                },
+                                {
+                                  "repr": "InfoDef",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "InfoDef",
+                                    "resolution": {
+                                      "kind": "local"
+                                    }
+                                  }
+                                }
+                              ],
+                              "typeName": "Record"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "InfoResult",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 37,
+                          "col": 0,
+                          "byteIndex": 1589
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "The result object type for a section: all keys optional (undefined dropped)."
+                        },
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "mapped",
+                            "value": {
+                              "typeParam": {
+                                "name": "K",
+                                "constraint": {
+                                  "kind": "typeOperator",
+                                  "value": {
+                                    "operator": "keyof",
+                                    "tsType": {
+                                      "repr": "S",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "S",
+                                        "resolution": {
+                                          "kind": "typeParam",
+                                          "declaringName": "InfoResult",
+                                          "declaringKind": "typeAlias"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "optional": true,
+                              "tsType": {
+                                "repr": "DefValue",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "kind": "indexedAccess",
+                                      "value": {
+                                        "objType": {
+                                          "repr": "S",
+                                          "kind": "typeRef",
+                                          "value": {
+                                            "typeName": "S",
+                                            "resolution": {
+                                              "kind": "typeParam",
+                                              "declaringName": "InfoResult",
+                                              "declaringKind": "typeAlias"
+                                            }
+                                          }
+                                        },
+                                        "indexType": {
+                                          "repr": "K",
+                                          "kind": "typeRef",
+                                          "value": {
+                                            "typeName": "K",
+                                            "resolution": {
+                                              "kind": "typeParam"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "typeName": "DefValue",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "typeParams": [
+                            {
+                              "name": "S",
+                              "constraint": {
+                                "repr": "InfoSection",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "InfoSection",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "readTag",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 44,
+                          "col": 0,
+                          "byteIndex": 1892
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Factory: read a raw EXIF tag value from the metadata object.\nCovers the task's \"1b: simpler case — just take a named property from metadata\"\nand \"1c: take focalLength and get metadata.FocalLength\"."
+                        },
+                        "kind": "function",
+                        "def": {
+                          "params": [
+                            {
+                              "kind": "identifier",
+                              "name": "tag",
+                              "optional": false,
+                              "tsType": {
+                                "repr": "K",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "K",
+                                  "resolution": {
+                                    "kind": "typeParam",
+                                    "declaringName": "readTag",
+                                    "declaringKind": "function"
+                                  }
+                                }
+                              }
+                            }
+                          ],
+                          "returnType": {
+                            "kind": "fnOrConstructor",
+                            "value": {
+                              "constructor": false,
+                              "tsType": {
+                                "kind": "union",
+                                "value": [
+                                  {
+                                    "kind": "indexedAccess",
+                                    "value": {
+                                      "objType": {
+                                        "repr": "Metadata",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "Metadata",
+                                          "resolution": {
+                                            "kind": "import",
+                                            "specifier": "./metadata.ts",
+                                            "name": "Metadata"
+                                          }
+                                        }
+                                      },
+                                      "indexType": {
+                                        "repr": "K",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "K",
+                                          "resolution": {
+                                            "kind": "typeParam",
+                                            "declaringName": "readTag",
+                                            "declaringKind": "function"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "repr": "undefined",
+                                    "kind": "keyword",
+                                    "value": "undefined"
+                                  }
+                                ]
+                              },
+                              "params": [
+                                {
+                                  "kind": "identifier",
+                                  "name": "fs",
+                                  "optional": false,
+                                  "tsType": {
+                                    "repr": "FS.File",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "FS.File",
+                                      "resolution": {
+                                        "kind": "import",
+                                        "specifier": "@epdoc/fs/fs"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "kind": "identifier",
+                                  "name": "meta",
+                                  "optional": false,
+                                  "tsType": {
+                                    "repr": "Metadata",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "Metadata",
+                                      "resolution": {
+                                        "kind": "import",
+                                        "specifier": "./metadata.ts",
+                                        "name": "Metadata"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          },
+                          "hasBody": true,
+                          "typeParams": [
+                            {
+                              "name": "K",
+                              "constraint": {
+                                "kind": "typeOperator",
+                                "value": {
+                                  "operator": "keyof",
+                                  "tsType": {
+                                    "repr": "Metadata",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "Metadata",
+                                      "resolution": {
+                                        "kind": "import",
+                                        "specifier": "./metadata.ts",
+                                        "name": "Metadata"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "collect",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 54,
+                          "col": 0,
+                          "byteIndex": 2350
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Enumerate a section's defs and collect property values into a result object.\nKeys are visited in declaration order. Properties whose value is `undefined`\nare omitted (per task 1e). In `json` mode, each def's `json` extractor is\nused when present; otherwise `value` is used as a fallback."
+                        },
+                        "kind": "function",
+                        "def": {
+                          "params": [
+                            {
+                              "kind": "identifier",
+                              "name": "section",
+                              "optional": false,
+                              "tsType": {
+                                "repr": "S",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "S",
+                                  "resolution": {
+                                    "kind": "typeParam",
+                                    "declaringName": "collect",
+                                    "declaringKind": "function"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "kind": "identifier",
+                              "name": "fs",
+                              "optional": false,
+                              "tsType": {
+                                "repr": "FS.File",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "FS.File",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "@epdoc/fs/fs"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "kind": "identifier",
+                              "name": "meta",
+                              "optional": false,
+                              "tsType": {
+                                "repr": "Metadata",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "Metadata",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "./metadata.ts",
+                                    "name": "Metadata"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "kind": "assign",
+                              "left": {
+                                "kind": "identifier",
+                                "name": "mode",
+                                "optional": false,
+                                "tsType": {
+                                  "kind": "union",
+                                  "value": [
+                                    {
+                                      "repr": "value",
+                                      "kind": "literal",
+                                      "value": {
+                                        "kind": "string",
+                                        "string": "value"
+                                      }
+                                    },
+                                    {
+                                      "repr": "json",
+                                      "kind": "literal",
+                                      "value": {
+                                        "kind": "string",
+                                        "string": "json"
+                                      }
+                                    }
+                                  ]
+                                }
+                              },
+                              "right": "value"
+                            }
+                          ],
+                          "returnType": {
+                            "repr": "InfoResult",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeParams": [
+                                {
+                                  "repr": "S",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "S",
+                                    "resolution": {
+                                      "kind": "typeParam",
+                                      "declaringName": "collect",
+                                      "declaringKind": "function"
+                                    }
+                                  }
+                                }
+                              ],
+                              "typeName": "InfoResult",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          },
+                          "hasBody": true,
+                          "typeParams": [
+                            {
+                              "name": "S",
+                              "constraint": {
+                                "repr": "InfoSection",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "InfoSection",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "titleCase",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 74,
+                          "col": 0,
+                          "byteIndex": 3016
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Display label for a key. Defaults to a title-cased version of the camelCase\nkey (e.g. `createdAt` → `Created At`). Override via the `title` field on\nthe InfoDef."
+                        },
+                        "kind": "function",
+                        "def": {
+                          "params": [
+                            {
+                              "kind": "identifier",
+                              "name": "key",
+                              "optional": false,
+                              "tsType": {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              }
+                            }
+                          ],
+                          "returnType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          },
+                          "hasBody": true
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "FileDef",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 85,
+                          "col": 0,
+                          "byteIndex": 3398
+                        },
+                        "declarationKind": "export",
+                        "kind": "interface",
+                        "def": {
+                          "extends": [
+                            {
+                              "repr": "InfoSection",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "InfoSection",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            }
+                          ],
+                          "properties": [
+                            {
+                              "name": "path",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 86,
+                                "col": 2,
+                                "byteIndex": 3447
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "FS.FilePath",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "FS.FilePath",
+                                        "resolution": {
+                                          "kind": "import",
+                                          "specifier": "@epdoc/fs/fs"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "filename",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 87,
+                                "col": 2,
+                                "byteIndex": 3477
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "string",
+                                      "kind": "keyword",
+                                      "value": "string"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "ext",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 88,
+                                "col": 2,
+                                "byteIndex": 3506
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "string",
+                                      "kind": "keyword",
+                                      "value": "string"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "createdAt",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 89,
+                                "col": 2,
+                                "byteIndex": 3530
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "DateTime",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "DateTime",
+                                        "resolution": {
+                                          "kind": "import",
+                                          "specifier": "@epdoc/datetime",
+                                          "name": "DateTime"
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "repr": "ISODateString",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "ISODateString",
+                                        "resolution": {
+                                          "kind": "import",
+                                          "specifier": "./metadata.ts",
+                                          "name": "ISODateString"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "modifiedAt",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 90,
+                                "col": 2,
+                                "byteIndex": 3577
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "DateTime",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "DateTime",
+                                        "resolution": {
+                                          "kind": "import",
+                                          "specifier": "@epdoc/datetime",
+                                          "name": "DateTime"
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "repr": "ISODateString",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "ISODateString",
+                                        "resolution": {
+                                          "kind": "import",
+                                          "specifier": "./metadata.ts",
+                                          "name": "ISODateString"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "size",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 91,
+                                "col": 2,
+                                "byteIndex": 3625
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "number",
+                                      "kind": "keyword",
+                                      "value": "number"
+                                    },
+                                    {
+                                      "repr": "string",
+                                      "kind": "keyword",
+                                      "value": "string"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "type",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 92,
+                                "col": 2,
+                                "byteIndex": 3658
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "string",
+                                      "kind": "keyword",
+                                      "value": "string"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "mimeType",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 93,
+                                "col": 2,
+                                "byteIndex": 3683
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "string",
+                                      "kind": "keyword",
+                                      "value": "string"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "fileDef",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 99,
+                          "col": 13,
+                          "byteIndex": 3815
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Filesystem-level information from {@link @epdoc/fs!FS.File} stats (not EXIF)."
+                        },
+                        "kind": "variable",
+                        "def": {
+                          "tsType": {
+                            "repr": "FileDef",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "FileDef",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          },
+                          "kind": "const"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "File",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 117,
+                          "col": 0,
+                          "byteIndex": 4613
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "tags": [
+                            {
+                              "kind": "see",
+                              "doc": "{@link fileDef}"
+                            }
+                          ]
+                        },
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "repr": "InfoResult",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeParams": [
+                                {
+                                  "repr": "fileDef",
+                                  "kind": "typeQuery",
+                                  "value": "fileDef"
+                                }
+                              ],
+                              "typeName": "InfoResult",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "ImageDef",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 119,
+                          "col": 0,
+                          "byteIndex": 4661
+                        },
+                        "declarationKind": "export",
+                        "kind": "interface",
+                        "def": {
+                          "extends": [
+                            {
+                              "repr": "InfoSection",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "InfoSection",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            }
+                          ],
+                          "properties": [
+                            {
+                              "name": "width",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 120,
+                                "col": 2,
+                                "byteIndex": 4711
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "number",
+                                      "kind": "keyword",
+                                      "value": "number"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "height",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 121,
+                                "col": 2,
+                                "byteIndex": 4737
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "number",
+                                      "kind": "keyword",
+                                      "value": "number"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "fileSize",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 122,
+                                "col": 2,
+                                "byteIndex": 4764
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "kind": "union",
+                                      "value": [
+                                        {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        },
+                                        {
+                                          "repr": "number",
+                                          "kind": "keyword",
+                                          "value": "number"
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "encoding",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 123,
+                                "col": 2,
+                                "byteIndex": 4802
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "string",
+                                      "kind": "keyword",
+                                      "value": "string"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "colorSpace",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 125,
+                                "col": 2,
+                                "byteIndex": 4863
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "string",
+                                      "kind": "keyword",
+                                      "value": "string"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "fNumber",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 126,
+                                "col": 2,
+                                "byteIndex": 4894
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "number",
+                                      "kind": "keyword",
+                                      "value": "number"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "exposureTime",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 127,
+                                "col": 2,
+                                "byteIndex": 4922
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "number",
+                                      "kind": "keyword",
+                                      "value": "number"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "iso",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 128,
+                                "col": 2,
+                                "byteIndex": 4955
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "number",
+                                      "kind": "keyword",
+                                      "value": "number"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "focalLength",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 129,
+                                "col": 2,
+                                "byteIndex": 4979
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "number",
+                                      "kind": "keyword",
+                                      "value": "number"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "focalLength35mm",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 130,
+                                "col": 2,
+                                "byteIndex": 5011
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "number",
+                                      "kind": "keyword",
+                                      "value": "number"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "subjectDistance",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 131,
+                                "col": 2,
+                                "byteIndex": 5047
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "number",
+                                      "kind": "keyword",
+                                      "value": "number"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "megapixels",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 132,
+                                "col": 2,
+                                "byteIndex": 5083
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "kind": "union",
+                                      "value": [
+                                        {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        },
+                                        {
+                                          "repr": "number",
+                                          "kind": "keyword",
+                                          "value": "number"
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "imageDef",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 135,
+                          "col": 13,
+                          "byteIndex": 5137
+                        },
+                        "declarationKind": "export",
+                        "kind": "variable",
+                        "def": {
+                          "tsType": {
+                            "repr": "ImageDef",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "ImageDef",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          },
+                          "kind": "const"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Image",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 159,
+                          "col": 0,
+                          "byteIndex": 6322
+                        },
+                        "declarationKind": "export",
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "repr": "InfoResult",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeParams": [
+                                {
+                                  "repr": "imageDef",
+                                  "kind": "typeQuery",
+                                  "value": "imageDef"
+                                }
+                              ],
+                              "typeName": "InfoResult",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "VideoResDef",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 161,
+                          "col": 0,
+                          "byteIndex": 6372
+                        },
+                        "declarationKind": "export",
+                        "kind": "interface",
+                        "def": {
+                          "extends": [
+                            {
+                              "repr": "InfoSection",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "InfoSection",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            }
+                          ],
+                          "properties": [
+                            {
+                              "name": "tag",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 162,
+                                "col": 2,
+                                "byteIndex": 6425
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "string",
+                                      "kind": "keyword",
+                                      "value": "string"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "isCropped",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 163,
+                                "col": 2,
+                                "byteIndex": 6449
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "boolean",
+                                      "kind": "keyword",
+                                      "value": "boolean"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "width",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 164,
+                                "col": 2,
+                                "byteIndex": 6480
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "Integer",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "Integer",
+                                        "resolution": {
+                                          "kind": "import",
+                                          "specifier": "@epdoc/type",
+                                          "name": "Integer"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "height",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 165,
+                                "col": 2,
+                                "byteIndex": 6507
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "Integer",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "Integer",
+                                        "resolution": {
+                                          "kind": "import",
+                                          "specifier": "@epdoc/type",
+                                          "name": "Integer"
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "VideoOtherDef",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 168,
+                          "col": 0,
+                          "byteIndex": 6536
+                        },
+                        "declarationKind": "export",
+                        "kind": "interface",
+                        "def": {
+                          "extends": [
+                            {
+                              "repr": "InfoSection",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "InfoSection",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            }
+                          ],
+                          "properties": [
+                            {
+                              "name": "duration",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 169,
+                                "col": 2,
+                                "byteIndex": 6591
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "number",
+                                      "kind": "keyword",
+                                      "value": "number"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "fileSize",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 170,
+                                "col": 2,
+                                "byteIndex": 6620
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "kind": "union",
+                                      "value": [
+                                        {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        },
+                                        {
+                                          "repr": "number",
+                                          "kind": "keyword",
+                                          "value": "number"
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "codec",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 171,
+                                "col": 2,
+                                "byteIndex": 6658
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "string",
+                                      "kind": "keyword",
+                                      "value": "string"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "framerate",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 172,
+                                "col": 2,
+                                "byteIndex": 6684
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "number",
+                                      "kind": "keyword",
+                                      "value": "number"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "bitDepth",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 173,
+                                "col": 2,
+                                "byteIndex": 6714
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "number",
+                                      "kind": "keyword",
+                                      "value": "number"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "colorRepresentation",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 174,
+                                "col": 2,
+                                "byteIndex": 6743
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "string",
+                                      "kind": "keyword",
+                                      "value": "string"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "pixelAspectRatio",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 175,
+                                "col": 2,
+                                "byteIndex": 6783
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "string",
+                                      "kind": "keyword",
+                                      "value": "string"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "rotation",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 176,
+                                "col": 2,
+                                "byteIndex": 6820
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "number",
+                                      "kind": "keyword",
+                                      "value": "number"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "avgBitrate",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 177,
+                                "col": 2,
+                                "byteIndex": 6849
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "number",
+                                      "kind": "keyword",
+                                      "value": "number"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "maxBitrate",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 178,
+                                "col": 2,
+                                "byteIndex": 6880
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "number",
+                                      "kind": "keyword",
+                                      "value": "number"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "megapixels",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 179,
+                                "col": 2,
+                                "byteIndex": 6911
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "kind": "union",
+                                      "value": [
+                                        {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        },
+                                        {
+                                          "repr": "number",
+                                          "kind": "keyword",
+                                          "value": "number"
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "VideoDef",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 182,
+                          "col": 0,
+                          "byteIndex": 6952
+                        },
+                        "declarationKind": "export",
+                        "kind": "interface",
+                        "def": {
+                          "extends": [
+                            {
+                              "repr": "InfoSection",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "InfoSection",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            },
+                            {
+                              "repr": "VideoResDef",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "VideoResDef",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            },
+                            {
+                              "repr": "VideoOtherDef",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "VideoOtherDef",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "videoResDef",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 199,
+                          "col": 13,
+                          "byteIndex": 7602
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Dummy entry. We use Normalize.videoResolution instead, when obtaining these properties"
+                        },
+                        "kind": "variable",
+                        "def": {
+                          "tsType": {
+                            "repr": "VideoResDef",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "VideoResDef",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          },
+                          "kind": "const"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "videoOtherDef",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 210,
+                          "col": 13,
+                          "byteIndex": 8078
+                        },
+                        "declarationKind": "export",
+                        "kind": "variable",
+                        "def": {
+                          "tsType": {
+                            "repr": "VideoOtherDef",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "VideoOtherDef",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          },
+                          "kind": "const"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "VideoRes",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 236,
+                          "col": 0,
+                          "byteIndex": 9845
+                        },
+                        "declarationKind": "export",
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "repr": "InfoResult",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeParams": [
+                                {
+                                  "repr": "videoResDef",
+                                  "kind": "typeQuery",
+                                  "value": "videoResDef"
+                                }
+                              ],
+                              "typeName": "InfoResult",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "VideoOther",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 237,
+                          "col": 0,
+                          "byteIndex": 9900
+                        },
+                        "declarationKind": "export",
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "repr": "InfoResult",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeParams": [
+                                {
+                                  "repr": "videoOtherDef",
+                                  "kind": "typeQuery",
+                                  "value": "videoOtherDef"
+                                }
+                              ],
+                              "typeName": "InfoResult",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Video",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 238,
+                          "col": 0,
+                          "byteIndex": 9959
+                        },
+                        "declarationKind": "export",
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "VideoRes",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "VideoRes",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "VideoOther",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "VideoOther",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "AudioDef",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 240,
+                          "col": 0,
+                          "byteIndex": 10003
+                        },
+                        "declarationKind": "export",
+                        "kind": "interface",
+                        "def": {
+                          "extends": [
+                            {
+                              "repr": "InfoSection",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "InfoSection",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            }
+                          ],
+                          "properties": [
+                            {
+                              "name": "format",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 241,
+                                "col": 2,
+                                "byteIndex": 10053
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "string",
+                                      "kind": "keyword",
+                                      "value": "string"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "channels",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 242,
+                                "col": 2,
+                                "byteIndex": 10080
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "number",
+                                      "kind": "keyword",
+                                      "value": "number"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "sampleRate",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 243,
+                                "col": 2,
+                                "byteIndex": 10109
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "number",
+                                      "kind": "keyword",
+                                      "value": "number"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "bitsPerSample",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 244,
+                                "col": 2,
+                                "byteIndex": 10140
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "number",
+                                      "kind": "keyword",
+                                      "value": "number"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "codec",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 245,
+                                "col": 2,
+                                "byteIndex": 10174
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "string",
+                                      "kind": "keyword",
+                                      "value": "string"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "language",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 246,
+                                "col": 2,
+                                "byteIndex": 10200
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "string",
+                                      "kind": "keyword",
+                                      "value": "string"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "audioDef",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 249,
+                          "col": 13,
+                          "byteIndex": 10243
+                        },
+                        "declarationKind": "export",
+                        "kind": "variable",
+                        "def": {
+                          "tsType": {
+                            "repr": "AudioDef",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "AudioDef",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          },
+                          "kind": "const"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Audio",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 261,
+                          "col": 0,
+                          "byteIndex": 10926
+                        },
+                        "declarationKind": "export",
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "repr": "InfoResult",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeParams": [
+                                {
+                                  "repr": "audioDef",
+                                  "kind": "typeQuery",
+                                  "value": "audioDef"
+                                }
+                              ],
+                              "typeName": "InfoResult",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "CameraDef",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 263,
+                          "col": 0,
+                          "byteIndex": 10976
+                        },
+                        "declarationKind": "export",
+                        "kind": "interface",
+                        "def": {
+                          "extends": [
+                            {
+                              "repr": "InfoSection",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "InfoSection",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            }
+                          ],
+                          "properties": [
+                            {
+                              "name": "name",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 264,
+                                "col": 2,
+                                "byteIndex": 11027
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "string",
+                                      "kind": "keyword",
+                                      "value": "string"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "make",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 265,
+                                "col": 2,
+                                "byteIndex": 11052
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "string",
+                                      "kind": "keyword",
+                                      "value": "string"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "model",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 266,
+                                "col": 2,
+                                "byteIndex": 11077
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "string",
+                                      "kind": "keyword",
+                                      "value": "string"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "lensMake",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 267,
+                                "col": 2,
+                                "byteIndex": 11103
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "string",
+                                      "kind": "keyword",
+                                      "value": "string"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "lensModel",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 268,
+                                "col": 2,
+                                "byteIndex": 11132
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "string",
+                                      "kind": "keyword",
+                                      "value": "string"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "serialNumber",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 269,
+                                "col": 2,
+                                "byteIndex": 11162
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "string",
+                                      "kind": "keyword",
+                                      "value": "string"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "makerNotes",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 270,
+                                "col": 2,
+                                "byteIndex": 11195
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "string",
+                                      "kind": "keyword",
+                                      "value": "string"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "name": "focalLength35mm",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 271,
+                                "col": 2,
+                                "byteIndex": 11226
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "number",
+                                      "kind": "keyword",
+                                      "value": "number"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "cameraDef",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 274,
+                          "col": 13,
+                          "byteIndex": 11276
+                        },
+                        "declarationKind": "export",
+                        "kind": "variable",
+                        "def": {
+                          "tsType": {
+                            "repr": "CameraDef",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "CameraDef",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          },
+                          "kind": "const"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Camera",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 287,
+                          "col": 0,
+                          "byteIndex": 11814
+                        },
+                        "declarationKind": "export",
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "repr": "InfoResult",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeParams": [
+                                {
+                                  "repr": "cameraDef",
+                                  "kind": "typeQuery",
+                                  "value": "cameraDef"
+                                }
+                              ],
+                              "typeName": "InfoResult",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "AppDef",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 289,
+                          "col": 0,
+                          "byteIndex": 11866
+                        },
+                        "declarationKind": "export",
+                        "kind": "interface",
+                        "def": {
+                          "extends": [
+                            {
+                              "repr": "InfoSection",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "InfoSection",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            }
+                          ],
+                          "properties": [
+                            {
+                              "name": "application",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 290,
+                                "col": 2,
+                                "byteIndex": 11914
+                              },
+                              "tsType": {
+                                "repr": "InfoDef",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeParams": [
+                                    {
+                                      "repr": "string",
+                                      "kind": "keyword",
+                                      "value": "string"
+                                    }
+                                  ],
+                                  "typeName": "InfoDef",
+                                  "resolution": {
+                                    "kind": "local"
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "appDef",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 293,
+                          "col": 13,
+                          "byteIndex": 11960
+                        },
+                        "declarationKind": "export",
+                        "kind": "variable",
+                        "def": {
+                          "tsType": {
+                            "repr": "AppDef",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "AppDef",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          },
+                          "kind": "const"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "App",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 300,
+                          "col": 0,
+                          "byteIndex": 12145
+                        },
+                        "declarationKind": "export",
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "repr": "InfoResult",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeParams": [
+                                {
+                                  "repr": "appDef",
+                                  "kind": "typeQuery",
+                                  "value": "appDef"
+                                }
+                              ],
+                              "typeName": "InfoResult",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "FileId",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 302,
+                          "col": 0,
+                          "byteIndex": 12191
+                        },
+                        "declarationKind": "export",
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "typeLiteral",
+                            "value": {
+                              "properties": [
+                                {
+                                  "name": "documentId",
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                    "line": 303,
+                                    "col": 2,
+                                    "byteIndex": 12216
+                                  },
+                                  "optional": true,
+                                  "tsType": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                },
+                                {
+                                  "name": "instanceId",
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                    "line": 304,
+                                    "col": 2,
+                                    "byteIndex": 12239
+                                  },
+                                  "optional": true,
+                                  "tsType": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "InfoRow",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                          "line": 314,
+                          "col": 0,
+                          "byteIndex": 12582
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "A single row produced by {@link ExifInfo.list}, suitable for table rendering."
+                        },
+                        "kind": "interface",
+                        "def": {
+                          "properties": [
+                            {
+                              "name": "key",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 315,
+                                "col": 2,
+                                "byteIndex": 12611
+                              },
+                              "tsType": {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              }
+                            },
+                            {
+                              "name": "label",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 316,
+                                "col": 2,
+                                "byteIndex": 12626
+                              },
+                              "tsType": {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              }
+                            },
+                            {
+                              "name": "value",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 317,
+                                "col": 2,
+                                "byteIndex": 12643
+                              },
+                              "tsType": {
+                                "repr": "unknown",
+                                "kind": "keyword",
+                                "value": "unknown"
+                              }
+                            },
+                            {
+                              "name": "display",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
+                                "line": 318,
+                                "col": 2,
+                                "byteIndex": 12661
+                              },
+                              "tsType": {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "Date",
           "declarations": [
             {
@@ -4367,7 +6984,7 @@
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/mod.ts",
                 "line": 1,
                 "col": 7,
-                "byteIndex": 112
+                "byteIndex": 53
               },
               "declarationKind": "export",
               "kind": "namespace",
@@ -5303,7 +7920,7 @@
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/mod.ts",
                 "line": 3,
                 "col": 7,
-                "byteIndex": 181
+                "byteIndex": 122
               },
               "declarationKind": "export",
               "kind": "namespace",
@@ -5763,7 +8380,7 @@
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/mod.ts",
                 "line": 5,
                 "col": 7,
-                "byteIndex": 250
+                "byteIndex": 191
               },
               "declarationKind": "export",
               "kind": "namespace",

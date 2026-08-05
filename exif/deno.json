@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/exif",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "description": "Read and write EXIF metadata via the exiftool binary",
   "exports": {
     ".": "./src/mod.ts"

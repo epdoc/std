@@ -1,7 +1,7 @@
 import type { DateTime } from '@epdoc/datetime';
 import type * as FS from '@epdoc/fs/fs';
 import { _, type Integer } from '@epdoc/type';
-import type { Metadata } from './metadata.ts';
+import type { ISODateString, Metadata } from './metadata.ts';
 import * as Normalize from './normalize.ts';
 import * as Parse from './parse.ts';
 // import { FileInfo } from './types.ts';
@@ -20,9 +20,10 @@ export type JsonValue = string | number | boolean | null | JsonValue[] | { [key:
  * (e.g. DateTime → ISO string). `title` overrides the auto-generated display
  * label; `asTitle` formats the value for display (defaults to `String(v)`).
  */
-export interface InfoDef<T = unknown> {
+export interface InfoDef<T = unknown, F = T> {
   value: (fs: FS.File, meta: Metadata) => T | undefined;
   json?: (fs: FS.File, meta: Metadata) => JsonValue | undefined;
+  format?: (fs: FS.File, meta: Metadata) => F | undefined;
   title?: string;
   asTitle?: (value: unknown) => string;
 }
@@ -86,9 +87,9 @@ export interface FileDef extends InfoSection {
   path: InfoDef<FS.FilePath>;
   filename: InfoDef<string>;
   ext: InfoDef<string>;
-  createdAt: InfoDef<DateTime>;
-  modifiedAt: InfoDef<DateTime>;
-  size: InfoDef<number>;
+  createdAt: InfoDef<DateTime, ISODateString>;
+  modifiedAt: InfoDef<DateTime, ISODateString>;
+  size: InfoDef<number, string>;
   type: InfoDef<string>;
   mimeType: InfoDef<string>;
 }
@@ -96,7 +97,7 @@ export interface FileDef extends InfoSection {
 /**
  * Filesystem-level information from {@link @epdoc/fs!FS.File} stats (not EXIF).
  */
-export const File: FileDef = {
+export const fileDef: FileDef = {
   path: { value: (fs: FS.File): FS.FilePath => fs.path },
   filename: { value: (fs: FS.File): string => fs.filename },
   ext: { value: (fs: FS.File): string => fs.ext },
@@ -113,8 +114,8 @@ export const File: FileDef = {
   mimeType: { value: readTag('MIMEType') },
 };
 
-/** @see {@link File} */
-export type File = InfoResult<typeof File>;
+/** @see {@link fileDef} */
+export type File = InfoResult<typeof fileDef>;
 
 export interface ImageDef extends InfoSection {
   width: InfoDef<number>;
@@ -132,7 +133,7 @@ export interface ImageDef extends InfoSection {
   megapixels: InfoDef<string | number>;
 }
 
-export const Image: ImageDef = {
+export const imageDef: ImageDef = {
   width: { value: (_fs: FS.File, m: Metadata): number | undefined => asInt(m.ExifImageWidth) || asInt(m.ImageWidth) },
   height: {
     value: (_fs: FS.File, m: Metadata): number | undefined => asInt(m.ExifImageHeight) || asInt(m.ImageHeight),
@@ -156,13 +157,16 @@ export const Image: ImageDef = {
   megapixels: { value: readTag('Megapixels') },
 };
 
-export type Image = InfoResult<typeof Image>;
+export type Image = InfoResult<typeof imageDef>;
 
-export interface VideoDef extends InfoSection {
-  width: InfoDef<number>;
-  height: InfoDef<number>;
-  sourceWidth: InfoDef<number>;
-  sourceHeight: InfoDef<number>;
+export interface VideoResDef extends InfoSection {
+  tag: InfoDef<string>;
+  isCropped: InfoDef<boolean>;
+  width: InfoDef<Integer>;
+  height: InfoDef<Integer>;
+}
+
+export interface VideoOtherDef extends InfoSection {
   duration: InfoDef<number>;
   fileSize: InfoDef<string | number>;
   codec: InfoDef<string>;
@@ -176,15 +180,49 @@ export interface VideoDef extends InfoSection {
   megapixels: InfoDef<string | number>;
 }
 
-export const Video: VideoDef = {
-  width: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.ImageWidth) },
-  height: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.ImageHeight) },
-  exifWidth: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.ExifImageWidth) },
-  exifHeight: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.ExifImageHeight) },
-  sourceWidth: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.SourceImageWidth) },
-  sourceHeight: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.SourceImageHeight) },
+export interface VideoDef extends InfoSection, VideoResDef, VideoOtherDef {
+  // sourceWidth: InfoDef<number>;
+  // sourceHeight: InfoDef<number>;
+  // duration: InfoDef<number>;
+  // fileSize: InfoDef<string | number>;
+  // codec: InfoDef<string>;
+  // framerate: InfoDef<number>;
+  // bitDepth: InfoDef<number>;
+  // colorRepresentation: InfoDef<string>;
+  // pixelAspectRatio: InfoDef<string>;
+  // rotation: InfoDef<number>;
+  // avgBitrate: InfoDef<number>;
+  // maxBitrate: InfoDef<number>;
+  // megapixels: InfoDef<string | number>;
+}
+
+/** Dummy entry. We use Normalize.videoResolution instead, when obtaining these properties */
+export const videoResDef: VideoResDef = {
+  width: {
+    value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.ImageWidth) || asInt(m.SourceImageWidth),
+  },
+  height: {
+    value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.ImageHeight) || asInt(m.SourceImageHeight),
+  },
+  tag: { value: (_fs: FS.File, _m: Metadata): string | undefined => undefined },
+  isCropped: { value: (_fs: FS.File, _m: Metadata): boolean | undefined => undefined },
+};
+
+export const videoOtherDef: VideoOtherDef = {
+  // width: {
+  //   value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.ImageWidth) || asInt(m.SourceImageWidth),
+  // },
+  // height: {
+  //   value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.ImageHeight) || asInt(m.SourceImageHeight),
+  // },
+  // exifWidth: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.ExifImageWidth) },
+  // exifHeight: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.ExifImageHeight) },
+  // sourceWidth: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.SourceImageWidth) },
+  // sourceHeight: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.SourceImageHeight) },
   duration: { value: (_fs: FS.File, m: Metadata): number | undefined => Parse.duration(m.Duration) },
   fileSize: { value: readTag('FileSize') },
+  // tag: { value: (_fs: FS.File, m: Metadata): string | undefined => Normalize.videoResolution(m) },
+  // isCropped: { value: (_fs: FS.File, m: Metadata): boolean | undefined => Normalize.videoCropped(m) },
   codec: { value: (_fs: FS.File, m: Metadata): string | undefined => Normalize.videoCodec(m) },
   framerate: { value: readTag('VideoFrameRate') },
   bitDepth: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.BitDepth) },
@@ -196,7 +234,9 @@ export const Video: VideoDef = {
   megapixels: { value: readTag('Megapixels') },
 };
 
-export type Video = InfoResult<typeof Video>;
+export type VideoRes = InfoResult<typeof videoResDef>;
+export type VideoOther = InfoResult<typeof videoOtherDef>;
+export type Video = VideoRes | VideoOther;
 
 export interface AudioDef extends InfoSection {
   format: InfoDef<string>;
@@ -207,7 +247,7 @@ export interface AudioDef extends InfoSection {
   language: InfoDef<string>;
 }
 
-export const Audio: AudioDef = {
+export const audioDef: AudioDef = {
   format: { value: readTag('AudioFormat') },
   channels: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.AudioChannels) },
   sampleRate: { value: readTag('AudioSampleRate') },
@@ -219,7 +259,7 @@ export const Audio: AudioDef = {
 const asInt = (val: unknown): Integer | undefined => _.isDefined(val) ? _.asInt(val) : undefined;
 const _asFloat = (val: unknown): Integer | undefined => _.isDefined(val) ? _.asFloat(val) : undefined;
 
-export type Audio = InfoResult<typeof Audio>;
+export type Audio = InfoResult<typeof audioDef>;
 
 export interface CameraDef extends InfoSection {
   name: InfoDef<string>;
@@ -232,7 +272,7 @@ export interface CameraDef extends InfoSection {
   focalLength35mm: InfoDef<number>;
 }
 
-export const Camera: CameraDef = {
+export const cameraDef: CameraDef = {
   name: { value: (_fs: FS.File, m: Metadata): string | undefined => Normalize.cameraName(m), title: 'Camera' },
   make: { value: readTag('Make') },
   model: { value: readTag('Model') },
@@ -245,20 +285,20 @@ export const Camera: CameraDef = {
   },
 };
 
-export type Camera = InfoResult<typeof Camera>;
+export type Camera = InfoResult<typeof cameraDef>;
 
 export interface AppDef extends InfoSection {
   application: InfoDef<string>;
 }
 
-export const App: AppDef = {
+export const appDef: AppDef = {
   application: {
     value: (_fs: FS.File, m: Metadata): string | undefined => Normalize.application(m.Software || m.CreatorTool),
     title: 'Application',
   },
 };
 
-export type App = InfoResult<typeof App>;
+export type App = InfoResult<typeof appDef>;
 
 export type FileId = {
   documentId?: string;
@@ -287,47 +327,47 @@ export interface InfoRow {
  * // rows: [{ key: 'name', label: 'Camera', value: '...', display: '...' }, ...]
  * ```
  */
-export const ExifInfo: {
-  file: typeof File;
-  image: typeof Image;
-  video: typeof Video;
-  audio: typeof Audio;
-  camera: typeof Camera;
-  app: typeof App;
-  keys(section: InfoSection): string[];
-  labels(section: InfoSection): string[];
-  list(section: InfoSection, fs: FS.File, meta: Metadata, mode?: 'value' | 'json'): InfoRow[];
-} = {
-  file: File,
-  image: Image,
-  video: Video,
-  audio: Audio,
-  camera: Camera,
-  app: App,
+// export const ExifInfo: {
+//   file: File;
+//   image: Image;
+//   video: Video;
+//   audio: Audio;
+//   camera: Camera;
+//   app: App;
+//   keys(section: InfoSection): string[];
+//   labels(section: InfoSection): string[];
+//   list(section: InfoSection, fs: FS.File, meta: Metadata, mode?: 'value' | 'json'): InfoRow[];
+// } = {
+//   file: fileDef,
+//   image: imageDef,
+//   video: Video,
+//   audio: Audio,
+//   camera: cameraDef,
+//   app: App,
 
-  /** Return the declaration-order keys of a section. */
-  keys(section: InfoSection): string[] {
-    return Object.keys(section);
-  },
+//   /** Return the declaration-order keys of a section. */
+//   keys(section: InfoSection): string[] {
+//     return Object.keys(section);
+//   },
 
-  /** Return display labels for each key in a section (def.title ?? titleCase(key)). */
-  labels(section: InfoSection): string[] {
-    return this.keys(section).map((k) => section[k].title ?? titleCase(k));
-  },
+//   /** Return display labels for each key in a section (def.title ?? titleCase(key)). */
+//   labels(section: InfoSection): string[] {
+//     return this.keys(section).map((k) => section[k].title ?? titleCase(k));
+//   },
 
-  /**
-   * Produce an array of { key, label, value, display } rows for rendering
-   * (straight text or tables — per the task).
-   *
-   * @param mode - `'value'` (default) or `'json'` to use serialized values.
-   */
-  list(section: InfoSection, fs: FS.File, meta: Metadata, mode: 'value' | 'json' = 'value'): InfoRow[] {
-    return this.keys(section).map((key: string): InfoRow => {
-      const def = section[key];
-      const value = mode === 'json' && def.json ? def.json(fs, meta) : def.value(fs, meta);
-      const label = def.title ?? titleCase(key);
-      const display = value !== undefined ? (def.asTitle ? def.asTitle(value as never) : String(value)) : '';
-      return { key, label, value, display };
-    });
-  },
-} as const;
+//   /**
+//    * Produce an array of { key, label, value, display } rows for rendering
+//    * (straight text or tables — per the task).
+//    *
+//    * @param mode - `'value'` (default) or `'json'` to use serialized values.
+//    */
+//   list(section: InfoSection, fs: FS.File, meta: Metadata, mode: 'value' | 'json' = 'value'): InfoRow[] {
+//     return this.keys(section).map((key: string): InfoRow => {
+//       const def = section[key];
+//       const value = mode === 'json' && def.json ? def.json(fs, meta) : def.value(fs, meta);
+//       const label = def.title ?? titleCase(key);
+//       const display = value !== undefined ? (def.asTitle ? def.asTitle(value as never) : String(value)) : '';
+//       return { key, label, value, display };
+//     });
+//   },
+// } as const;

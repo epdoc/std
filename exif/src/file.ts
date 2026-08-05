@@ -3,20 +3,13 @@ import type { DateTime } from '@epdoc/datetime';
 import * as FS from '@epdoc/fs/fs';
 import { _ } from '@epdoc/type';
 import { assert } from '@std/assert';
-import type * as Schema from './collections.ts';
-import {
-  App as AppDef,
-  Audio as AudioDef,
-  Camera as CameraDef,
-  collect,
-  File as FileDef,
-  Image as ImageDef,
-  Video as VideoDef,
-} from './collections.ts';
+import * as Schema from './collections.ts';
+import { collect, fileDef as FileDef } from './collections.ts';
 import * as ExifDate from './date.ts';
 import * as Gps from './gps.ts';
 import type { Metadata } from './metadata.ts';
-import type { FileInfo, FileJson, IDryRun, ToJSONOptions } from './types.ts';
+import * as Normalize from './normalize.ts';
+import type { FileInfo, IDryRun } from './types.ts';
 
 export const EXIFTOOL_READ_FLAGS = ['-j', '-struct', '-api', 'QuickTimeUTC=1'];
 
@@ -114,32 +107,43 @@ export class File {
         if (Object.keys(video).length) result.video = video;
       }
       const audio = this.audio;
-      if (Object.keys(audio).length) result.audio = audio;
+      if (Object.keys(audio).length) {
+        if (Object.keys(audio).length !== 1 || audio.codec !== Normalize.CODEC_AUDIO_UNKNOWN) {
+          result.audio = audio;
+        }
+      }
     }
     if (opts.metadata) {
       result.metadata = this.metadata;
     }
+    const gps = this.gps;
+    if (gps && Object.keys(gps)) result.gps = gps;
     return result;
   }
 
   get file(): Schema.File {
-    return collect(FileDef, this.#fsFile, this.metadata);
+    return collect(Schema.fileDef, this.#fsFile, this.metadata);
   }
 
   get image(): Schema.Image {
-    return collect(ImageDef, this.#fsFile, this.metadata);
+    return collect(Schema.imageDef, this.#fsFile, this.metadata);
   }
 
   get video(): Schema.Video {
-    return collect(VideoDef, this.#fsFile, this.metadata);
+    const res: Schema.VideoRes | undefined = Normalize.videoResolution(this.metadata);
+    const other: Schema.VideoOther = collect(Schema.videoOtherDef, this.#fsFile, this.metadata);
+    if ((res && Object.keys(res).length) || (other && Object.keys(other).length)) {
+      return { ...res, ...other };
+    }
+    return {};
   }
 
   get audio(): Schema.Audio {
-    return collect(AudioDef, this.#fsFile, this.metadata);
+    return collect(Schema.audioDef, this.#fsFile, this.metadata);
   }
 
   get camera(): Schema.Camera {
-    return collect(CameraDef, this.#fsFile, this.metadata);
+    return collect(Schema.cameraDef, this.#fsFile, this.metadata);
   }
 
   set camera(value: Schema.Camera) {
@@ -156,7 +160,7 @@ export class File {
   }
 
   get app(): Schema.App {
-    return collect(AppDef, this.#fsFile, this.metadata);
+    return collect(Schema.appDef, this.#fsFile, this.metadata);
   }
 
   /**
@@ -165,31 +169,8 @@ export class File {
    * Raw exiftool metadata is excluded by default. Pass
    * `{ includeMetadata: true }` to include the raw `Metadata` object.
    */
-  toJSON(opts?: ToJSONOptions): FileJson {
-    const isVideo = this.#isVideo();
-    const json: FileJson = {
-      file: collect(FileDef, this.#fsFile, this.metadata, 'json') as Schema.File,
-      ...(isVideo ? {} : { image: collect(ImageDef, this.#fsFile, this.metadata, 'json') as Schema.Image }),
-      ...(isVideo
-        ? {
-          video: collect(VideoDef, this.#fsFile, this.metadata, 'json') as Schema.Video,
-          audio: collect(AudioDef, this.#fsFile, this.metadata, 'json') as Schema.Audio,
-        }
-        : {}),
-      camera: collect(CameraDef, this.#fsFile, this.metadata, 'json') as Schema.Camera,
-      app: collect(AppDef, this.#fsFile, this.metadata, 'json') as Schema.App,
-      createdAt: this.createdAt?.toISOString(),
-      digitizedAt: this.digitizedAt?.toISOString(),
-      modifiedAt: this.modifiedAt?.toISOString(),
-      hasTimezone: this.hasTimezone,
-      tzOffset: this.tzOffset,
-      gps: this.gps,
-      id: this.id,
-    };
-    if (opts?.includeMetadata) {
-      json.metadata = this.metadata;
-    }
-    return json;
+  toJSON(opts: { metadata: boolean }): FileInfo {
+    return this.info(opts);
   }
 
   /**
@@ -233,13 +214,6 @@ export class File {
    */
   get tzOffset(): string | undefined {
     return this.createdAt?.getTzString();
-  }
-
-  /**
-   * The video/media duration in seconds, when available in the metadata.
-   */
-  get duration(): number | undefined {
-    return this.video.duration;
   }
 
   // ============================================================================

@@ -40,6 +40,7 @@ export type FileInfo = {
   file: Schema.File;
   camera?: Schema.Camera;
   app?: Schema.App;
+  gps?: Gps.Location;
   image?: Schema.Image;
   video?: Schema.Video;
   audio?: Schema.Audio;

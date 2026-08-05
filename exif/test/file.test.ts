@@ -63,17 +63,17 @@ Deno.test('File.fromMetadata', async (t) => {
 
   await t.step('duration parses video duration strings', () => {
     const file = File.fromMetadata(meta({ Duration: '2.00 s' }));
-    assertEquals(file.duration, 2);
+    assertEquals(file.video.duration, 2);
   });
 
   await t.step('duration parses H:MM:SS strings', () => {
     const file = File.fromMetadata(meta({ Duration: '1:02:03' }));
-    assertEquals(file.duration, 3723);
+    assertEquals(file.video.duration, 3723);
   });
 
   await t.step('duration returns undefined when missing', () => {
     const file = File.fromMetadata(meta({}));
-    assertEquals(file.duration, undefined);
+    assertEquals(file.video.duration, undefined);
   });
 });
 

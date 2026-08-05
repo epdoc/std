@@ -1,4 +1,4 @@
-export { type App, type Audio, type Camera, ExifInfo, type FileId, type Video } from './collections.ts';
+export type * as Def from './collections.ts';
 export * as Date from './date.ts';
 export { File } from './file.ts';
 export * as Gps from './gps.ts';
