@@ -90,7 +90,7 @@ export class File {
   // Info section getters (def-driven SSoT)
   // ============================================================================
 
-  info(opts: { metadata: boolean }): FileInfo {
+  info(opts: { metadata: boolean } = { metadata: false }): FileInfo {
     const result: FileInfo = {
       file: collect(FileDef, this.#fsFile, this.metadata),
     };
