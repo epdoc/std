@@ -89,7 +89,7 @@ export interface FileDef extends InfoSection {
   ext: InfoDef<string>;
   createdAt: InfoDef<DateTime, ISODateString>;
   modifiedAt: InfoDef<DateTime, ISODateString>;
-  size: InfoDef<number, string>;
+  size: InfoDef<Integer>;
   type: InfoDef<string>;
   mimeType: InfoDef<string>;
 }
