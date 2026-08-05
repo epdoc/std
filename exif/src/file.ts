@@ -3,7 +3,7 @@ import type { DateTime } from '@epdoc/datetime';
 import * as FS from '@epdoc/fs/fs';
 import { _ } from '@epdoc/type';
 import { assert } from '@std/assert';
-import * as ExifDate from './date.ts';
+import type * as Schema from './collections.ts';
 import {
   App as AppDef,
   Audio as AudioDef,
@@ -12,10 +12,11 @@ import {
   File as FileDef,
   Image as ImageDef,
   Video as VideoDef,
-} from './exif-schema.ts';
-import type * as Schema from './exif-schema.ts';
+} from './collections.ts';
+import * as ExifDate from './date.ts';
 import * as Gps from './gps.ts';
-import type { FileJson, IDryRun, ToJSONOptions } from './types.ts';
+import type { Metadata } from './metadata.ts';
+import type { FileInfo, FileJson, IDryRun, ToJSONOptions } from './types.ts';
 
 export const EXIFTOOL_READ_FLAGS = ['-j', '-struct', '-api', 'QuickTimeUTC=1'];
 
@@ -29,7 +30,7 @@ export const EXIFTOOL_READ_FLAGS = ['-j', '-struct', '-api', 'QuickTimeUTC=1'];
  */
 export class File {
   #fsFile: FS.File;
-  #metadata?: Schema.Metadata;
+  #metadata?: Metadata;
   #dryRun: boolean;
   #dirty = false;
   #pending = new Map<string, string>();
@@ -47,7 +48,7 @@ export class File {
     return this.#fsFile.path;
   }
 
-  get metadata(): Schema.Metadata {
+  get metadata(): Metadata {
     assert(this.#metadata, `File ${this.path} has no metadata; call getMetadata() first`);
     return this.#metadata;
   }
@@ -62,7 +63,7 @@ export class File {
    * Dates are read in canonical EXIF form (`YYYY:MM:DD HH:MM:SS`) so that
    * missing timezones can be distinguished from explicit UTC offsets.
    */
-  async getMetadata(opts: { force?: boolean } = {}): Promise<Schema.Metadata | undefined> {
+  async getMetadata(opts: { force?: boolean } = {}): Promise<Metadata | undefined> {
     if (this.#metadata && !opts.force) return this.#metadata;
 
     const isFile = await this.#fsFile.isFile();
@@ -86,7 +87,7 @@ export class File {
     return this.#metadata;
   }
 
-  static fromMetadata(metadata: Schema.Metadata, opts?: IDryRun): File {
+  static fromMetadata(metadata: Metadata, opts?: IDryRun): File {
     const file = new File(metadata.SourceFile, opts);
     file.#metadata = metadata;
     return file;
@@ -96,27 +97,52 @@ export class File {
   // Info section getters (def-driven SSoT)
   // ============================================================================
 
-  get fileInfo(): Schema.File {
+  info(opts: { metadata: boolean }): FileInfo {
+    const result: FileInfo = {
+      file: collect(FileDef, this.#fsFile, this.metadata),
+    };
+    const camera = this.camera;
+    if (Object.keys(camera).length) result.camera = camera;
+    const app = this.app;
+    if (Object.keys(app).length) result.app = app;
+    if (result.file.type === 'image') {
+      const image = this.image;
+      if (Object.keys(image).length) result.image = image;
+    } else {
+      if (result.file.type === 'video') {
+        const video = this.video;
+        if (Object.keys(video).length) result.video = video;
+      }
+      const audio = this.audio;
+      if (Object.keys(audio).length) result.audio = audio;
+    }
+    if (opts.metadata) {
+      result.metadata = this.metadata;
+    }
+    return result;
+  }
+
+  get file(): Schema.File {
     return collect(FileDef, this.#fsFile, this.metadata);
   }
 
-  get imageInfo(): Schema.Image {
+  get image(): Schema.Image {
     return collect(ImageDef, this.#fsFile, this.metadata);
   }
 
-  get videoInfo(): Schema.Video {
+  get video(): Schema.Video {
     return collect(VideoDef, this.#fsFile, this.metadata);
   }
 
-  get audioInfo(): Schema.Audio {
+  get audio(): Schema.Audio {
     return collect(AudioDef, this.#fsFile, this.metadata);
   }
 
-  get cameraInfo(): Schema.Camera {
+  get camera(): Schema.Camera {
     return collect(CameraDef, this.#fsFile, this.metadata);
   }
 
-  set cameraInfo(value: Schema.Camera) {
+  set camera(value: Schema.Camera) {
     if (value.make !== undefined) this.#setTag('Make', value.make);
     if (value.model !== undefined) this.#setTag('Model', value.model);
     if (value.lensMake !== undefined) this.#setTag('LensMake', value.lensMake);
@@ -129,7 +155,7 @@ export class File {
     }
   }
 
-  get appInfo(): Schema.App {
+  get app(): Schema.App {
     return collect(AppDef, this.#fsFile, this.metadata);
   }
 
@@ -213,7 +239,7 @@ export class File {
    * The video/media duration in seconds, when available in the metadata.
    */
   get duration(): number | undefined {
-    return this.videoInfo.duration;
+    return this.video.duration;
   }
 
   // ============================================================================

@@ -1,7 +1,7 @@
 import type { FilePath } from '@epdoc/fs/fs';
 import build from './build/build-info.json' with { type: 'json' };
 import pkg from './deno.json' with { type: 'json' };
-import { Reader } from './src/mod.ts';
+import { type FileInfo, Reader } from './src/mod.ts';
 
 const version = pkg.version;
 const buildNumber = build.build.number;
@@ -48,10 +48,8 @@ const reader = new Reader();
 try {
   const results = await reader.read(files);
   const output = results.map((file) => {
-    const result: Record<string, unknown> = { ...file.toJSON() };
-    if (showMeta) {
-      result.metadata = file.metadata;
-    }
+    const result: FileInfo = file.info({ metadata: showMeta });
+
     return result;
   });
   console.log(JSON.stringify(output, null, 2));

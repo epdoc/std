@@ -1,37 +1,10 @@
 import type { DateTime } from '@epdoc/datetime';
 import type * as FS from '@epdoc/fs/fs';
-import type { Integer } from '@epdoc/type';
-import { _ } from '@epdoc/type';
-import { APP_NORMALIZE_RULES, CAMERA_MODEL_MAP } from './consts.ts';
-import {
-  parseBitrate,
-  parseDuration,
-  parseExposureTime,
-  parseFileSize,
-  parseFNumber,
-  parseFocalLength,
-  parseSubjectDistance,
-  toNumber,
-} from './utils.ts';
-
-/** EXIF date/time as emitted by exiftool (default format), e.g. "2026:07:31 18:00:00". */
-export type ExifDateTime = string;
-
-/**
- * A GPS coordinate as emitted by exiftool.
- * Default (`-j` without `-n`): a DMS string with the reference embedded,
- * e.g. `"51 deg 30' 26.00" N"`. With `-n`: a decimal number of degrees.
- */
-export type GpsCoordinate = number | string;
-
-/**
- * Latitude/longitude reference hemisphere. exiftool emits the long form by
- * default (`"North"`) and the short form with `-n` (`"N"`).
- */
-export type GpsLatitudeRef = 'North' | 'South' | 'N' | 'S';
-export type GpsLongitudeRef = 'East' | 'West' | 'E' | 'W';
-
-export type ISODateString = string; // e.g. "2024-01-01T12:00:00Z"
+import { _, type Integer } from '@epdoc/type';
+import type { Metadata } from './metadata.ts';
+import * as Normalize from './normalize.ts';
+import * as Parse from './parse.ts';
+// import { FileInfo } from './types.ts';
 
 // ============================================================================
 // SSoT infrastructure — InfoDef, factories, collect, derived types
@@ -106,145 +79,6 @@ export function titleCase(key: string): string {
 }
 
 // ============================================================================
-// Normalization helpers (moved from file.ts so defs can use them)
-// ============================================================================
-
-export function normalizeCameraName(meta: Metadata): string | undefined {
-  const make = meta.Make;
-  const model = meta.Model?.toUpperCase();
-  if (make && model && CAMERA_MODEL_MAP[make]?.[model]) {
-    return `${make} ${CAMERA_MODEL_MAP[make][model]}`;
-  }
-}
-
-export function normalizeApplication(software: string | undefined): string | undefined {
-  if (!software) return undefined;
-  for (const rule of APP_NORMALIZE_RULES) {
-    if (rule.pattern.test(software)) {
-      return rule.label;
-    }
-  }
-  return software;
-}
-
-// ============================================================================
-// Metadata — raw exiftool JSON for one file (unchanged interface)
-// ============================================================================
-
-/**
- * The JSON object exiftool emits for one file with `-j`.
- * Fields are the raw EXIF tag names as produced by exiftool.
- */
-export interface Metadata {
-  SourceFile: FS.FilePath;
-  ExifToolVersion: number;
-  FileName: string;
-  Directory: string;
-  MIMEType: string;
-
-  ImageWidth?: Integer;
-  ImageHeight?: Integer;
-  ExifImageWidth?: Integer;
-  ExifImageHeight?: Integer;
-  /** e.g. "320x240" */
-  ImageSize?: string;
-  Megapixels?: number;
-
-  FileType: string;
-  FileTypeExtension: string;
-  Format?: string;
-  EncodingProcess?: string;
-  ColorSpace?: string;
-  BitsPerSample?: Integer;
-  ColorComponents?: Integer;
-
-  Make?: string;
-  Model?: string;
-  LensMake?: string;
-  LensModel?: string;
-  FocalLengthIn35mmFormat?: string;
-  Software?: string;
-  CreatorTool?: string;
-  SerialNumber?: string;
-
-  /**
-   * Video duration. Default format is a string with units, e.g. `"2.00 s"`,
-   * or `"H:MM:SS"`; with `-n` it is a plain number of seconds.
-   * See {@link parseExifDuration}.
-   */
-  Duration?: string | number;
-
-  FileSize?: string | number;
-  FNumber?: number;
-  Aperture?: string | number;
-  ExposureTime?: string | number;
-  ISO?: number;
-  FocalLength?: string | number;
-  SubjectDistance?: string | number;
-
-  DateTimeOriginal?: ExifDateTime;
-  CreateDate?: ExifDateTime;
-  DateCreated?: ExifDateTime;
-  ModifyDate?: ExifDateTime;
-  FileModifyDate?: ExifDateTime;
-  FileAccessDate?: ExifDateTime;
-  FileInodeChangeDate?: ExifDateTime;
-
-  SubSecDateTimeOriginal?: string;
-  SubSecCreateDate?: string;
-  SubSecModifyDate?: string;
-
-  SubSecTimeOriginal?: string | Integer;
-  SubSecTimeDigitized?: string | Integer;
-  SubSecTime?: string | Integer;
-
-  OffsetTime?: string;
-  OffsetTimeOriginal?: string;
-  OffsetTimeDigitized?: string;
-
-  MakerNote?: string;
-  HdrPlusMakernote?: string;
-
-  DocumentID?: string;
-  InstanceID?: string;
-
-  VideoFrameRate?: number;
-  CompressorID?: string;
-  CompressorName?: string;
-  BitDepth?: Integer;
-  ColorRepresentation?: string;
-  PixelAspectRatio?: string;
-  MatrixStructure?: string;
-  Rotation?: number;
-  AvgBitrate?: string | number;
-  MaxBitrate?: number;
-  AverageBitrate?: number;
-  SourceImageWidth?: Integer;
-  SourceImageHeight?: Integer;
-  GraphicsMode?: string;
-  OpColor?: string;
-
-  AudioFormat?: string;
-  AudioChannels?: Integer;
-  AudioBitsPerSample?: Integer;
-  AudioSampleRate?: number;
-  MediaLanguageCode?: string;
-  TrackVolume?: string;
-  Balance?: number;
-  PreferredVolume?: string;
-  HandlerDescription?: string;
-
-  GPSLatitude?: GpsCoordinate;
-  GPSLongitude?: GpsCoordinate;
-  /** Altitude in meters; string form includes units, e.g. "12.5 m". */
-  GPSAltitude?: number | string;
-  GPSLatitudeRef?: GpsLatitudeRef;
-  GPSLongitudeRef?: GpsLongitudeRef;
-  /** 0 = above sea level, 1 = below. */
-  GPSAltitudeRef?: Integer;
-}
-
-// ============================================================================
 // Section consts — single source of truth for each info category
 // ============================================================================
 
@@ -285,8 +119,9 @@ export type File = InfoResult<typeof File>;
 export interface ImageDef extends InfoSection {
   width: InfoDef<number>;
   height: InfoDef<number>;
-  fileSize: InfoDef<number>;
-  mimeType: InfoDef<string>;
+  fileSize: InfoDef<string | number>;
+  encoding: InfoDef<string>;
+  // mimeType: InfoDef<string>;
   colorSpace: InfoDef<string>;
   fNumber: InfoDef<number>;
   exposureTime: InfoDef<number>;
@@ -294,26 +129,31 @@ export interface ImageDef extends InfoSection {
   focalLength: InfoDef<number>;
   focalLength35mm: InfoDef<number>;
   subjectDistance: InfoDef<number>;
+  megapixels: InfoDef<string | number>;
 }
 
 export const Image: ImageDef = {
-  width: { value: (_fs: FS.File, m: Metadata): number | undefined => toNumber(m.ExifImageWidth) },
-  height: { value: (_fs: FS.File, m: Metadata): number | undefined => toNumber(m.ExifImageHeight) },
-  fileSize: { value: (_fs: FS.File, m: Metadata): number | undefined => parseFileSize(m.FileSize) },
-  mimeType: { value: readTag('MIMEType') },
+  width: { value: (_fs: FS.File, m: Metadata): number | undefined => asInt(m.ExifImageWidth) || asInt(m.ImageWidth) },
+  height: {
+    value: (_fs: FS.File, m: Metadata): number | undefined => asInt(m.ExifImageHeight) || asInt(m.ImageHeight),
+  },
+  fileSize: { value: readTag('FileSize') },
+  encoding: { value: readTag('EncodingProcess') },
+  // mimeType: { value: readTag('MIMEType') },
   colorSpace: { value: readTag('ColorSpace') },
   fNumber: {
-    value: (_fs: FS.File, m: Metadata): number | undefined => parseFNumber(m.FNumber) ?? parseFNumber(m.Aperture),
+    value: (_fs: FS.File, m: Metadata): number | undefined => Parse.fNumber(m.FNumber) ?? Parse.fNumber(m.Aperture),
   },
-  exposureTime: { value: (_fs: FS.File, m: Metadata): number | undefined => parseExposureTime(m.ExposureTime) },
+  exposureTime: { value: (_fs: FS.File, m: Metadata): number | undefined => Parse.exposureTime(m.ExposureTime) },
   iso: { value: readTag('ISO'), title: 'ISO' },
-  focalLength: { value: (_fs: FS.File, m: Metadata): number | undefined => parseFocalLength(m.FocalLength) },
+  focalLength: { value: (_fs: FS.File, m: Metadata): number | undefined => Parse.focalLength(m.FocalLength) },
   focalLength35mm: {
-    value: (_fs: FS.File, m: Metadata): number | undefined => parseFocalLength(m.FocalLengthIn35mmFormat),
+    value: (_fs: FS.File, m: Metadata): number | undefined => Parse.focalLength(m.FocalLengthIn35mmFormat),
   },
   subjectDistance: {
-    value: (_fs: FS.File, m: Metadata): number | undefined => parseSubjectDistance(m.SubjectDistance),
+    value: (_fs: FS.File, m: Metadata): number | undefined => Parse.subjectDistance(m.SubjectDistance),
   },
+  megapixels: { value: readTag('Megapixels') },
 };
 
 export type Image = InfoResult<typeof Image>;
@@ -324,8 +164,8 @@ export interface VideoDef extends InfoSection {
   sourceWidth: InfoDef<number>;
   sourceHeight: InfoDef<number>;
   duration: InfoDef<number>;
+  fileSize: InfoDef<string | number>;
   codec: InfoDef<string>;
-  codecName: InfoDef<string>;
   framerate: InfoDef<number>;
   bitDepth: InfoDef<number>;
   colorRepresentation: InfoDef<string>;
@@ -333,23 +173,27 @@ export interface VideoDef extends InfoSection {
   rotation: InfoDef<number>;
   avgBitrate: InfoDef<number>;
   maxBitrate: InfoDef<number>;
+  megapixels: InfoDef<string | number>;
 }
 
 export const Video: VideoDef = {
-  width: { value: (_fs: FS.File, m: Metadata): number | undefined => toNumber(m.ImageWidth) },
-  height: { value: (_fs: FS.File, m: Metadata): number | undefined => toNumber(m.ImageHeight) },
-  sourceWidth: { value: (_fs: FS.File, m: Metadata): number | undefined => toNumber(m.SourceImageWidth) },
-  sourceHeight: { value: (_fs: FS.File, m: Metadata): number | undefined => toNumber(m.SourceImageHeight) },
-  duration: { value: (_fs: FS.File, m: Metadata): number | undefined => parseDuration(m.Duration) },
-  codec: { value: readTag('CompressorID') },
-  codecName: { value: readTag('CompressorName') },
+  width: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.ImageWidth) },
+  height: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.ImageHeight) },
+  exifWidth: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.ExifImageWidth) },
+  exifHeight: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.ExifImageHeight) },
+  sourceWidth: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.SourceImageWidth) },
+  sourceHeight: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.SourceImageHeight) },
+  duration: { value: (_fs: FS.File, m: Metadata): number | undefined => Parse.duration(m.Duration) },
+  fileSize: { value: readTag('FileSize') },
+  codec: { value: (_fs: FS.File, m: Metadata): string | undefined => Normalize.videoCodec(m) },
   framerate: { value: readTag('VideoFrameRate') },
-  bitDepth: { value: (_fs: FS.File, m: Metadata): number | undefined => toNumber(m.BitDepth) },
+  bitDepth: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.BitDepth) },
   colorRepresentation: { value: readTag('ColorRepresentation') },
   pixelAspectRatio: { value: readTag('PixelAspectRatio') },
   rotation: { value: readTag('Rotation') },
-  avgBitrate: { value: (_fs: FS.File, m: Metadata): number | undefined => parseBitrate(m.AvgBitrate) },
-  maxBitrate: { value: (_fs: FS.File, m: Metadata): number | undefined => parseBitrate(m.MaxBitrate) },
+  avgBitrate: { value: (_fs: FS.File, m: Metadata): number | undefined => Parse.bitrate(m.AvgBitrate) },
+  maxBitrate: { value: (_fs: FS.File, m: Metadata): number | undefined => Parse.bitrate(m.MaxBitrate) },
+  megapixels: { value: readTag('Megapixels') },
 };
 
 export type Video = InfoResult<typeof Video>;
@@ -359,16 +203,21 @@ export interface AudioDef extends InfoSection {
   channels: InfoDef<number>;
   sampleRate: InfoDef<number>;
   bitsPerSample: InfoDef<number>;
+  codec: InfoDef<string>;
   language: InfoDef<string>;
 }
 
 export const Audio: AudioDef = {
   format: { value: readTag('AudioFormat') },
-  channels: { value: (_fs: FS.File, m: Metadata): number | undefined => toNumber(m.AudioChannels) },
+  channels: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.AudioChannels) },
   sampleRate: { value: readTag('AudioSampleRate') },
-  bitsPerSample: { value: (_fs: FS.File, m: Metadata): number | undefined => toNumber(m.AudioBitsPerSample) },
+  bitsPerSample: { value: (_fs: FS.File, m: Metadata): number | undefined => asInt(m.AudioBitsPerSample) },
+  codec: { value: (_fs: FS.File, m: Metadata): string | undefined => Normalize.audioCodec(m) },
   language: { value: readTag('MediaLanguageCode') },
 };
+
+const asInt = (val: unknown): Integer | undefined => _.isDefined(val) ? _.asInt(val) : undefined;
+const _asFloat = (val: unknown): Integer | undefined => _.isDefined(val) ? _.asFloat(val) : undefined;
 
 export type Audio = InfoResult<typeof Audio>;
 
@@ -384,7 +233,7 @@ export interface CameraDef extends InfoSection {
 }
 
 export const Camera: CameraDef = {
-  name: { value: (_fs: FS.File, m: Metadata): string | undefined => normalizeCameraName(m), title: 'Camera' },
+  name: { value: (_fs: FS.File, m: Metadata): string | undefined => Normalize.cameraName(m), title: 'Camera' },
   make: { value: readTag('Make') },
   model: { value: readTag('Model') },
   lensMake: { value: readTag('LensMake') },
@@ -392,7 +241,7 @@ export const Camera: CameraDef = {
   serialNumber: { value: readTag('SerialNumber') },
   makerNotes: { value: readTag('MakerNote') },
   focalLength35mm: {
-    value: (_fs: FS.File, m: Metadata): number | undefined => parseFocalLength(m.FocalLengthIn35mmFormat),
+    value: (_fs: FS.File, m: Metadata): number | undefined => Parse.focalLength(m.FocalLengthIn35mmFormat),
   },
 };
 
@@ -404,7 +253,7 @@ export interface AppDef extends InfoSection {
 
 export const App: AppDef = {
   application: {
-    value: (_fs: FS.File, m: Metadata): string | undefined => normalizeApplication(m.Software || m.CreatorTool),
+    value: (_fs: FS.File, m: Metadata): string | undefined => Normalize.application(m.Software || m.CreatorTool),
     title: 'Application',
   },
 };

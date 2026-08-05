@@ -1,5 +1,6 @@
+import type * as Schema from './collections.ts';
 import type * as Gps from './gps.ts';
-import type * as Schema from './exif-schema.ts';
+import type { Metadata } from './metadata.ts';
 
 /**
  * Options shared by the {@link Reader} and {@link File} classes.
@@ -7,8 +8,6 @@ import type * as Schema from './exif-schema.ts';
 export interface IDryRun {
   dryRun?: boolean;
 }
-
-export type ISODateString = Schema.ISODateString;
 
 /**
  * JSON representation of a File's extracted metadata, nested by section.
@@ -29,10 +28,21 @@ export type FileJson = {
   tzOffset?: string;
   gps?: Gps.Location;
   id?: Schema.FileId;
-  metadata?: Schema.Metadata;
+  metadata?: Metadata;
 };
 
 /** Options for {@link File.toJSON}. */
 export interface ToJSONOptions {
   includeMetadata?: boolean;
 }
+
+export type FileInfo = {
+  file: Schema.File;
+  camera?: Schema.Camera;
+  app?: Schema.App;
+  image?: Schema.Image;
+  video?: Schema.Video;
+  audio?: Schema.Audio;
+  metadata?: Metadata;
+};
+export type FileInfoKey = keyof FileInfo;

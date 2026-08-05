@@ -149,7 +149,7 @@ Deno.test('File.cameraInfo', async (t) => {
       SerialNumber: 'ABC123',
       MakerNote: 'binary-makernote-data',
     }));
-    assertEquals(file.cameraInfo, {
+    assertEquals(file.camera, {
       make: 'Apple',
       model: 'iPhone 15 Pro',
       lensModel: 'iPhone 15 Pro back triple camera 6.86mm f/1.78',
@@ -161,26 +161,26 @@ Deno.test('File.cameraInfo', async (t) => {
 
   await t.step('returns undefined fields when metadata is sparse', () => {
     const file = File.fromMetadata(meta({ Make: 'Canon' }));
-    assertEquals(file.cameraInfo, {
+    assertEquals(file.camera, {
       make: 'Canon',
     });
   });
 
   await t.step('setter queues writes for present fields', () => {
     const file = File.fromMetadata(meta({}));
-    file.cameraInfo = { make: 'Canon', model: 'EOS R5' };
+    file.camera = { make: 'Canon', model: 'EOS R5' };
     assertEquals(file.dirty, true);
   });
 
   await t.step('setter skips undefined fields and stays clean for an empty object', () => {
     const file = File.fromMetadata(meta({}));
-    file.cameraInfo = {};
+    file.camera = {};
     assertEquals(file.dirty, false);
   });
 
   await t.step('setter queues MakerNote write', () => {
     const file = File.fromMetadata(meta({}));
-    file.cameraInfo = { makerNotes: 'binary-data' };
+    file.camera = { makerNotes: 'binary-data' };
     assertEquals(file.dirty, true);
   });
 });

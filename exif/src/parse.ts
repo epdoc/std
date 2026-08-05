@@ -1,12 +1,12 @@
 import { _ } from '@epdoc/type';
-import type { Metadata } from './exif-schema.ts';
+import type { Metadata } from './metadata.ts';
 
 /**
  * Parse the JSON stdout of `exiftool -j` into an array of metadata objects.
  * exiftool emits an array when multiple files are passed and a single object
  * for one file; this normalizes both.
  */
-export function parseJson(stdout: string): Metadata[] {
+export function json(stdout: string): Metadata[] {
   const trimmed = stdout.trim();
   if (!trimmed) return [];
   const data = JSON.parse(trimmed);
@@ -20,7 +20,7 @@ export function parseJson(stdout: string): Metadata[] {
  *
  * @internal Used by {@link File.duration}.
  */
-export function parseDuration(value: string | number | undefined): number | undefined {
+export function duration(value: string | number | undefined): number | undefined {
   if (value === undefined) return undefined;
   if (_.isNumber(value)) return Number.isFinite(value) ? value : undefined;
 
@@ -49,7 +49,7 @@ export function parseDuration(value: string | number | undefined): number | unde
  * @param input - Raw focal length input from EXIF or user data.
  * @returns Numeric focal length in mm, or undefined if unparseable.
  */
-export function parseFocalLength(input: unknown): number | undefined {
+export function focalLength(input: unknown): number | undefined {
   if (typeof input === 'number') {
     return Number.isFinite(input) && input > 0 ? input : undefined;
   }
@@ -88,7 +88,7 @@ export function parseFocalLength(input: unknown): number | undefined {
  * @param input - Raw aperture value from EXIF.
  * @returns Numeric aperture, or undefined if unparseable.
  */
-export function parseFNumber(input: unknown): number | undefined {
+export function fNumber(input: unknown): number | undefined {
   if (typeof input === 'number') {
     return Number.isFinite(input) && input > 0 ? input : undefined;
   }
@@ -115,7 +115,7 @@ export function parseFNumber(input: unknown): number | undefined {
  * @param input - Raw exposure time from EXIF.
  * @returns Numeric exposure time in seconds, or undefined if unparseable.
  */
-export function parseExposureTime(input: unknown): number | undefined {
+export function exposureTime(input: unknown): number | undefined {
   if (typeof input === 'number') {
     return Number.isFinite(input) && input >= 0 ? input : undefined;
   }
@@ -148,7 +148,7 @@ export function parseExposureTime(input: unknown): number | undefined {
  * @param input - Raw subject distance from EXIF.
  * @returns Numeric distance in meters, or undefined if unparseable.
  */
-export function parseSubjectDistance(input: unknown): number | undefined {
+export function subjectDistance(input: unknown): number | undefined {
   if (typeof input === 'number') {
     return Number.isFinite(input) && input >= 0 ? input : undefined;
   }
@@ -175,7 +175,7 @@ export function parseSubjectDistance(input: unknown): number | undefined {
  * @param input - Raw file size from EXIF.
  * @returns Numeric size in bytes, or undefined if unparseable.
  */
-export function parseFileSize(input: unknown): number | undefined {
+export function fileSize(input: unknown): number | undefined {
   type Unit = 'B' | 'KB' | 'MB' | 'GB' | 'TB';
   const multipliers: Record<Unit, number> = {
     B: 1,
@@ -215,18 +215,7 @@ export function parseFileSize(input: unknown): number | undefined {
  * @param input - Raw bitrate from EXIF.
  * @returns Numeric bitrate in bps, or undefined if unparseable.
  */
-/**
- * Converts a value to a finite number, returning undefined for null/undefined
- * or NaN results. Used by section defs to coerce Integer-branded or string
- * EXIF values to plain number.
- */
-export function toNumber(value: unknown): number | undefined {
-  if (value === undefined || value === null) return undefined;
-  const n = Number(value);
-  return isNaN(n) ? undefined : n;
-}
-
-export function parseBitrate(input: unknown): number | undefined {
+export function bitrate(input: unknown): number | undefined {
   if (typeof input === 'number') {
     return Number.isFinite(input) && input >= 0 ? input : undefined;
   }

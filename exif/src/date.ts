@@ -1,5 +1,5 @@
 import { DateTime, type ISOTZ } from '@epdoc/datetime';
-import type { Metadata } from './exif-schema.ts';
+import type { Metadata } from './metadata.ts';
 
 /**
  * Build a {@link DateTime} from parsed EXIF date components, applying any

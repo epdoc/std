@@ -3,8 +3,8 @@ import * as FS from '@epdoc/fs/fs';
 import type { Dict } from '@epdoc/type';
 import { _ } from '@epdoc/type';
 import { EXIFTOOL_READ_FLAGS, File } from './file.ts';
+import { json as parseJson } from './parse.ts';
 import type { IDryRun } from './types.ts';
-import { parseJson } from './utils.ts';
 
 /**
  * Factory for reading EXIF metadata from one or more files in a single
