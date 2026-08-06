@@ -404,16 +404,11 @@ export class DateTime {
   static from(arg?: unknown, opts?: { strict: false }): DateTime | undefined;
   static from(arg: unknown, opts: { strict?: boolean }): DateTime | undefined;
   static from(arg?: unknown, opts: IStrict = { strict: true }): DateTime | undefined {
-    if (arg === undefined) {
+    if (_.isNullOrUndefined(arg)) {
       return new DateTime(Temporal.Now.instant());
     }
     if (!_.isString(arg)) {
       try {
-        // 1. No arguments: Current Time
-        if (_.isNullOrUndefined(arg)) {
-          return new DateTime(Temporal.Now.instant());
-        }
-
         // 2. Clone existing DateTime
         if (arg instanceof DateTime) {
           return new DateTime(arg._value);
@@ -756,15 +751,16 @@ export class DateTime {
 
   /**
    * Returns the appropriate Temporal object for arithmetic.
-   * Temporal.Instant only supports time units; for calendar units (days, weeks,
-   * months, years) we must use a ZonedDateTime. We promote to local tz on demand.
+   * Promotes to the requested timezone or defaults to UTC/local as needed.
    */
   #temporalForArithmetic(tz?: TzAny): Temporal.Instant | Temporal.ZonedDateTime | Temporal.PlainDateTime {
+    if (tz) {
+      return this.withTz(tz).temporal;
+    }
     if (this._value instanceof Temporal.Instant) {
-      return this.withTz(tz ? tz : 'utc').temporal;
-      // return this._value.toZonedDateTimeISO(Temporal.Now.timeZoneId());
+      return this.withTz('utc').temporal;
     } else if (this._value instanceof Temporal.PlainDateTime) {
-      return this.withTz(tz ? tz : 'local').temporal;
+      return this.withTz('local').temporal;
     }
     return this._value;
   }
@@ -992,43 +988,18 @@ export class DateTime {
 
   /**
    * Checks if this DateTime represents "now" within an asymmetric tolerance window.
-   * Throws if the internal value is a PlainDateTime.
-   *
-   * ## Tolerance Behavior (Asymmetric)
-   *
-   * - **Positive tolerance**: Returns true if this DateTime is within `toleranceSeconds`
-   *   BEFORE the current time (i.e., is it "recent"?).
-   * - **Negative tolerance**: Returns true if this DateTime is within `abs(toleranceSeconds)`
-   *   AFTER the current time (i.e., is it "soon"?).
-   * - **Zero tolerance** (default): Returns true only if exactly equal to now.
-   *
-   * @param toleranceSeconds - Asymmetric tolerance in seconds. Positive means within
-   *   that many seconds BEFORE now; negative means within that many seconds AFTER now.
-   *   Default is 0 (exact match).
-   * @returns true if this DateTime falls within the tolerance window
-   * @throws Error if the internal value is a PlainDateTime
-   *
-   * @example
-   * ```typescript
-   * const now = DateTime.now();
-   * const recent = DateTime.from(Date.now() - 30000); // 30 seconds ago
-   * const future = DateTime.from(Date.now() + 30000); // 30 seconds from now
-   *
-   * // Check if within the last 60 seconds (is it recent?)
-   * console.log(recent.isNow(60)); // true
-   *
-   * // Check if within the next 60 seconds (is it soon?)
-   * console.log(future.isNow(-60)); // true
-   *
-   * // Exact match only
-   * console.log(now.isNow()); // true (or very close)
-   * ```
    */
-
   isNow(seconds: number = 0): boolean {
     const now = Temporal.Now.instant().epochMilliseconds;
     const thisMs = this.epochMilliseconds;
-    return Math.abs(now - thisMs) <= seconds * 1000;
+    const diff = now - thisMs;
+
+    if (seconds > 0) {
+      return diff >= 0 && diff <= seconds * 1000;
+    } else if (seconds < 0) {
+      return diff <= 0 && diff >= seconds * 1000;
+    }
+    return diff === 0;
   }
 
   /**
@@ -1558,12 +1529,13 @@ export class DateTime {
   }
 
   static formatZDT(zdt: Temporal.ZonedDateTime, format: string): string {
-    // Use the ZonedDateTime directly - it already has the correct local time
     let f = String(format);
     const placeholders: Record<string, string> = {};
 
-    // Step 1 & 2: Names (Weekday/Month) using Intl
-    // Temporal objects work directly with Intl.DateTimeFormat
+    // Construct a UTC Date representing the local calendar date to ensure text tokens
+    // (weekday/month names) format according to wall-clock time instead of UTC instant.
+    const localDate = new Date(Date.UTC(zdt.year, zdt.month - 1, zdt.day));
+
     const formatters = {
       EEEE: new Intl.DateTimeFormat('en-US', { weekday: 'long', timeZone: 'UTC' }),
       EEE: new Intl.DateTimeFormat('en-US', { weekday: 'short', timeZone: 'UTC' }),
@@ -1575,13 +1547,11 @@ export class DateTime {
     Object.entries(formatters).forEach(([token, formatter], index) => {
       if (f.includes(token)) {
         const placeholder = `___${index}___`;
-        placeholders[placeholder] = formatter.format(new Date(zdt.epochMilliseconds));
+        placeholders[placeholder] = formatter.format(localDate);
         f = f.replace(token, placeholder);
       }
     });
 
-    // Step 3: Numeric tokens
-    // We use direct properties instead of getUTC methods
     const pad = (n: number, l: number = 2) => String(n).padStart(l, '0');
 
     f = f
@@ -1596,7 +1566,6 @@ export class DateTime {
       .replace('d', String(zdt.day))
       .replace('H', String(zdt.hour));
 
-    // Step 4: Restore placeholders
     for (const [placeholder, value] of Object.entries(placeholders)) {
       f = f.replace(placeholder, value);
     }
@@ -1759,39 +1728,14 @@ export class DateTime {
 
   /**
    * Returns a new DateTime set to the end of the calendar month.
-   * By default this is the last millisecond of the last day of the month.
-   *
-   * @param backoffMs - Milliseconds to subtract from the start of the next month.
-   *   Defaults to 1.
-   * @param tz - The timezone to use for the calculation. Defaults to 'local'.
-   * @example
-   * ```typescript
-   * const d = DateTime.from('2024-03-15T10:30:00Z');
-   * d.endOfMonth().toISOString(); // "2024-03-31T23:59:59.999Z"
-   * ```
    */
-  public endOfMonth(backoffMs: number = 1, tz: TzAny = 'local'): DateTime {
+  public endOfMonth(backoffMs: number = 1, tz?: TzAny): DateTime {
     return this.startOfMonth().add({ months: 1 }, tz).subtract({ milliseconds: backoffMs }, tz);
   }
 
   /**
    * Returns a new DateTime set to the start of the calendar week at 00:00:00.000
    * using the timezone already set on this DateTime.
-   *
-   * The week start day follows ISO-8601 conventions where Monday=1 and Sunday=7.
-   *
-   * - If the internal value is a `ZonedDateTime`, its timezone is used.
-   * - If the internal value is an `Instant`, UTC is used.
-   * - If the internal value is a `PlainDateTime`, the local timezone is used.
-   *
-   * @param dayOfWeek - The day that starts the week (1=Monday, 7=Sunday). Defaults to 1.
-   * @example
-   * ```typescript
-   * const d = DateTime.from('2024-03-15T10:30:00Z'); // Friday
-   * d.startOfWeek().toISOString();            // "2024-03-11T00:00:00.000Z" (Monday)
-   * d.startOfWeek(7).toISOString();           // "2024-03-10T00:00:00.000Z" (Sunday)
-   * d.startOfWeek(5).toISOString();           // "2024-03-15T00:00:00.000Z" (Friday)
-   * ```
    */
   startOfWeek(dayOfWeek: number = 1): DateTime {
     const zdt = this.#zonedDateTimeForCalendar();
@@ -1799,11 +1743,7 @@ export class DateTime {
     // Calculate difference to the requested start day
     const diff = (zdt.dayOfWeek - dayOfWeek + 7) % 7;
 
-    // 1. Subtract the days
-    // 2. Use startOfDay() - it's cleaner than manually setting 00:00:00
-    const startZdt = zdt.subtract({ days: diff }).startOfDay();
-
-    return DateTime.of(startZdt);
+    return DateTime.of(zdt.subtract({ days: diff })).startOfDay();
   }
 
   /**
@@ -2049,7 +1989,7 @@ export class DateTime {
 
   /**
    * @returns
-   * @deprecated Use getOffset() which follows ISO 8601 convention (positive = ahead of UTC).
+   * @deprecated Use getTzOffset() which follows ISO 8601 convention (positive = ahead of UTC).
    */
   getTz(): TzMinutes | undefined {
     return this.getTzOffset();

@@ -224,6 +224,19 @@ Deno.test('util', async (t) => {
     });
   });
 
+  await t.step('format with wall-clock timezone', async (t) => {
+    await t.step('should use wall-clock weekday when UTC day differs', () => {
+      const d = DateTime.fromString('2024-01-14T22:00:00-07:00');
+      assertEquals(d.format('EEEE'), 'Sunday');
+      assertEquals(d.format('EEEE, MMMM dd'), 'Sunday, January 14');
+    });
+
+    await t.step('should use wall-clock month when UTC month differs', () => {
+      const d = DateTime.fromString('2024-01-31T22:00:00-07:00');
+      assertEquals(d.format('EEEE, MMMM dd'), 'Wednesday, January 31');
+    });
+  });
+
   await t.step('julianDate', () => {
     const d = new Date('1997-11-25T12:13:14.456Z');
     assertAlmostEquals(DateTime.fromDate(d).julianDate(), 2450778.0091950926);
@@ -365,6 +378,16 @@ Deno.test('util', async (t) => {
       const now = DateTime.now();
       const ny = now.withTz('America/New_York' as IANATZ);
       assertExists(ny.getTzOffset());
+    });
+  });
+
+  await t.step('DateTime.from()', async (t) => {
+    await t.step('should return current time for null argument', () => {
+      const before = Date.now();
+      const dt = DateTime.from(null);
+      const after = Date.now();
+      assert(dt.epochMilliseconds >= before);
+      assert(dt.epochMilliseconds <= after);
     });
   });
 
@@ -852,22 +875,22 @@ Deno.test('util', async (t) => {
 
     await t.step('should return true for future time with negative tolerance', () => {
       const future = DateTime.from(DateTime.now().valueOf() + 30000);
-      assertEquals(future.isNow(60), true);
+      assertEquals(future.isNow(-60), true);
     });
 
     await t.step('should return false for distant future with negative tolerance', () => {
       const future = DateTime.from(DateTime.now().valueOf() + 120000);
-      assertEquals(future.isNow(60), false);
+      assertEquals(future.isNow(-60), false);
     });
 
     await t.step('should return false for future time with positive tolerance', () => {
       const future = DateTime.from(DateTime.now().valueOf() + 30000);
-      assertEquals(future.isNow(60), true);
+      assertEquals(future.isNow(60), false);
     });
 
     await t.step('should return false for past time with negative tolerance', () => {
       const past = DateTime.from(DateTime.now().valueOf() - 30000);
-      assertEquals(past.isNow(15), false);
+      assertEquals(past.isNow(-15), false);
     });
 
     await t.step('should throw for PlainDateTime', () => {
@@ -1067,6 +1090,19 @@ Deno.test('util', async (t) => {
     await t.step('endOfWeek with custom backoff', () => {
       const d = DateTime.from('2024-03-15T10:30:00Z');
       assertEquals(d.endOfWeek(1, 0).toISOString(), '2024-03-18T00:00:00+00:00');
+    });
+  });
+
+  await t.step('timezone preservation for calendar methods', async (t) => {
+    await t.step('endOfMonth preserves timezone on ZonedDateTime', () => {
+      const d = DateTime.fromString('2024-03-15T10:30:00-05:00');
+      assertEquals(d.endOfMonth().getTzString(), '-05:00');
+      assertEquals(d.endOfMonth().toISOString(), '2024-03-31T23:59:59.999-05:00');
+    });
+
+    await t.step('startOfWeek preserves timezone on ZonedDateTime', () => {
+      const d = DateTime.fromString('2024-03-15T10:30:00-05:00');
+      assertEquals(d.startOfWeek().getTzString(), '-05:00');
     });
   });
 

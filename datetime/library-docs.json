@@ -1077,9 +1077,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 483,
+                      "line": 478,
                       "col": 2,
-                      "byteIndex": 16694
+                      "byteIndex": 16554
                     }
                   },
                   {
@@ -1120,9 +1120,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 490,
+                      "line": 485,
                       "col": 2,
-                      "byteIndex": 16854
+                      "byteIndex": 16714
                     }
                   },
                   {
@@ -1152,9 +1152,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 505,
+                      "line": 500,
                       "col": 2,
-                      "byteIndex": 17347
+                      "byteIndex": 17207
                     }
                   },
                   {
@@ -1184,9 +1184,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 520,
+                      "line": 515,
                       "col": 2,
-                      "byteIndex": 17814
+                      "byteIndex": 17674
                     }
                   },
                   {
@@ -1254,9 +1254,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 548,
+                      "line": 543,
                       "col": 2,
-                      "byteIndex": 18773
+                      "byteIndex": 18633
                     }
                   },
                   {
@@ -1292,9 +1292,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 569,
+                      "line": 564,
                       "col": 2,
-                      "byteIndex": 19343
+                      "byteIndex": 19203
                     }
                   },
                   {
@@ -1330,9 +1330,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 586,
+                      "line": 581,
                       "col": 2,
-                      "byteIndex": 19823
+                      "byteIndex": 19683
                     }
                   },
                   {
@@ -1391,9 +1391,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 603,
+                      "line": 598,
                       "col": 2,
-                      "byteIndex": 20419
+                      "byteIndex": 20279
                     }
                   },
                   {
@@ -1488,9 +1488,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 633,
+                      "line": 628,
                       "col": 2,
-                      "byteIndex": 21511
+                      "byteIndex": 21371
                     }
                   },
                   {
@@ -1512,9 +1512,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 647,
+                      "line": 642,
                       "col": 2,
-                      "byteIndex": 22014
+                      "byteIndex": 21874
                     }
                   },
                   {
@@ -1589,9 +1589,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 673,
+                      "line": 668,
                       "col": 2,
-                      "byteIndex": 23172
+                      "byteIndex": 23032
                     }
                   },
                   {
@@ -1661,9 +1661,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 689,
+                      "line": 684,
                       "col": 2,
-                      "byteIndex": 23663
+                      "byteIndex": 23523
                     }
                   },
                   {
@@ -1705,9 +1705,9 @@
                                   "name": "year",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                                    "line": 728,
+                                    "line": 723,
                                     "col": 6,
-                                    "byteIndex": 25161
+                                    "byteIndex": 25021
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -1720,9 +1720,9 @@
                                   "name": "month",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                                    "line": 729,
+                                    "line": 724,
                                     "col": 6,
-                                    "byteIndex": 25182
+                                    "byteIndex": 25042
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -1735,9 +1735,9 @@
                                   "name": "day",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                                    "line": 730,
+                                    "line": 725,
                                     "col": 6,
-                                    "byteIndex": 25204
+                                    "byteIndex": 25064
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -1750,9 +1750,9 @@
                                   "name": "hour",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                                    "line": 731,
+                                    "line": 726,
                                     "col": 6,
-                                    "byteIndex": 25224
+                                    "byteIndex": 25084
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -1765,9 +1765,9 @@
                                   "name": "minute",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                                    "line": 732,
+                                    "line": 727,
                                     "col": 6,
-                                    "byteIndex": 25245
+                                    "byteIndex": 25105
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -1780,9 +1780,9 @@
                                   "name": "second",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                                    "line": 733,
+                                    "line": 728,
                                     "col": 6,
-                                    "byteIndex": 25268
+                                    "byteIndex": 25128
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -1795,9 +1795,9 @@
                                   "name": "millisecond",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                                    "line": 734,
+                                    "line": 729,
                                     "col": 6,
-                                    "byteIndex": 25291
+                                    "byteIndex": 25151
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -1810,9 +1810,9 @@
                                   "name": "microsecond",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                                    "line": 735,
+                                    "line": 730,
                                     "col": 6,
-                                    "byteIndex": 25319
+                                    "byteIndex": 25179
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -1825,9 +1825,9 @@
                                   "name": "nanosecond",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                                    "line": 736,
+                                    "line": 731,
                                     "col": 6,
-                                    "byteIndex": 25347
+                                    "byteIndex": 25207
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -1840,9 +1840,9 @@
                                   "name": "era",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                                    "line": 737,
+                                    "line": 732,
                                     "col": 6,
-                                    "byteIndex": 25374
+                                    "byteIndex": 25234
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -1855,9 +1855,9 @@
                                   "name": "eraYear",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                                    "line": 738,
+                                    "line": 733,
                                     "col": 6,
-                                    "byteIndex": 25394
+                                    "byteIndex": 25254
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -1870,9 +1870,9 @@
                                   "name": "offset",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                                    "line": 739,
+                                    "line": 734,
                                     "col": 6,
-                                    "byteIndex": 25418
+                                    "byteIndex": 25278
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -1885,9 +1885,9 @@
                                   "name": "timeZone",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                                    "line": 740,
+                                    "line": 735,
                                     "col": 6,
-                                    "byteIndex": 25441
+                                    "byteIndex": 25301
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -1915,9 +1915,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 726,
+                      "line": 721,
                       "col": 2,
-                      "byteIndex": 25135
+                      "byteIndex": 24995
                     }
                   },
                   {
@@ -1990,9 +1990,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 807,
+                      "line": 803,
                       "col": 2,
-                      "byteIndex": 27990
+                      "byteIndex": 27726
                     }
                   },
                   {
@@ -2047,9 +2047,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 836,
+                      "line": 832,
                       "col": 2,
-                      "byteIndex": 28918
+                      "byteIndex": 28654
                     }
                   },
                   {
@@ -2107,9 +2107,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 850,
+                      "line": 846,
                       "col": 2,
-                      "byteIndex": 29445
+                      "byteIndex": 29181
                     }
                   },
                   {
@@ -2160,9 +2160,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 862,
+                      "line": 858,
                       "col": 2,
-                      "byteIndex": 29829
+                      "byteIndex": 29565
                     }
                   },
                   {
@@ -2213,9 +2213,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 874,
+                      "line": 870,
                       "col": 2,
-                      "byteIndex": 30203
+                      "byteIndex": 29939
                     }
                   },
                   {
@@ -2266,9 +2266,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 886,
+                      "line": 882,
                       "col": 2,
-                      "byteIndex": 30603
+                      "byteIndex": 30339
                     }
                   },
                   {
@@ -2319,9 +2319,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 898,
+                      "line": 894,
                       "col": 2,
-                      "byteIndex": 31007
+                      "byteIndex": 30743
                     }
                   },
                   {
@@ -2355,9 +2355,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 918,
+                      "line": 914,
                       "col": 2,
-                      "byteIndex": 31548
+                      "byteIndex": 31284
                     }
                   },
                   {
@@ -2391,9 +2391,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 938,
+                      "line": 934,
                       "col": 2,
-                      "byteIndex": 32108
+                      "byteIndex": 31844
                     }
                   },
                   {
@@ -2447,9 +2447,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 961,
+                      "line": 957,
                       "col": 2,
-                      "byteIndex": 33060
+                      "byteIndex": 32796
                     }
                   },
                   {
@@ -2503,33 +2503,14 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 986,
+                      "line": 982,
                       "col": 2,
-                      "byteIndex": 34139
+                      "byteIndex": 33875
                     }
                   },
                   {
                     "jsDoc": {
-                      "doc": "Checks if this DateTime represents \"now\" within an asymmetric tolerance window.\nThrows if the internal value is a PlainDateTime.\n\n## Tolerance Behavior (Asymmetric)\n\n- **Positive tolerance**: Returns true if this DateTime is within `toleranceSeconds`\n  BEFORE the current time (i.e., is it \"recent\"?).\n- **Negative tolerance**: Returns true if this DateTime is within `abs(toleranceSeconds)`\n  AFTER the current time (i.e., is it \"soon\"?).\n- **Zero tolerance** (default): Returns true only if exactly equal to now.\n",
-                      "tags": [
-                        {
-                          "kind": "param",
-                          "name": "toleranceSeconds",
-                          "doc": "Asymmetric tolerance in seconds. Positive means within\nthat many seconds BEFORE now; negative means within that many seconds AFTER now.\nDefault is 0 (exact match)."
-                        },
-                        {
-                          "kind": "return",
-                          "doc": "true if this DateTime falls within the tolerance window"
-                        },
-                        {
-                          "kind": "throws",
-                          "doc": "Error if the internal value is a PlainDateTime\n"
-                        },
-                        {
-                          "kind": "example",
-                          "doc": "```typescript\nconst now = DateTime.now();\nconst recent = DateTime.from(Date.now() - 30000); // 30 seconds ago\nconst future = DateTime.from(Date.now() + 30000); // 30 seconds from now\n\n// Check if within the last 60 seconds (is it recent?)\nconsole.log(recent.isNow(60)); // true\n\n// Check if within the next 60 seconds (is it soon?)\nconsole.log(future.isNow(-60)); // true\n\n// Exact match only\nconsole.log(now.isNow()); // true (or very close)\n```"
-                        }
-                      ]
+                      "doc": "Checks if this DateTime represents \"now\" within an asymmetric tolerance window."
                     },
                     "name": "isNow",
                     "kind": "method",
@@ -2559,9 +2540,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1027,
+                      "line": 991,
                       "col": 2,
-                      "byteIndex": 35827
+                      "byteIndex": 34207
                     }
                   },
                   {
@@ -2590,9 +2571,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1046,
+                      "line": 1017,
                       "col": 2,
-                      "byteIndex": 36352
+                      "byteIndex": 34893
                     }
                   },
                   {
@@ -2621,9 +2602,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1064,
+                      "line": 1035,
                       "col": 2,
-                      "byteIndex": 36750
+                      "byteIndex": 35291
                     }
                   },
                   {
@@ -2658,9 +2639,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1083,
+                      "line": 1054,
                       "col": 2,
-                      "byteIndex": 37236
+                      "byteIndex": 35777
                     }
                   },
                   {
@@ -2695,9 +2676,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1101,
+                      "line": 1072,
                       "col": 2,
-                      "byteIndex": 37706
+                      "byteIndex": 36247
                     }
                   },
                   {
@@ -2745,9 +2726,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1126,
+                      "line": 1097,
                       "col": 2,
-                      "byteIndex": 38790
+                      "byteIndex": 37331
                     }
                   },
                   {
@@ -2809,9 +2790,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1210,
+                      "line": 1181,
                       "col": 2,
-                      "byteIndex": 42276
+                      "byteIndex": 40817
                     }
                   },
                   {
@@ -2854,9 +2835,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1223,
+                      "line": 1194,
                       "col": 2,
-                      "byteIndex": 42761
+                      "byteIndex": 41302
                     }
                   },
                   {
@@ -2899,9 +2880,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1244,
+                      "line": 1215,
                       "col": 2,
-                      "byteIndex": 43585
+                      "byteIndex": 42126
                     }
                   },
                   {
@@ -2931,9 +2912,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1270,
+                      "line": 1241,
                       "col": 2,
-                      "byteIndex": 44396
+                      "byteIndex": 42937
                     }
                   },
                   {
@@ -2966,9 +2947,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1285,
+                      "line": 1256,
                       "col": 2,
-                      "byteIndex": 44810
+                      "byteIndex": 43351
                     }
                   },
                   {
@@ -3036,9 +3017,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1316,
+                      "line": 1287,
                       "col": 2,
-                      "byteIndex": 46364
+                      "byteIndex": 44905
                     }
                   },
                   {
@@ -3109,9 +3090,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1331,
+                      "line": 1302,
                       "col": 2,
-                      "byteIndex": 47101
+                      "byteIndex": 45642
                     }
                   },
                   {
@@ -3173,9 +3154,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1372,
+                      "line": 1343,
                       "col": 2,
-                      "byteIndex": 49230
+                      "byteIndex": 47771
                     }
                   },
                   {
@@ -3255,9 +3236,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1438,
+                      "line": 1409,
                       "col": 2,
-                      "byteIndex": 52365
+                      "byteIndex": 50906
                     }
                   },
                   {
@@ -3274,9 +3255,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1447,
+                      "line": 1418,
                       "col": 2,
-                      "byteIndex": 52627
+                      "byteIndex": 51168
                     }
                   },
                   {
@@ -3318,9 +3299,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1475,
+                      "line": 1446,
                       "col": 2,
-                      "byteIndex": 53686
+                      "byteIndex": 52227
                     }
                   },
                   {
@@ -3361,9 +3342,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1559,
+                      "line": 1530,
                       "col": 2,
-                      "byteIndex": 57059
+                      "byteIndex": 55600
                     }
                   },
                   {
@@ -3401,9 +3382,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1611,
+                      "line": 1580,
                       "col": 2,
-                      "byteIndex": 59074
+                      "byteIndex": 57529
                     }
                   },
                   {
@@ -3456,9 +3437,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1641,
+                      "line": 1610,
                       "col": 2,
-                      "byteIndex": 60330
+                      "byteIndex": 58785
                     }
                   },
                   {
@@ -3490,9 +3471,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1672,
+                      "line": 1641,
                       "col": 2,
-                      "byteIndex": 61690
+                      "byteIndex": 60145
                     }
                   },
                   {
@@ -3544,9 +3525,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1697,
+                      "line": 1666,
                       "col": 2,
-                      "byteIndex": 62836
+                      "byteIndex": 61291
                     }
                   },
                   {
@@ -3578,9 +3559,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1715,
+                      "line": 1684,
                       "col": 2,
-                      "byteIndex": 63515
+                      "byteIndex": 61970
                     }
                   },
                   {
@@ -3632,9 +3613,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1734,
+                      "line": 1703,
                       "col": 2,
-                      "byteIndex": 64183
+                      "byteIndex": 62638
                     }
                   },
                   {
@@ -3666,30 +3647,14 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1752,
+                      "line": 1721,
                       "col": 2,
-                      "byteIndex": 64865
+                      "byteIndex": 63320
                     }
                   },
                   {
                     "jsDoc": {
-                      "doc": "Returns a new DateTime set to the end of the calendar month.\nBy default this is the last millisecond of the last day of the month.\n",
-                      "tags": [
-                        {
-                          "kind": "param",
-                          "name": "backoffMs",
-                          "doc": "Milliseconds to subtract from the start of the next month.\nDefaults to 1."
-                        },
-                        {
-                          "kind": "param",
-                          "name": "tz",
-                          "doc": "The timezone to use for the calculation. Defaults to 'local'."
-                        },
-                        {
-                          "kind": "example",
-                          "doc": "```typescript\nconst d = DateTime.from('2024-03-15T10:30:00Z');\nd.endOfMonth().toISOString(); // \"2024-03-31T23:59:59.999Z\"\n```"
-                        }
-                      ]
+                      "doc": "Returns a new DateTime set to the end of the calendar month."
                     },
                     "accessibility": "public",
                     "name": "endOfMonth",
@@ -3711,25 +3676,21 @@
                           "right": "1"
                         },
                         {
-                          "kind": "assign",
-                          "left": {
-                            "kind": "identifier",
-                            "name": "tz",
-                            "optional": false,
-                            "tsType": {
-                              "repr": "TzAny",
-                              "kind": "typeRef",
-                              "value": {
-                                "typeName": "TzAny",
-                                "resolution": {
-                                  "kind": "import",
-                                  "specifier": "./types.ts",
-                                  "name": "TzAny"
-                                }
+                          "kind": "identifier",
+                          "name": "tz",
+                          "optional": true,
+                          "tsType": {
+                            "repr": "TzAny",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "TzAny",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./types.ts",
+                                "name": "TzAny"
                               }
                             }
-                          },
-                          "right": "local"
+                          }
                         }
                       ],
                       "returnType": {
@@ -3746,25 +3707,14 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1772,
+                      "line": 1731,
                       "col": 2,
-                      "byteIndex": 65597
+                      "byteIndex": 63627
                     }
                   },
                   {
                     "jsDoc": {
-                      "doc": "Returns a new DateTime set to the start of the calendar week at 00:00:00.000\nusing the timezone already set on this DateTime.\n\nThe week start day follows ISO-8601 conventions where Monday=1 and Sunday=7.\n\n- If the internal value is a `ZonedDateTime`, its timezone is used.\n- If the internal value is an `Instant`, UTC is used.\n- If the internal value is a `PlainDateTime`, the local timezone is used.\n",
-                      "tags": [
-                        {
-                          "kind": "param",
-                          "name": "dayOfWeek",
-                          "doc": "The day that starts the week (1=Monday, 7=Sunday). Defaults to 1."
-                        },
-                        {
-                          "kind": "example",
-                          "doc": "```typescript\nconst d = DateTime.from('2024-03-15T10:30:00Z'); // Friday\nd.startOfWeek().toISOString();            // \"2024-03-11T00:00:00.000Z\" (Monday)\nd.startOfWeek(7).toISOString();           // \"2024-03-10T00:00:00.000Z\" (Sunday)\nd.startOfWeek(5).toISOString();           // \"2024-03-15T00:00:00.000Z\" (Friday)\n```"
-                        }
-                      ]
+                      "doc": "Returns a new DateTime set to the start of the calendar week at 00:00:00.000\nusing the timezone already set on this DateTime."
                     },
                     "name": "startOfWeek",
                     "kind": "method",
@@ -3799,9 +3749,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1795,
+                      "line": 1739,
                       "col": 2,
-                      "byteIndex": 66685
+                      "byteIndex": 63944
                     }
                   },
                   {
@@ -3871,9 +3821,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1822,
+                      "line": 1762,
                       "col": 2,
-                      "byteIndex": 67720
+                      "byteIndex": 64846
                     }
                   },
                   {
@@ -3920,9 +3870,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1832,
+                      "line": 1772,
                       "col": 2,
-                      "byteIndex": 68101
+                      "byteIndex": 65227
                     }
                   },
                   {
@@ -3992,9 +3942,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1875,
+                      "line": 1815,
                       "col": 2,
-                      "byteIndex": 70005
+                      "byteIndex": 67131
                     }
                   },
                   {
@@ -4031,9 +3981,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1932,
+                      "line": 1872,
                       "col": 2,
-                      "byteIndex": 72177
+                      "byteIndex": 69303
                     }
                   },
                   {
@@ -4104,9 +4054,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 1973,
+                      "line": 1913,
                       "col": 2,
-                      "byteIndex": 74105
+                      "byteIndex": 71231
                     }
                   },
                   {
@@ -4153,9 +4103,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 2004,
+                      "line": 1944,
                       "col": 2,
-                      "byteIndex": 75287
+                      "byteIndex": 72413
                     }
                   },
                   {
@@ -4177,9 +4127,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 2037,
+                      "line": 1977,
                       "col": 2,
-                      "byteIndex": 76253
+                      "byteIndex": 73379
                     }
                   },
                   {
@@ -4190,7 +4140,7 @@
                         },
                         {
                           "kind": "deprecated",
-                          "doc": "Use getOffset() which follows ISO 8601 convention (positive = ahead of UTC)."
+                          "doc": "Use getTzOffset() which follows ISO 8601 convention (positive = ahead of UTC)."
                         }
                       ]
                     },
@@ -4224,9 +4174,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 2053,
+                      "line": 1993,
                       "col": 2,
-                      "byteIndex": 76907
+                      "byteIndex": 74035
                     }
                   },
                   {
@@ -4286,9 +4236,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 2060,
+                      "line": 2000,
                       "col": 2,
-                      "byteIndex": 77030
+                      "byteIndex": 74158
                     }
                   },
                   {
@@ -4320,9 +4270,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 2067,
+                      "line": 2007,
                       "col": 2,
-                      "byteIndex": 77184
+                      "byteIndex": 74312
                     }
                   },
                   {
@@ -4368,9 +4318,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 2103,
+                      "line": 2043,
                       "col": 2,
-                      "byteIndex": 78455
+                      "byteIndex": 75583
                     }
                   },
                   {
@@ -4387,9 +4337,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 2110,
+                      "line": 2050,
                       "col": 2,
-                      "byteIndex": 78638
+                      "byteIndex": 75766
                     }
                   },
                   {
@@ -4406,9 +4356,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 2114,
+                      "line": 2054,
                       "col": 2,
-                      "byteIndex": 78782
+                      "byteIndex": 75910
                     }
                   },
                   {
@@ -4425,9 +4375,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 2118,
+                      "line": 2058,
                       "col": 2,
-                      "byteIndex": 78929
+                      "byteIndex": 76057
                     }
                   },
                   {
@@ -4444,9 +4394,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 2123,
+                      "line": 2063,
                       "col": 2,
-                      "byteIndex": 79096
+                      "byteIndex": 76224
                     }
                   },
                   {
@@ -4463,9 +4413,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 2127,
+                      "line": 2067,
                       "col": 2,
-                      "byteIndex": 79240
+                      "byteIndex": 76368
                     }
                   },
                   {
@@ -4482,9 +4432,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 2131,
+                      "line": 2071,
                       "col": 2,
-                      "byteIndex": 79390
+                      "byteIndex": 76518
                     }
                   },
                   {
@@ -4501,9 +4451,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 2135,
+                      "line": 2075,
                       "col": 2,
-                      "byteIndex": 79540
+                      "byteIndex": 76668
                     }
                   },
                   {
@@ -4520,9 +4470,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 2142,
+                      "line": 2082,
                       "col": 2,
-                      "byteIndex": 79748
+                      "byteIndex": 76876
                     }
                   },
                   {
@@ -4539,9 +4489,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 2148,
+                      "line": 2088,
                       "col": 2,
-                      "byteIndex": 79919
+                      "byteIndex": 77047
                     }
                   },
                   {
@@ -4558,9 +4508,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 2154,
+                      "line": 2094,
                       "col": 2,
-                      "byteIndex": 80090
+                      "byteIndex": 77218
                     }
                   },
                   {
@@ -4577,9 +4527,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 2160,
+                      "line": 2100,
                       "col": 2,
-                      "byteIndex": 80267
+                      "byteIndex": 77395
                     }
                   },
                   {
@@ -4596,9 +4546,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/datetime/src/date.ts",
-                      "line": 2166,
+                      "line": 2106,
                       "col": 2,
-                      "byteIndex": 80441
+                      "byteIndex": 77569
                     }
                   }
                 ]
