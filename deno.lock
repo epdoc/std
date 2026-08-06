@@ -3,7 +3,7 @@
   "specifiers": {
     "jsr:@epdoc/cmd@~0.3.2": "0.3.2",
     "jsr:@epdoc/colors@^1.1.3": "1.1.3",
-    "jsr:@epdoc/datetime@^4.2.8": "4.2.8",
+    "jsr:@epdoc/datetime@^4.2.9": "4.2.9",
     "jsr:@epdoc/duration@~0.3.22": "0.3.22",
     "jsr:@epdoc/fmt@^1.0.19": "1.0.19",
     "jsr:@epdoc/fs@^1.6.9": "1.6.9",
@@ -36,8 +36,8 @@
     "@epdoc/datetime@4.2.7": {
       "integrity": "4776d91837cb200c81ae80d589ad2b7f7fe5c2fdb60f8f759bab5f4bf1a6e52e"
     },
-    "@epdoc/datetime@4.2.8": {
-      "integrity": "8262c1289857640e8dc9920de6d7982d1e1954a3223d8103c1de34f0ec6de687"
+    "@epdoc/datetime@4.2.9": {
+      "integrity": "bdb76e8efd36d67c4af76ba526b5bae224e98110ff447f3cad4426f24ec357b8"
     },
     "@epdoc/duration@0.3.22": {
       "integrity": "bf388c84ef857fc79a6c8dcddc34c03a0af9b9872bb308c56809e5cb6eca416c"
@@ -142,14 +142,14 @@
       },
       "condition": {
         "dependencies": [
-          "jsr:@epdoc/datetime@^4.2.8",
+          "jsr:@epdoc/datetime@^4.2.9",
           "jsr:@epdoc/type@^2.0.2",
           "jsr:@std/assert@^1.0.19"
         ]
       },
       "daterange": {
         "dependencies": [
-          "jsr:@epdoc/datetime@^4.2.8",
+          "jsr:@epdoc/datetime@^4.2.9",
           "jsr:@epdoc/type@^2.0.2",
           "jsr:@std/assert@^1.0.19"
         ]
@@ -169,7 +169,7 @@
       "exif": {
         "dependencies": [
           "jsr:@epdoc/cmd@~0.3.2",
-          "jsr:@epdoc/datetime@^4.2.8",
+          "jsr:@epdoc/datetime@^4.2.9",
           "jsr:@epdoc/fs@^1.6.9",
           "jsr:@epdoc/type@^2.0.2",
           "jsr:@std/assert@^1.0.19"
@@ -186,7 +186,7 @@
       },
       "fs": {
         "dependencies": [
-          "jsr:@epdoc/datetime@^4.2.8",
+          "jsr:@epdoc/datetime@^4.2.9",
           "jsr:@epdoc/transform@^2.0.8",
           "jsr:@epdoc/type@^2.0.2",
           "jsr:@std/assert@^1.0.19",
@@ -215,7 +215,7 @@
       "table": {
         "dependencies": [
           "jsr:@epdoc/colors@^1.1.3",
-          "jsr:@epdoc/datetime@^4.2.8",
+          "jsr:@epdoc/datetime@^4.2.9",
           "jsr:@epdoc/fmt@^1.0.19",
           "jsr:@epdoc/type@^2.0.2",
           "jsr:@std/assert@^1.0.19",
@@ -237,7 +237,7 @@
       },
       "transform": {
         "dependencies": [
-          "jsr:@epdoc/datetime@^4.2.8",
+          "jsr:@epdoc/datetime@^4.2.9",
           "jsr:@epdoc/type@^2.0.2",
           "jsr:@std/assert@^1.0.19",
           "jsr:@std/encoding@^1.0.11"
