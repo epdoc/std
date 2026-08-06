@@ -1,5 +1,29 @@
 import { DateTime, type ISOTZ } from '@epdoc/datetime';
+import { _ } from '@epdoc/type';
 import type { Metadata } from './metadata.ts';
+
+/** Parsed components of an exiftool date/time value. */
+export interface Parts {
+  year: number;
+  month: number;
+  day: number;
+  hour: number;
+  minute: number;
+  second: number;
+  millisecond?: number;
+  /** e.g. "+02:00" (omitted when the value carries no timezone). */
+  tzOffset?: string;
+}
+
+/** The fields {@link format} requires. */
+export interface Input {
+  year: number;
+  month: number;
+  day: number;
+  hour: number;
+  minute: number;
+  second: number;
+}
 
 /**
  * Build a {@link DateTime} from parsed EXIF date components, applying any
@@ -44,7 +68,7 @@ export function build(
     milliseconds = parseMilliseconds(subSec);
   }
   let tzOffset = parts.tzOffset;
-  if (!tzOffset && offset) tzOffset = offset;
+  if (!tzOffset && offset) tzOffset = normalizeTzOffset(offset);
 
   return fromParts({ ...parts, millisecond: milliseconds, tzOffset });
 }
@@ -52,25 +76,47 @@ export function build(
 /**
  * Return the creation date/time from an EXIF metadata object.
  *
- * Priority: DateTimeOriginal (with SubSecDateTimeOriginal) → CreateDate /
- * DateCreated (with SubSecCreateDate).
+ * Alias/Wrapper for getOriginal with fallback to Digitized or OS File Dates.
  */
 export function getCreated(meta: Metadata): DateTime | undefined {
-  const original = build(
-    meta.SubSecDateTimeOriginal ?? meta.DateTimeOriginal,
-    meta.SubSecTimeOriginal,
-    meta.OffsetTimeOriginal,
-  );
-  if (original) return original;
+  return getOriginal(meta) ?? getDigitized(meta) ?? build(meta.FileModifyDate);
+}
 
-  const digitized = build(
-    meta.SubSecCreateDate ?? meta.CreateDate ?? meta.DateCreated,
-    meta.SubSecTimeDigitized,
-    meta.OffsetTimeDigitized,
+/**
+ * Return the metadata modification date/time.
+ */
+export function getModified(meta: Metadata): DateTime | undefined {
+  return (
+    build(
+      meta.SubSecModifyDate ?? meta.ModifyDate,
+      meta.SubSecTime,
+      meta.OffsetTime,
+    ) ??
+      build(meta.FileModifyDate, undefined, meta.OffsetTime) ??
+      build(meta.FileInodeChangeDate, undefined, meta.OffsetTime) ??
+      build(meta.FileAccessDate, undefined, meta.OffsetTime)
   );
-  if (digitized) return digitized;
+}
 
-  return build(meta.FileModifyDate);
+/**
+ * Return the digitization date/time (CreateDate / DigitalCreationDateTime).
+ */
+export function getDigitized(meta: Metadata): DateTime | undefined {
+  return (
+    // Priority 1: ExifTool Composite Tag
+    build(meta.SubSecCreateDate) ??
+      // Priority 2: Standard EXIF Tags (EXIF DateTimeDigitized is CreateDate in ExifTool)
+      build(
+        meta.CreateDate,
+        meta.SubSecTimeDigitized,
+        meta.OffsetTimeDigitized,
+      ) ??
+      // Priority 3: XMP / IPTC Digitized Tags
+      build(meta.DigitalCreationDateTime) ??
+      build(meta.DigitalCreationDate) ??
+      // Priority 4: Fallback to Original Date (For native photos, taken == digitized)
+      getOriginal(meta)
+  );
 }
 
 /**
@@ -78,45 +124,20 @@ export function getCreated(meta: Metadata): DateTime | undefined {
  *
  * Uses CreateDate / DateCreated (with SubSecCreateDate when present).
  */
-export function getDigitized(meta: Metadata): DateTime | undefined {
-  return build(
-    meta.SubSecCreateDate ?? meta.CreateDate ?? meta.DateCreated,
-    meta.SubSecTimeDigitized,
-    meta.OffsetTimeDigitized,
-  ) ?? build(meta.FileModifyDate);
-}
-
-/**
- * Return the modification date/time from an EXIF metadata object.
- *
- * Priority: ModifyDate → FileModifyDate → FileInodeChangeDate → FileAccessDate.
- */
-export function getModified(meta: Metadata): DateTime | undefined {
-  const modified = build(
-    meta.SubSecModifyDate ?? meta.ModifyDate,
-    meta.SubSecTime,
-    meta.OffsetTime,
-  );
-  if (modified) return modified;
-
-  const fileModified = build(
-    meta.FileModifyDate,
-    undefined,
-    meta.OffsetTime,
-  );
-  if (fileModified) return fileModified;
-
-  const fileInodeChanged = build(
-    meta.FileInodeChangeDate,
-    undefined,
-    meta.OffsetTime,
-  );
-  if (fileInodeChanged) return fileInodeChanged;
-
-  return build(
-    meta.FileAccessDate,
-    undefined,
-    meta.OffsetTime,
+export function getOriginal(meta: Metadata): DateTime | undefined {
+  return (
+    // Priority 1: ExifTool Composite Tag (includes subsec & tz if available)
+    build(meta.SubSecDateTimeOriginal) ??
+      // Priority 2: Standard EXIF Tags + optional split offset/subsec
+      build(
+        meta.DateTimeOriginal,
+        meta.SubSecTimeOriginal,
+        meta.OffsetTimeOriginal,
+      ) ??
+      // Priority 3: XMP / IPTC Original Date Tags
+      build(meta.DateCreated) ??
+      // Priority 4: GPS Timestamp (UTC)
+      build(meta.GPSDateTime)
   );
 }
 
@@ -125,20 +146,7 @@ export function getModified(meta: Metadata): DateTime | undefined {
  * original (DateTimeOriginal) → digitized (CreateDate) → modified (ModifyDate).
  */
 export function getPrimary(meta: Metadata): DateTime | undefined {
-  return getCreated(meta) ?? getDigitized(meta) ?? getModified(meta);
-}
-
-/** Parsed components of an exiftool date/time value. */
-export interface Parts {
-  year: number;
-  month: number;
-  day: number;
-  hour: number;
-  minute: number;
-  second: number;
-  millisecond?: number;
-  /** e.g. "+02:00" (omitted when the value carries no timezone). */
-  tzOffset?: string;
+  return getCreated(meta) ?? getModified(meta);
 }
 
 const EXIF_DATE_FULL_RE =
@@ -178,12 +186,27 @@ export function parse(value: string | undefined): Parts | undefined {
  * than 3 digits are truncated to millisecond precision.
  */
 export function parseMilliseconds(raw: string | number | undefined): number | undefined {
-  if (raw === undefined || raw === null) return undefined;
-  const s = String(raw);
-  const frac = s.padEnd(3, '0').slice(0, 3);
-  return parseInt(frac, 10);
+  if (_.isNullOrUndefined(raw)) return undefined;
+  const s = String(raw).trim();
+  if (!s) return undefined;
+
+  const fraction = parseFloat(`0.${s}`);
+  if (isNaN(fraction)) return undefined;
+
+  return Math.round(fraction * 1000);
 }
 
+/**
+ * Normalize offset strings (e.g., "-0600" or "Z") into ISO "+00:00" / "-06:00" format.
+ */
+export function normalizeTzOffset(tz: string): string {
+  const trimmed = tz.trim();
+  if (trimmed === 'Z') return '+00:00';
+  if (/^[+-]\d{4}$/.test(trimmed)) {
+    return `${trimmed.slice(0, 3)}:${trimmed.slice(3)}`;
+  }
+  return trimmed;
+}
 /**
  * Convert a timezone offset string (e.g. `"-06:00"`, `"+01:00"`) to signed
  * minutes using the intuitive ISO 8601 convention: positive values are ahead
@@ -196,20 +219,11 @@ export function parseMilliseconds(raw: string | number | undefined): number | un
  * @throws Error if the offset cannot be parsed.
  */
 export function parseTzOffset(tz: string): number {
-  const sign = tz.startsWith('-') ? -1 : 1;
-  const rest = tz.startsWith('-') || tz.startsWith('+') ? tz.slice(1) : tz;
+  const normalized = normalizeTzOffset(tz);
+  const sign = normalized.startsWith('-') ? -1 : 1;
+  const rest = normalized.startsWith('-') || normalized.startsWith('+') ? normalized.slice(1) : normalized;
   const parts = rest.split(':');
   return sign * (parseInt(parts[0], 10) * 60 + parseInt(parts[1] ?? '0', 10));
-}
-
-/** The fields {@link format} requires. */
-export interface Input {
-  year: number;
-  month: number;
-  day: number;
-  hour: number;
-  minute: number;
-  second: number;
 }
 
 /**

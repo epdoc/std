@@ -120,6 +120,7 @@ export type File = InfoResult<typeof fileDef>;
 export interface ImageDef extends InfoSection {
   width: InfoDef<number>;
   height: InfoDef<number>;
+  originatedAt: InfoDef<DateTime>;
   fileSize: InfoDef<string | number>;
   encoding: InfoDef<string>;
   // mimeType: InfoDef<string>;
@@ -138,6 +139,7 @@ export const imageDef: ImageDef = {
   height: {
     value: (_fs: FS.File, m: Metadata): number | undefined => asInt(m.ExifImageHeight) || asInt(m.ImageHeight),
   },
+  originatedAt: { value: (fs: FS.File): DateTime | undefined => fs.info.createdAt ?? undefined },
   fileSize: { value: readTag('FileSize') },
   encoding: { value: readTag('EncodingProcess') },
   // mimeType: { value: readTag('MIMEType') },

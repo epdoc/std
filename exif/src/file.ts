@@ -1,5 +1,5 @@
 import * as Cmd from '@epdoc/cmd';
-import type { DateTime } from '@epdoc/datetime';
+import { DateTime, type ISOTZ } from '@epdoc/datetime';
 import * as FS from '@epdoc/fs/fs';
 import { _ } from '@epdoc/type';
 import { assert } from '@std/assert';
@@ -12,6 +12,12 @@ import * as Normalize from './normalize.ts';
 import type { FileInfo, IDryRun } from './types.ts';
 
 export const EXIFTOOL_READ_FLAGS = ['-j', '-struct', '-api', 'QuickTimeUTC=1'];
+
+export interface PartialDate {
+  year: number;
+  month?: number;
+  day?: number;
+}
 
 /**
  * Wrapper around a single media file and its EXIF metadata.
@@ -249,6 +255,72 @@ export class File {
     this.#setDateTags('DateTimeOriginal', 'SubSecTimeOriginal', 'OffsetTimeOriginal', datetime);
     this.#setDateTags('CreateDate', 'SubSecTimeDigitized', 'OffsetTimeDigitized', datetime);
     this.#setDateTags('ModifyDate', 'SubSecTime', 'OffsetTime', datetime);
+  }
+
+  /**
+   * Shift all creation, digitization, and modification timestamps by a relative duration.
+   * Useful for correcting camera clock drift across a batch of photos.
+   *
+   * @param duration Relative offset (e.g. { seconds: 192 } or Temporal.DurationLike)
+   */
+  adjustAllDates(duration: Temporal.DurationLike | { seconds?: number; milliseconds?: number }): void {
+    if (this.createdAt) {
+      this.setCreatedAt(this.createdAt.add(duration));
+    }
+    if (this.digitizedAt) {
+      this.setDigitizedAt(this.digitizedAt.add(duration));
+    }
+    if (this.modifiedAt) {
+      this.setModifiedAt(this.modifiedAt.add(duration));
+    }
+  }
+
+  /**
+   * Set an approximate or partial date for scanned photos.
+   *
+   * Standard EXIF tags receive a padded DateTime (e.g. 1975 -> 1975:01:01 00:00:00),
+   * while XMP tags store the exact partial ISO string ("1975" or "1975-06").
+   */
+  setPartialDate(date: PartialDate): void {
+    const month = date.month ?? 1;
+    const day = date.day ?? 1;
+
+    // 1. Pad EXIF tags using DateTime.fromComponents
+    const dt = DateTime.fromComponents(date.year, month, day, 0, 0, 0, 0);
+    this.setAllDates(dt);
+
+    // 2. Store exact partial date in XMP/IPTC
+    const yStr = String(date.year).padStart(4, '0');
+    let partialStr = yStr;
+    if (date.month !== undefined) {
+      partialStr += `-${String(date.month).padStart(2, '0')}`;
+      if (date.day !== undefined) {
+        partialStr += `-${String(date.day).padStart(2, '0')}`;
+      }
+    }
+
+    this.setTag('XMP-dc:Date', partialStr);
+    this.setTag('XMP-photoshop:DateCreated', partialStr);
+  }
+
+  /**
+   * Re-base photo timestamps to a target timezone offset.
+   * Adjusts both wall-clock time and timezone offset tags while keeping
+   * the exact same UTC instant.
+   *
+   * Example: Camera was set to NY (17:00 -05:00). Re-basing to SFO (-07:00)
+   * updates wall-clock to 14:00 and offset tags to "-07:00".
+   */
+  setTimezoneAndShiftWallClock(targetTz: ISOTZ): void {
+    if (this.createdAt) {
+      this.setCreatedAt(this.createdAt.withTz(targetTz));
+    }
+    if (this.digitizedAt) {
+      this.setDigitizedAt(this.digitizedAt.withTz(targetTz));
+    }
+    if (this.modifiedAt) {
+      this.setModifiedAt(this.modifiedAt.withTz(targetTz));
+    }
   }
 
   /**
