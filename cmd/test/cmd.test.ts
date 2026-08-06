@@ -92,7 +92,7 @@ Deno.test('cmd - Cmd.Result.json parses stdout', async () => {
 
 Deno.test('cmd - Cmd.Result.stdoutLines', async () => {
   const result = await Cmd.runner('echo', ['line1\nline2\nline3']).run();
-  const lines = result.stdoutLines;
+  const lines = result.stdoutAsLines;
   assertEquals(lines.length, 3);
   assertEquals(lines[0], 'line1');
 });

@@ -1324,17 +1324,14 @@
                     }
                   },
                   {
-                    "name": "stdoutLines",
+                    "name": "stdoutAsString",
                     "kind": "getter",
                     "functionDef": {
                       "params": [],
                       "returnType": {
-                        "kind": "array",
-                        "value": {
-                          "repr": "string",
-                          "kind": "keyword",
-                          "value": "string"
-                        }
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
                       },
                       "hasBody": true
                     },
@@ -1346,7 +1343,26 @@
                     }
                   },
                   {
-                    "name": "stderrLines",
+                    "name": "stderrAsString",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 142,
+                      "col": 2,
+                      "byteIndex": 3917
+                    }
+                  },
+                  {
+                    "name": "stdoutAsLines",
                     "kind": "getter",
                     "functionDef": {
                       "params": [],
@@ -1362,9 +1378,31 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
-                      "line": 144,
+                      "line": 146,
                       "col": 2,
-                      "byteIndex": 4016
+                      "byteIndex": 3986
+                    }
+                  },
+                  {
+                    "name": "stderrAsLines",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "kind": "array",
+                        "value": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
+                      "line": 152,
+                      "col": 2,
+                      "byteIndex": 4156
                     }
                   },
                   {
@@ -1393,9 +1431,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd-result.ts",
-                      "line": 150,
+                      "line": 158,
                       "col": 2,
-                      "byteIndex": 4184
+                      "byteIndex": 4326
                     }
                   }
                 ],

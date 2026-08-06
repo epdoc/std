@@ -1,6 +1,6 @@
 import type { CmdError } from './cmd-error.ts';
-import type { CmdOptions, ICmdResult, Milliseconds } from './types.ts';
 import { getExitCodeDescription } from './codes.ts';
+import type { CmdOptions, ICmdResult, Milliseconds } from './types.ts';
 
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
@@ -136,13 +136,21 @@ export class CmdResult<T = void> implements ICmdResult {
     return this._stderr;
   }
 
-  get stdoutLines(): string[] {
+  get stdoutAsString(): string {
+    return this.stdout.trim();
+  }
+
+  get stderrAsString(): string {
+    return this.stdout.trim();
+  }
+
+  get stdoutAsLines(): string[] {
     const cleaned = this.stdout.trim();
     if (!cleaned) return [];
     return cleaned.split(/\r?\n/).map((line) => line.trim());
   }
 
-  get stderrLines(): string[] {
+  get stderrAsLines(): string[] {
     const cleaned = this.stderr.trim();
     if (!cleaned) return [];
     return cleaned.split(/\r?\n/).map((line) => line.trim());
