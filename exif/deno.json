@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/exif",
-  "version": "0.1.20",
+  "version": "0.1.21",
   "description": "Read and write EXIF metadata via the exiftool binary",
   "exports": {
     ".": "./src/mod.ts"
@@ -55,8 +55,8 @@
   "license": "MIT",
   "imports": {
     "@epdoc/cmd": "jsr:@epdoc/cmd@^0.3.2",
-    "@epdoc/datetime": "jsr:@epdoc/datetime@^4.2.8",
-    "@epdoc/fs": "jsr:@epdoc/fs@^1.6.9",
+    "@epdoc/datetime": "jsr:@epdoc/datetime@^4.2.9",
+    "@epdoc/fs": "jsr:@epdoc/fs@^1.6.10",
     "@epdoc/type": "jsr:@epdoc/type@^2.0.2",
     "@std/assert": "jsr:@std/assert@^1.0.19"
   }
