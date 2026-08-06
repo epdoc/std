@@ -1,7 +1,8 @@
 import type { DateTime } from '@epdoc/datetime';
 import type * as FS from '@epdoc/fs/fs';
 import { _, type Integer } from '@epdoc/type';
-import type { ISODateString, Metadata } from './metadata.ts';
+import * as Date from './date/mod.ts';
+import type { ISODateString, Metadata } from './meta-types.ts';
 import * as Normalize from './normalize.ts';
 import * as Parse from './parse.ts';
 // import { FileInfo } from './types.ts';
@@ -79,6 +80,17 @@ export function titleCase(key: string): string {
     .trim();
 }
 
+/**
+ * EXIF-derived content dates. Unlike the filesystem-level `fileDef` dates,
+ * these reflect when the content was captured/digitized/modified per the
+ * embedded metadata (e.g. a photo taken in 1925 and scanned in 2024).
+ *
+ * Each falls back across the tag hierarchies in {@link Date.Meta}.
+ */
+const exifOriginal = (_fs: FS.File, meta: Metadata): DateTime | undefined => Date.Meta.from(meta).original();
+const exifDigitized = (_fs: FS.File, meta: Metadata): DateTime | undefined => Date.Meta.from(meta).digitized();
+const exifModified = (_fs: FS.File, meta: Metadata): DateTime | undefined => Date.Meta.from(meta).modified();
+
 // ============================================================================
 // Section consts — single source of truth for each info category
 // ============================================================================
@@ -96,20 +108,21 @@ export interface FileDef extends InfoSection {
 
 /**
  * Filesystem-level information from {@link @epdoc/fs!FS.File} stats (not EXIF).
+ * Returns `undefined` when the file's stats have not been read yet.
  */
 export const fileDef: FileDef = {
   path: { value: (fs: FS.File): FS.FilePath => fs.path },
   filename: { value: (fs: FS.File): string => fs.filename },
   ext: { value: (fs: FS.File): string => fs.ext },
   createdAt: {
-    value: (fs: FS.File): DateTime | undefined => fs.info.createdAt ?? undefined,
-    json: (fs: FS.File): JsonValue | undefined => fs.info.createdAt?.toISOString(),
+    value: (fs: FS.File): DateTime | undefined => fs.hasInfo() ? fs.info.createdAt ?? undefined : undefined,
+    json: (fs: FS.File): JsonValue | undefined => fs.hasInfo() ? fs.info.createdAt?.toISOString() : undefined,
   },
   modifiedAt: {
-    value: (fs: FS.File): DateTime | undefined => fs.info.modifiedAt ?? undefined,
-    json: (fs: FS.File): JsonValue | undefined => fs.info.modifiedAt?.toISOString(),
+    value: (fs: FS.File): DateTime | undefined => fs.hasInfo() ? fs.info.modifiedAt ?? undefined : undefined,
+    json: (fs: FS.File): JsonValue | undefined => fs.hasInfo() ? fs.info.modifiedAt?.toISOString() : undefined,
   },
-  size: { value: (fs: FS.File): number => fs.info.size },
+  size: { value: (fs: FS.File): number | undefined => fs.hasInfo() ? fs.info.size : undefined },
   type: { value: (_fs: FS.File, m: Metadata): string => m.MIMEType?.split('/')[0] ?? 'unknown' },
   mimeType: { value: readTag('MIMEType') },
 };
@@ -121,6 +134,8 @@ export interface ImageDef extends InfoSection {
   width: InfoDef<number>;
   height: InfoDef<number>;
   originatedAt: InfoDef<DateTime>;
+  digitizedAt: InfoDef<DateTime>;
+  modifiedAt: InfoDef<DateTime>;
   fileSize: InfoDef<string | number>;
   encoding: InfoDef<string>;
   // mimeType: InfoDef<string>;
@@ -139,7 +154,9 @@ export const imageDef: ImageDef = {
   height: {
     value: (_fs: FS.File, m: Metadata): number | undefined => asInt(m.ExifImageHeight) || asInt(m.ImageHeight),
   },
-  originatedAt: { value: (fs: FS.File): DateTime | undefined => fs.info.createdAt ?? undefined },
+  originatedAt: { value: exifOriginal },
+  digitizedAt: { value: exifDigitized },
+  modifiedAt: { value: exifModified },
   fileSize: { value: readTag('FileSize') },
   encoding: { value: readTag('EncodingProcess') },
   // mimeType: { value: readTag('MIMEType') },
@@ -169,6 +186,9 @@ export interface VideoResDef extends InfoSection {
 }
 
 export interface VideoOtherDef extends InfoSection {
+  originatedAt: InfoDef<DateTime>;
+  digitizedAt: InfoDef<DateTime>;
+  modifiedAt: InfoDef<DateTime>;
   duration: InfoDef<number>;
   fileSize: InfoDef<string | number>;
   codec: InfoDef<string>;
@@ -221,6 +241,9 @@ export const videoOtherDef: VideoOtherDef = {
   // exifHeight: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.ExifImageHeight) },
   // sourceWidth: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.SourceImageWidth) },
   // sourceHeight: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.SourceImageHeight) },
+  originatedAt: { value: exifOriginal },
+  digitizedAt: { value: exifDigitized },
+  modifiedAt: { value: exifModified },
   duration: { value: (_fs: FS.File, m: Metadata): number | undefined => Parse.duration(m.Duration) },
   fileSize: { value: readTag('FileSize') },
   // tag: { value: (_fs: FS.File, m: Metadata): string | undefined => Normalize.videoResolution(m) },
@@ -241,6 +264,9 @@ export type VideoOther = InfoResult<typeof videoOtherDef>;
 export type Video = VideoRes | VideoOther;
 
 export interface AudioDef extends InfoSection {
+  originatedAt: InfoDef<DateTime>;
+  digitizedAt: InfoDef<DateTime>;
+  modifiedAt: InfoDef<DateTime>;
   format: InfoDef<string>;
   channels: InfoDef<number>;
   sampleRate: InfoDef<number>;
@@ -250,6 +276,9 @@ export interface AudioDef extends InfoSection {
 }
 
 export const audioDef: AudioDef = {
+  originatedAt: { value: exifOriginal },
+  digitizedAt: { value: exifDigitized },
+  modifiedAt: { value: exifModified },
   format: { value: readTag('AudioFormat') },
   channels: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.AudioChannels) },
   sampleRate: { value: readTag('AudioSampleRate') },
@@ -301,6 +330,39 @@ export const appDef: AppDef = {
 };
 
 export type App = InfoResult<typeof appDef>;
+
+/**
+ * Document-level information (PDF, Word, Excel, presentations, text, etc.).
+ *
+ * Unlike `appDef` (the software that created the file), these fields describe
+ * the document itself. `pageCount` handles both the PDF `PageCount` tag and
+ * the Office `Pages` tag; `producer` is the PDF producer (when present).
+ */
+export interface DocDef extends InfoSection {
+  title: InfoDef<string>;
+  author: InfoDef<string>;
+  subject: InfoDef<string>;
+  keywords: InfoDef<string | string[]>;
+  originatedAt: InfoDef<DateTime>;
+  digitizedAt: InfoDef<DateTime>;
+  modifiedAt: InfoDef<DateTime>;
+  pageCount: InfoDef<number>;
+  producer: InfoDef<string>;
+}
+
+export const docDef: DocDef = {
+  title: { value: readTag('Title') },
+  author: { value: readTag('Author') },
+  subject: { value: readTag('Subject') },
+  keywords: { value: readTag('Keywords') },
+  originatedAt: { value: exifOriginal },
+  digitizedAt: { value: exifDigitized },
+  modifiedAt: { value: exifModified },
+  pageCount: { value: (_fs: FS.File, m: Metadata): number | undefined => asInt(m.PageCount) ?? asInt(m.Pages) },
+  producer: { value: readTag('Producer') },
+};
+
+export type Doc = InfoResult<typeof docDef>;
 
 export type FileId = {
   documentId?: string;

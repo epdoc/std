@@ -5,9 +5,9 @@ import { _ } from '@epdoc/type';
 import { assert } from '@std/assert';
 import * as Schema from './collections.ts';
 import { collect, fileDef as FileDef } from './collections.ts';
-import * as ExifDate from './date.ts';
+import * as Date from './date/mod.ts';
 import * as Gps from './gps.ts';
-import type { Metadata } from './metadata.ts';
+import type { Metadata } from './meta-types.ts';
 import * as Normalize from './normalize.ts';
 import type { FileInfo, IDryRun } from './types.ts';
 
@@ -107,17 +107,26 @@ export class File {
     if (result.file.type === 'image') {
       const image = this.image;
       if (Object.keys(image).length) result.image = image;
-    } else {
-      if (result.file.type === 'video') {
-        const video = this.video;
-        if (Object.keys(video).length) result.video = video;
-      }
+    } else if (result.file.type === 'video') {
+      const video = this.video;
+      if (Object.keys(video).length) result.video = video;
       const audio = this.audio;
       if (Object.keys(audio).length) {
         if (Object.keys(audio).length !== 1 || audio.codec !== Normalize.CODEC_AUDIO_UNKNOWN) {
           result.audio = audio;
         }
       }
+    } else if (result.file.type === 'audio') {
+      const audio = this.audio;
+      if (Object.keys(audio).length) {
+        if (Object.keys(audio).length !== 1 || audio.codec !== Normalize.CODEC_AUDIO_UNKNOWN) {
+          result.audio = audio;
+        }
+      }
+    } else {
+      // Documents and other non-media types (application/pdf, application/msword, text/plain, ...)
+      const doc = this.doc;
+      if (Object.keys(doc).length) result.doc = doc;
     }
     if (opts.metadata) {
       result.metadata = this.metadata;
@@ -146,6 +155,10 @@ export class File {
 
   get audio(): Schema.Audio {
     return collect(Schema.audioDef, this.#fsFile, this.metadata);
+  }
+
+  get doc(): Schema.Doc {
+    return collect(Schema.docDef, this.#fsFile, this.metadata);
   }
 
   get camera(): Schema.Camera {
@@ -180,30 +193,40 @@ export class File {
   }
 
   /**
-   * Returns the most accurate creation timestamp available.
+   * Returns the most accurate content origination timestamp available, based solely on metadata
+   * timestamps within the file. Does not use file system values.
+   *
+   * Priority: DateTimeOriginal → CreateDate / DateCreated.
+   */
+  get originatedAt(): DateTime | undefined {
+    return Date.Meta.from(this.metadata).original();
+  }
+
+  /**
+   * Returns the most accurate file creation timestamp available, based solely on metadata
+   * timestamps within the file. Does not use file system values.
    *
    * Priority: DateTimeOriginal → CreateDate / DateCreated.
    */
   get createdAt(): DateTime | undefined {
-    return ExifDate.getCreated(this.metadata);
+    return Date.Meta.from(this.metadata).created();
   }
 
   /**
-   * Returns the digitization timestamp.
-   *
-   * Uses CreateDate / DateCreated (with SubSecCreateDate when present).
-   */
-  get digitizedAt(): DateTime | undefined {
-    return ExifDate.getDigitized(this.metadata);
-  }
-
-  /**
-   * Returns the most accurate modification timestamp available.
+   * Returns the most accurate modification timestamp available, based solely on metadata
+   * timestamps within the file. Does not use file system values.
    *
    * Priority: ModifyDate → FileModifyDate → FileInodeChangeDate → FileAccessDate.
    */
   get modifiedAt(): DateTime | undefined {
-    return ExifDate.getModified(this.metadata);
+    return Date.Meta.from(this.metadata).modified();
+  }
+
+  /**
+   * Returns the digitization timestamp.
+   */
+  get digitizedAt(): DateTime | undefined {
+    return Date.Meta.from(this.metadata).digitized();
   }
 
   /**
@@ -452,6 +475,14 @@ export class File {
     return this.metadata.MIMEType?.startsWith('video/') ?? false;
   }
 
+  #fsCreatedAt(): DateTime | undefined {
+    return this.#fsFile.hasInfo() ? this.#fsFile.info.createdAt ?? undefined : undefined;
+  }
+
+  #fsModifiedAt(): DateTime | undefined {
+    return this.#fsFile.hasInfo() ? this.#fsFile.info.modifiedAt ?? undefined : undefined;
+  }
+
   #setTag(tag: string, value: string): void {
     this.#pending.set(tag, value);
     this.#dirty = true;
@@ -467,7 +498,7 @@ export class File {
   }
 
   #setDateTags(dateTag: string, subSecTag: string, offsetTag: string, dt: DateTime): void {
-    this.#setTag(dateTag, ExifDate.formatDateTime(dt));
+    this.#setTag(dateTag, Date.Util.formatDateTime(dt));
 
     const ms = dt.millisecond;
     this.#setTag(subSecTag, ms > 0 ? String(ms).padStart(3, '0') : '');

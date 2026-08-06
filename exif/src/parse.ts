@@ -1,5 +1,5 @@
 import { _ } from '@epdoc/type';
-import type { Metadata } from './metadata.ts';
+import type { Metadata } from './meta-types.ts';
 
 /**
  * Parse the JSON stdout of `exiftool -j` into an array of metadata objects.

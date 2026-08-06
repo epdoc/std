@@ -311,6 +311,300 @@ Deno.test('File.id', async (t) => {
   });
 });
 
+Deno.test('File.image dates', async (t) => {
+  await t.step('originatedAt uses DateTimeOriginal, not the filesystem time', () => {
+    const file = File.fromMetadata(meta({
+      DateTimeOriginal: '1925:06:15 14:30:00',
+      CreateDate: '2024:03:01 10:00:00',
+      ModifyDate: '2024:03:02 11:00:00',
+    }));
+    assertEquals(file.image.originatedAt?.toString().startsWith('1925-06-15'), true);
+  });
+
+  await t.step('digitizedAt uses CreateDate', () => {
+    const file = File.fromMetadata(meta({
+      DateTimeOriginal: '1925:06:15 14:30:00',
+      CreateDate: '2024:03:01 10:00:00',
+    }));
+    assertEquals(file.image.digitizedAt?.toString().startsWith('2024-03-01'), true);
+  });
+
+  await t.step('modifiedAt uses ModifyDate', () => {
+    const file = File.fromMetadata(meta({
+      DateTimeOriginal: '1925:06:15 14:30:00',
+      CreateDate: '2024:03:01 10:00:00',
+      ModifyDate: '2024:03:02 11:00:00',
+    }));
+    assertEquals(file.image.modifiedAt?.toString().startsWith('2024-03-02'), true);
+  });
+
+  await t.step('omits date fields when no metadata dates exist', () => {
+    const file = File.fromMetadata(meta({}));
+    assertEquals(file.image.originatedAt, undefined);
+    assertEquals(file.image.digitizedAt, undefined);
+    assertEquals(file.image.modifiedAt, undefined);
+  });
+});
+
+Deno.test('File.video dates', async (t) => {
+  await t.step('originatedAt uses DateTimeOriginal', () => {
+    const file = File.fromMetadata(meta({
+      MIMEType: 'video/mp4',
+      FileType: 'MP4',
+      FileTypeExtension: 'mp4',
+      DateTimeOriginal: '2026:07:31 18:00:00',
+      CreateDate: '2026:07:30 10:00:00',
+    }));
+    assertEquals(file.video.originatedAt?.toString().startsWith('2026-07-31'), true);
+  });
+
+  await t.step('digitizedAt falls back to QuickTime CreationDate', () => {
+    const file = File.fromMetadata(meta({
+      MIMEType: 'video/mp4',
+      FileType: 'MP4',
+      FileTypeExtension: 'mp4',
+      CreationDate: '2026:07:30 10:00:00',
+    }));
+    assertEquals(file.video.digitizedAt?.toString().startsWith('2026-07-30'), true);
+  });
+
+  await t.step('modifiedAt uses ModifyDate', () => {
+    const file = File.fromMetadata(meta({
+      MIMEType: 'video/mp4',
+      FileType: 'MP4',
+      FileTypeExtension: 'mp4',
+      ModifyDate: '2026:07:31 12:00:00',
+    }));
+    assertEquals(file.video.modifiedAt?.toString().startsWith('2026-07-31T12:00:00'), true);
+  });
+});
+
+Deno.test('File.audio dates', async (t) => {
+  await t.step('reads EXIF-like dates from standalone audio files', () => {
+    const file = File.fromMetadata(meta({
+      MIMEType: 'audio/mpeg',
+      FileType: 'MP3',
+      FileTypeExtension: 'mp3',
+      DateTimeOriginal: '1985:11:20 09:00:00',
+      CreateDate: '2001:06:01 12:00:00',
+      ModifyDate: '2001:06:02 13:00:00',
+    }));
+    assertEquals(file.audio.originatedAt?.toString().startsWith('1985-11-20'), true);
+    assertEquals(file.audio.digitizedAt?.toString().startsWith('2001-06-01'), true);
+    assertEquals(file.audio.modifiedAt?.toString().startsWith('2001-06-02'), true);
+  });
+});
+
+Deno.test('File.doc', async (t) => {
+  await t.step('reads PDF metadata', () => {
+    const file = File.fromMetadata(meta({
+      MIMEType: 'application/pdf',
+      FileType: 'PDF',
+      FileTypeExtension: 'pdf',
+      Title: 'Annual Report 2025',
+      Author: 'Jane Doe',
+      Subject: 'Financial summary',
+      Keywords: ['finance', 'report'],
+      Producer: 'Adobe PDF Library 17.0',
+      PDFVersion: '1.7',
+      PageCount: 42,
+      CreateDate: '2025:01:15 09:30:00',
+      ModifyDate: '2025:01:20 16:45:00',
+    }));
+    assertEquals(file.doc.title, 'Annual Report 2025');
+    assertEquals(file.doc.author, 'Jane Doe');
+    assertEquals(file.doc.subject, 'Financial summary');
+    assertEquals(file.doc.keywords, ['finance', 'report']);
+    assertEquals(file.doc.producer, 'Adobe PDF Library 17.0');
+    assertEquals(file.doc.pageCount, 42);
+    assertEquals(file.doc.digitizedAt?.toString().startsWith('2025-01-15'), true);
+    assertEquals(file.doc.modifiedAt?.toString().startsWith('2025-01-20'), true);
+  });
+
+  await t.step('uses the Pages tag for Office documents', () => {
+    const file = File.fromMetadata(meta({
+      MIMEType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      FileType: 'DOCX',
+      FileTypeExtension: 'docx',
+      Title: 'Proposal',
+      Author: 'Bob Smith',
+      Pages: 17,
+      CreateDate: '2026:02:10 08:00:00',
+    }));
+    assertEquals(file.doc.title, 'Proposal');
+    assertEquals(file.doc.author, 'Bob Smith');
+    assertEquals(file.doc.pageCount, 17);
+  });
+
+  await t.step('omits fields when document metadata is missing', () => {
+    const file = File.fromMetadata(meta({
+      MIMEType: 'application/pdf',
+      FileType: 'PDF',
+      FileTypeExtension: 'pdf',
+    }));
+    assertEquals(file.doc, {});
+  });
+});
+
+Deno.test('File.info dispatch', async (t) => {
+  await t.step('includes the image section for images', () => {
+    const file = File.fromMetadata(meta({
+      DateTimeOriginal: '2026:07:31 18:00:00',
+      ExifImageWidth: 3000,
+      ExifImageHeight: 2000,
+    }));
+    const info = file.info();
+    assertEquals(info.file.type, 'image');
+    assertEquals(info.image?.originatedAt?.toString().startsWith('2026-07-31'), true);
+    assertEquals(info.image?.width, 3000);
+    assertEquals(info.doc, undefined);
+  });
+
+  await t.step('includes the video section for videos', () => {
+    const file = File.fromMetadata(meta({
+      MIMEType: 'video/mp4',
+      FileType: 'MP4',
+      FileTypeExtension: 'mp4',
+      DateTimeOriginal: '2026:07:31 18:00:00',
+    }));
+    const info = file.info();
+    assertEquals(info.file.type, 'video');
+    assertEquals(info.video?.originatedAt?.toString().startsWith('2026-07-31'), true);
+    assertEquals(info.image, undefined);
+  });
+
+  await t.step('includes the doc section for documents', () => {
+    const file = File.fromMetadata(meta({
+      MIMEType: 'application/pdf',
+      FileType: 'PDF',
+      FileTypeExtension: 'pdf',
+      Title: 'Report',
+      PageCount: 5,
+    }));
+    const info = file.info();
+    assertEquals(info.file.type, 'application');
+    assertEquals(info.doc?.title, 'Report');
+    assertEquals(info.doc?.pageCount, 5);
+    assertEquals(info.image, undefined);
+    assertEquals(info.video, undefined);
+  });
+});
+
+Deno.test('File.*At getters ignore filesystem dates from exiftool', async (t) => {
+  await t.step('originatedAt returns undefined when only filesystem dates exist', () => {
+    const file = File.fromMetadata(meta({
+      FileModifyDate: '2026:08:01 12:00:00',
+      FileAccessDate: '2026:08:01 13:00:00',
+      FileInodeChangeDate: '2026:08:01 14:00:00',
+      FileCreateDate: '2026:08:01 15:00:00',
+    }));
+    assertEquals(file.originatedAt, undefined);
+  });
+
+  await t.step('createdAt returns undefined when only filesystem dates exist', () => {
+    const file = File.fromMetadata(meta({
+      FileModifyDate: '2026:08:01 12:00:00',
+      FileAccessDate: '2026:08:01 13:00:00',
+      FileInodeChangeDate: '2026:08:01 14:00:00',
+      FileCreateDate: '2026:08:01 15:00:00',
+    }));
+    assertEquals(file.createdAt, undefined);
+  });
+
+  await t.step('modifiedAt returns undefined when only filesystem dates exist', () => {
+    const file = File.fromMetadata(meta({
+      FileModifyDate: '2026:08:01 12:00:00',
+      FileAccessDate: '2026:08:01 13:00:00',
+      FileInodeChangeDate: '2026:08:01 14:00:00',
+      FileCreateDate: '2026:08:01 15:00:00',
+    }));
+    assertEquals(file.modifiedAt, undefined);
+  });
+
+  await t.step('digitizedAt returns undefined when only filesystem dates exist', () => {
+    const file = File.fromMetadata(meta({
+      FileModifyDate: '2026:08:01 12:00:00',
+      FileAccessDate: '2026:08:01 13:00:00',
+      FileInodeChangeDate: '2026:08:01 14:00:00',
+      FileCreateDate: '2026:08:01 15:00:00',
+    }));
+    assertEquals(file.digitizedAt, undefined);
+  });
+
+  await t.step('prefers EXIF dates over filesystem dates when both are present', () => {
+    const file = File.fromMetadata(meta({
+      DateTimeOriginal: '2026:07:31 18:00:00',
+      CreateDate: '2026:07:30 10:00:00',
+      ModifyDate: '2026:07:29 14:00:00',
+      FileModifyDate: '2026:08:01 12:00:00',
+      FileAccessDate: '2026:08:01 13:00:00',
+      FileInodeChangeDate: '2026:08:01 14:00:00',
+      FileCreateDate: '2026:08:01 15:00:00',
+    }));
+    assertEquals(file.originatedAt?.toString().startsWith('2026-07-31'), true);
+    assertEquals(file.createdAt?.toString().startsWith('2026-07-31'), true);
+    assertEquals(file.digitizedAt?.toString().startsWith('2026-07-30'), true);
+    assertEquals(file.modifiedAt?.toString().startsWith('2026-07-29'), true);
+  });
+
+  await t.step('image section dates ignore filesystem dates', () => {
+    const file = File.fromMetadata(meta({
+      FileModifyDate: '2026:08:01 12:00:00',
+      FileAccessDate: '2026:08:01 13:00:00',
+      FileInodeChangeDate: '2026:08:01 14:00:00',
+      FileCreateDate: '2026:08:01 15:00:00',
+    }));
+    assertEquals(file.image.originatedAt, undefined);
+    assertEquals(file.image.digitizedAt, undefined);
+    assertEquals(file.image.modifiedAt, undefined);
+  });
+
+  await t.step('video section dates ignore filesystem dates', () => {
+    const file = File.fromMetadata(meta({
+      MIMEType: 'video/mp4',
+      FileType: 'MP4',
+      FileTypeExtension: 'mp4',
+      FileModifyDate: '2026:08:01 12:00:00',
+      FileAccessDate: '2026:08:01 13:00:00',
+      FileInodeChangeDate: '2026:08:01 14:00:00',
+      FileCreateDate: '2026:08:01 15:00:00',
+    }));
+    assertEquals(file.video.originatedAt, undefined);
+    assertEquals(file.video.digitizedAt, undefined);
+    assertEquals(file.video.modifiedAt, undefined);
+  });
+
+  await t.step('audio section dates ignore filesystem dates', () => {
+    const file = File.fromMetadata(meta({
+      MIMEType: 'audio/mpeg',
+      FileType: 'MP3',
+      FileTypeExtension: 'mp3',
+      FileModifyDate: '2026:08:01 12:00:00',
+      FileAccessDate: '2026:08:01 13:00:00',
+      FileInodeChangeDate: '2026:08:01 14:00:00',
+      FileCreateDate: '2026:08:01 15:00:00',
+    }));
+    assertEquals(file.audio.originatedAt, undefined);
+    assertEquals(file.audio.digitizedAt, undefined);
+    assertEquals(file.audio.modifiedAt, undefined);
+  });
+
+  await t.step('document section dates ignore filesystem dates', () => {
+    const file = File.fromMetadata(meta({
+      MIMEType: 'application/pdf',
+      FileType: 'PDF',
+      FileTypeExtension: 'pdf',
+      FileModifyDate: '2026:08:01 12:00:00',
+      FileAccessDate: '2026:08:01 13:00:00',
+      FileInodeChangeDate: '2026:08:01 14:00:00',
+      FileCreateDate: '2026:08:01 15:00:00',
+    }));
+    assertEquals(file.doc.originatedAt, undefined);
+    assertEquals(file.doc.digitizedAt, undefined);
+    assertEquals(file.doc.modifiedAt, undefined);
+  });
+});
+
 Deno.test('File.write in dry-run mode', async (t) => {
   await t.step('clears the dirty flag without invoking exiftool', async () => {
     const file = File.fromMetadata(meta({}), { dryRun: true });

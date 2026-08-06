@@ -1,6 +1,6 @@
 import type * as Schema from './collections.ts';
 import type * as Gps from './gps.ts';
-import type { Metadata } from './metadata.ts';
+import type { Metadata } from './meta-types.ts';
 
 /**
  * Options shared by the {@link Reader} and {@link File} classes.
@@ -19,6 +19,7 @@ export type FileJson = {
   image?: Schema.Image;
   video?: Schema.Video;
   audio?: Schema.Audio;
+  doc?: Schema.Doc;
   camera?: Schema.Camera;
   app?: Schema.App;
   createdAt?: string;
@@ -44,6 +45,7 @@ export type FileInfo = {
   image?: Schema.Image;
   video?: Schema.Video;
   audio?: Schema.Audio;
+  doc?: Schema.Doc;
   metadata?: Metadata;
 };
 export type FileInfoKey = keyof FileInfo;

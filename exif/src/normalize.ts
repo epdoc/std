@@ -1,7 +1,7 @@
 import { _ } from '@epdoc/type';
 import type { VideoRes } from './collections.ts';
 import { APP_NORMALIZE_RULES, CAMERA_MODEL_MAP } from './consts.ts';
-import type { Metadata } from './metadata.ts';
+import type { Metadata } from './meta-types.ts';
 
 export const CODEC_AUDIO_UNKNOWN = 'Unknown Audio Codec';
 
@@ -103,4 +103,16 @@ export function videoResolution(meta: Metadata): VideoRes | undefined {
   }
 
   return { tag: 'SD', width, height, isCropped: false };
+}
+
+/**
+ * Normalize offset strings (e.g., "-0600" or "Z") into ISO "+00:00" / "-06:00" format.
+ */
+export function tzOffset(tz: string): string {
+  const trimmed = tz.trim();
+  if (trimmed === 'Z') return '+00:00';
+  if (/^[+-]\d{4}$/.test(trimmed)) {
+    return `${trimmed.slice(0, 3)}:${trimmed.slice(3)}`;
+  }
+  return trimmed;
 }

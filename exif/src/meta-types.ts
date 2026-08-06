@@ -416,6 +416,17 @@ export interface CompositeMetadata {
  * Video and audio codec/stream metadata.
  */
 export interface VideoAudioMetadata {
+  // --- Container & Stream Timestamps ---
+  /** QuickTime Keys atom creation date (e.g. "2024:10:29 18:43:30-06:00") */
+  CreationDate?: ExifDateTime;
+  /** QuickTime track creation date */
+  TrackCreateDate?: ExifDateTime;
+  /** QuickTime media creation date */
+  MediaCreateDate?: ExifDateTime;
+  /** QuickTime track modification date */
+  TrackModifyDate?: ExifDateTime;
+  /** QuickTime media modification date */
+  MediaModifyDate?: ExifDateTime;
   // --- Video ---
   VideoFrameRate?: number;
   CompressorID?: string;
@@ -452,6 +463,26 @@ export interface VideoAudioMetadata {
   HandlerDescription?: string;
 }
 
+/**
+ * Document metadata (PDF, Office, EPUB, text, etc.).
+ * These tags are emitted by exiftool for non-media documents.
+ */
+export interface DocumentMetadata {
+  Title?: string;
+  Author?: string;
+  Subject?: string;
+  /** May be a string or, for some formats, an array of strings. */
+  Keywords?: string | string[];
+  /** PDF producer application, e.g. "Adobe PDF Library 17.0". */
+  Producer?: string;
+  /** Page count (PDF). */
+  PageCount?: Integer;
+  /** Page count (Office documents). */
+  Pages?: Integer;
+  /** PDF version, e.g. "1.7". */
+  PDFVersion?: string;
+}
+
 // ============================================================================
 // Combined Metadata interface
 // ============================================================================
@@ -469,4 +500,5 @@ export interface Metadata
     XmpMetadata,
     AdobeDevelopSettings,
     CompositeMetadata,
-    VideoAudioMetadata {}
+    VideoAudioMetadata,
+    DocumentMetadata {}
