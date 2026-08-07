@@ -1,5 +1,5 @@
 import { _ } from '@epdoc/type';
-import type { VideoRes } from './collections.ts';
+import type { Integer } from '@epdoc/type';
 import { APP_NORMALIZE_RULES, CAMERA_MODEL_MAP } from './consts.ts';
 import type { Metadata } from './meta-types.ts';
 
@@ -73,6 +73,13 @@ export function audioCodec(meta: Metadata): string | undefined {
 
   // Return original trimmed string if no standard regex pattern matched
   return raw;
+}
+
+export interface VideoRes {
+  width?: Integer;
+  height?: Integer;
+  tag?: string;
+  isCropped?: boolean;
 }
 
 export function videoResolution(meta: Metadata): VideoRes | undefined {

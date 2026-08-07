@@ -1,11 +1,9 @@
 import type { DateTime } from '@epdoc/datetime';
 import type * as FS from '@epdoc/fs/fs';
 import { _, type Integer } from '@epdoc/type';
-import * as Date from './date/mod.ts';
 import type { ISODateString, Metadata } from './meta-types.ts';
 import * as Normalize from './normalize.ts';
-import * as Parse from './parse.ts';
-// import { FileInfo } from './types.ts';
+import * as Meta from './meta/mod.ts';
 
 // ============================================================================
 // SSoT infrastructure — InfoDef, factories, collect, derived types
@@ -85,11 +83,11 @@ export function titleCase(key: string): string {
  * these reflect when the content was captured/digitized/modified per the
  * embedded metadata (e.g. a photo taken in 1925 and scanned in 2024).
  *
- * Each falls back across the tag hierarchies in {@link Date.Meta}.
+ * Each falls back across the tag hierarchies in {@link Meta.Resolver}.
  */
-const exifOriginal = (_fs: FS.File, meta: Metadata): DateTime | undefined => Date.Meta.from(meta).original();
-const exifDigitized = (_fs: FS.File, meta: Metadata): DateTime | undefined => Date.Meta.from(meta).digitized();
-const exifModified = (_fs: FS.File, meta: Metadata): DateTime | undefined => Date.Meta.from(meta).modified();
+const exifOriginal = (_fs: FS.File, meta: Metadata): DateTime | undefined => Meta.Resolver.from(meta).originatedAt();
+const exifDigitized = (_fs: FS.File, meta: Metadata): DateTime | undefined => Meta.Resolver.from(meta).digitizedAt();
+const exifModified = (_fs: FS.File, meta: Metadata): DateTime | undefined => Meta.Resolver.from(meta).modifiedAt();
 
 // ============================================================================
 // Section consts — single source of truth for each info category
@@ -162,28 +160,22 @@ export const imageDef: ImageDef = {
   // mimeType: { value: readTag('MIMEType') },
   colorSpace: { value: readTag('ColorSpace') },
   fNumber: {
-    value: (_fs: FS.File, m: Metadata): number | undefined => Parse.fNumber(m.FNumber) ?? Parse.fNumber(m.Aperture),
+    value: (_fs: FS.File, m: Metadata): number | undefined =>
+      Meta.Parse.fNumber(m.FNumber) ?? Meta.Parse.fNumber(m.Aperture),
   },
-  exposureTime: { value: (_fs: FS.File, m: Metadata): number | undefined => Parse.exposureTime(m.ExposureTime) },
+  exposureTime: { value: (_fs: FS.File, m: Metadata): number | undefined => Meta.Parse.exposureTime(m.ExposureTime) },
   iso: { value: readTag('ISO'), title: 'ISO' },
-  focalLength: { value: (_fs: FS.File, m: Metadata): number | undefined => Parse.focalLength(m.FocalLength) },
+  focalLength: { value: (_fs: FS.File, m: Metadata): number | undefined => Meta.Parse.focalLength(m.FocalLength) },
   focalLength35mm: {
-    value: (_fs: FS.File, m: Metadata): number | undefined => Parse.focalLength(m.FocalLengthIn35mmFormat),
+    value: (_fs: FS.File, m: Metadata): number | undefined => Meta.Parse.focalLength(m.FocalLengthIn35mmFormat),
   },
   subjectDistance: {
-    value: (_fs: FS.File, m: Metadata): number | undefined => Parse.subjectDistance(m.SubjectDistance),
+    value: (_fs: FS.File, m: Metadata): number | undefined => Meta.Parse.subjectDistance(m.SubjectDistance),
   },
   megapixels: { value: readTag('Megapixels') },
 };
 
 export type Image = InfoResult<typeof imageDef>;
-
-export interface VideoResDef extends InfoSection {
-  tag: InfoDef<string>;
-  isCropped: InfoDef<boolean>;
-  width: InfoDef<Integer>;
-  height: InfoDef<Integer>;
-}
 
 export interface VideoOtherDef extends InfoSection {
   originatedAt: InfoDef<DateTime>;
@@ -202,66 +194,25 @@ export interface VideoOtherDef extends InfoSection {
   megapixels: InfoDef<string | number>;
 }
 
-export interface VideoDef extends InfoSection, VideoResDef, VideoOtherDef {
-  // sourceWidth: InfoDef<number>;
-  // sourceHeight: InfoDef<number>;
-  // duration: InfoDef<number>;
-  // fileSize: InfoDef<string | number>;
-  // codec: InfoDef<string>;
-  // framerate: InfoDef<number>;
-  // bitDepth: InfoDef<number>;
-  // colorRepresentation: InfoDef<string>;
-  // pixelAspectRatio: InfoDef<string>;
-  // rotation: InfoDef<number>;
-  // avgBitrate: InfoDef<number>;
-  // maxBitrate: InfoDef<number>;
-  // megapixels: InfoDef<string | number>;
-}
-
-/** Dummy entry. We use Normalize.videoResolution instead, when obtaining these properties */
-export const videoResDef: VideoResDef = {
-  width: {
-    value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.ImageWidth) || asInt(m.SourceImageWidth),
-  },
-  height: {
-    value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.ImageHeight) || asInt(m.SourceImageHeight),
-  },
-  tag: { value: (_fs: FS.File, _m: Metadata): string | undefined => undefined },
-  isCropped: { value: (_fs: FS.File, _m: Metadata): boolean | undefined => undefined },
-};
+export type VideoOther = InfoResult<typeof videoOtherDef>;
+export type Video = Normalize.VideoRes & VideoOther;
 
 export const videoOtherDef: VideoOtherDef = {
-  // width: {
-  //   value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.ImageWidth) || asInt(m.SourceImageWidth),
-  // },
-  // height: {
-  //   value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.ImageHeight) || asInt(m.SourceImageHeight),
-  // },
-  // exifWidth: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.ExifImageWidth) },
-  // exifHeight: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.ExifImageHeight) },
-  // sourceWidth: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.SourceImageWidth) },
-  // sourceHeight: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.SourceImageHeight) },
   originatedAt: { value: exifOriginal },
   digitizedAt: { value: exifDigitized },
   modifiedAt: { value: exifModified },
-  duration: { value: (_fs: FS.File, m: Metadata): number | undefined => Parse.duration(m.Duration) },
+  duration: { value: (_fs: FS.File, m: Metadata): number | undefined => Meta.Parse.duration(m.Duration) },
   fileSize: { value: readTag('FileSize') },
-  // tag: { value: (_fs: FS.File, m: Metadata): string | undefined => Normalize.videoResolution(m) },
-  // isCropped: { value: (_fs: FS.File, m: Metadata): boolean | undefined => Normalize.videoCropped(m) },
   codec: { value: (_fs: FS.File, m: Metadata): string | undefined => Normalize.videoCodec(m) },
   framerate: { value: readTag('VideoFrameRate') },
   bitDepth: { value: (_fs: FS.File, m: Metadata): Integer | undefined => asInt(m.BitDepth) },
   colorRepresentation: { value: readTag('ColorRepresentation') },
   pixelAspectRatio: { value: readTag('PixelAspectRatio') },
   rotation: { value: readTag('Rotation') },
-  avgBitrate: { value: (_fs: FS.File, m: Metadata): number | undefined => Parse.bitrate(m.AvgBitrate) },
-  maxBitrate: { value: (_fs: FS.File, m: Metadata): number | undefined => Parse.bitrate(m.MaxBitrate) },
+  avgBitrate: { value: (_fs: FS.File, m: Metadata): number | undefined => Meta.Parse.bitrate(m.AvgBitrate) },
+  maxBitrate: { value: (_fs: FS.File, m: Metadata): number | undefined => Meta.Parse.bitrate(m.MaxBitrate) },
   megapixels: { value: readTag('Megapixels') },
 };
-
-export type VideoRes = InfoResult<typeof videoResDef>;
-export type VideoOther = InfoResult<typeof videoOtherDef>;
-export type Video = VideoRes | VideoOther;
 
 export interface AudioDef extends InfoSection {
   originatedAt: InfoDef<DateTime>;
@@ -273,6 +224,7 @@ export interface AudioDef extends InfoSection {
   bitsPerSample: InfoDef<number>;
   codec: InfoDef<string>;
   language: InfoDef<string>;
+  duration: InfoDef<number>;
 }
 
 export const audioDef: AudioDef = {
@@ -285,6 +237,14 @@ export const audioDef: AudioDef = {
   bitsPerSample: { value: (_fs: FS.File, m: Metadata): number | undefined => asInt(m.AudioBitsPerSample) },
   codec: { value: (_fs: FS.File, m: Metadata): string | undefined => Normalize.audioCodec(m) },
   language: { value: readTag('MediaLanguageCode') },
+  duration: {
+    value: (_fs: FS.File, m: Metadata): number | undefined => {
+      return Meta.Parse.duration(m.Duration) ??
+        Meta.Parse.duration(m.AudioDuration) ??
+        Meta.Parse.duration(m.MediaDuration) ??
+        Meta.Parse.duration(m.TrackDuration) ?? undefined;
+    },
+  },
 };
 
 const asInt = (val: unknown): Integer | undefined => _.isDefined(val) ? _.asInt(val) : undefined;
@@ -312,7 +272,7 @@ export const cameraDef: CameraDef = {
   serialNumber: { value: readTag('SerialNumber') },
   makerNotes: { value: readTag('MakerNote') },
   focalLength35mm: {
-    value: (_fs: FS.File, m: Metadata): number | undefined => Parse.focalLength(m.FocalLengthIn35mmFormat),
+    value: (_fs: FS.File, m: Metadata): number | undefined => Meta.Parse.focalLength(m.FocalLengthIn35mmFormat),
   },
 };
 
@@ -368,70 +328,3 @@ export type FileId = {
   documentId?: string;
   instanceId?: string;
 };
-
-// ============================================================================
-// ExifInfo — grouping of all section consts + formatting helpers
-// ============================================================================
-
-/**
- * A single row produced by {@link ExifInfo.list}, suitable for table rendering.
- */
-export interface InfoRow {
-  key: string;
-  label: string;
-  value: unknown;
-  display: string;
-}
-
-/**
- * Grouping of all section consts plus enumeration/formatting utilities.
- *
- * ```ts
- * const rows = ExifInfo.list(ExifInfo.camera, fsFile, metadata);
- * // rows: [{ key: 'name', label: 'Camera', value: '...', display: '...' }, ...]
- * ```
- */
-// export const ExifInfo: {
-//   file: File;
-//   image: Image;
-//   video: Video;
-//   audio: Audio;
-//   camera: Camera;
-//   app: App;
-//   keys(section: InfoSection): string[];
-//   labels(section: InfoSection): string[];
-//   list(section: InfoSection, fs: FS.File, meta: Metadata, mode?: 'value' | 'json'): InfoRow[];
-// } = {
-//   file: fileDef,
-//   image: imageDef,
-//   video: Video,
-//   audio: Audio,
-//   camera: cameraDef,
-//   app: App,
-
-//   /** Return the declaration-order keys of a section. */
-//   keys(section: InfoSection): string[] {
-//     return Object.keys(section);
-//   },
-
-//   /** Return display labels for each key in a section (def.title ?? titleCase(key)). */
-//   labels(section: InfoSection): string[] {
-//     return this.keys(section).map((k) => section[k].title ?? titleCase(k));
-//   },
-
-//   /**
-//    * Produce an array of { key, label, value, display } rows for rendering
-//    * (straight text or tables — per the task).
-//    *
-//    * @param mode - `'value'` (default) or `'json'` to use serialized values.
-//    */
-//   list(section: InfoSection, fs: FS.File, meta: Metadata, mode: 'value' | 'json' = 'value'): InfoRow[] {
-//     return this.keys(section).map((key: string): InfoRow => {
-//       const def = section[key];
-//       const value = mode === 'json' && def.json ? def.json(fs, meta) : def.value(fs, meta);
-//       const label = def.title ?? titleCase(key);
-//       const display = value !== undefined ? (def.asTitle ? def.asTitle(value as never) : String(value)) : '';
-//       return { key, label, value, display };
-//     });
-//   },
-// } as const;

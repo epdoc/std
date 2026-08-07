@@ -1,23 +1,17 @@
 import * as Cmd from '@epdoc/cmd';
-import { DateTime, type ISOTZ } from '@epdoc/datetime';
 import * as FS from '@epdoc/fs/fs';
 import { _ } from '@epdoc/type';
 import { assert } from '@std/assert';
 import * as Schema from './collections.ts';
 import { collect, fileDef as FileDef } from './collections.ts';
-import * as Date from './date/mod.ts';
 import * as Gps from './gps.ts';
 import type { Metadata } from './meta-types.ts';
+import * as Meta from './meta/mod.ts';
 import * as Normalize from './normalize.ts';
 import type { FileInfo, IDryRun } from './types.ts';
 
+/** Flags passed to exiftool for JSON reading with QuickTime UTC normalization. */
 export const EXIFTOOL_READ_FLAGS = ['-j', '-struct', '-api', 'QuickTimeUTC=1'];
-
-export interface PartialDate {
-  year: number;
-  month?: number;
-  day?: number;
-}
 
 /**
  * Wrapper around a single media file and its EXIF metadata.
@@ -30,6 +24,7 @@ export interface PartialDate {
 export class File {
   #fsFile: FS.File;
   #metadata?: Metadata;
+  #resolver?: Meta.Resolver;
   #dryRun: boolean;
   #dirty = false;
   #pending = new Map<string, string>();
@@ -37,6 +32,10 @@ export class File {
   constructor(file: FS.FilePath | FS.File, opts?: IDryRun) {
     this.#fsFile = _.isString(file) ? new FS.File(file) : file;
     this.#dryRun = opts?.dryRun ?? false;
+  }
+
+  static from(file: FS.FilePath | FS.File): File {
+    return new File(file);
   }
 
   get fsFile(): FS.File {
@@ -50,6 +49,11 @@ export class File {
   get metadata(): Metadata {
     assert(this.#metadata, `File ${this.path} has no metadata; call getMetadata() first`);
     return this.#metadata;
+  }
+
+  get resolver(): Meta.Resolver {
+    assert(this.#resolver, `File ${this.path} has no metadata; call getMetadata() first`);
+    return this.#resolver;
   }
 
   get dirty(): boolean {
@@ -79,16 +83,23 @@ export class File {
     const trimmed = result.stdout.trim();
     if (!trimmed) {
       this.#metadata = undefined;
+      return;
     } else {
       const parsed = JSON.parse(trimmed);
-      this.#metadata = _.isArray(parsed) ? parsed[0] : parsed;
+      const meta: Metadata = _.isArray(parsed) ? parsed[0] : parsed;
+      this.#metadata = meta;
+      this.#resolver = new Meta.Resolver(meta);
+      return meta;
     }
-    return this.#metadata;
   }
 
+  /**
+   * Construct a File from pre-loaded metadata (e.g. from {@link Reader.read}).
+   */
   static fromMetadata(metadata: Metadata, opts?: IDryRun): File {
     const file = new File(metadata.SourceFile, opts);
     file.#metadata = metadata;
+    file.#resolver = new Meta.Resolver(metadata);
     return file;
   }
 
@@ -96,56 +107,66 @@ export class File {
   // Info section getters (def-driven SSoT)
   // ============================================================================
 
+  /**
+   * Return the full structured info object for this file. Includes all
+   * populated sections (file, image, video, audio, doc, camera, app, gps).
+   *
+   * @param opts.metadata Set to true to include the raw {@link Metadata} object.
+   */
   info(opts: { metadata: boolean } = { metadata: false }): FileInfo {
     const result: FileInfo = {
       file: collect(FileDef, this.#fsFile, this.metadata),
     };
-    const camera = this.camera;
-    if (Object.keys(camera).length) result.camera = camera;
-    const app = this.app;
-    if (Object.keys(app).length) result.app = app;
-    if (result.file.type === 'image') {
-      const image = this.image;
-      if (Object.keys(image).length) result.image = image;
-    } else if (result.file.type === 'video') {
-      const video = this.video;
-      if (Object.keys(video).length) result.video = video;
-      const audio = this.audio;
-      if (Object.keys(audio).length) {
+    const id = this.id();
+    if (id) result.id = id;
+    const camera = this.camera();
+    if (camera && Object.keys(camera).length) result.camera = camera;
+    const app = this.app();
+    if (app && Object.keys(app).length) result.app = app;
+    const type = this.resolver.type();
+    if (type === 'image') {
+      const image = this.image();
+      if (image && Object.keys(image).length) result.image = image;
+    } else if (type === 'video') {
+      const video = this.video();
+      if (video && Object.keys(video).length) result.video = video;
+      const audio = this.audio();
+      if (audio && Object.keys(audio).length) {
         if (Object.keys(audio).length !== 1 || audio.codec !== Normalize.CODEC_AUDIO_UNKNOWN) {
           result.audio = audio;
         }
       }
-    } else if (result.file.type === 'audio') {
-      const audio = this.audio;
-      if (Object.keys(audio).length) {
+    } else if (type === 'audio') {
+      const audio = this.audio();
+      if (audio && Object.keys(audio).length) {
         if (Object.keys(audio).length !== 1 || audio.codec !== Normalize.CODEC_AUDIO_UNKNOWN) {
           result.audio = audio;
         }
       }
     } else {
-      // Documents and other non-media types (application/pdf, application/msword, text/plain, ...)
-      const doc = this.doc;
-      if (Object.keys(doc).length) result.doc = doc;
+      const doc = this.doc();
+      if (doc && Object.keys(doc).length) result.doc = doc;
     }
     if (opts.metadata) {
       result.metadata = this.metadata;
     }
-    const gps = this.gps;
+    const gps = this.gps();
     if (gps && Object.keys(gps)) result.gps = gps;
     return result;
   }
 
-  get file(): Schema.File {
+  file(): Schema.File {
     return collect(Schema.fileDef, this.#fsFile, this.metadata);
   }
 
-  get image(): Schema.Image {
+  image(): Schema.Image | undefined {
+    if (this.resolver.type() !== 'image') return undefined;
     return collect(Schema.imageDef, this.#fsFile, this.metadata);
   }
 
-  get video(): Schema.Video {
-    const res: Schema.VideoRes | undefined = Normalize.videoResolution(this.metadata);
+  video(): Schema.Video | undefined {
+    if (this.resolver.type() !== 'video') return undefined;
+    const res: Normalize.VideoRes | undefined = Normalize.videoResolution(this.metadata);
     const other: Schema.VideoOther = collect(Schema.videoOtherDef, this.#fsFile, this.metadata);
     if ((res && Object.keys(res).length) || (other && Object.keys(other).length)) {
       return { ...res, ...other };
@@ -153,19 +174,22 @@ export class File {
     return {};
   }
 
-  get audio(): Schema.Audio {
-    return collect(Schema.audioDef, this.#fsFile, this.metadata);
+  audio(): Schema.Audio | undefined {
+    const result = collect(Schema.audioDef, this.#fsFile, this.metadata);
+    return result && Object.keys(result).length ? result : undefined;
   }
 
-  get doc(): Schema.Doc {
-    return collect(Schema.docDef, this.#fsFile, this.metadata);
+  doc(): Schema.Doc | undefined {
+    const result = collect(Schema.docDef, this.#fsFile, this.metadata);
+    return result && Object.keys(result).length ? result : undefined;
   }
 
-  get camera(): Schema.Camera {
-    return collect(Schema.cameraDef, this.#fsFile, this.metadata);
+  camera(): Schema.Camera | undefined {
+    const result = collect(Schema.cameraDef, this.#fsFile, this.metadata);
+    return result && Object.keys(result).length ? result : undefined;
   }
 
-  set camera(value: Schema.Camera) {
+  setCamera(value: Schema.Camera) {
     if (value.make !== undefined) this.#setTag('Make', value.make);
     if (value.model !== undefined) this.#setTag('Model', value.model);
     if (value.lensMake !== undefined) this.#setTag('LensMake', value.lensMake);
@@ -178,182 +202,13 @@ export class File {
     }
   }
 
-  get app(): Schema.App {
-    return collect(Schema.appDef, this.#fsFile, this.metadata);
+  app(): Schema.App | undefined {
+    const result = collect(Schema.appDef, this.#fsFile, this.metadata);
+    return result && Object.keys(result).length ? result : undefined;
   }
 
-  /**
-   * Return this file's extracted metadata as a nested JSON object.
-   *
-   * Raw exiftool metadata is excluded by default. Pass
-   * `{ includeMetadata: true }` to include the raw `Metadata` object.
-   */
   toJSON(opts: { metadata: boolean }): FileInfo {
     return this.info(opts);
-  }
-
-  /**
-   * Returns the most accurate content origination timestamp available, based solely on metadata
-   * timestamps within the file. Does not use file system values.
-   *
-   * Priority: DateTimeOriginal → CreateDate / DateCreated.
-   */
-  get originatedAt(): DateTime | undefined {
-    return Date.Meta.from(this.metadata).original();
-  }
-
-  /**
-   * Returns the most accurate file creation timestamp available, based solely on metadata
-   * timestamps within the file. Does not use file system values.
-   *
-   * Priority: DateTimeOriginal → CreateDate / DateCreated.
-   */
-  get createdAt(): DateTime | undefined {
-    return Date.Meta.from(this.metadata).created();
-  }
-
-  /**
-   * Returns the most accurate modification timestamp available, based solely on metadata
-   * timestamps within the file. Does not use file system values.
-   *
-   * Priority: ModifyDate → FileModifyDate → FileInodeChangeDate → FileAccessDate.
-   */
-  get modifiedAt(): DateTime | undefined {
-    return Date.Meta.from(this.metadata).modified();
-  }
-
-  /**
-   * Returns the digitization timestamp.
-   */
-  get digitizedAt(): DateTime | undefined {
-    return Date.Meta.from(this.metadata).digitized();
-  }
-
-  /**
-   * True when the primary creation date carries an explicit timezone offset.
-   * Falls back to false when no creation date is present.
-   */
-  get hasTimezone(): boolean {
-    return this.createdAt?.hasTimezone() ?? false;
-  }
-
-  /**
-   * The timezone offset of the primary creation date, if one is present.
-   * Returns `undefined` when there is no creation date or no timezone.
-   */
-  get tzOffset(): string | undefined {
-    return this.createdAt?.getTzString();
-  }
-
-  // ============================================================================
-  // Date setters
-  // ============================================================================
-
-  /**
-   * Set the creation timestamp and its associated sub-second and offset tags.
-   */
-  setCreatedAt(datetime: DateTime): void {
-    this.#setDateTags('DateTimeOriginal', 'SubSecTimeOriginal', 'OffsetTimeOriginal', datetime);
-  }
-
-  /**
-   * Set the modification timestamp and its associated sub-second and offset tags.
-   */
-  setModifiedAt(datetime: DateTime): void {
-    this.#setDateTags('ModifyDate', 'SubSecTime', 'OffsetTime', datetime);
-  }
-
-  /**
-   * Set the digitization timestamp (CreateDate) and its associated sub-second
-   * and offset tags.
-   */
-  setDigitizedAt(datetime: DateTime): void {
-    this.#setDateTags('CreateDate', 'SubSecTimeDigitized', 'OffsetTimeDigitized', datetime);
-  }
-
-  /**
-   * Set all date/time tags to the same value.
-   */
-  setAllDates(datetime: DateTime): void {
-    this.#setDateTags('DateTimeOriginal', 'SubSecTimeOriginal', 'OffsetTimeOriginal', datetime);
-    this.#setDateTags('CreateDate', 'SubSecTimeDigitized', 'OffsetTimeDigitized', datetime);
-    this.#setDateTags('ModifyDate', 'SubSecTime', 'OffsetTime', datetime);
-  }
-
-  /**
-   * Shift all creation, digitization, and modification timestamps by a relative duration.
-   * Useful for correcting camera clock drift across a batch of photos.
-   *
-   * @param duration Relative offset (e.g. { seconds: 192 } or Temporal.DurationLike)
-   */
-  adjustAllDates(duration: Temporal.DurationLike | { seconds?: number; milliseconds?: number }): void {
-    if (this.createdAt) {
-      this.setCreatedAt(this.createdAt.add(duration));
-    }
-    if (this.digitizedAt) {
-      this.setDigitizedAt(this.digitizedAt.add(duration));
-    }
-    if (this.modifiedAt) {
-      this.setModifiedAt(this.modifiedAt.add(duration));
-    }
-  }
-
-  /**
-   * Set an approximate or partial date for scanned photos.
-   *
-   * Standard EXIF tags receive a padded DateTime (e.g. 1975 -> 1975:01:01 00:00:00),
-   * while XMP tags store the exact partial ISO string ("1975" or "1975-06").
-   */
-  setPartialDate(date: PartialDate): void {
-    const month = date.month ?? 1;
-    const day = date.day ?? 1;
-
-    // 1. Pad EXIF tags using DateTime.fromComponents
-    const dt = DateTime.fromComponents(date.year, month, day, 0, 0, 0, 0);
-    this.setAllDates(dt);
-
-    // 2. Store exact partial date in XMP/IPTC
-    const yStr = String(date.year).padStart(4, '0');
-    let partialStr = yStr;
-    if (date.month !== undefined) {
-      partialStr += `-${String(date.month).padStart(2, '0')}`;
-      if (date.day !== undefined) {
-        partialStr += `-${String(date.day).padStart(2, '0')}`;
-      }
-    }
-
-    this.setTag('XMP-dc:Date', partialStr);
-    this.setTag('XMP-photoshop:DateCreated', partialStr);
-  }
-
-  /**
-   * Re-base photo timestamps to a target timezone offset.
-   * Adjusts both wall-clock time and timezone offset tags while keeping
-   * the exact same UTC instant.
-   *
-   * Example: Camera was set to NY (17:00 -05:00). Re-basing to SFO (-07:00)
-   * updates wall-clock to 14:00 and offset tags to "-07:00".
-   */
-  setTimezoneAndShiftWallClock(targetTz: ISOTZ): void {
-    if (this.createdAt) {
-      this.setCreatedAt(this.createdAt.withTz(targetTz));
-    }
-    if (this.digitizedAt) {
-      this.setDigitizedAt(this.digitizedAt.withTz(targetTz));
-    }
-    if (this.modifiedAt) {
-      this.setModifiedAt(this.modifiedAt.withTz(targetTz));
-    }
-  }
-
-  /**
-   * Set the timezone offset tags without changing the wall-clock date/time values.
-   */
-  setTimezoneOffset(offset: string): void {
-    const normalized = this.#normalizeOffset(offset);
-    this.#setTag('OffsetTimeOriginal', normalized);
-    this.#setTag('OffsetTimeDigitized', normalized);
-    this.#setTag('OffsetTime', normalized);
   }
 
   // ============================================================================
@@ -364,7 +219,7 @@ export class File {
     return _.isDefined(this.metadata.GPSLatitude) && _.isDefined(this.metadata.GPSLongitude);
   }
 
-  get gps(): Gps.Location | undefined {
+  gps(): Gps.Location | undefined {
     const lat = Gps.parse(this.metadata.GPSLatitude, this.metadata.GPSLatitudeRef);
     const lng = Gps.parse(this.metadata.GPSLongitude, this.metadata.GPSLongitudeRef);
     if (lat === undefined || lng === undefined) return undefined;
@@ -404,11 +259,15 @@ export class File {
   // File IDs
   // ============================================================================
 
-  get id(): Schema.FileId {
-    const result: Schema.FileId = {};
-    if (this.metadata.DocumentID) result.documentId = this.metadata.DocumentID;
-    if (this.metadata.InstanceID) result.instanceId = this.metadata.InstanceID;
-    return result;
+  id(): Schema.FileId | undefined {
+    const m = this.metadata;
+    if (m.DocumentID || m.InstanceID) {
+      const result: Schema.FileId = {};
+      if (m.DocumentID) result.documentId = m.DocumentID;
+      if (m.InstanceID) result.instanceId = m.InstanceID;
+      return result;
+    }
+    return undefined;
   }
 
   // ============================================================================
@@ -437,6 +296,16 @@ export class File {
     if (value === undefined) {
       this.#setTag(tag, '');
     } else {
+      this.#setTag(tag, value);
+    }
+  }
+
+  /**
+   * Merge a changeset (tag→value map) from {@link Meta.Resolver} into the
+   * pending tag buffer. Empty-string values delete the corresponding tag.
+   */
+  applyTags(changes: Record<string, string>): void {
+    for (const [tag, value] of Object.entries(changes)) {
       this.#setTag(tag, value);
     }
   }
@@ -471,45 +340,8 @@ export class File {
     return Cmd.runner<Record<string, unknown>>('exiftool', args).dryRun(this.#dryRun).cwd(FS.cwd());
   }
 
-  #isVideo(): boolean {
-    return this.metadata.MIMEType?.startsWith('video/') ?? false;
-  }
-
-  #fsCreatedAt(): DateTime | undefined {
-    return this.#fsFile.hasInfo() ? this.#fsFile.info.createdAt ?? undefined : undefined;
-  }
-
-  #fsModifiedAt(): DateTime | undefined {
-    return this.#fsFile.hasInfo() ? this.#fsFile.info.modifiedAt ?? undefined : undefined;
-  }
-
   #setTag(tag: string, value: string): void {
     this.#pending.set(tag, value);
     this.#dirty = true;
-  }
-
-  #normalizeOffset(offset: string): string {
-    const trimmed = offset.trim();
-    const withColon = trimmed.replace(/^([+-]\d{2})(\d{2})$/, '$1:$2');
-    if (!/^(?:[+-]\d{2}:\d{2}|Z)$/i.test(withColon)) {
-      throw new Error(`Invalid timezone offset format: "${offset}". Expected "+HH:MM", "-HH:MM", or "Z".`);
-    }
-    return withColon === 'Z' || withColon === 'z' ? '+00:00' : withColon;
-  }
-
-  #setDateTags(dateTag: string, subSecTag: string, offsetTag: string, dt: DateTime): void {
-    this.#setTag(dateTag, Date.Util.formatDateTime(dt));
-
-    const ms = dt.millisecond;
-    this.#setTag(subSecTag, ms > 0 ? String(ms).padStart(3, '0') : '');
-
-    if (dt.hasTimezone()) {
-      const offset = dt.getTzString();
-      if (offset) this.#setTag(offsetTag, offset);
-    } else if (dt.temporal instanceof Temporal.Instant) {
-      this.#setTag(offsetTag, '+00:00');
-    } else {
-      this.#setTag(offsetTag, '');
-    }
   }
 }

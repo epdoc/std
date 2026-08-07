@@ -38,6 +38,7 @@ export interface ToJSONOptions {
 }
 
 export type FileInfo = {
+  id?: { documentId?: string; instanceId?: string };
   file: Schema.File;
   camera?: Schema.Camera;
   app?: Schema.App;

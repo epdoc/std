@@ -1,4 +1,3 @@
-export { Meta } from './meta.ts';
+export { Resolver } from './resolver.ts';
 export * as Parse from './parse.ts';
 export type * from './types.ts';
-export * as Util from './utils.ts';

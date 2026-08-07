@@ -1,5 +1,6 @@
 import { _ } from '@epdoc/type';
-import type { Metadata } from './meta-types.ts';
+import type { Metadata } from '../meta-types.ts';
+import type { Parts } from './types.ts';
 
 /**
  * Parse the JSON stdout of `exiftool -j` into an array of metadata objects.
@@ -11,34 +12,6 @@ export function json(stdout: string): Metadata[] {
   if (!trimmed) return [];
   const data = JSON.parse(trimmed);
   return _.isArray(data) ? data as Metadata[] : [data] as Metadata[];
-}
-
-/**
- * Normalize an exiftool video `Duration` value to a number of seconds.
- * Accepts `"2.00 s"`, `"MM:SS"`, `"H:MM:SS"`, a bare number, or a plain
- * numeric string. Returns `undefined` for missing/unparseable input.
- *
- * @internal Used by {@link File.duration}.
- */
-export function duration(value: string | number | undefined): number | undefined {
-  if (value === undefined) return undefined;
-  if (_.isNumber(value)) return Number.isFinite(value) ? value : undefined;
-
-  const s = value.trim();
-  if (!s) return undefined;
-
-  // "2.00 s"
-  const seconds = s.match(/^([\d.]+)\s*s$/i);
-  if (seconds) return parseFloat(seconds[1]);
-
-  // "MM:SS" or "H:MM:SS"
-  const parts = s.split(':').map((p) => p.trim());
-  if (parts.length >= 2 && parts.length <= 3 && parts.every((p) => /^\d+(\.\d+)?$/.test(p))) {
-    return parts.reduce((acc, p) => acc * 60 + parseFloat(p), 0);
-  }
-
-  const n = Number(s);
-  return Number.isNaN(n) ? undefined : n;
 }
 
 /**
@@ -59,15 +32,12 @@ export function focalLength(input: unknown): number | undefined {
   const trimmed = input.trim();
   if (!trimmed) return undefined;
 
-  // Handle standard numeric or decimal string with optional "mm" suffix
-  // Matches: "6.8 mm", "24mm", "50", "6.8"
   const match = trimmed.match(/^([\d.]+)\s*(?:mm)?$/i);
   if (match) {
     const val = parseFloat(match[1]);
     return !isNaN(val) && val > 0 ? val : undefined;
   }
 
-  // Handle rational/fractional EXIF strings like "50/1" or "27/5"
   if (trimmed.includes('/')) {
     const [numStr, denStr] = trimmed.split('/');
     const num = parseFloat(numStr);
@@ -235,4 +205,107 @@ export function bitrate(input: unknown): number | undefined {
 
   const n = Number(trimmed);
   return Number.isNaN(n) || n < 0 ? undefined : n;
+}
+
+/**
+ * Parse an EXIF sub-second value to milliseconds.
+ * Handles exiftool's fractional-second strings of variable length.
+ *
+ * Note: EXIF fractional seconds are commonly 1-3 digits. Values with more
+ * than 3 digits are truncated to millisecond precision.
+ */
+export function milliseconds(raw: string | number | undefined): number | undefined {
+  if (_.isNullOrUndefined(raw)) return undefined;
+  const s = String(raw).trim();
+  if (!s) return undefined;
+
+  const fraction = parseFloat(`0.${s}`);
+  if (isNaN(fraction)) return undefined;
+
+  return Math.round(fraction * 1000);
+}
+
+const EXIF_DATE_FULL_RE =
+  /^(\d{4})[:-](\d{2})[:-](\d{2})[ T](\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?(?:(Z)|([+-])(\d{2}):?(\d{2}))?$/;
+
+/**
+ * Parse an exiftool date string — `"YYYY:MM:DD HH:MM:SS"`, optionally with a
+ * fractional second and a `Z` or `±HH:MM` timezone — into its components.
+ *
+ * Returns `undefined` when the input is missing or unparseable.
+ */
+export function dateString(value: string | undefined): Parts | undefined {
+  if (!value) return undefined;
+  const m = EXIF_DATE_FULL_RE.exec(value.trim());
+  if (!m) return undefined;
+
+  const month = parseInt(m[2], 10);
+  const day = parseInt(m[3], 10);
+
+  // Reject invalid zero-months or zero-days (e.g. "2024:00:00 00:00:00")
+  if (month === 0 || day === 0) return undefined;
+
+  const parts: Parts = {
+    year: parseInt(m[1], 10),
+    month,
+    day,
+    hour: parseInt(m[4], 10),
+    minute: parseInt(m[5], 10),
+    second: parseInt(m[6], 10),
+  };
+  if (m[7]) parts.millisecond = milliseconds(m[7]);
+  if (m[8] === 'Z') parts.tzOffset = '+00:00';
+  else if (m[9]) {
+    parts.tzOffset = `${m[9]}${m[10]}:${m[11] ?? '00'}`;
+  }
+  return parts;
+}
+
+/**
+ * Convert a timezone offset string (e.g. `"-06:00"`, `"+01:00"`) to signed
+ * minutes using the intuitive ISO 8601 convention: positive values are ahead
+ * of UTC and negative values are behind UTC.
+ *
+ * To convert the result into a {@link @epdoc/datetime!DateTime} timezone
+ * value, pass the original offset string directly to
+ * {@link @epdoc/datetime!DateTime.setTz} as an `ISOTZ`.
+ *
+ * @throws Error if the offset cannot be parsed.
+ */
+/*
+export function tzOffset(tz: string): number {
+  const normalized = Normalize.tzOffset(tz);
+  const sign = normalized.startsWith('-') ? -1 : 1;
+  const rest = normalized.startsWith('-') || normalized.startsWith('+') ? normalized.slice(1) : normalized;
+  const parts = rest.split(':');
+  return sign * (parseInt(parts[0], 10) * 60 + parseInt(parts[1] ?? '0', 10));
+}
+*/
+
+/**
+ * Normalize an exiftool video `Duration` value to a number of seconds.
+ * Accepts `"2.00 s"`, `"MM:SS"`, `"H:MM:SS"`, a bare number, or a plain
+ * numeric string. Returns `undefined` for missing/unparseable input.
+ *
+ * @internal Used by {@link File.duration}.
+ */
+export function duration(value: string | number | undefined): number | undefined {
+  if (value === undefined) return undefined;
+  if (_.isNumber(value)) return Number.isFinite(value) ? value : undefined;
+
+  const s = value.trim();
+  if (!s) return undefined;
+
+  // "2.00 s"
+  const seconds = s.match(/^([\d.]+)\s*s$/i);
+  if (seconds) return parseFloat(seconds[1]);
+
+  // "MM:SS" or "H:MM:SS"
+  const parts = s.split(':').map((p) => p.trim());
+  if (parts.length >= 2 && parts.length <= 3 && parts.every((p) => /^\d+(\.\d+)?$/.test(p))) {
+    return parts.reduce((acc, p) => acc * 60 + parseFloat(p), 0);
+  }
+
+  const n = Number(s);
+  return Number.isNaN(n) ? undefined : n;
 }

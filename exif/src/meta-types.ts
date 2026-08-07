@@ -85,6 +85,9 @@ export interface ExifMetadata {
    * or `"H:MM:SS"`; with `-n` it is a plain number of seconds.
    */
   Duration?: string | number;
+  AudioDuration?: string | number;
+  MediaDuration?: string | number;
+  TrackDuration?: string | number;
 
   // --- File size & capture settings ---
   FileSize?: string | number; // e.g. "5.8 MB"

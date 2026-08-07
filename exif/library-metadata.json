@@ -1,119 +1,111 @@
 {
   "identity": {
     "name": "@epdoc/exif",
-    "purpose": "Read/write EXIF metadata via the exiftool binary (thin wrapper + schema + DateTime helpers)",
+    "purpose": "Read/write EXIF metadata via the exiftool binary with GPS parsing, date resolution, and reverse geocoding",
     "type": "utility",
-    "complexity": "simple"
+    "complexity": "moderate"
   },
   "quickStart": {
-    "pattern": "new Reader() → getInfo(paths) → File.getMetadata(); File setters + write() for updates",
-    "code": "import * as Exif from '@epdoc/exif';\nconst reader = new Exif.Reader();\nconst [file] = await reader.getInfo(['v.mp4']);\nawait file.getMetadata();\nfile.setCreatedAt(DateTime.from('2026-07-31T18:00:00+02:00'));\nawait file.write();"
+    "pattern": "new Reader() → read(paths) → File.resolver for dates → File.applyTags() + write() for updates",
+    "code": "import * as Exif from '@epdoc/exif';\nconst reader = new Exif.Reader();\nconst files = await reader.read(['v.mp4']);\nconst file = files[0];\nconsole.log(file.resolver.originatedAt());\nconsole.log(file.resolver.width(), file.resolver.height());"
   },
   "exports": [
     {
       "name": "Reader",
       "role": "main_entry",
-      "description": "Factory for bulk EXIF reads; returns File instances",
-      "whenToUse": "Reading metadata for one or more files in one invocation"
+      "description": "Factory for bulk EXIF reads in one exiftool invocation; returns File instances",
+      "whenToUse": "Reading metadata for one or more files efficiently"
     },
     {
       "name": "File",
       "role": "main_entry",
-      "description": "Wraps a single file's EXIF metadata and provides setters/write support",
+      "description": "Wraps a single file's EXIF metadata; provides typed getters, GPS access, and a write queue",
       "whenToUse": "Reading or writing tags on a specific file"
     },
     {
-      "name": "Date.getPrimary",
-      "role": "helper",
-      "description": "Primary DateTime from a metadata object (original → digitized → modified)",
-      "whenToUse": "Get the recording/creation date of a file"
+      "name": "Meta.Resolver",
+      "role": "core",
+      "description": "Media-agnostic date resolution and write-prepare methods; has fallback chains across EXIF/QuickTime/XMP/IPTC/GPS tags",
+      "whenToUse": "Getting standardised dates/dimensions/duration/codec regardless of file type"
     },
     {
-      "name": "Date.getCreated",
+      "name": "Meta.Resolver.buildDateTime",
       "role": "helper",
-      "description": "Creation DateTime from a metadata object (DateTimeOriginal → CreateDate / DateCreated)",
-      "whenToUse": "When you specifically need the creation timestamp"
-    },
-    {
-      "name": "Date.getDigitized",
-      "role": "helper",
-      "description": "Digitization DateTime from a metadata object (CreateDate / DateCreated)",
-      "whenToUse": "When you specifically need the digitization timestamp"
-    },
-    {
-      "name": "Date.getModified",
-      "role": "helper",
-      "description": "Modification DateTime from a metadata object (ModifyDate → file-system dates)",
-      "whenToUse": "When you specifically need the modification timestamp"
-    },
-    {
-      "name": "Date.build",
-      "role": "helper",
-      "description": "DateTime from a base date tag + sub-second/tz tags",
+      "description": "Build a DateTime from EXIF date tag values (base + subSec + offset)",
       "whenToUse": "Parsing exiftool date tags into a DateTime"
     },
     {
-      "name": "Date.parse",
-      "role": "helper",
-      "description": "Parse exiftool 'YYYY:MM:DD HH:MM:SS' into components",
-      "whenToUse": "Reading the raw date fields"
-    },
-    {
-      "name": "Date.parseTzOffset",
-      "role": "helper",
-      "description": "Convert an ISO offset to intuitive signed minutes",
-      "whenToUse": "Displaying or computing with offsets"
-    },
-    {
-      "name": "Date.formatDateTime",
+      "name": "Meta.Resolver.toExifDateTimeString",
       "role": "helper",
       "description": "Format a DateTime as exiftool's 'YYYY:MM:DD HH:MM:SS'",
-      "whenToUse": "Preparing DateTime values for exiftool write args"
+      "whenToUse": "Preparing DateTime values for exiftool write operations"
     },
     {
-      "name": "Date.format",
+      "name": "Meta.Parse.dateString",
       "role": "helper",
-      "description": "Format date components into exiftool's canonical form",
-      "whenToUse": "Building exiftool date strings manually"
+      "description": "Parse an exiftool date string into its components (year, month, day, hour, minute, second, millisecond, tzOffset)",
+      "whenToUse": "Reading raw date field values from exiftool output"
     },
     {
-      "name": "Gps.parse",
-      "role": "helper",
-      "description": "Convert a DMS or numeric coordinate to decimal degrees",
-      "whenToUse": "Reading GPS values from EXIF"
-    },
-    {
-      "name": "Gps.toDms",
-      "role": "helper",
-      "description": "Convert decimal degrees to an exiftool DMS string + ref",
-      "whenToUse": "Writing GPS values to EXIF"
-    },
-    {
-      "name": "parseJson",
-      "role": "helper",
-      "description": "Normalize `exiftool -j` stdout (object or array) to an array",
-      "whenToUse": "Parsing raw exiftool JSON output"
-    },
-    {
-      "name": "parseDuration",
+      "name": "Meta.Parse.duration",
       "role": "helper",
       "description": "Normalize an exiftool Duration value to seconds",
       "whenToUse": "Reading video/media duration values"
     },
     {
-      "name": "Metadata",
-      "role": "type",
-      "description": "Typed JSON exiftool emits for one file (precise GPS/duration types)"
+      "name": "Meta.Parse.json",
+      "role": "helper",
+      "description": "Normalize exiftool -j stdout (object or array) to an array of Metadata objects",
+      "whenToUse": "Parsing raw exiftool JSON output"
     },
     {
-      "name": "Camera",
+      "name": "Gps.parse",
+      "role": "helper",
+      "description": "Convert a DMS or numeric GPS coordinate to decimal degrees",
+      "whenToUse": "Reading GPS values from EXIF"
+    },
+    {
+      "name": "Gps.toDms",
+      "role": "helper",
+      "description": "Convert decimal degrees to an exiftool DMS string + hemisphere ref",
+      "whenToUse": "Writing GPS values to EXIF"
+    },
+    {
+      "name": "Geo.NominatimApi",
+      "role": "helper",
+      "description": "Client for OpenStreetMap's Nominatim reverse-geocode API; converts GPS coordinates to structured addresses",
+      "whenToUse": "Looking up human-readable locations from GPS coordinates"
+    },
+    {
+      "name": "Geo.buildLocationTags",
+      "role": "helper",
+      "description": "Convert address components into EXIF-compatible location tags at a given granularity",
+      "whenToUse": "Writing location metadata (country, state, city, sublocation) to EXIF"
+    },
+    {
+      "name": "Geo.LocationGranularity",
       "role": "type",
-      "description": "Camera/device metadata including maker, model, lens, software, and MakerNotes"
+      "description": "Enum controlling how much location detail to write: country | state | city | sublocation | exact"
+    },
+    {
+      "name": "Metadata",
+      "role": "type",
+      "description": "Typed JSON exiftool emits for one file; union of EXIF, IPTC, XMP, video, and document tag families"
     },
     {
       "name": "Gps.Location",
       "role": "type",
       "description": "Decimal latitude, longitude, and optional altitude"
+    },
+    {
+      "name": "Geo.AddressComponents",
+      "role": "type",
+      "description": "Structured breakdown of a physical address from reverse geocoding"
+    },
+    {
+      "name": "Geo.GeocodeResult",
+      "role": "type",
+      "description": "Result from a reverse geocode lookup: displayName, lat, lon, and parsed address"
     }
   ],
   "patterns": [],
