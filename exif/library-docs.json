@@ -9,9 +9,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                "line": 23,
+                "line": 35,
                 "col": 0,
-                "byteIndex": 1010
+                "byteIndex": 1235
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -76,9 +76,9 @@
                     ],
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 31,
+                      "line": 45,
                       "col": 2,
-                      "byteIndex": 1184
+                      "byteIndex": 1455
                     }
                   }
                 ],
@@ -136,9 +136,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 36,
+                      "line": 50,
                       "col": 2,
-                      "byteIndex": 1356
+                      "byteIndex": 1627
                     }
                   },
                   {
@@ -161,9 +161,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 40,
+                      "line": 54,
                       "col": 2,
-                      "byteIndex": 1439
+                      "byteIndex": 1710
                     }
                   },
                   {
@@ -186,9 +186,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 44,
+                      "line": 58,
                       "col": 2,
-                      "byteIndex": 1495
+                      "byteIndex": 1766
                     }
                   },
                   {
@@ -212,9 +212,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 48,
+                      "line": 62,
                       "col": 2,
-                      "byteIndex": 1558
+                      "byteIndex": 1829
                     }
                   },
                   {
@@ -237,9 +237,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 53,
+                      "line": 67,
                       "col": 2,
-                      "byteIndex": 1710
+                      "byteIndex": 1981
                     }
                   },
                   {
@@ -256,9 +256,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 58,
+                      "line": 72,
                       "col": 2,
-                      "byteIndex": 1867
+                      "byteIndex": 2138
                     }
                   },
                   {
@@ -283,9 +283,9 @@
                                     "name": "force",
                                     "location": {
                                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                                      "line": 68,
+                                      "line": 82,
                                       "col": 28,
-                                      "byteIndex": 2162
+                                      "byteIndex": 2433
                                     },
                                     "optional": true,
                                     "tsType": {
@@ -337,9 +337,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 68,
+                      "line": 82,
                       "col": 2,
-                      "byteIndex": 2136
+                      "byteIndex": 2407
                     }
                   },
                   {
@@ -400,9 +400,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 98,
+                      "line": 112,
                       "col": 2,
-                      "byteIndex": 3046
+                      "byteIndex": 3317
                     }
                   },
                   {
@@ -434,9 +434,9 @@
                                     "name": "metadata",
                                     "location": {
                                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                                      "line": 115,
+                                      "line": 129,
                                       "col": 15,
-                                      "byteIndex": 3738
+                                      "byteIndex": 4009
                                     },
                                     "tsType": {
                                       "repr": "boolean",
@@ -467,9 +467,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 115,
+                      "line": 129,
                       "col": 2,
-                      "byteIndex": 3725
+                      "byteIndex": 3996
                     }
                   },
                   {
@@ -492,9 +492,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 161,
+                      "line": 177,
                       "col": 2,
-                      "byteIndex": 5342
+                      "byteIndex": 5677
                     }
                   },
                   {
@@ -527,9 +527,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 165,
+                      "line": 183,
                       "col": 2,
-                      "byteIndex": 5436
+                      "byteIndex": 5863
                     }
                   },
                   {
@@ -562,9 +562,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 171,
+                      "line": 193,
                       "col": 2,
-                      "byteIndex": 5683
+                      "byteIndex": 6211
                     }
                   },
                   {
@@ -597,9 +597,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 181,
+                      "line": 204,
                       "col": 2,
-                      "byteIndex": 6113
+                      "byteIndex": 6722
                     }
                   },
                   {
@@ -632,9 +632,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 186,
+                      "line": 213,
                       "col": 2,
-                      "byteIndex": 6300
+                      "byteIndex": 7010
                     }
                   },
                   {
@@ -667,9 +667,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 191,
+                      "line": 222,
                       "col": 2,
-                      "byteIndex": 6481
+                      "byteIndex": 7284
                     }
                   },
                   {
@@ -702,9 +702,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 196,
+                      "line": 231,
                       "col": 2,
-                      "byteIndex": 6662
+                      "byteIndex": 7558
                     }
                   },
                   {
@@ -738,9 +738,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 201,
+                      "line": 240,
                       "col": 2,
-                      "byteIndex": 6852
+                      "byteIndex": 7853
                     }
                   },
                   {
@@ -773,9 +773,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 214,
+                      "line": 253,
                       "col": 2,
-                      "byteIndex": 7563
+                      "byteIndex": 8564
                     }
                   },
                   {
@@ -795,9 +795,9 @@
                                   "name": "metadata",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                                    "line": 219,
+                                    "line": 262,
                                     "col": 17,
-                                    "byteIndex": 7759
+                                    "byteIndex": 8853
                                   },
                                   "tsType": {
                                     "repr": "boolean",
@@ -826,9 +826,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 219,
+                      "line": 262,
                       "col": 2,
-                      "byteIndex": 7744
+                      "byteIndex": 8838
                     }
                   },
                   {
@@ -845,9 +845,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 227,
+                      "line": 270,
                       "col": 2,
-                      "byteIndex": 8001
+                      "byteIndex": 9095
                     }
                   },
                   {
@@ -880,9 +880,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 231,
+                      "line": 274,
                       "col": 2,
-                      "byteIndex": 8122
+                      "byteIndex": 9216
                     }
                   },
                   {
@@ -935,9 +935,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 248,
+                      "line": 293,
                       "col": 2,
-                      "byteIndex": 8767
+                      "byteIndex": 9949
                     }
                   },
                   {
@@ -970,9 +970,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 271,
+                      "line": 316,
                       "col": 2,
-                      "byteIndex": 9764
+                      "byteIndex": 10946
                     }
                   },
                   {
@@ -1002,9 +1002,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 289,
+                      "line": 334,
                       "col": 2,
-                      "byteIndex": 10332
+                      "byteIndex": 11514
                     }
                   },
                   {
@@ -1055,9 +1055,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 304,
+                      "line": 349,
                       "col": 2,
-                      "byteIndex": 10837
+                      "byteIndex": 12019
                     }
                   },
                   {
@@ -1102,9 +1102,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 316,
+                      "line": 361,
                       "col": 2,
-                      "byteIndex": 11174
+                      "byteIndex": 12356
                     }
                   },
                   {
@@ -1134,9 +1134,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 329,
+                      "line": 374,
                       "col": 2,
-                      "byteIndex": 11570
+                      "byteIndex": 12752
                     }
                   }
                 ]

@@ -13,6 +13,18 @@ import type { FileInfo, IDryRun } from './types.ts';
 /** Flags passed to exiftool for JSON reading with QuickTime UTC normalization. */
 export const EXIFTOOL_READ_FLAGS = ['-j', '-struct', '-api', 'QuickTimeUTC=1'];
 
+type MetaCache = {
+  file?: Schema.File;
+  video?: Schema.Video;
+  image?: Schema.Image;
+  audio?: Schema.Audio;
+  camera?: Schema.Camera;
+  pdf?: Schema.Pdf;
+  doc?: Schema.Doc;
+  gps?: Gps.Location;
+  app?: Schema.App;
+};
+
 /**
  * Wrapper around a single media file and its EXIF metadata.
  *
@@ -24,6 +36,8 @@ export const EXIFTOOL_READ_FLAGS = ['-j', '-struct', '-api', 'QuickTimeUTC=1'];
 export class File {
   #fsFile: FS.File;
   #metadata?: Metadata;
+  #info?: FileInfo;
+  #cache: MetaCache = {};
   #resolver?: Meta.Resolver;
   #dryRun: boolean;
   #dirty = false;
@@ -114,6 +128,7 @@ export class File {
    * @param opts.metadata Set to true to include the raw {@link Metadata} object.
    */
   info(opts: { metadata: boolean } = { metadata: false }): FileInfo {
+    if (this.#info) return this.#info;
     const result: FileInfo = {
       file: collect(FileDef, this.#fsFile, this.metadata),
     };
@@ -156,47 +171,71 @@ export class File {
     }
     const gps = this.gps();
     if (gps && Object.keys(gps)) result.gps = gps;
+    this.#info = result;
     return result;
   }
 
   file(): Schema.File {
-    return collect(Schema.fileDef, this.#fsFile, this.metadata);
+    if (this.#cache.file) return this.#cache.file;
+    this.#cache.file = collect(Schema.fileDef, this.#fsFile, this.metadata);
+    return this.#cache.file;
   }
 
   image(): Schema.Image | undefined {
+    if (this.#cache.image) return this.#cache.image;
     if (this.resolver.type() !== 'image') return undefined;
     const result = collect(Schema.imageDef, this.#fsFile, this.metadata);
-    return result && Object.keys(result).length ? result : undefined;
+    if (result && Object.keys(result).length) {
+      this.#cache.image = result;
+    }
+    return this.#cache.image;
   }
 
   video(): Schema.Video | undefined {
+    if (this.#cache.video) return this.#cache.video;
     if (this.resolver.type() !== 'video') return undefined;
     const res: Normalize.VideoRes | undefined = Normalize.videoResolution(this.metadata);
     const other: Schema.VideoOther = collect(Schema.videoOtherDef, this.#fsFile, this.metadata);
     if ((res && Object.keys(res).length) || (other && Object.keys(other).length)) {
-      return { ...res, ...other };
+      this.#cache.video = { ...res, ...other };
     }
-    return {};
+    return this.#cache.video;
   }
 
   audio(): Schema.Audio | undefined {
+    if (this.#cache.audio) return this.#cache.audio;
     const result = collect(Schema.audioDef, this.#fsFile, this.metadata);
-    return result && Object.keys(result).length ? result : undefined;
+    if (result && Object.keys(result).length) {
+      this.#cache.audio = result;
+    }
+    return this.#cache.audio;
   }
 
   doc(): Schema.Doc | undefined {
+    if (this.#cache.doc) return this.#cache.doc;
     const result = collect(Schema.docDef, this.#fsFile, this.metadata);
-    return result && Object.keys(result).length ? result : undefined;
+    if (result && Object.keys(result).length) {
+      this.#cache.doc = result;
+    }
+    return this.#cache.doc;
   }
 
   pdf(): Schema.Pdf | undefined {
+    if (this.#cache.pdf) return this.#cache.pdf;
     const result = collect(Schema.pdfDef, this.#fsFile, this.metadata);
-    return result && Object.keys(result).length ? result : undefined;
+    if (result && Object.keys(result).length) {
+      this.#cache.pdf = result;
+    }
+    return this.#cache.pdf;
   }
 
   camera(): Schema.Camera | undefined {
+    if (this.#cache.camera) return this.#cache.camera;
     const result = collect(Schema.cameraDef, this.#fsFile, this.metadata);
-    return result && Object.keys(result).length ? result : undefined;
+    if (result && Object.keys(result).length) {
+      this.#cache.camera = result;
+    }
+    return this.#cache.camera;
   }
 
   setCamera(value: Schema.Camera) {
@@ -213,8 +252,12 @@ export class File {
   }
 
   app(): Schema.App | undefined {
+    if (this.#cache.app) return this.#cache.app;
     const result = collect(Schema.appDef, this.#fsFile, this.metadata);
-    return result && Object.keys(result).length ? result : undefined;
+    if (result && Object.keys(result).length) {
+      this.#cache.app = result;
+    }
+    return this.#cache.app;
   }
 
   toJSON(opts: { metadata: boolean }): FileInfo {
@@ -230,6 +273,7 @@ export class File {
   }
 
   gps(): Gps.Location | undefined {
+    if (this.#cache.gps) return this.#cache.gps;
     const lat = Gps.parse(this.metadata.GPSLatitude, this.metadata.GPSLatitudeRef);
     const lng = Gps.parse(this.metadata.GPSLongitude, this.metadata.GPSLongitudeRef);
     if (lat === undefined || lng === undefined) return undefined;
@@ -240,7 +284,8 @@ export class File {
         : parseFloat(String(this.metadata.GPSAltitude).replace(/[^-\d.]/g, ''))
       : undefined;
 
-    return { lat, lng, alt };
+    this.#cache.gps = { lat, lng, alt };
+    return this.#cache.gps;
   }
 
   /**
