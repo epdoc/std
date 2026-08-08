@@ -77,7 +77,7 @@ function pdfMeta(partial: Record<string, unknown> = {}) {
 Deno.test('File.file section', async (t) => {
   await t.step('returns filesystem-level info', () => {
     const exifFile = File.fromMetadata(jpgMeta());
-    const file = exifFile.file();
+    const file = exifFile.file;
     assertEquals(file.path, '/photos/beach.jpg');
     assertEquals(file.filename, 'beach.jpg');
     assertEquals(file.ext, 'jpg');
@@ -103,7 +103,7 @@ Deno.test('File.image section', async (t) => {
       Megapixels: 24.0,
       FileSize: '8.2 MB',
     }));
-    const img = file.image();
+    const img = file.image;
     assert(img);
     assertEquals(img.width, 6000);
     assertEquals(img.height, 4000);
@@ -119,7 +119,7 @@ Deno.test('File.image section', async (t) => {
 
   await t.step('exposureTime is normalized to seconds', () => {
     const file = File.fromMetadata(jpgMeta({ ExposureTime: '1/250' }));
-    const img = file.image();
+    const img = file.image;
     assert(img);
     assertEquals(img.exposureTime, 1 / 250);
   });
@@ -129,7 +129,7 @@ Deno.test('File.image section', async (t) => {
       FocalLength: '50 mm',
       FocalLengthIn35mmFormat: '50 mm',
     }));
-    const img = file.image();
+    const img = file.image;
     assert(img);
     assertEquals(img.focalLength, 50);
     assertEquals(img.focalLength35mm, 50);
@@ -137,7 +137,7 @@ Deno.test('File.image section', async (t) => {
 
   await t.step('omits undefined fields', () => {
     const file = File.fromMetadata(jpgMeta());
-    const img = file.image();
+    const img = file.image;
     assert(img);
     assertEquals(img.iso, undefined);
     assertEquals(img.fNumber, undefined);
@@ -152,7 +152,7 @@ Deno.test('File.video section', async (t) => {
       ImageWidth: 3840,
       ImageHeight: 2160,
     }));
-    const vid = file.video();
+    const vid = file.video;
     assert(vid);
     assertEquals(vid.width, 3840);
     assertEquals(vid.height, 2160);
@@ -161,7 +161,7 @@ Deno.test('File.video section', async (t) => {
 
   await t.step('returns video duration', () => {
     const file = File.fromMetadata(videoMeta({ Duration: '1:02:03' }));
-    const vid = file.video();
+    const vid = file.video;
     assert(vid);
     assertEquals(vid.duration, 3723);
   });
@@ -170,14 +170,14 @@ Deno.test('File.video section', async (t) => {
     const file = File.fromMetadata(videoMeta({
       CompressorID: 'avc1',
     }));
-    const vid = file.video();
+    const vid = file.video;
     assert(vid);
     assertEquals(typeof vid.codec, 'string');
   });
 
   await t.step('returns undefined for non-video metadata', () => {
     const file = File.fromMetadata(pdfMeta());
-    assertEquals(file.video(), undefined);
+    assertEquals(file.video, undefined);
   });
 });
 
@@ -192,7 +192,7 @@ Deno.test('File.audio section', async (t) => {
       AudioBitsPerSample: 16,
       Duration: '3:45',
     }));
-    const aud = file.audio();
+    const aud = file.audio;
     assert(aud);
     assertEquals(aud.format, 'MPEG Audio');
     assertEquals(aud.channels, 2);
@@ -215,7 +215,7 @@ Deno.test('File.camera section', async (t) => {
       MakerNote: '(binary data)',
       FocalLengthIn35mmFormat: '50 mm',
     }));
-    const cam = file.camera();
+    const cam = file.camera;
     assert(cam);
     assertEquals(cam.make, 'Nikon');
     assertEquals(cam.model, 'D7100');
@@ -229,7 +229,7 @@ Deno.test('File.camera section', async (t) => {
 
   await t.step('omits undefined fields', () => {
     const file = File.fromMetadata(jpgMeta());
-    const cam = file.camera();
+    const cam = file.camera;
     assert(!_.isDefined(cam));
   });
 });
@@ -249,7 +249,7 @@ Deno.test('File.camera setter', async (t) => {
 Deno.test('File.app section', async (t) => {
   await t.step('returns software/creator tool', () => {
     const file = File.fromMetadata(jpgMeta({ Software: 'Adobe Lightroom 7.0' }));
-    assertEquals(file.app()!.application, 'Adobe Lightroom');
+    assertEquals(file.app!.application, 'Adobe Lightroom');
   });
 });
 
@@ -258,21 +258,21 @@ Deno.test('File.app section', async (t) => {
 Deno.test('File.doc section', async (t) => {
   await t.step('returns document metadata', () => {
     const file = File.fromMetadata(pdfMeta());
-    assertEquals(file.doc()!.title, 'Annual Report');
-    assertEquals(file.doc()!.author, 'Jane Doe');
-    assertEquals(file.doc()!.subject, 'Financial Summary');
-    assertEquals(file.doc()!.pageCount, 42);
-    assertEquals(file.doc()!.producer, 'Adobe PDF Library 15.0');
+    assertEquals(file.doc!.title, 'Annual Report');
+    assertEquals(file.doc!.author, 'Jane Doe');
+    assertEquals(file.doc!.subject, 'Financial Summary');
+    assertEquals(file.doc!.pageCount, 42);
+    assertEquals(file.doc!.producer, 'Adobe PDF Library 15.0');
   });
 
   await t.step('keywords are passed through as-is', () => {
     const file = File.fromMetadata(pdfMeta({ Keywords: ['report', 'finance'] }));
-    assertEquals(file.doc()!.keywords, ['report', 'finance']);
+    assertEquals(file.doc!.keywords, ['report', 'finance']);
   });
 
   await t.step('single keyword string works', () => {
     const file = File.fromMetadata(pdfMeta({ Keywords: 'report' }));
-    assertEquals(file.doc()!.keywords, 'report');
+    assertEquals(file.doc!.keywords, 'report');
   });
 });
 
@@ -286,7 +286,7 @@ Deno.test('File.gps getter', async (t) => {
       GPSLongitude: '0 deg 7\' 39.00" W',
       GPSLongitudeRef: 'West',
     }));
-    const gps = file.gps();
+    const gps = file.gps;
     assert(gps);
     assertEquals(Math.abs(gps.lat - 51.5072) < 0.01, true);
     assertEquals(Math.abs(gps.lng - (-0.1275)) < 0.01, true);
@@ -294,7 +294,7 @@ Deno.test('File.gps getter', async (t) => {
 
   await t.step('returns undefined when GPS data is missing', () => {
     const file = File.fromMetadata(jpgMeta());
-    assertEquals(file.gps(), undefined);
+    assertEquals(file.gps, undefined);
   });
 
   await t.step('handles altitude', () => {
@@ -303,7 +303,7 @@ Deno.test('File.gps getter', async (t) => {
       GPSLongitude: '0 deg 7\' 39.00" W',
       GPSAltitude: 12.5,
     }));
-    assertEquals(file.gps()?.alt, 12.5);
+    assertEquals(file.gps?.alt, 12.5);
   });
 });
 

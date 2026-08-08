@@ -118,7 +118,7 @@ Deno.test('Resolver.originatedAt', async (t) => {
     const result = Meta.Resolver.from(videoMeta({
       DateTimeOriginal: '2026:07:31 18:00:00',
       CreateDate: '2026:07:30 10:00:00',
-    })).originatedAt();
+    })).originatedAt;
     assertEquals(result?.toString().startsWith('2026-07-31'), true);
   });
 
@@ -126,28 +126,28 @@ Deno.test('Resolver.originatedAt', async (t) => {
     const result = Meta.Resolver.from(videoMeta({
       DateTimeOriginal: '2026:07:31 18:00:00',
       OffsetTimeOriginal: '+02:00',
-    })).originatedAt();
+    })).originatedAt;
     assertEquals(result?.hasTimezone(), true);
     assertEquals(result?.getTzString(), '+02:00');
   });
 
   await t.step('falls back to QuickTime CreationDate', () => {
-    const result = Meta.Resolver.from(videoMeta({ CreationDate: '2026:07:30 10:00:00' })).originatedAt();
+    const result = Meta.Resolver.from(videoMeta({ CreationDate: '2026:07:30 10:00:00' })).originatedAt;
     assertEquals(result?.toString().startsWith('2026-07-30'), true);
   });
 
   await t.step('falls back to XMP/IPTC DateCreated', () => {
-    const result = Meta.Resolver.from(videoMeta({ DateCreated: '2026:07:29 10:00:00' })).originatedAt();
+    const result = Meta.Resolver.from(videoMeta({ DateCreated: '2026:07:29 10:00:00' })).originatedAt;
     assertEquals(result?.toString().startsWith('2026-07-29'), true);
   });
 
   await t.step('falls back to GPSDateTime', () => {
-    const result = Meta.Resolver.from(videoMeta({ GPSDateTime: '2026:07:28 10:00:00Z' })).originatedAt();
+    const result = Meta.Resolver.from(videoMeta({ GPSDateTime: '2026:07:28 10:00:00Z' })).originatedAt;
     assertEquals(result?.toString().startsWith('2026-07-28'), true);
   });
 
   await t.step('returns undefined when no original date exists', () => {
-    assertEquals(Meta.Resolver.from(videoMeta({})).originatedAt(), undefined);
+    assertEquals(Meta.Resolver.from(videoMeta({})).originatedAt, undefined);
   });
 });
 
@@ -156,17 +156,17 @@ Deno.test('Resolver.createdAt', async (t) => {
     const result = Meta.Resolver.from(videoMeta({
       DateTimeOriginal: '2026:07:31 18:00:00',
       CreateDate: '2026:07:30 10:00:00',
-    })).createdAt();
+    })).createdAt;
     assertEquals(result?.toString().startsWith('2026-07-31'), true);
   });
 
   await t.step('falls back to the digitized date', () => {
-    const result = Meta.Resolver.from(videoMeta({ CreateDate: '2026:07:30 10:00:00' })).createdAt();
+    const result = Meta.Resolver.from(videoMeta({ CreateDate: '2026:07:30 10:00:00' })).createdAt;
     assertEquals(result?.toString().startsWith('2026-07-30'), true);
   });
 
   await t.step('returns undefined when no date exists', () => {
-    assertEquals(Meta.Resolver.from(videoMeta({})).createdAt(), undefined);
+    assertEquals(Meta.Resolver.from(videoMeta({})).createdAt, undefined);
   });
 });
 
@@ -175,34 +175,34 @@ Deno.test('Resolver.digitizedAt', async (t) => {
     const result = Meta.Resolver.from(videoMeta({
       DateTimeOriginal: '2026:07:31 18:00:00',
       CreateDate: '2026:07:30 10:00:00',
-    })).digitizedAt();
+    })).digitizedAt;
     assertEquals(result?.toString().startsWith('2026-07-30'), true);
   });
 
   await t.step('falls back to XMP/IPTC digitized tags', () => {
-    const result = Meta.Resolver.from(videoMeta({ DateCreated: '2026:07:29 10:00:00' })).digitizedAt();
+    const result = Meta.Resolver.from(videoMeta({ DateCreated: '2026:07:29 10:00:00' })).digitizedAt;
     assertEquals(result?.toString().startsWith('2026-07-29'), true);
   });
 
   await t.step('falls back to the original date', () => {
-    const result = Meta.Resolver.from(videoMeta({ DateTimeOriginal: '2026:07:31 18:00:00' })).digitizedAt();
+    const result = Meta.Resolver.from(videoMeta({ DateTimeOriginal: '2026:07:31 18:00:00' })).digitizedAt;
     assertEquals(result?.toString().startsWith('2026-07-31'), true);
   });
 });
 
 Deno.test('Resolver.modifiedAt', async (t) => {
   await t.step('uses ModifyDate', () => {
-    const result = Meta.Resolver.from(videoMeta({ ModifyDate: '2026:07:31 12:00:00' })).modifiedAt();
+    const result = Meta.Resolver.from(videoMeta({ ModifyDate: '2026:07:31 12:00:00' })).modifiedAt;
     assertEquals(result?.toString().startsWith('2026-07-31T12:00:00'), true);
   });
 
   await t.step('falls back to QuickTime track modification dates', () => {
-    const result = Meta.Resolver.from(videoMeta({ TrackModifyDate: '2026:07:30 10:00:00' })).modifiedAt();
+    const result = Meta.Resolver.from(videoMeta({ TrackModifyDate: '2026:07:30 10:00:00' })).modifiedAt;
     assertEquals(result?.toString().startsWith('2026-07-30'), true);
   });
 
   await t.step('falls back to MetadataDate', () => {
-    const result = Meta.Resolver.from(videoMeta({ MetadataDate: '2026:07:29 10:00:00' })).modifiedAt();
+    const result = Meta.Resolver.from(videoMeta({ MetadataDate: '2026:07:29 10:00:00' })).modifiedAt;
     assertEquals(result?.toString().startsWith('2026-07-29'), true);
   });
 
@@ -211,7 +211,7 @@ Deno.test('Resolver.modifiedAt', async (t) => {
       FileModifyDate: '2026:07:31 10:00:00',
       FileInodeChangeDate: '2026:07:31 09:00:00',
       FileAccessDate: '2026:07:28 10:00:00',
-    })).modifiedAt();
+    })).modifiedAt;
     assertEquals(result, undefined);
   });
 });
@@ -221,13 +221,13 @@ Deno.test('Resolver.primary', async (t) => {
     const result = Meta.Resolver.from(videoMeta({
       DateTimeOriginal: '2026:07:31 18:00:00',
       CreateDate: '2026:07:30 10:00:00',
-    })).primary();
+    })).primary;
     assertEquals(result?.toString().startsWith('2026-07-31'), true);
     assertEquals(result?.hasTimezone(), false);
   });
 
   await t.step('falls back to the modified date', () => {
-    const result = Meta.Resolver.from(videoMeta({ ModifyDate: '2026:07:29 10:00:00' })).primary();
+    const result = Meta.Resolver.from(videoMeta({ ModifyDate: '2026:07:29 10:00:00' })).primary;
     assertEquals(result?.toString().startsWith('2026-07-29'), true);
   });
 });

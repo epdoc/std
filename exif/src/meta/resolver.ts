@@ -2,6 +2,7 @@ import { DateTime, type ISOTZ } from '@epdoc/datetime';
 import { _, type Integer } from '@epdoc/type';
 import type { Metadata } from '../meta-types.ts';
 import * as Normalize from '../normalize.ts';
+import type { Seconds } from '../types.ts';
 import * as Parse from './parse.ts';
 import type { Parts } from './types.ts';
 
@@ -47,6 +48,16 @@ function isUninitializedSentinel(parts: Parts): boolean {
   return false;
 }
 
+type ResolverCache = {
+  originatedAt?: DateTime;
+  digitizedAt?: DateTime;
+  modifiedAt?: DateTime;
+  duration?: Seconds;
+  height?: Integer;
+  width?: Integer;
+  codec?: string;
+};
+
 /**
  * Class returns media-agnostic values from Metadata. For example, regardless of whether this is
  * a video or image file, it will return the width and height. Or regardless of whether this is a
@@ -56,6 +67,8 @@ function isUninitializedSentinel(parts: Parts): boolean {
 export class Resolver {
   /** The raw exiftool metadata being resolved. */
   meta: Metadata;
+  #cache: ResolverCache = {};
+
   constructor(meta: Metadata) {
     this.meta = meta;
   }
@@ -152,7 +165,7 @@ export class Resolver {
    * Return the top-level MIME type category (e.g. `"image"`, `"video"`, `"audio"`,
    * `"application"`) from the file's MIMEType.
    */
-  type(): string | undefined {
+  get type(): string | undefined {
     return this.meta.MIMEType?.split('/')[0] ?? undefined;
   }
 
@@ -161,18 +174,18 @@ export class Resolver {
    *
    * Alias/Wrapper for getOriginal with fallback to Digitized or OS File Dates.
    */
-  createdAt(): DateTime | undefined {
-    return this.originatedAt() ?? this.digitizedAt();
+  get createdAt(): DateTime | undefined {
+    return this.originatedAt ?? this.digitizedAt;
   }
 
   /**
    * Return the original capture/recording date/time from internal metadata.
    * Checks EXIF, QuickTime Keys/UserData (videos), XMP, IPTC, and GPS.
    */
-  originatedAt(): DateTime | undefined {
-    const meta = this.meta;
-    return (
-      Resolver.buildDateTime(meta.SubSecDateTimeOriginal) ??
+  get originatedAt(): DateTime | undefined {
+    if (!_.isDefined(this.#cache.originatedAt)) {
+      const meta = this.meta;
+      this.#cache.originatedAt = Resolver.buildDateTime(meta.SubSecDateTimeOriginal) ??
         Resolver.buildDateTime(
           meta.DateTimeOriginal,
           meta.SubSecTimeOriginal,
@@ -180,17 +193,18 @@ export class Resolver {
         ) ??
         Resolver.buildDateTime(meta.CreationDate) ??
         Resolver.buildDateTime(meta.DateCreated) ??
-        Resolver.buildDateTime(meta.GPSDateTime)
-    );
+        Resolver.buildDateTime(meta.GPSDateTime);
+    }
+    return this.#cache.originatedAt;
   }
 
   /**
    * Return the digitization date/time (CreateDate / DigitalCreationDateTime).
    */
-  digitizedAt(): DateTime | undefined {
-    const meta = this.meta;
-    return (
-      Resolver.buildDateTime(meta.SubSecCreateDate) ??
+  get digitizedAt(): DateTime | undefined {
+    if (!_.isDefined(this.#cache.digitizedAt)) {
+      const meta = this.meta;
+      this.#cache.digitizedAt = Resolver.buildDateTime(meta.SubSecCreateDate) ??
         Resolver.buildDateTime(
           meta.CreateDate,
           meta.SubSecTimeDigitized,
@@ -200,33 +214,35 @@ export class Resolver {
         Resolver.buildDateTime(meta.MediaCreateDate) ??
         Resolver.buildDateTime(meta.DigitalCreationDateTime) ??
         Resolver.buildDateTime(meta.DigitalCreationDate) ??
-        this.originatedAt()
-    );
+        this.originatedAt;
+    }
+    return this.#cache.digitizedAt;
   }
 
   /**
    * Return the metadata modification date/time.
    */
-  modifiedAt(): DateTime | undefined {
-    const meta = this.meta;
-    return (
-      Resolver.buildDateTime(
+  get modifiedAt(): DateTime | undefined {
+    if (!_.isDefined(this.#cache.modifiedAt)) {
+      const meta = this.meta;
+      this.#cache.modifiedAt = Resolver.buildDateTime(
         meta.SubSecModifyDate ?? meta.ModifyDate,
         meta.SubSecTime,
         meta.OffsetTime,
       ) ??
         Resolver.buildDateTime(meta.TrackModifyDate) ??
         Resolver.buildDateTime(meta.MediaModifyDate) ??
-        Resolver.buildDateTime(meta.MetadataDate)
-    );
+        Resolver.buildDateTime(meta.MetadataDate);
+    }
+    return this.#cache.modifiedAt;
   }
 
   /**
    * Return the "primary" date/time from an EXIF metadata object, in priority order:
    * original (DateTimeOriginal) → digitized (CreateDate) → modified (ModifyDate).
    */
-  primary(): DateTime | undefined {
-    return this.createdAt() ?? this.modifiedAt();
+  get primary(): DateTime | undefined {
+    return this.createdAt ?? this.modifiedAt;
   }
 
   /**
@@ -234,41 +250,50 @@ export class Resolver {
    * Falls back to false when no creation date is present.
    */
   get hasTimezone(): boolean {
-    return this.createdAt()?.hasTimezone() ?? false;
+    return this.createdAt?.hasTimezone() ?? false;
   }
 
   /**
    * The timezone offset of the primary creation date, if one is present.
    */
   get tzOffset(): string | undefined {
-    return this.createdAt()?.getTzString();
+    return this.createdAt?.getTzString();
   }
 
   /**
    * Returns the width of the content
    */
-  width(): Integer | undefined {
-    const m = this.meta;
-    return asInt(m.ExifImageWidth) ?? asInt(m.ImageWidth) ?? asInt(m.SourceImageWidth) ?? undefined;
+  get width(): Integer | undefined {
+    if (!_.isDefined(this.#cache.width)) {
+      const m = this.meta;
+      this.#cache.width = asInt(m.ExifImageWidth) ?? asInt(m.ImageWidth) ?? asInt(m.SourceImageWidth) ?? undefined;
+    }
+    return this.#cache.width;
   }
 
   /**
    * Returns the height of the content
    */
-  height(): Integer | undefined {
-    const m = this.meta;
-    return asInt(m.ExifImageHeight) ?? asInt(m.ImageHeight) ?? asInt(m.SourceImageHeight) ?? undefined;
+  get height(): Integer | undefined {
+    if (!_.isDefined(this.#cache.height)) {
+      const m = this.meta;
+      this.#cache.height = asInt(m.ExifImageHeight) ?? asInt(m.ImageHeight) ?? asInt(m.SourceImageHeight) ?? undefined;
+    }
+    return this.#cache.height;
   }
 
   /**
    * Returns the duration of the video or audio file.
    */
-  duration(): number | undefined {
-    const m = this.meta;
-    return Parse.duration(m.Duration) ??
-      Parse.duration(m.MediaDuration) ??
-      Parse.duration(m.AudioDuration) ??
-      Parse.duration(m.TrackDuration) ?? undefined;
+  get duration(): number | undefined {
+    if (!_.isDefined(this.#cache.duration)) {
+      const m = this.meta;
+      this.#cache.duration = Parse.duration(m.Duration) ??
+        Parse.duration(m.MediaDuration) ??
+        Parse.duration(m.AudioDuration) ??
+        Parse.duration(m.TrackDuration) ?? undefined;
+    }
+    return this.#cache.duration;
   }
 
   /**
@@ -276,19 +301,21 @@ export class Resolver {
    * process; for video/audio this is the video and/or audio codec,
    * semicolon-separated.
    */
-  codec(): string | undefined {
-    const m = this.meta;
-    const codec: string[] = [];
-    if (this.type() === 'image') {
-      if (m.EncodingProcess) codec.push(m.EncodingProcess);
-    } else if (this.type() === 'video' || this.type() === 'audio') {
-      const videoCodec = Normalize.videoCodec(m);
-      const audioCodec = Normalize.audioCodec(m);
-      if (videoCodec) codec.push(videoCodec);
-      if (audioCodec) codec.push(audioCodec);
+  get codec(): string | undefined {
+    if (!_.isDefined(this.#cache.codec)) {
+      const m = this.meta;
+      const codec: string[] = [];
+      if (this.type === 'image') {
+        if (m.EncodingProcess) codec.push(m.EncodingProcess);
+      } else if (this.type === 'video' || this.type === 'audio') {
+        const videoCodec = Normalize.videoCodec(m);
+        const audioCodec = Normalize.audioCodec(m);
+        if (videoCodec) codec.push(videoCodec);
+        if (audioCodec) codec.push(audioCodec);
+      }
+      if (codec.length) this.#cache.codec = codec.join('; ');
     }
-    if (codec.length) return codec.join('; ');
-    return;
+    return this.#cache.codec;
   }
 
   // ==========================================================================
@@ -337,11 +364,11 @@ export class Resolver {
    */
   adjustAllDates(duration: Temporal.DurationLike): Record<string, string> {
     const changes: Record<string, string> = {};
-    const originated = this.originatedAt();
+    const originated = this.originatedAt;
     if (originated) Object.assign(changes, this.setOriginatedAt(originated.add(duration)));
-    const digitized = this.digitizedAt();
+    const digitized = this.digitizedAt;
     if (digitized) Object.assign(changes, this.setDigitizedAt(digitized.add(duration)));
-    const modified = this.modifiedAt();
+    const modified = this.modifiedAt;
     if (modified) Object.assign(changes, this.setModifiedAt(modified.add(duration)));
     return changes;
   }
@@ -356,11 +383,11 @@ export class Resolver {
    */
   shiftTimezone(tz: ISOTZ): Record<string, string> {
     const changes: Record<string, string> = {};
-    const originated = this.originatedAt();
+    const originated = this.originatedAt;
     if (originated) Object.assign(changes, this.setOriginatedAt(originated.withTz(tz)));
-    const digitized = this.digitizedAt();
+    const digitized = this.digitizedAt;
     if (digitized) Object.assign(changes, this.setDigitizedAt(digitized.withTz(tz)));
-    const modified = this.modifiedAt();
+    const modified = this.modifiedAt;
     if (modified) Object.assign(changes, this.setModifiedAt(modified.withTz(tz)));
     return changes;
   }

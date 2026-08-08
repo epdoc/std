@@ -40,24 +40,24 @@ function videoMeta(partial: Record<string, unknown> = {}): Metadata {
 
 Deno.test('Resolver.type', async (t) => {
   await t.step('returns "image" for image/jpeg', () => {
-    assertEquals(Meta.Resolver.from(imageMeta()).type(), 'image');
+    assertEquals(Meta.Resolver.from(imageMeta()).type, 'image');
   });
 
   await t.step('returns "video" for video/mp4', () => {
-    assertEquals(Meta.Resolver.from(videoMeta()).type(), 'video');
+    assertEquals(Meta.Resolver.from(videoMeta()).type, 'video');
   });
 
   await t.step('returns "audio" for audio/mpeg', () => {
-    assertEquals(Meta.Resolver.from(videoMeta({ MIMEType: 'audio/mpeg' })).type(), 'audio');
+    assertEquals(Meta.Resolver.from(videoMeta({ MIMEType: 'audio/mpeg' })).type, 'audio');
   });
 
   await t.step('returns "application" for application/pdf', () => {
-    assertEquals(Meta.Resolver.from(videoMeta({ MIMEType: 'application/pdf' })).type(), 'application');
+    assertEquals(Meta.Resolver.from(videoMeta({ MIMEType: 'application/pdf' })).type, 'application');
   });
 
   await t.step('returns empty string when MIMEType is empty', () => {
     const meta: Metadata = { ...videoMeta(), MIMEType: '' };
-    assertEquals(Meta.Resolver.from(meta).type(), '');
+    assertEquals(Meta.Resolver.from(meta).type, '');
   });
 });
 
@@ -65,43 +65,43 @@ Deno.test('Resolver.type', async (t) => {
 
 Deno.test('Resolver.width', async (t) => {
   await t.step('uses ImageWidth by default', () => {
-    assertEquals(Meta.Resolver.from(imageMeta({ ImageWidth: 1920 })).width(), 1920);
+    assertEquals(Meta.Resolver.from(imageMeta({ ImageWidth: 1920 })).width, 1920);
   });
 
   await t.step('falls back to SourceImageWidth', () => {
     const meta = imageMeta({ ImageWidth: undefined, SourceImageWidth: 3840 });
-    assertEquals(Meta.Resolver.from(meta).width(), 3840);
+    assertEquals(Meta.Resolver.from(meta).width, 3840);
   });
 
   await t.step('prefers ExifImageWidth', () => {
     const meta = imageMeta({ ExifImageWidth: 6000, ImageWidth: 1920 });
-    assertEquals(Meta.Resolver.from(meta).width(), 6000);
+    assertEquals(Meta.Resolver.from(meta).width, 6000);
   });
 
   await t.step('returns undefined when no dimensions exist', () => {
     const meta = imageMeta({ ImageWidth: undefined, SourceImageWidth: undefined });
-    assertEquals(Meta.Resolver.from(meta).width(), undefined);
+    assertEquals(Meta.Resolver.from(meta).width, undefined);
   });
 });
 
 Deno.test('Resolver.height', async (t) => {
   await t.step('uses ImageHeight by default', () => {
-    assertEquals(Meta.Resolver.from(imageMeta({ ImageHeight: 1080 })).height(), 1080);
+    assertEquals(Meta.Resolver.from(imageMeta({ ImageHeight: 1080 })).height, 1080);
   });
 
   await t.step('falls back to SourceImageHeight', () => {
     const meta = imageMeta({ ImageHeight: undefined, SourceImageHeight: 2160 });
-    assertEquals(Meta.Resolver.from(meta).height(), 2160);
+    assertEquals(Meta.Resolver.from(meta).height, 2160);
   });
 
   await t.step('prefers ExifImageHeight', () => {
     const meta = imageMeta({ ExifImageHeight: 4000, ImageHeight: 1080 });
-    assertEquals(Meta.Resolver.from(meta).height(), 4000);
+    assertEquals(Meta.Resolver.from(meta).height, 4000);
   });
 
   await t.step('returns undefined when no dimensions exist', () => {
     const meta = imageMeta({ ImageHeight: undefined, SourceImageHeight: undefined });
-    assertEquals(Meta.Resolver.from(meta).height(), undefined);
+    assertEquals(Meta.Resolver.from(meta).height, undefined);
   });
 });
 
@@ -110,26 +110,26 @@ Deno.test('Resolver.height', async (t) => {
 Deno.test('Resolver.duration', async (t) => {
   await t.step('parses Duration tag', () => {
     const meta = videoMeta({ Duration: '2.00 s' });
-    assertEquals(Meta.Resolver.from(meta).duration(), 2);
+    assertEquals(Meta.Resolver.from(meta).duration, 2);
   });
 
   await t.step('falls back to MediaDuration', () => {
     const meta = videoMeta({ MediaDuration: '1:30:00' });
-    assertEquals(Meta.Resolver.from(meta).duration(), 5400);
+    assertEquals(Meta.Resolver.from(meta).duration, 5400);
   });
 
   await t.step('falls back to AudioDuration', () => {
     const meta = videoMeta({ AudioDuration: '3.5' });
-    assertEquals(Meta.Resolver.from(meta).duration(), 3.5);
+    assertEquals(Meta.Resolver.from(meta).duration, 3.5);
   });
 
   await t.step('falls back to TrackDuration', () => {
     const meta = videoMeta({ TrackDuration: '0:05:30' });
-    assertEquals(Meta.Resolver.from(meta).duration(), 330);
+    assertEquals(Meta.Resolver.from(meta).duration, 330);
   });
 
   await t.step('returns undefined when no duration tags exist', () => {
-    assertEquals(Meta.Resolver.from(videoMeta()).duration(), undefined);
+    assertEquals(Meta.Resolver.from(videoMeta()).duration, undefined);
   });
 });
 
@@ -138,11 +138,11 @@ Deno.test('Resolver.duration', async (t) => {
 Deno.test('Resolver.codec for images', async (t) => {
   await t.step('returns the encoding process for JPEG images', () => {
     const meta = imageMeta({ EncodingProcess: 'Baseline DCT, Huffman coding' });
-    assertEquals(Meta.Resolver.from(meta).codec(), 'Baseline DCT, Huffman coding');
+    assertEquals(Meta.Resolver.from(meta).codec, 'Baseline DCT, Huffman coding');
   });
 
   await t.step('returns undefined when no encoding process is set', () => {
-    assertEquals(Meta.Resolver.from(imageMeta()).codec(), undefined);
+    assertEquals(Meta.Resolver.from(imageMeta()).codec, undefined);
   });
 });
 
@@ -152,7 +152,7 @@ Deno.test('Resolver.codec for audio', async (t) => {
       MIMEType: 'audio/mpeg',
       AudioFormat: 'MPEG Audio',
     });
-    const codec = Meta.Resolver.from(meta).codec();
+    const codec = Meta.Resolver.from(meta).codec;
     assertEquals(typeof codec, 'string');
     assertEquals(codec!.length > 0, true);
   });

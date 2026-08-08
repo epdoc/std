@@ -85,10 +85,10 @@ export function titleCase(key: string): string {
  *
  * Each falls back across the tag hierarchies in {@link Meta.Resolver}.
  */
-const exifOriginal = (_fs: FS.File, meta: Metadata): DateTime | undefined => Meta.Resolver.from(meta).originatedAt();
-const exifDigitized = (_fs: FS.File, meta: Metadata): DateTime | undefined => Meta.Resolver.from(meta).digitizedAt();
-const exifModified = (_fs: FS.File, meta: Metadata): DateTime | undefined => Meta.Resolver.from(meta).modifiedAt();
-const exifCreated = (_fs: FS.File, meta: Metadata): DateTime | undefined => Meta.Resolver.from(meta).createdAt();
+const exifOriginal = (_fs: FS.File, meta: Metadata): DateTime | undefined => Meta.Resolver.from(meta).originatedAt;
+const exifDigitized = (_fs: FS.File, meta: Metadata): DateTime | undefined => Meta.Resolver.from(meta).digitizedAt;
+const exifModified = (_fs: FS.File, meta: Metadata): DateTime | undefined => Meta.Resolver.from(meta).modifiedAt;
+const exifCreated = (_fs: FS.File, meta: Metadata): DateTime | undefined => Meta.Resolver.from(meta).createdAt;
 
 // ============================================================================
 // Section consts — single source of truth for each info category

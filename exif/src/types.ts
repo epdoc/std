@@ -9,6 +9,8 @@ export interface IDryRun {
   dryRun?: boolean;
 }
 
+export type Seconds = number;
+
 /**
  * JSON representation of a File's extracted metadata, nested by section.
  * Raw exiftool metadata is excluded by default; opt in with

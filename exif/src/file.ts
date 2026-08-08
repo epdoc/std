@@ -134,56 +134,46 @@ export class File {
     };
     const id = this.id();
     if (id) result.id = id;
-    const camera = this.camera();
-    if (camera && Object.keys(camera).length) result.camera = camera;
-    const app = this.app();
-    if (app && Object.keys(app).length) result.app = app;
-    const type = this.resolver.type();
+    if (this.camera && Object.keys(this.camera).length) result.camera = this.camera;
+    if (this.app && Object.keys(this.app).length) result.app = this.app;
+    const type = this.resolver.type;
     if (type === 'image') {
-      const image = this.image();
-      if (image && Object.keys(image).length) result.image = image;
+      if (this.image && Object.keys(this.image).length) result.image = this.image;
     } else if (type === 'video') {
-      const video = this.video();
-      if (video && Object.keys(video).length) result.video = video;
-      const audio = this.audio();
-      if (audio && Object.keys(audio).length) {
-        if (Object.keys(audio).length !== 1 || audio.codec !== Normalize.CODEC_AUDIO_UNKNOWN) {
-          result.audio = audio;
+      if (this.video && Object.keys(this.video).length) result.video = this.video;
+      if (this.audio && Object.keys(this.audio).length) {
+        if (Object.keys(this.audio).length !== 1 || this.audio.codec !== Normalize.CODEC_AUDIO_UNKNOWN) {
+          result.audio = this.audio;
         }
       }
     } else if (type === 'audio') {
-      const audio = this.audio();
-      if (audio && Object.keys(audio).length) {
-        if (Object.keys(audio).length !== 1 || audio.codec !== Normalize.CODEC_AUDIO_UNKNOWN) {
-          result.audio = audio;
+      if (this.audio && Object.keys(this.audio).length) {
+        if (Object.keys(this.audio).length !== 1 || this.audio.codec !== Normalize.CODEC_AUDIO_UNKNOWN) {
+          result.audio = this.audio;
         }
       }
     } else {
-      const pdf = this.pdf();
-      if (pdf && Object.keys(pdf).length) result.pdf = pdf;
-      if (!result.pdf) {
-        const doc = this.doc();
-        if (doc && Object.keys(doc).length) result.doc = doc;
+      if (this.pdf && Object.keys(this.pdf).length) result.pdf = this.pdf;
+      if (!this.pdf) {
+        if (this.doc && Object.keys(this.doc).length) result.doc = this.doc;
       }
     }
-    if (opts.metadata) {
-      result.metadata = this.metadata;
-    }
-    const gps = this.gps();
-    if (gps && Object.keys(gps)) result.gps = gps;
+    if (this.gps && Object.keys(this.gps)) result.gps = this.gps;
+    if (opts.metadata) result.metadata = this.metadata;
+
     this.#info = result;
     return result;
   }
 
-  file(): Schema.File {
+  get file(): Schema.File {
     if (this.#cache.file) return this.#cache.file;
     this.#cache.file = collect(Schema.fileDef, this.#fsFile, this.metadata);
     return this.#cache.file;
   }
 
-  image(): Schema.Image | undefined {
+  get image(): Schema.Image | undefined {
     if (this.#cache.image) return this.#cache.image;
-    if (this.resolver.type() !== 'image') return undefined;
+    if (this.resolver.type !== 'image') return undefined;
     const result = collect(Schema.imageDef, this.#fsFile, this.metadata);
     if (result && Object.keys(result).length) {
       this.#cache.image = result;
@@ -191,9 +181,9 @@ export class File {
     return this.#cache.image;
   }
 
-  video(): Schema.Video | undefined {
+  get video(): Schema.Video | undefined {
     if (this.#cache.video) return this.#cache.video;
-    if (this.resolver.type() !== 'video') return undefined;
+    if (this.resolver.type !== 'video') return undefined;
     const res: Normalize.VideoRes | undefined = Normalize.videoResolution(this.metadata);
     const other: Schema.VideoOther = collect(Schema.videoOtherDef, this.#fsFile, this.metadata);
     if ((res && Object.keys(res).length) || (other && Object.keys(other).length)) {
@@ -202,7 +192,7 @@ export class File {
     return this.#cache.video;
   }
 
-  audio(): Schema.Audio | undefined {
+  get audio(): Schema.Audio | undefined {
     if (this.#cache.audio) return this.#cache.audio;
     const result = collect(Schema.audioDef, this.#fsFile, this.metadata);
     if (result && Object.keys(result).length) {
@@ -211,7 +201,7 @@ export class File {
     return this.#cache.audio;
   }
 
-  doc(): Schema.Doc | undefined {
+  get doc(): Schema.Doc | undefined {
     if (this.#cache.doc) return this.#cache.doc;
     const result = collect(Schema.docDef, this.#fsFile, this.metadata);
     if (result && Object.keys(result).length) {
@@ -220,7 +210,7 @@ export class File {
     return this.#cache.doc;
   }
 
-  pdf(): Schema.Pdf | undefined {
+  get pdf(): Schema.Pdf | undefined {
     if (this.#cache.pdf) return this.#cache.pdf;
     const result = collect(Schema.pdfDef, this.#fsFile, this.metadata);
     if (result && Object.keys(result).length) {
@@ -229,7 +219,7 @@ export class File {
     return this.#cache.pdf;
   }
 
-  camera(): Schema.Camera | undefined {
+  get camera(): Schema.Camera | undefined {
     if (this.#cache.camera) return this.#cache.camera;
     const result = collect(Schema.cameraDef, this.#fsFile, this.metadata);
     if (result && Object.keys(result).length) {
@@ -251,7 +241,7 @@ export class File {
     }
   }
 
-  app(): Schema.App | undefined {
+  get app(): Schema.App | undefined {
     if (this.#cache.app) return this.#cache.app;
     const result = collect(Schema.appDef, this.#fsFile, this.metadata);
     if (result && Object.keys(result).length) {
@@ -272,7 +262,7 @@ export class File {
     return _.isDefined(this.metadata.GPSLatitude) && _.isDefined(this.metadata.GPSLongitude);
   }
 
-  gps(): Gps.Location | undefined {
+  get gps(): Gps.Location | undefined {
     if (this.#cache.gps) return this.#cache.gps;
     const lat = Gps.parse(this.metadata.GPSLatitude, this.metadata.GPSLatitudeRef);
     const lng = Gps.parse(this.metadata.GPSLongitude, this.metadata.GPSLongitudeRef);
