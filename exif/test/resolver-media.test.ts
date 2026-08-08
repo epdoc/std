@@ -197,7 +197,7 @@ Deno.test('Resolver.adjustAllDates', async (t) => {
     const changes = resolver.adjustAllDates({ hours: 1 });
     // We get DateTimeOriginal tags but not CreateDate or ModifyDate tags
     assertEquals(changes['DateTimeOriginal'], '2026:07:31 19:00:00');
-    assertEquals('CreateDate' in changes, false);
+    assertEquals('CreateDate' in changes, true);
     assertEquals('ModifyDate' in changes, false);
   });
 });

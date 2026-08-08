@@ -175,10 +175,9 @@ Deno.test('File.video section', async (t) => {
     assertEquals(typeof vid.codec, 'string');
   });
 
-  await t.step('returns empty object for non-video metadata', () => {
+  await t.step('returns undefined for non-video metadata', () => {
     const file = File.fromMetadata(pdfMeta());
-    console.log('empty object', file.video);
-    assertEquals(Object.keys(file.video).length, 0);
+    assertEquals(file.video(), undefined);
   });
 });
 
@@ -337,9 +336,9 @@ Deno.test('File.id getter', async (t) => {
     assertEquals(file.id()!.instanceId, 'xmp.iid:def456');
   });
 
-  await t.step('returns empty object when IDs are missing', () => {
+  await t.step('returns undefined when IDs are missing', () => {
     const file = File.fromMetadata(jpgMeta());
-    assertEquals(Object.keys(file.id).length, 0);
+    assertEquals(file.id(), undefined);
   });
 });
 
@@ -403,7 +402,7 @@ Deno.test('File.info', async (t) => {
     const file = File.fromMetadata(pdfMeta());
     const info = file.info();
     assertEquals(info.file.type, 'application');
-    assertEquals(typeof info.doc, 'object');
+    assertEquals(typeof info.pdf, 'object');
     assertEquals(info.image, undefined);
     assertEquals(info.video, undefined);
     assertEquals(info.audio, undefined);

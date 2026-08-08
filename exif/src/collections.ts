@@ -304,8 +304,7 @@ export interface PdfDef extends InfoSection {
   author: InfoDef<string>;
   subject: InfoDef<string>;
   keywords: InfoDef<string | string[]>;
-  originatedAt: InfoDef<DateTime>;
-  digitizedAt: InfoDef<DateTime>;
+  createdAt: InfoDef<DateTime>;
   modifiedAt: InfoDef<DateTime>;
   pageCount: InfoDef<number>;
   producer: InfoDef<string>;

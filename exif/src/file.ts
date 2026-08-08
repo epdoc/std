@@ -165,7 +165,8 @@ export class File {
 
   image(): Schema.Image | undefined {
     if (this.resolver.type() !== 'image') return undefined;
-    return collect(Schema.imageDef, this.#fsFile, this.metadata);
+    const result = collect(Schema.imageDef, this.#fsFile, this.metadata);
+    return result && Object.keys(result).length ? result : undefined;
   }
 
   video(): Schema.Video | undefined {

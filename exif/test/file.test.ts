@@ -201,9 +201,9 @@ Deno.test('File resolution: prefers EXIF dates over filesystem dates', async (t)
       FileInodeChangeDate: '2026:08:01 14:00:00',
       FileCreateDate: '2026:08:01 15:00:00',
     }));
-    assertEquals(file.image()!.originatedAt, undefined);
-    assertEquals(file.image()!.digitizedAt, undefined);
-    assertEquals(file.image()!.modifiedAt, undefined);
+    assertEquals(file.image()?.originatedAt, undefined);
+    assertEquals(file.image()?.digitizedAt, undefined);
+    assertEquals(file.image()?.modifiedAt, undefined);
   });
 
   await t.step('video section dates ignore filesystem dates', () => {
@@ -216,9 +216,9 @@ Deno.test('File resolution: prefers EXIF dates over filesystem dates', async (t)
       FileInodeChangeDate: '2026:08:01 14:00:00',
       FileCreateDate: '2026:08:01 15:00:00',
     }));
-    assertEquals(file.video()!.originatedAt, undefined);
-    assertEquals(file.video()!.digitizedAt, undefined);
-    assertEquals(file.video()!.modifiedAt, undefined);
+    assertEquals(file.video()?.originatedAt, undefined);
+    assertEquals(file.video()?.digitizedAt, undefined);
+    assertEquals(file.video()?.modifiedAt, undefined);
   });
 
   await t.step('audio section dates ignore filesystem dates', () => {
@@ -231,9 +231,9 @@ Deno.test('File resolution: prefers EXIF dates over filesystem dates', async (t)
       FileInodeChangeDate: '2026:08:01 14:00:00',
       FileCreateDate: '2026:08:01 15:00:00',
     }));
-    assertEquals(file.audio()!.originatedAt, undefined);
-    assertEquals(file.audio()!.digitizedAt, undefined);
-    assertEquals(file.audio()!.modifiedAt, undefined);
+    assertEquals(file.audio()?.originatedAt, undefined);
+    assertEquals(file.audio()?.digitizedAt, undefined);
+    assertEquals(file.audio()?.modifiedAt, undefined);
   });
 
   await t.step('document section dates ignore filesystem dates', () => {
@@ -246,9 +246,7 @@ Deno.test('File resolution: prefers EXIF dates over filesystem dates', async (t)
       FileInodeChangeDate: '2026:08:01 14:00:00',
       FileCreateDate: '2026:08:01 15:00:00',
     }));
-    assertEquals(file.doc()!.originatedAt, undefined);
-    assertEquals(file.doc()!.digitizedAt, undefined);
-    assertEquals(file.doc()!.modifiedAt, undefined);
+    assertEquals(file.doc(), undefined);
   });
 });
 
