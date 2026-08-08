@@ -46,6 +46,7 @@ export type FileInfo = {
   image?: Schema.Image;
   video?: Schema.Video;
   audio?: Schema.Audio;
+  pdf?: Schema.Pdf;
   doc?: Schema.Doc;
   metadata?: Metadata;
 };

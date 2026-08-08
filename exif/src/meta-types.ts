@@ -467,6 +467,30 @@ export interface VideoAudioMetadata {
 }
 
 /**
+ * PDF metadata.
+ * These tags are emitted by exiftool for non-media documents.
+ */
+export interface PdfMetadata {
+  Title?: string;
+  Author?: string;
+  Subject?: string;
+  /** May be a string or, for some formats, an array of strings. */
+  Keywords?: string | string[];
+  /** PDF producer application, e.g. "Adobe PDF Library 17.0". */
+  Producer?: string;
+  Description?: string;
+  Creator?: string;
+  DocumentID?: string;
+  InstanceID?: string;
+  /** Page count (PDF). */
+  PageCount?: Integer;
+  /** Page count (Office documents). */
+  Pages?: Integer;
+  /** PDF version, e.g. "1.7". */
+  PDFVersion?: string;
+}
+
+/**
  * Document metadata (PDF, Office, EPUB, text, etc.).
  * These tags are emitted by exiftool for non-media documents.
  */
@@ -504,4 +528,5 @@ export interface Metadata
     AdobeDevelopSettings,
     CompositeMetadata,
     VideoAudioMetadata,
+    PdfMetadata,
     DocumentMetadata {}

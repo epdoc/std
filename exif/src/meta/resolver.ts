@@ -153,7 +153,8 @@ export class Resolver {
    * `"application"`) from the file's MIMEType.
    */
   type(): string | undefined {
-    return this.meta.MIMEType?.split('/')[0] ?? undefined;
+    if (this.meta.MIMEType === 'application/pdf') return 'pdf';
+    this.meta.MIMEType?.split('/')[0] ?? undefined;
   }
 
   /**

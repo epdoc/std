@@ -2,8 +2,8 @@ import type { DateTime } from '@epdoc/datetime';
 import type * as FS from '@epdoc/fs/fs';
 import { _, type Integer } from '@epdoc/type';
 import type { ISODateString, Metadata } from './meta-types.ts';
-import * as Normalize from './normalize.ts';
 import * as Meta from './meta/mod.ts';
+import * as Normalize from './normalize.ts';
 
 // ============================================================================
 // SSoT infrastructure — InfoDef, factories, collect, derived types
@@ -88,6 +88,7 @@ export function titleCase(key: string): string {
 const exifOriginal = (_fs: FS.File, meta: Metadata): DateTime | undefined => Meta.Resolver.from(meta).originatedAt();
 const exifDigitized = (_fs: FS.File, meta: Metadata): DateTime | undefined => Meta.Resolver.from(meta).digitizedAt();
 const exifModified = (_fs: FS.File, meta: Metadata): DateTime | undefined => Meta.Resolver.from(meta).modifiedAt();
+const exifCreated = (_fs: FS.File, meta: Metadata): DateTime | undefined => Meta.Resolver.from(meta).createdAt();
 
 // ============================================================================
 // Section consts — single source of truth for each info category
@@ -290,6 +291,46 @@ export const appDef: AppDef = {
 };
 
 export type App = InfoResult<typeof appDef>;
+
+/**
+ * Document-level information (PDF, Word, Excel, presentations, text, etc.).
+ *
+ * Unlike `appDef` (the software that created the file), these fields describe
+ * the document itself. `pageCount` handles both the PDF `PageCount` tag and
+ * the Office `Pages` tag; `producer` is the PDF producer (when present).
+ */
+export interface PdfDef extends InfoSection {
+  title: InfoDef<string>;
+  author: InfoDef<string>;
+  subject: InfoDef<string>;
+  keywords: InfoDef<string | string[]>;
+  originatedAt: InfoDef<DateTime>;
+  digitizedAt: InfoDef<DateTime>;
+  modifiedAt: InfoDef<DateTime>;
+  pageCount: InfoDef<number>;
+  producer: InfoDef<string>;
+  description: InfoDef<string>;
+  creator: InfoDef<string>;
+  documentId: InfoDef<string>;
+  instanceId: InfoDef<string>;
+}
+
+export const pdfDef: PdfDef = {
+  title: { value: readTag('Title') },
+  author: { value: readTag('Author') },
+  subject: { value: readTag('Subject') },
+  keywords: { value: readTag('Keywords') },
+  createdAt: { value: exifCreated },
+  modifiedAt: { value: exifModified },
+  pageCount: { value: (_fs: FS.File, m: Metadata): number | undefined => asInt(m.PageCount) ?? asInt(m.Pages) },
+  producer: { value: readTag('Producer') },
+  description: { value: readTag('Description') },
+  creator: { value: readTag('Creator') },
+  documentId: { value: readTag('DocumentID') },
+  instanceId: { value: readTag('InstanceID') },
+};
+
+export type Pdf = InfoResult<typeof pdfDef>;
 
 /**
  * Document-level information (PDF, Word, Excel, presentations, text, etc.).

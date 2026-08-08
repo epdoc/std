@@ -144,8 +144,12 @@ export class File {
         }
       }
     } else {
-      const doc = this.doc();
-      if (doc && Object.keys(doc).length) result.doc = doc;
+      const pdf = this.pdf();
+      if (pdf && Object.keys(pdf).length) result.pdf = pdf;
+      if (!result.pdf) {
+        const doc = this.doc();
+        if (doc && Object.keys(doc).length) result.doc = doc;
+      }
     }
     if (opts.metadata) {
       result.metadata = this.metadata;
@@ -181,6 +185,11 @@ export class File {
 
   doc(): Schema.Doc | undefined {
     const result = collect(Schema.docDef, this.#fsFile, this.metadata);
+    return result && Object.keys(result).length ? result : undefined;
+  }
+
+  pdf(): Schema.Pdf | undefined {
+    const result = collect(Schema.pdfDef, this.#fsFile, this.metadata);
     return result && Object.keys(result).length ? result : undefined;
   }
 
