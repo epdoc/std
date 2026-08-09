@@ -157,16 +157,12 @@ export class Resolver {
 
   /**
    * Return the top-level MIME type category (e.g. `"image"`, `"video"`, `"audio"`,
-   * `"application"`) from the file's MIMEType.
+   * `"application"`) from the file's MIMEType. Returns an empty string when the
+   * MIMEType is empty or missing.
    */
   get type(): string {
-    const [type, subtype] = this.meta.MIMEType.split('/');
-    if (type === 'application' && subtype) {
-      return subtype;
-    } else if (type) {
-      return type;
-    }
-    return 'unknown';
+    const [type] = this.meta.MIMEType?.split('/') ?? [];
+    return type ?? '';
   }
 
   /**

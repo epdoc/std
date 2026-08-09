@@ -50,7 +50,7 @@ if (files.length === 0) {
 
 const reader = new Reader();
 try {
-  const results = await reader.read(files);
+  const results = await reader.read(files, { digest: digest ? 'sha1' : false });
   const output = results.map((file) => {
     const result: FileInfo = file.info({ metadata: showMeta });
 

@@ -11,7 +11,7 @@ export interface IDryRun {
 
 export interface IDigest {
   /** Compute and include a digest in the top-level file object. */
-  digest?: boolean;
+  digest?: string | boolean;
 }
 
 export type Seconds = number;
@@ -65,8 +65,7 @@ export interface ToJSONOptions {
 
 export type FileInfo = {
   id?: { documentId?: string; instanceId?: string };
-  digest?: Digest;
-  file: Schema.File;
+  file: Schema.File & { digest?: string };
   camera?: Schema.Camera;
   app?: Schema.App;
   gps?: Gps.Location;
@@ -80,7 +79,6 @@ export type FileInfo = {
 export type FileInfoKey = keyof FileInfo;
 export const FileInfoEnum = [
   'id',
-  'digest',
   'file',
   'camera',
   'app',

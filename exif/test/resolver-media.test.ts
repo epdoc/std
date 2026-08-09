@@ -55,8 +55,17 @@ Deno.test('Resolver.type', async (t) => {
     assertEquals(Meta.Resolver.from(videoMeta({ MIMEType: 'application/pdf' })).type, 'application');
   });
 
+  await t.step('returns "application" for application/octet-stream', () => {
+    assertEquals(Meta.Resolver.from(videoMeta({ MIMEType: 'application/octet-stream' })).type, 'application');
+  });
+
   await t.step('returns empty string when MIMEType is empty', () => {
     const meta: Metadata = { ...videoMeta(), MIMEType: '' };
+    assertEquals(Meta.Resolver.from(meta).type, '');
+  });
+
+  await t.step('returns empty string when MIMEType is missing', () => {
+    const meta: Metadata = { ...videoMeta(), MIMEType: undefined as unknown as string };
     assertEquals(Meta.Resolver.from(meta).type, '');
   });
 });

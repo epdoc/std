@@ -4,7 +4,7 @@ import type { Dict } from '@epdoc/type';
 import { _ } from '@epdoc/type';
 import { EXIFTOOL_READ_FLAGS, File } from './file.ts';
 import { json as parseJson } from './meta/parse.ts';
-import type { IDryRun } from './types.ts';
+import type { IDigest, IDryRun } from './types.ts';
 
 /**
  * Factory for reading EXIF metadata from one or more files in a single
@@ -28,8 +28,9 @@ export class Reader {
   async read(files: (FS.FilePath | FS.File)[], opts: IDigest = {}): Promise<File[]> {
     const paths = files.map((f) => (_.isString(f) ? f : f.path));
     const args = [...EXIFTOOL_READ_FLAGS, ...paths];
-    const result = await Cmd.runner<Dict>('exiftool', args).dryRun(this.#dryRun).cwd(FS.cwd()).run();
+    const exiftoolPromise = await Cmd.runner<Dict>('exiftool', args).dryRun(this.#dryRun).cwd(FS.cwd()).run();
 
+    const result = await exiftoolPromise;
     if (result.exitCode !== 0 && !result.stdout) {
       const err = _.asError(result.stderr.trim() || `exiftool exited with code ${result.exitCode}`, { silent: true });
       throw err;
@@ -37,10 +38,15 @@ export class Reader {
 
     const metadataArray = parseJson(result.stdout);
     const results = metadataArray.map((metadata) => File.fromMetadata(metadata, { dryRun: this.#dryRun }));
-    await Promise.all(results.map((f) => f.fsFile.stats()));
+
+    // Run stats and digests in parallel
+    const promises: Promise<unknown>[] = results.map((f) => f.fsFile.stats());
     if (opts.digest) {
-      await Promise.all(results.map((f) => f.fsFile.digest()));
+      const alg = _.isString(opts.digest) ? opts.digest as FS.DigestAlgorithmValues : FS.DigestAlgorithm.sha1;
+      promises.push(...results.map((f) => f.getDigest(alg)));
     }
+    await Promise.all(promises);
+
     return results;
   }
 }

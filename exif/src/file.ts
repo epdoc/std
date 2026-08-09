@@ -75,9 +75,9 @@ export class File {
     return this.#dirty;
   }
 
-  async getDigest(alg?: FS.DigestAlgorithmValues): Promise<Digest> {
+  async getDigest(alg: FS.DigestAlgorithmValues = FS.DigestAlgorithm.sha1): Promise<Digest> {
     if (!this.#cache.digest) {
-      this.#cache.digest = await this.#fsFile.digest(alg);
+      this.#cache.digest = alg + ':' + await this.#fsFile.digest(alg);
     }
     return this.#cache.digest;
   }
@@ -142,7 +142,7 @@ export class File {
       file: collect(FileDef, this.#fsFile, this.metadata),
     };
     if (this.#cache.digest) {
-      result.digest = this.#cache.digest;
+      result.file.digest = this.#cache.digest;
     }
     const id = this.id();
     if (id) result.id = id;
