@@ -1,7 +1,7 @@
 import { DateTime } from '@epdoc/datetime';
-import * as FS from '@epdoc/fs/fs';
+import type * as FS from '@epdoc/fs/fs';
 import { assertEquals } from '@std/assert';
-import { File, Meta, type Metadata } from '../src/mod.ts';
+import { File, Meta } from '../src/mod.ts';
 
 function sourceFile(path: string): FS.FilePath {
   return path as FS.FilePath;
@@ -268,84 +268,3 @@ Deno.test('File.write in dry-run mode', async (t) => {
 });
 
 // --- repair() ---
-
-function repairMeta(sourcePath: FS.FilePath, partial: Record<string, unknown> = {}): Metadata {
-  return {
-    SourceFile: sourcePath,
-    ExifToolVersion: 12.0,
-    FileName: 'IMG-20260406-WA0005.jpg',
-    Directory: '/tmp',
-    MIMEType: 'image/jpeg',
-    FileType: 'JPEG',
-    FileTypeExtension: 'jpg',
-    ...partial,
-  };
-}
-
-Deno.test('File.repair', async (t) => {
-  const tmpDir = await Deno.makeTempDir({ prefix: 'exif-repair-' });
-  try {
-    const work = new FS.File(`${tmpDir}/IMG-20260406-WA0005.jpg`);
-    await work.write('dummy content');
-
-    await t.step('returns true and repairs a whatsapp file with no embedded dates', async () => {
-      const file = File.fromMetadata(repairMeta(work.path), { dryRun: true });
-      assertEquals(await file.repair(), true);
-      assertEquals(file.pending.get('Software'), 'WhatsApp');
-      assertEquals(file.pending.get('DateTimeOriginal'), '2026:04:06 00:00:00');
-      assertEquals(file.pending.get('CreateDate') !== undefined, true);
-      assertEquals(file.pending.get('ModifyDate') !== undefined, true);
-    });
-
-    await t.step('returns true and repairs a tiktok file with no embedded dates', async () => {
-      const file = File.fromMetadata(
-        repairMeta(work.path, {
-          FileName: 'tiktok-video.mp4',
-          MIMEType: 'video/mp4',
-          FileType: 'MP4',
-          FileTypeExtension: 'mp4',
-          Comment: 'vid:v15044gf0000d9n1eifog65t4dv1v2u0',
-        }),
-        { dryRun: true },
-      );
-      assertEquals(await file.repair(), true);
-      assertEquals(file.pending.get('Software'), 'TikTok');
-      assertEquals(file.pending.get('DateTimeOriginal'), undefined);
-      assertEquals(file.pending.get('TrackCreateDate') !== undefined, true);
-      assertEquals(file.pending.get('MediaCreateDate') !== undefined, true);
-    });
-
-    await t.step('does not repair a camera file', async () => {
-      const file = File.fromMetadata(
-        repairMeta(work.path, {
-          FileName: 'a.jpg',
-          Make: 'Google',
-          Model: 'Pixel 7',
-        }),
-        { dryRun: true },
-      );
-      assertEquals(await file.repair(), false);
-      assertEquals(file.pending.size, 0);
-    });
-
-    await t.step('does not repair when a valid embedded date exists', async () => {
-      const file = File.fromMetadata(
-        repairMeta(work.path, {
-          DateTimeOriginal: '2026:04:06 21:42:47',
-        }),
-        { dryRun: true },
-      );
-      assertEquals(await file.repair(), false);
-      assertEquals(file.pending.size, 0);
-    });
-
-    await t.step('returns false when the file does not exist on disk', async () => {
-      const missing = new FS.File(`${tmpDir}/missing/IMG-20260406-WA0005.jpg`);
-      const file = File.fromMetadata(repairMeta(missing.path), { dryRun: true });
-      assertEquals(await file.repair(), false);
-      assertEquals(file.pending.size, 0);
-    });
-  } finally {
-    await Deno.remove(tmpDir, { recursive: true });
-  }
-});

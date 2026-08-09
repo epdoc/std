@@ -231,7 +231,7 @@ Deno.test('Resolver.repairDates', async (t) => {
     assertEquals(changes['DateTimeOriginal'], '2026:04:06 00:00:00');
     assertEquals(changes['CreateDate'], '2026:04:06 21:42:47');
     assertEquals(changes['ModifyDate'], '2026:04:06 21:42:47');
-    assertEquals(/^[+-]\d{2}:\d{2}$/.test(changes['OffsetTimeOriginal'] ?? ''), true);
+    assertEquals(/^[+-]\d{2}:\d{2}$/.test(String(changes['OffsetTimeOriginal'] ?? '')), true);
   });
 
   await t.step('repairs macOS whatsapp downloads using the full filename datetime', () => {

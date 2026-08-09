@@ -36,6 +36,29 @@ export type FileInfoOptions = {
 };
 
 /**
+ * Represents one key/value change to the Metadata
+ */
+export type MetaModHistory = MetaMod & {
+  previousValue: MetadataValue;
+};
+export type MetaMod = {
+  tag: WriteTag;
+  value: MetadataValue;
+};
+export type PendingMetaMod = Partial<Record<WriteTag, MetadataValue>>;
+export type MetadataKey = keyof Metadata;
+export type MetadataValue = string | number | undefined;
+
+/**
+ * Tags accepted by the write pipeline (setTag / applyTags / PendingMetaMod).
+ * Either a plain read tag (`MetadataKey`) or a group-prefixed exiftool write
+ * spec such as `XMP-dc:Date` that targets a specific metadata group.
+ * Group-prefixed specs never appear in `-j` read output, so they are kept
+ * out of the `Metadata` read model.
+ */
+export type WriteTag = MetadataKey | `XMP-${string}:${string}`;
+
+/**
  * JSON representation of a File's extracted metadata, nested by section.
  * Raw exiftool metadata is excluded by default; opt in with
  * `toJSON({ includeMetadata: true })`.

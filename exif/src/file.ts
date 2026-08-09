@@ -8,7 +8,18 @@ import * as Gps from './gps.ts';
 import type { Metadata } from './meta-types.ts';
 import * as Meta from './meta/mod.ts';
 import * as Normalize from './normalize.ts';
-import type { Digest, FileGetMetadataOptions, FileInfo, FileInfoOptions, IDryRun } from './types.ts';
+import type {
+  Digest,
+  FileGetMetadataOptions,
+  FileInfo,
+  FileInfoOptions,
+  IDryRun,
+  MetadataKey,
+  MetadataValue,
+  MetaModHistory,
+  PendingMetaMod,
+  WriteTag,
+} from './types.ts';
 
 /** Flags passed to exiftool for JSON reading with QuickTime UTC normalization. */
 export const EXIFTOOL_READ_FLAGS = ['-j', '-struct', '-api', 'QuickTimeUTC=1'];
@@ -42,7 +53,7 @@ export class File {
   #resolver?: Meta.Resolver;
   #dryRun: boolean;
   #dirty = false;
-  #pending = new Map<string, string>();
+  #pending = new Map<WriteTag, MetadataValue>();
 
   constructor(file: FS.FilePath | FS.File, opts?: IDryRun) {
     this.#fsFile = _.isString(file) ? new FS.File(file) : file;
@@ -396,7 +407,7 @@ export class File {
   // Tag access & write
   // ============================================================================
 
-  get pending(): Map<string, string> {
+  get pending(): Map<WriteTag, MetadataValue> {
     return this.#pending;
   }
 
@@ -407,7 +418,7 @@ export class File {
    * point for GPS, location, keywords, or any other tag not covered by the
    * typed setters.
    */
-  setTag(tag: string, value: string | undefined): void {
+  setTag(tag: WriteTag, value: MetadataValue | undefined): void {
     if (value === undefined) {
       this.#setTag(tag, '');
     } else {
@@ -419,9 +430,9 @@ export class File {
    * Merge a changeset (tag→value map) from {@link Meta.Resolver} into the
    * pending tag buffer. Empty-string values delete the corresponding tag.
    */
-  applyTags(changes: Record<string, string>): void {
+  applyTags(changes: PendingMetaMod): void {
     for (const [tag, value] of Object.entries(changes)) {
-      this.#setTag(tag, value);
+      this.#setTag(tag as WriteTag, value);
     }
   }
 
@@ -432,26 +443,34 @@ export class File {
    * flag is cleared, pending tags are dropped, and cached metadata is
    * invalidated.
    */
-  async write(): Promise<void> {
-    if (!this.#dirty) return;
+  async write(): Promise<MetaModHistory[]> {
+    if (!this.#dirty) return [];
 
+    const prev = this.#metadata;
+    const diffs: MetaModHistory[] = [];
     const args = ['-overwrite_original', '-P', '-m'];
     for (const [tag, value] of this.#pending) {
+      const previousValue = prev ? prev[metadataKeyOf(tag)] as MetadataValue : undefined;
+      const diff: MetaModHistory = { tag, value, previousValue };
+      diffs.push(diff);
       args.push(`-${tag}=${value}`);
     }
     args.push(this.#fsFile.path);
 
-    const result = await this.#cmd(args).dryRun(this.#dryRun).run();
-    if (!result.success && !this.#dryRun) {
-      throw new Error(
-        result.stderr.trim() ||
-          `exiftool write failed with code ${result.exitCode}`,
-      );
+    if (!this.#dryRun) {
+      const result = await this.#cmd(args).run();
+      if (!result.success) {
+        throw new Error(
+          result.stderr.trim() ||
+            `exiftool write failed with code ${result.exitCode}`,
+        );
+      }
     }
 
     this.#pending.clear();
     this.#dirty = false;
     this.#metadata = undefined;
+    return diffs;
   }
 
   /**
@@ -468,7 +487,7 @@ export class File {
    *
    * @returns true when a repair changeset was applied (or queued in dry-run).
    */
-  async repair(): Promise<boolean> {
+  async repair(): Promise<MetaModHistory[]> {
     if (!this.#fsFile.hasInfo()) {
       await this.#fsFile.stats();
     }
@@ -476,21 +495,20 @@ export class File {
       ? (this.#fsFile.info.modifiedAt ?? this.#fsFile.info.createdAt ??
         undefined)
       : undefined;
-    const changes = this.resolver.repairDates(fsDate);
-    if (!Object.keys(changes).length) return false;
+    const changes: PendingMetaMod = this.resolver.repairDates(fsDate);
+    if (!Object.keys(changes).length) return [];
 
     const source = this.resolver.source;
-    if (source === 'whatsapp') {
+    if (source === 'whatsapp' && this.metadata.Software !== 'WhatsApp') {
       changes['Software'] = 'WhatsApp';
-    } else if (source === 'tiktok') {
+    } else if (
+      source === 'tiktok' && this.metadata.Software !== 'TikTok'
+    ) {
       changes['Software'] = 'TikTok';
     }
 
     this.applyTags(changes);
-    if (!this.#dryRun) {
-      await this.write();
-    }
-    return true;
+    return this.write();
   }
 
   #cmd(args?: string[]): Cmd.Runner<Record<string, unknown>> {
@@ -499,8 +517,21 @@ export class File {
     ).cwd(FS.cwd());
   }
 
-  #setTag(tag: string, value: string): void {
+  #setTag(tag: WriteTag, value: MetadataValue): void {
     this.#pending.set(tag, value);
     this.#dirty = true;
   }
+}
+
+/**
+ * Map a write tag back to the read-model key it corresponds to.
+ * Group-prefixed specs such as `XMP-dc:Date` read back as their short name
+ * (`Date`); plain tags map to themselves. Note the read model is flattened by
+ * exiftool's group priority, so the previous value found for a group-prefixed
+ * tag is the priority-winning group's value, not necessarily the exact group
+ * being written.
+ */
+function metadataKeyOf(tag: WriteTag): MetadataKey {
+  const i = tag.lastIndexOf(':');
+  return (i >= 0 ? tag.slice(i + 1) : tag) as MetadataKey;
 }

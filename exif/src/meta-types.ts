@@ -79,6 +79,14 @@ export interface ExifMetadata {
   Software?: string;
   SerialNumber?: string;
 
+  // --- Author / copyright ---
+  /** Person who created the image (EXIF tag 0x013B). */
+  Artist?: string;
+  /** Copyright holder (EXIF tag 0x8298). */
+  Copyright?: string;
+  /** Camera owner name (EXIF tag 0x9C9F). */
+  OwnerName?: string;
+
   // --- Duration ---
   /**
    * Video duration. Default format is a string with units, e.g. `"2.00 s"`,
@@ -180,6 +188,35 @@ export interface IptcMetadata {
   TimeCreated?: string; // e.g. "11:25:24-06:00"
   DigitalCreationDate?: string; // e.g. "2026:05:29"
   DigitalCreationTime?: string; // e.g. "11:25:24-06:00"
+
+  // --- Author / credit ---
+  /** Author/byline (IPTC By-line). */
+  'By-line'?: string;
+  /** Job title of the byline (IPTC By-lineTitle). */
+  'By-lineTitle'?: string;
+  /** Credit to the provider (IPTC Credit). */
+  Credit?: string;
+  /** Original source/owner (IPTC Source). */
+  Source?: string;
+  /** Contact information (IPTC Contact). */
+  Contact?: string;
+  /** Person who wrote the caption (IPTC Writer-Editor). */
+  'Writer-Editor'?: string;
+  /** Copyright notice (IPTC CopyrightNotice). */
+  CopyrightNotice?: string;
+
+  // --- Location ---
+  /** City (IPTC City). */
+  City?: string;
+  /** Neighborhood/sublocation (IPTC Sub-location). */
+  'Sub-location'?: string;
+  /** State or province (IPTC Province-State). */
+  'Province-State'?: string;
+  /** Country name (IPTC Country-PrimaryLocationName). */
+  'Country-PrimaryLocationName'?: string;
+  /** ISO 3166-1 country code (IPTC Country-PrimaryLocationCode). */
+  'Country-PrimaryLocationCode'?: string;
+
   DisplayedUnitsX?: string; // Displayed horizontal unit, e.g. "inches"
   DisplayedUnitsY?: string; // Displayed vertical unit, e.g. "inches"
 }
@@ -240,6 +277,41 @@ export interface XmpMetadata {
   // --- XMP lens and focus ---
   Lens?: string; // Lens description, e.g. "Pixel 7 back camera 6.81mm f/1.85"
   ApproximateFocusDistance?: number; // Focus distance in meters
+
+  // --- Author / rights ---
+  /** Human-readable copyright/usage statement (`xmp:Rights`). */
+  Rights?: string;
+  /** Caption author (`photoshop:CaptionWriter`). */
+  CaptionWriter?: string;
+  /** Creator's work email (`xmp:CreatorWorkEmail`). */
+  CreatorWorkEmail?: string;
+  /** Creator's work URL (`xmp:CreatorWorkURL`). */
+  CreatorWorkURL?: string;
+
+  // --- Date / location ---
+  /**
+   * Date from XMP (`dc:Date`), often a partial date such as `"1975"` or
+   * `"1975-06"` that EXIF tags cannot represent. Read back from `XMP-dc:Date`.
+   */
+  Date?: string;
+
+  // --- Location (photoshop / iptcCore) ---
+  /** Free-form location (`XMP-iptcCore:Location`). */
+  Location?: string;
+  /** City (`photoshop:City`). */
+  City?: string;
+  /** State or province (`photoshop:State`). */
+  State?: string;
+  /** Country name (`photoshop:Country`). */
+  Country?: string;
+  /** ISO 3166-1 alpha-2 country code (`XMP-iptcCore:CountryCode`). */
+  CountryCode?: string;
+  /** Creator's city (`XMP-iptc:CreatorCity`). */
+  CreatorCity?: string;
+  /** Creator's country (`XMP-iptc:CreatorCountry`). */
+  CreatorCountry?: string;
+  /** Creator's region (`XMP-iptc:CreatorRegion`). */
+  CreatorRegion?: string;
 }
 
 /**

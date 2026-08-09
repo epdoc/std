@@ -1,14 +1,14 @@
 import { DateTime } from '@epdoc/datetime';
 import type * as FS from '@epdoc/fs/fs';
 import { assertEquals } from '@std/assert';
-import { Meta } from '../src/mod.ts';
 import type { Metadata } from '../src/meta-types.ts';
+import { Meta } from '../src/mod.ts';
 
 function sourceFile(path: string): FS.FilePath {
   return path as FS.FilePath;
 }
 
-function videoMeta(partial: Record<string, unknown>): Metadata {
+function videoMeta(partial: Partial<Metadata>): Metadata {
   return {
     SourceFile: sourceFile('/tmp/a.mp4'),
     ExifToolVersion: 10.98,
