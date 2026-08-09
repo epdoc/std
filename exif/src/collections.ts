@@ -122,7 +122,7 @@ export const fileDef: FileDef = {
     json: (fs: FS.File): JsonValue | undefined => fs.hasInfo() ? fs.info.modifiedAt?.toISOString() : undefined,
   },
   size: { value: (fs: FS.File): number | undefined => fs.hasInfo() ? fs.info.size : undefined },
-  type: { value: (_fs: FS.File, m: Metadata): string => m.MIMEType?.split('/')[0] ?? 'unknown' },
+  type: { value: (_fs: FS.File, m: Metadata): string | undefined => Meta.Resolver.from(m).type },
   mimeType: { value: readTag('MIMEType') },
 };
 

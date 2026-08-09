@@ -9,17 +9,20 @@ export interface IDryRun {
   dryRun?: boolean;
 }
 
+export interface IDigest {
+  /** Compute and include a digest in the top-level file object. */
+  digest?: boolean;
+}
+
 export type Seconds = number;
 export type Digest = string;
 
 /**
  * Options when retrieving metadata from exiftools
  */
-export type FileGetMetadataOptions = {
+export type FileGetMetadataOptions = IDigest & {
   /** On subsequent calls will use a cache version, unless set to true. */
   force?: boolean;
-  /** Compute and include a digest in the top-level file object. */
-  digest?: boolean;
 };
 
 /**

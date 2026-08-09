@@ -159,8 +159,14 @@ export class Resolver {
    * Return the top-level MIME type category (e.g. `"image"`, `"video"`, `"audio"`,
    * `"application"`) from the file's MIMEType.
    */
-  get type(): string | undefined {
-    return this.meta.MIMEType?.split('/')[0] ?? undefined;
+  get type(): string {
+    const [type, subtype] = this.meta.MIMEType.split('/');
+    if (type === 'application' && subtype) {
+      return subtype;
+    } else if (type) {
+      return type;
+    }
+    return 'unknown';
   }
 
   /**

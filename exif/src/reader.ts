@@ -25,18 +25,22 @@ export class Reader {
    *
    * @returns An array of {@link File} instances, one per input file (in input order).
    */
-  async read(files: (FS.FilePath | FS.File)[]): Promise<File[]> {
+  async read(files: (FS.FilePath | FS.File)[], opts: IDigest = {}): Promise<File[]> {
     const paths = files.map((f) => (_.isString(f) ? f : f.path));
     const args = [...EXIFTOOL_READ_FLAGS, ...paths];
     const result = await Cmd.runner<Dict>('exiftool', args).dryRun(this.#dryRun).cwd(FS.cwd()).run();
 
     if (result.exitCode !== 0 && !result.stdout) {
-      throw new Error(result.stderr.trim() || `exiftool exited with code ${result.exitCode}`);
+      const err = _.asError(result.stderr.trim() || `exiftool exited with code ${result.exitCode}`, { silent: true });
+      throw err;
     }
 
     const metadataArray = parseJson(result.stdout);
     const results = metadataArray.map((metadata) => File.fromMetadata(metadata, { dryRun: this.#dryRun }));
     await Promise.all(results.map((f) => f.fsFile.stats()));
+    if (opts.digest) {
+      await Promise.all(results.map((f) => f.fsFile.digest()));
+    }
     return results;
   }
 }

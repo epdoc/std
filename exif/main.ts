@@ -11,6 +11,7 @@ const rawArgs = Deno.args;
 const flags: string[] = [];
 const files: FilePath[] = [];
 let showMeta = false;
+let digest = false;
 
 for (const arg of rawArgs) {
   if (arg === '-v' || arg === '--version') {
@@ -19,6 +20,8 @@ for (const arg of rawArgs) {
     flags.push(arg);
   } else if (arg === '-m' || arg === '--meta') {
     showMeta = true;
+  } else if (arg === '-d' || arg === '--digest') {
+    digest = true;
   } else {
     files.push(arg as FilePath);
   }
@@ -36,6 +39,7 @@ if (flags.includes('-h') || flags.includes('--help')) {
   console.log('  -v, --version  Show version information');
   console.log('  -h, --help     Show this help message');
   console.log('  -m, --meta     Include raw exiftool metadata in output');
+  console.log('  -d, --digest   Compute file digest');
   Deno.exit(0);
 }
 
