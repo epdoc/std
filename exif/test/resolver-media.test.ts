@@ -206,6 +206,14 @@ Deno.test('Resolver.source', async (t) => {
     assertEquals(Meta.Resolver.from(meta).source, 'whatsapp');
   });
 
+  await t.step('detects whatsapp from macOS desktop filename pattern', () => {
+    const meta = imageMeta({
+      FileName: 'WhatsApp Image 2026-06-29 at 17.20.56.jpeg',
+      SourceFile: sourceFile('/tmp/WhatsApp Image 2026-06-29 at 17.20.56.jpeg'),
+    });
+    assertEquals(Meta.Resolver.from(meta).source, 'whatsapp');
+  });
+
   await t.step('returns undefined when no source clues exist', () => {
     assertEquals(Meta.Resolver.from(videoMeta()).source, undefined);
   });
@@ -214,15 +222,43 @@ Deno.test('Resolver.source', async (t) => {
 // --- repairDates() ---
 
 Deno.test('Resolver.repairDates', async (t) => {
-  await t.step('repairs whatsapp files with missing dates', () => {
+  await t.step('repairs whatsapp files using the filename date for DateTimeOriginal', () => {
     const resolver = Meta.Resolver.from(videoMeta({
       FileName: 'IMG-20260406-WA0005.jpg',
       SourceFile: sourceFile('/tmp/IMG-20260406-WA0005.jpg'),
     }));
     const changes = resolver.repairDates(DateTime.from('2026-04-06T21:42:47'));
-    assertEquals(changes['DateTimeOriginal'], '2026:04:06 21:42:47');
+    assertEquals(changes['DateTimeOriginal'], '2026:04:06 00:00:00');
     assertEquals(changes['CreateDate'], '2026:04:06 21:42:47');
     assertEquals(changes['ModifyDate'], '2026:04:06 21:42:47');
+    assertEquals(/^[+-]\d{2}:\d{2}$/.test(changes['OffsetTimeOriginal'] ?? ''), true);
+  });
+
+  await t.step('repairs macOS whatsapp downloads using the full filename datetime', () => {
+    const resolver = Meta.Resolver.from(videoMeta({
+      FileName: 'WhatsApp Image 2026-06-29 at 17.20.56.jpeg',
+      SourceFile: sourceFile('/tmp/WhatsApp Image 2026-06-29 at 17.20.56.jpeg'),
+    }));
+    const changes = resolver.repairDates(DateTime.from('2026-08-09T10:23:31-06:00'));
+    assertEquals(changes['DateTimeOriginal'], '2026:06:29 17:20:56');
+    assertEquals(changes['CreateDate'], '2026:08:09 10:23:31');
+    assertEquals(changes['ModifyDate'], '2026:08:09 10:23:31');
+    assertEquals(changes['OffsetTimeDigitized'], '-06:00');
+  });
+
+  await t.step('repairs tiktok videos without setting DateTimeOriginal', () => {
+    const resolver = Meta.Resolver.from(videoMeta({
+      FileName: 'tiktok-video.mp4',
+      Comment: 'vid:v15044gf0000d9n1eifog65t4dv1v2u0',
+    }));
+    const changes = resolver.repairDates(DateTime.from('2026-04-06T21:42:47'));
+    assertEquals(changes['DateTimeOriginal'], undefined);
+    assertEquals(changes['CreateDate'], '2026:04:06 21:42:47');
+    assertEquals(changes['ModifyDate'], '2026:04:06 21:42:47');
+    assertEquals(changes['TrackCreateDate'], '2026:04:06 21:42:47');
+    assertEquals(changes['MediaCreateDate'], '2026:04:06 21:42:47');
+    assertEquals(changes['TrackModifyDate'], '2026:04:06 21:42:47');
+    assertEquals(changes['MediaModifyDate'], '2026:04:06 21:42:47');
   });
 
   await t.step('does not repair camera files', () => {
@@ -231,10 +267,30 @@ Deno.test('Resolver.repairDates', async (t) => {
     assertEquals(Object.keys(changes).length, 0);
   });
 
-  await t.step('does not repair when a valid embedded date exists', () => {
+  await t.step('does not repair whatsapp when a valid embedded date exists', () => {
     const resolver = Meta.Resolver.from(videoMeta({
       FileName: 'IMG-20260406-WA0005.jpg',
       SourceFile: sourceFile('/tmp/IMG-20260406-WA0005.jpg'),
+      DateTimeOriginal: '2026:04:06 21:42:47',
+    }));
+    const changes = resolver.repairDates(DateTime.from('2026-04-06T21:42:47'));
+    assertEquals(Object.keys(changes).length, 0);
+  });
+
+  await t.step('does not repair tiktok when a created date exists', () => {
+    const resolver = Meta.Resolver.from(videoMeta({
+      FileName: 'tiktok-video.mp4',
+      Comment: 'vid:v15044gf0000d9n1eifog65t4dv1v2u0',
+      CreateDate: '2026:04:06 21:42:47',
+    }));
+    const changes = resolver.repairDates(DateTime.from('2026-04-06T21:42:47'));
+    assertEquals(Object.keys(changes).length, 0);
+  });
+
+  await t.step('does not repair tiktok when only an original date exists', () => {
+    const resolver = Meta.Resolver.from(videoMeta({
+      FileName: 'tiktok-video.mp4',
+      Comment: 'vid:v15044gf0000d9n1eifog65t4dv1v2u0',
       DateTimeOriginal: '2026:04:06 21:42:47',
     }));
     const changes = resolver.repairDates(DateTime.from('2026-04-06T21:42:47'));

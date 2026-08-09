@@ -120,6 +120,23 @@
                               }
                             ]
                           }
+                        },
+                        {
+                          "kind": "identifier",
+                          "name": "opts",
+                          "optional": true,
+                          "tsType": {
+                            "repr": "IDryRun",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "IDryRun",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./types.ts",
+                                "name": "IDryRun"
+                              }
+                            }
+                          }
                         }
                       ],
                       "returnType": {
@@ -163,7 +180,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 55,
                       "col": 2,
-                      "byteIndex": 1778
+                      "byteIndex": 1800
                     }
                   },
                   {
@@ -188,7 +205,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 59,
                       "col": 2,
-                      "byteIndex": 1834
+                      "byteIndex": 1856
                     }
                   },
                   {
@@ -214,7 +231,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 63,
                       "col": 2,
-                      "byteIndex": 1897
+                      "byteIndex": 1919
                     }
                   },
                   {
@@ -237,9 +254,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 68,
+                      "line": 71,
                       "col": 2,
-                      "byteIndex": 2049
+                      "byteIndex": 2090
                     }
                   },
                   {
@@ -256,9 +273,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 73,
+                      "line": 79,
                       "col": 2,
-                      "byteIndex": 2206
+                      "byteIndex": 2266
                     }
                   },
                   {
@@ -313,14 +330,28 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 77,
+                      "line": 83,
                       "col": 2,
-                      "byteIndex": 2260
+                      "byteIndex": 2320
                     }
                   },
                   {
                     "jsDoc": {
-                      "doc": "Read JSON metadata from the file via exiftool.\n\nDates are read in canonical EXIF form (`YYYY:MM:DD HH:MM:SS`) so that\nmissing timezones can be distinguished from explicit UTC offsets."
+                      "doc": "Read JSON metadata from the file via exiftool.\n\nDates are read in canonical EXIF form (`YYYY:MM:DD HH:MM:SS`) so that\nmissing timezones can be distinguished from explicit UTC offsets.",
+                      "tags": [
+                        {
+                          "kind": "unsupported",
+                          "value": "@params opts"
+                        },
+                        {
+                          "kind": "unsupported",
+                          "value": "@params opts.force Refreshes metadata with a new call to exiftool"
+                        },
+                        {
+                          "kind": "unsupported",
+                          "value": "@params opts.digest Generate a digest. Specify the digest or use default if true."
+                        }
+                      ]
                     },
                     "name": "getMetadata",
                     "kind": "method",
@@ -384,9 +415,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 90,
+                      "line": 101,
                       "col": 2,
-                      "byteIndex": 2713
+                      "byteIndex": 2958
                     }
                   },
                   {
@@ -447,9 +478,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 120,
+                      "line": 135,
                       "col": 2,
-                      "byteIndex": 3595
+                      "byteIndex": 3866
                     }
                   },
                   {
@@ -505,9 +536,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 137,
+                      "line": 152,
                       "col": 2,
-                      "byteIndex": 4274
+                      "byteIndex": 4545
                     }
                   },
                   {
@@ -530,9 +561,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 179,
+                      "line": 209,
                       "col": 2,
-                      "byteIndex": 5950
+                      "byteIndex": 6350
                     }
                   },
                   {
@@ -565,9 +596,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 185,
+                      "line": 215,
                       "col": 2,
-                      "byteIndex": 6140
+                      "byteIndex": 6540
                     }
                   },
                   {
@@ -600,9 +631,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 195,
+                      "line": 225,
                       "col": 2,
-                      "byteIndex": 6490
+                      "byteIndex": 6890
                     }
                   },
                   {
@@ -635,9 +666,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 206,
+                      "line": 244,
                       "col": 2,
-                      "byteIndex": 7003
+                      "byteIndex": 7453
                     }
                   },
                   {
@@ -670,9 +701,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 215,
+                      "line": 253,
                       "col": 2,
-                      "byteIndex": 7295
+                      "byteIndex": 7745
                     }
                   },
                   {
@@ -705,9 +736,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 224,
+                      "line": 262,
                       "col": 2,
-                      "byteIndex": 7573
+                      "byteIndex": 8023
                     }
                   },
                   {
@@ -740,9 +771,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 233,
+                      "line": 271,
                       "col": 2,
-                      "byteIndex": 7851
+                      "byteIndex": 8301
                     }
                   },
                   {
@@ -776,9 +807,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 242,
+                      "line": 280,
                       "col": 2,
-                      "byteIndex": 8150
+                      "byteIndex": 8600
                     }
                   },
                   {
@@ -811,9 +842,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 255,
+                      "line": 299,
                       "col": 2,
-                      "byteIndex": 8861
+                      "byteIndex": 9353
                     }
                   },
                   {
@@ -833,9 +864,9 @@
                                   "name": "metadata",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                                    "line": 264,
+                                    "line": 308,
                                     "col": 17,
-                                    "byteIndex": 9154
+                                    "byteIndex": 9646
                                   },
                                   "tsType": {
                                     "repr": "boolean",
@@ -864,9 +895,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 264,
+                      "line": 308,
                       "col": 2,
-                      "byteIndex": 9139
+                      "byteIndex": 9631
                     }
                   },
                   {
@@ -883,9 +914,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 272,
+                      "line": 316,
                       "col": 2,
-                      "byteIndex": 9396
+                      "byteIndex": 9888
                     }
                   },
                   {
@@ -918,9 +949,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 276,
+                      "line": 321,
                       "col": 2,
-                      "byteIndex": 9517
+                      "byteIndex": 10015
                     }
                   },
                   {
@@ -973,9 +1004,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 295,
+                      "line": 346,
                       "col": 2,
-                      "byteIndex": 10254
+                      "byteIndex": 10790
                     }
                   },
                   {
@@ -1008,9 +1039,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 318,
+                      "line": 372,
                       "col": 2,
-                      "byteIndex": 11251
+                      "byteIndex": 11812
                     }
                   },
                   {
@@ -1040,9 +1071,42 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 336,
+                      "line": 390,
                       "col": 2,
-                      "byteIndex": 11819
+                      "byteIndex": 12380
+                    }
+                  },
+                  {
+                    "name": "pending",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "Map",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeParams": [
+                            {
+                              "repr": "string",
+                              "kind": "keyword",
+                              "value": "string"
+                            },
+                            {
+                              "repr": "string",
+                              "kind": "keyword",
+                              "value": "string"
+                            }
+                          ],
+                          "typeName": "Map"
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
+                      "line": 398,
+                      "col": 2,
+                      "byteIndex": 12652
                     }
                   },
                   {
@@ -1093,9 +1157,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 351,
+                      "line": 409,
                       "col": 2,
-                      "byteIndex": 12324
+                      "byteIndex": 12955
                     }
                   },
                   {
@@ -1140,9 +1204,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 363,
+                      "line": 421,
                       "col": 2,
-                      "byteIndex": 12661
+                      "byteIndex": 13292
                     }
                   },
                   {
@@ -1172,14 +1236,14 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 376,
+                      "line": 434,
                       "col": 2,
-                      "byteIndex": 13057
+                      "byteIndex": 13688
                     }
                   },
                   {
                     "jsDoc": {
-                      "doc": "Repair missing or corrupted date metadata for files whose source platform\nstripped the embedded dates (e.g. TikTok, WhatsApp).\n\nUses the filesystem modified/created timestamp as the replacement date.\nWhen the file was created with a dry-run flag, the changeset is computed\nand queued but the exiftool write is a no-op.\n",
+                      "doc": "Repair missing or corrupted date metadata for files whose source platform\nstripped the embedded dates (e.g. TikTok, WhatsApp).\n\nUses the filesystem modified/created timestamp as the replacement date,\nwith the filename timestamp preferred for WhatsApp `DateTimeOriginal`.\nAlso writes a `Software` tag identifying the source platform.\n\nIn dry-run mode the changeset is computed and queued but the exiftool\nwrite is a no-op, leaving {@link pending} populated so callers can report\nthe changes.\n",
                       "tags": [
                         {
                           "kind": "return",
@@ -1210,12 +1274,143 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 405,
+                      "line": 470,
                       "col": 2,
-                      "byteIndex": 14034
+                      "byteIndex": 14904
                     }
                   }
                 ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "dateFromFilename",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/filename.ts",
+                "line": 61,
+                "col": 0,
+                "byteIndex": 2393
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Extract a datetime from a media filename produced by common software\n(WhatsApp, Signal, epoch-millisecond exports, or a generic compact pattern).\n\nThe returned {@link DateTime} carries no timezone: it holds the wall-clock\ncomponents found in the filename. Callers interpret those components in the\ntimezone of their choosing, e.g. `withTz('local')` for timestamps recorded\non the local machine, or `withTz('utc')` for a canonical instant. The epoch\npattern is the exception — it returns a true instant (UTC).\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "fileName",
+                    "doc": "The basename (with extension) of the file."
+                  },
+                  {
+                    "kind": "return",
+                    "doc": "The parsed date, or `undefined` when no pattern matches."
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "fileName",
+                    "optional": false,
+                    "tsType": {
+                      "kind": "union",
+                      "value": [
+                        {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        },
+                        {
+                          "repr": "undefined",
+                          "kind": "keyword",
+                          "value": "undefined"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "returnType": {
+                  "kind": "union",
+                  "value": [
+                    {
+                      "repr": "DateTime",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "DateTime",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "@epdoc/datetime",
+                          "name": "DateTime"
+                        }
+                      }
+                    },
+                    {
+                      "repr": "undefined",
+                      "kind": "keyword",
+                      "value": "undefined"
+                    }
+                  ]
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "isWhatsAppFilename",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/filename.ts",
+                "line": 43,
+                "col": 0,
+                "byteIndex": 1541
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "True when the filename follows a WhatsApp naming convention.\n\nMatches both the mobile pattern (`IMG-YYYYMMDD-WA####`, date only) and the\nmacOS desktop pattern (`WhatsApp Image YYYY-MM-DD at HH.MM.SS`).\n",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "fileName",
+                    "doc": "The basename (with extension) of the file."
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "fileName",
+                    "optional": false,
+                    "tsType": {
+                      "kind": "union",
+                      "value": [
+                        {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        },
+                        {
+                          "repr": "undefined",
+                          "kind": "keyword",
+                          "value": "undefined"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "boolean",
+                  "kind": "keyword",
+                  "value": "boolean"
+                },
+                "hasBody": true
               }
             }
           ]
@@ -12612,9 +12807,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/mod.ts",
-                "line": 2,
+                "line": 3,
                 "col": 7,
-                "byteIndex": 87
+                "byteIndex": 157
               },
               "declarationKind": "export",
               "kind": "namespace",
@@ -12630,9 +12825,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/mod.ts",
-                "line": 3,
+                "line": 4,
                 "col": 7,
-                "byteIndex": 124
+                "byteIndex": 194
               },
               "declarationKind": "export",
               "kind": "namespace",
@@ -13090,9 +13285,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/mod.ts",
-                "line": 5,
+                "line": 6,
                 "col": 7,
-                "byteIndex": 195
+                "byteIndex": 265
               },
               "declarationKind": "export",
               "kind": "namespace",
@@ -13243,9 +13438,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/mod.ts",
-                          "line": 5,
+                          "line": 6,
                           "col": 7,
-                          "byteIndex": 195
+                          "byteIndex": 265
                         },
                         "declarationKind": "export",
                         "jsDoc": {

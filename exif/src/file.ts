@@ -49,8 +49,8 @@ export class File {
     this.#dryRun = opts?.dryRun ?? false;
   }
 
-  static from(file: FS.FilePath | FS.File): File {
-    return new File(file);
+  static from(file: FS.FilePath | FS.File, opts?: IDryRun): File {
+    return new File(file, opts);
   }
 
   get fsFile(): FS.File {
@@ -62,12 +62,18 @@ export class File {
   }
 
   get metadata(): Metadata {
-    assert(this.#metadata, `File ${this.path} has no metadata; call getMetadata() first`);
+    assert(
+      this.#metadata,
+      `File ${this.path} has no metadata; call getMetadata() first`,
+    );
     return this.#metadata;
   }
 
   get resolver(): Meta.Resolver {
-    assert(this.#resolver, `File ${this.path} has no metadata; call getMetadata() first`);
+    assert(
+      this.#resolver,
+      `File ${this.path} has no metadata; call getMetadata() first`,
+    );
     return this.#resolver;
   }
 
@@ -75,7 +81,9 @@ export class File {
     return this.#dirty;
   }
 
-  async getDigest(alg: FS.DigestAlgorithmValues = FS.DigestAlgorithm.sha1): Promise<Digest> {
+  async getDigest(
+    alg: FS.DigestAlgorithmValues = FS.DigestAlgorithm.sha1,
+  ): Promise<Digest> {
     if (!this.#cache.digest) {
       this.#cache.digest = alg + ':' + await this.#fsFile.digest(alg);
     }
@@ -87,8 +95,13 @@ export class File {
    *
    * Dates are read in canonical EXIF form (`YYYY:MM:DD HH:MM:SS`) so that
    * missing timezones can be distinguished from explicit UTC offsets.
+   * @params opts
+   * @params opts.force Refreshes metadata with a new call to exiftool
+   * @params opts.digest Generate a digest. Specify the digest or use default if true.
    */
-  async getMetadata(opts: FileGetMetadataOptions = {}): Promise<Metadata | undefined> {
+  async getMetadata(
+    opts: FileGetMetadataOptions = {},
+  ): Promise<Metadata | undefined> {
     if (this.#metadata && !opts.force) return this.#metadata;
 
     const isFile = await this.#fsFile.isFile();
@@ -99,7 +112,9 @@ export class File {
     const result = await this.#cmd(args).run();
 
     if (!result.success) {
-      throw new Error(result.stderr.trim() || `exiftool exited with code ${result.exitCode}`);
+      throw new Error(
+        result.stderr.trim() || `exiftool exited with code ${result.exitCode}`,
+      );
     }
 
     const trimmed = result.stdout.trim();
@@ -136,7 +151,10 @@ export class File {
    * @param opts.metadata Set to true to include the raw {@link Metadata} object.
    */
   info(opts: FileInfoOptions = {}): FileInfo {
-    assert(this.#metadata, 'Metadata must be retrieved before calling this method');
+    assert(
+      this.#metadata,
+      'Metadata must be retrieved before calling this method',
+    );
     if (this.#info) return this.#info;
     const result: FileInfo = {
       file: collect(FileDef, this.#fsFile, this.metadata),
@@ -146,21 +164,33 @@ export class File {
     }
     const id = this.id();
     if (id) result.id = id;
-    if (this.camera && Object.keys(this.camera).length) result.camera = this.camera;
+    if (this.camera && Object.keys(this.camera).length) {
+      result.camera = this.camera;
+    }
     if (this.app && Object.keys(this.app).length) result.app = this.app;
     const type = this.resolver.type;
     if (type === 'image') {
-      if (this.image && Object.keys(this.image).length) result.image = this.image;
+      if (this.image && Object.keys(this.image).length) {
+        result.image = this.image;
+      }
     } else if (type === 'video') {
-      if (this.video && Object.keys(this.video).length) result.video = this.video;
+      if (this.video && Object.keys(this.video).length) {
+        result.video = this.video;
+      }
       if (this.audio && Object.keys(this.audio).length) {
-        if (Object.keys(this.audio).length !== 1 || this.audio.codec !== Normalize.CODEC_AUDIO_UNKNOWN) {
+        if (
+          Object.keys(this.audio).length !== 1 ||
+          this.audio.codec !== Normalize.CODEC_AUDIO_UNKNOWN
+        ) {
           result.audio = this.audio;
         }
       }
     } else if (type === 'audio') {
       if (this.audio && Object.keys(this.audio).length) {
-        if (Object.keys(this.audio).length !== 1 || this.audio.codec !== Normalize.CODEC_AUDIO_UNKNOWN) {
+        if (
+          Object.keys(this.audio).length !== 1 ||
+          this.audio.codec !== Normalize.CODEC_AUDIO_UNKNOWN
+        ) {
           result.audio = this.audio;
         }
       }
@@ -196,9 +226,17 @@ export class File {
   get video(): Schema.Video | undefined {
     if (this.#cache.video) return this.#cache.video;
     if (this.resolver.type !== 'video') return undefined;
-    const res: Normalize.VideoRes | undefined = Normalize.videoResolution(this.metadata);
-    const other: Schema.VideoOther = collect(Schema.videoOtherDef, this.#fsFile, this.metadata);
-    if ((res && Object.keys(res).length) || (other && Object.keys(other).length)) {
+    const res: Normalize.VideoRes | undefined = Normalize.videoResolution(
+      this.metadata,
+    );
+    const other: Schema.VideoOther = collect(
+      Schema.videoOtherDef,
+      this.#fsFile,
+      this.metadata,
+    );
+    if (
+      (res && Object.keys(res).length) || (other && Object.keys(other).length)
+    ) {
       this.#cache.video = { ...res, ...other };
     }
     return this.#cache.video;
@@ -244,9 +282,15 @@ export class File {
     if (value.make !== undefined) this.#setTag('Make', value.make);
     if (value.model !== undefined) this.#setTag('Model', value.model);
     if (value.lensMake !== undefined) this.#setTag('LensMake', value.lensMake);
-    if (value.lensModel !== undefined) this.#setTag('LensModel', value.lensModel);
-    if (value.serialNumber !== undefined) this.#setTag('SerialNumber', value.serialNumber);
-    if (value.makerNotes !== undefined) this.#setTag('MakerNote', value.makerNotes);
+    if (value.lensModel !== undefined) {
+      this.#setTag('LensModel', value.lensModel);
+    }
+    if (value.serialNumber !== undefined) {
+      this.#setTag('SerialNumber', value.serialNumber);
+    }
+    if (value.makerNotes !== undefined) {
+      this.#setTag('MakerNote', value.makerNotes);
+    }
     if (value.focalLength35mm !== undefined) {
       const formattedNum = Number(value.focalLength35mm.toFixed(1));
       this.#setTag('FocalLengthIn35mmFormat', `${formattedNum} mm`);
@@ -271,13 +315,20 @@ export class File {
   // ============================================================================
 
   hasGps(): boolean {
-    return _.isDefined(this.metadata.GPSLatitude) && _.isDefined(this.metadata.GPSLongitude);
+    return _.isDefined(this.metadata.GPSLatitude) &&
+      _.isDefined(this.metadata.GPSLongitude);
   }
 
   get gps(): Gps.Location | undefined {
     if (this.#cache.gps) return this.#cache.gps;
-    const lat = Gps.parse(this.metadata.GPSLatitude, this.metadata.GPSLatitudeRef);
-    const lng = Gps.parse(this.metadata.GPSLongitude, this.metadata.GPSLongitudeRef);
+    const lat = Gps.parse(
+      this.metadata.GPSLatitude,
+      this.metadata.GPSLatitudeRef,
+    );
+    const lng = Gps.parse(
+      this.metadata.GPSLongitude,
+      this.metadata.GPSLongitudeRef,
+    );
     if (lat === undefined || lng === undefined) return undefined;
 
     const alt = this.metadata?.GPSAltitude !== undefined
@@ -308,7 +359,10 @@ export class File {
     this.setTag('GPSLongitudeRef', lngDms.ref);
     if (_.isNumber(location.alt)) {
       this.setTag('GPSAltitude', Math.abs(location.alt).toString());
-      this.setTag('GPSAltitudeRef', location.alt < 0 ? 'Below Sea Level' : 'Above Sea Level');
+      this.setTag(
+        'GPSAltitudeRef',
+        location.alt < 0 ? 'Below Sea Level' : 'Above Sea Level',
+      );
     }
   }
 
@@ -341,6 +395,10 @@ export class File {
   // ============================================================================
   // Tag access & write
   // ============================================================================
+
+  get pending(): Map<string, string> {
+    return this.#pending;
+  }
 
   /**
    * Queue an arbitrary exiftool tag write.
@@ -383,9 +441,12 @@ export class File {
     }
     args.push(this.#fsFile.path);
 
-    const result = await this.#cmd(args).run();
+    const result = await this.#cmd(args).dryRun(this.#dryRun).run();
     if (!result.success && !this.#dryRun) {
-      throw new Error(result.stderr.trim() || `exiftool write failed with code ${result.exitCode}`);
+      throw new Error(
+        result.stderr.trim() ||
+          `exiftool write failed with code ${result.exitCode}`,
+      );
     }
 
     this.#pending.clear();
@@ -397,9 +458,13 @@ export class File {
    * Repair missing or corrupted date metadata for files whose source platform
    * stripped the embedded dates (e.g. TikTok, WhatsApp).
    *
-   * Uses the filesystem modified/created timestamp as the replacement date.
-   * When the file was created with a dry-run flag, the changeset is computed
-   * and queued but the exiftool write is a no-op.
+   * Uses the filesystem modified/created timestamp as the replacement date,
+   * with the filename timestamp preferred for WhatsApp `DateTimeOriginal`.
+   * Also writes a `Software` tag identifying the source platform.
+   *
+   * In dry-run mode the changeset is computed and queued but the exiftool
+   * write is a no-op, leaving {@link pending} populated so callers can report
+   * the changes.
    *
    * @returns true when a repair changeset was applied (or queued in dry-run).
    */
@@ -408,19 +473,30 @@ export class File {
       await this.#fsFile.stats();
     }
     const fsDate = this.#fsFile.hasInfo()
-      ? (this.#fsFile.info.modifiedAt ?? this.#fsFile.info.createdAt ?? undefined)
+      ? (this.#fsFile.info.modifiedAt ?? this.#fsFile.info.createdAt ??
+        undefined)
       : undefined;
     const changes = this.resolver.repairDates(fsDate);
-    if (Object.keys(changes).length) {
-      this.applyTags(changes);
-      await this.write();
-      return true;
+    if (!Object.keys(changes).length) return false;
+
+    const source = this.resolver.source;
+    if (source === 'whatsapp') {
+      changes['Software'] = 'WhatsApp';
+    } else if (source === 'tiktok') {
+      changes['Software'] = 'TikTok';
     }
-    return false;
+
+    this.applyTags(changes);
+    if (!this.#dryRun) {
+      await this.write();
+    }
+    return true;
   }
 
   #cmd(args?: string[]): Cmd.Runner<Record<string, unknown>> {
-    return Cmd.runner<Record<string, unknown>>('exiftool', args).dryRun(this.#dryRun).cwd(FS.cwd());
+    return Cmd.runner<Record<string, unknown>>('exiftool', args).dryRun(
+      this.#dryRun,
+    ).cwd(FS.cwd());
   }
 
   #setTag(tag: string, value: string): void {

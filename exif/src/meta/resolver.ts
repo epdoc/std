@@ -1,5 +1,6 @@
 import { DateTime, type ISOTZ } from '@epdoc/datetime';
 import { _, type Integer } from '@epdoc/type';
+import { dateFromFilename, isWhatsAppFilename } from '../filename.ts';
 import type { Metadata } from '../meta-types.ts';
 import * as Normalize from '../normalize.ts';
 import type { Seconds } from '../types.ts';
@@ -321,7 +322,8 @@ export class Resolver {
    * Detection priority:
    * 1. `Comment` matching TikTok's `vid:v...` content-ID pattern → `'tiktok'`
    * 2. TikTok's `Aigc_info` tag present → `'tiktok'`
-   * 3. Filename matching WhatsApp's `IMG-/VID-YYYYMMDD-WA####` convention → `'whatsapp'`
+   * 3. Filename matching WhatsApp's `IMG-/VID-YYYYMMDD-WA####` or
+   *    `WhatsApp <Type> YYYY-MM-DD at HH.MM.SS` convention → `'whatsapp'`
    * 4. `Make` or `Model` present → `'camera'`
    * 5. Otherwise → `undefined`
    */
@@ -332,7 +334,7 @@ export class Resolver {
         this.#cache.source = 'tiktok';
       } else if (m.Aigc_info !== undefined) {
         this.#cache.source = 'tiktok';
-      } else if (m.FileName && /^(?:IMG|VID)-\d{8}-WA\d{4,}\./i.test(m.FileName)) {
+      } else if (isWhatsAppFilename(m.FileName)) {
         this.#cache.source = 'whatsapp';
       } else if (m.Make || m.Model) {
         this.#cache.source = 'camera';
@@ -383,13 +385,22 @@ export class Resolver {
   }
 
   /**
-   * Return tag changes that repair missing or uninitialized date tags using a
-   * fallback date (typically the filesystem timestamp of the file).
+   * Return tag changes that repair missing or uninitialized date tags for
+   * files whose source platform stripped or corrupted the embedded dates
+   * (`'tiktok'` or `'whatsapp'`).
    *
-   * Only applies when the file's {@link source} is a platform that stripped
-   * or corrupted the embedded dates (`'tiktok'` or `'whatsapp'`) AND no
-   * reliable embedded date could be resolved. Returns an empty changeset when
-   * there is nothing to repair.
+   * WhatsApp files receive all three EXIF date tags. `DateTimeOriginal` is
+   * taken from the filename timestamp (assumed to be in the local timezone,
+   * e.g. `IMG-20260406-WA0005.jpg` → `2026:04:06 00:00:00`), falling back to
+   * the provided fallback date. `CreateDate` and `ModifyDate` use the
+   * filesystem fallback, which represents when the file was saved locally.
+   *
+   * TikTok videos are re-encodes with no meaningful "original" capture, so
+   * `DateTimeOriginal` is left untouched. `CreateDate`/`ModifyDate` are set
+   * from the fallback date, and the QuickTime `Track*Date`/`Media*Date` tags
+   * are written to the same value so video player headers stay consistent.
+   *
+   * Returns an empty changeset when there is nothing to repair.
    *
    * @param fallbackDate The replacement date/time to write, e.g. the file's
    *                     filesystem modified date. Pass `undefined` when no
@@ -399,8 +410,27 @@ export class Resolver {
     const source = this.source;
     if (source !== 'tiktok' && source !== 'whatsapp') return {};
     if (!fallbackDate) return {};
-    if (this.originatedAt || this.digitizedAt || this.modifiedAt) return {};
-    return this.setAllDates(fallbackDate);
+
+    if (source === 'whatsapp') {
+      if (this.originatedAt || this.digitizedAt || this.modifiedAt) return {};
+      const originalDate = dateFromFilename(this.meta.FileName)?.withTz('local') ?? fallbackDate;
+      return {
+        ...this.setOriginatedAt(originalDate),
+        ...this.setDigitizedAt(fallbackDate),
+        ...this.setModifiedAt(fallbackDate),
+      };
+    }
+
+    if (this.digitizedAt || this.modifiedAt) return {};
+    const dt = Resolver.toExifDateTimeString(fallbackDate);
+    return {
+      ...this.setDigitizedAt(fallbackDate),
+      ...this.setModifiedAt(fallbackDate),
+      TrackCreateDate: dt,
+      MediaCreateDate: dt,
+      TrackModifyDate: dt,
+      MediaModifyDate: dt,
+    };
   }
 
   /**

@@ -88,6 +88,12 @@
       "description": "Enum controlling how much location detail to write: country | state | city | sublocation | exact"
     },
     {
+      "name": "dateFromFilename",
+      "role": "helper",
+      "description": "Extract a datetime from a media filename produced by common software (WhatsApp mobile/macOS, Signal, epoch-ms, generic YYYYMMDD-HHMMSS patterns). Returns a wall-clock DateTime; the caller interprets it in a chosen timezone",
+      "whenToUse": "Deriving a capture/creation date from a filename, e.g. WhatsApp repair fallback or filesystem date strategies"
+    },
+    {
       "name": "Metadata",
       "role": "type",
       "description": "Typed JSON exiftool emits for one file; union of EXIF, IPTC, XMP, video, and document tag families"

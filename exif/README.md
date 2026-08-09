@@ -211,6 +211,52 @@ const file = new Exif.File('/path/to/photo.jpg', { dryRun: true });
 // Logs what would happen without invoking exiftool
 ```
 
+### Repairing stripped dates (WhatsApp / TikTok)
+
+TikTok and WhatsApp strip embedded dates when a file is downloaded. `File.repair()` restores them using the filesystem
+timestamp (or the filename timestamp for WhatsApp) and tags the file with its source platform.
+
+```ts
+const file = new Exif.File('/path/to/IMG-20260406-WA0005.jpg', { dryRun: true });
+await file.getMetadata();
+
+const repaired = await file.repair();
+if (repaired) {
+  for (const [tag, value] of file.pending) {
+    console.log(`  ${tag} = ${value}`);
+  }
+  await file.write(); // no-op in dry-run; clears the pending queue
+}
+```
+
+The repair strategy depends on the detected source (`file.resolver.source`):
+
+| Source   | Dates written                                                                                                                                                               | `Software` tag |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| WhatsApp | `DateTimeOriginal` from the filename timestamp (local tz) — e.g. `IMG-20260406-WA0005.jpg` → `2026:04:06 00:00:00`; `CreateDate`/`ModifyDate` from the filesystem timestamp | `WhatsApp`     |
+| TikTok   | `CreateDate`/`ModifyDate` + `Track*Date`/`Media*Date` from the filesystem timestamp; `DateTimeOriginal` left untouched (re-encode, no meaningful original)                  | `TikTok`       |
+
+Repair is skipped when the file already has valid embedded dates. In dry-run mode the changeset is queued but not
+written, so `file.pending` lets you report exactly what would change; `file.write()` then clears the queue.
+
+### Extracting dates from filenames
+
+`dateFromFilename()` parses datetimes out of media filenames produced by common software — WhatsApp (both the mobile
+`IMG-20260406-WA0005.jpg` and macOS `WhatsApp Image 2026-06-29 at 17.20.56.jpeg` conventions), Signal, epoch-ms exports,
+and generic compact `YYYYMMDD-HHMMSS` patterns:
+
+```ts
+import { dateFromFilename, isWhatsAppFilename } from '@epdoc/exif';
+
+const dt = dateFromFilename('WhatsApp Image 2026-06-29 at 17.20.56.jpeg');
+dt?.withTz('local').format('yyyy-MM-dd HH:mm:ss'); // "2026-06-29 17:20:56"
+
+isWhatsAppFilename('IMG-20260406-WA0005.jpg'); // true
+```
+
+The returned `DateTime` carries no timezone — callers interpret the wall-clock components in the timezone of their
+choosing (`.withTz('local')`, `.withTz('utc')`, etc.).
+
 ### Reverse geocoding
 
 The `Geo` namespace provides reverse geocoding via OpenStreetMap's Nominatim API, converting GPS coordinates into EXIF
