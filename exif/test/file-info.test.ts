@@ -247,9 +247,37 @@ Deno.test('File.camera setter', async (t) => {
 // --- app getter ---
 
 Deno.test('File.app section', async (t) => {
-  await t.step('returns software/creator tool', () => {
+  await t.step('returns software/creator tool as editor', () => {
     const file = File.fromMetadata(jpgMeta({ Software: 'Adobe Lightroom 7.0' }));
-    assertEquals(file.app!.application, 'Adobe Lightroom');
+    assertEquals(file.app!.editor, 'Adobe Lightroom');
+  });
+
+  await t.step('maps FFmpeg encoder to editor', () => {
+    const file = File.fromMetadata(videoMeta({ Encoder: 'Lavf58.76.100' }));
+    assertEquals(file.app!.editor, 'FFmpeg');
+  });
+
+  await t.step('detects camera originator', () => {
+    const file = File.fromMetadata(jpgMeta({ Make: 'Google', Model: 'Pixel 7' }));
+    assertEquals(file.app!.originator, 'camera');
+  });
+
+  await t.step('detects tiktok originator from Comment tag', () => {
+    const file = File.fromMetadata(videoMeta({ Comment: 'vid:v15044gf0000d9n1eifog65t4dv1v2u0' }));
+    assertEquals(file.app!.originator, 'tiktok');
+  });
+
+  await t.step('detects whatsapp originator from filename', () => {
+    const file = File.fromMetadata(videoMeta({
+      FileName: 'IMG-20260406-WA0005.jpg',
+      SourceFile: sourceFile('/photos/IMG-20260406-WA0005.jpg'),
+    }));
+    assertEquals(file.app!.originator, 'whatsapp');
+  });
+
+  await t.step('leaves originator undefined when no clues', () => {
+    const file = File.fromMetadata(videoMeta({ Software: 'Adobe Lightroom 7.0' }));
+    assertEquals(file.app!.originator, undefined);
   });
 });
 

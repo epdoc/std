@@ -4,5 +4,6 @@ export * as Geo from './geo/mod.ts';
 export * as Gps from './gps.ts';
 export type * from './meta-types.ts';
 export * as Meta from './meta/mod.ts';
+export type { FileSource } from './meta/types.ts';
 export { Reader } from './reader.ts';
-export type { FileInfo, FileJson, IDryRun, ToJSONOptions } from './types.ts';
+export type * from './types.ts';

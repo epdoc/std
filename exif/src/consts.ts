@@ -6,6 +6,7 @@ export const APP_NORMALIZE_RULES: { pattern: RegExp; label: string | undefined }
   { pattern: /^Snapseed /i, label: 'Snapseed' },
   { pattern: /^Google /i, label: 'Google' },
   { pattern: /^Picasa /i, label: 'Picasa' },
+  { pattern: /^Lavf\d/i, label: 'FFmpeg' },
   { pattern: /^HDR\+/i, label: undefined },
 ];
 

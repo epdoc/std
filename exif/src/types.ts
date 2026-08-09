@@ -10,6 +10,27 @@ export interface IDryRun {
 }
 
 export type Seconds = number;
+export type Digest = string;
+
+/**
+ * Options when retrieving metadata from exiftools
+ */
+export type FileGetMetadataOptions = {
+  /** On subsequent calls will use a cache version, unless set to true. */
+  force?: boolean;
+  /** Compute and include a digest in the top-level file object. */
+  digest?: boolean;
+};
+
+/**
+ * Options to File.info() method.
+ */
+export type FileInfoOptions = {
+  /** Include a top-level metadata object with the raw exiftool metadata */
+  metadata?: boolean;
+  /** Compute and include a digest in the top-level file object. */
+  digest?: boolean;
+};
 
 /**
  * JSON representation of a File's extracted metadata, nested by section.
@@ -41,6 +62,7 @@ export interface ToJSONOptions {
 
 export type FileInfo = {
   id?: { documentId?: string; instanceId?: string };
+  digest?: Digest;
   file: Schema.File;
   camera?: Schema.Camera;
   app?: Schema.App;
@@ -53,3 +75,17 @@ export type FileInfo = {
   metadata?: Metadata;
 };
 export type FileInfoKey = keyof FileInfo;
+export const FileInfoEnum = [
+  'id',
+  'digest',
+  'file',
+  'camera',
+  'app',
+  'gps',
+  'image',
+  'video',
+  'audio',
+  'pdf',
+  'doc',
+  'metadata',
+] as const;

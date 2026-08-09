@@ -4,7 +4,7 @@ import type { Metadata } from '../meta-types.ts';
 import * as Normalize from '../normalize.ts';
 import type { Seconds } from '../types.ts';
 import * as Parse from './parse.ts';
-import type { Parts } from './types.ts';
+import type { FileSource, Parts } from './types.ts';
 
 function fromParts(parts: Parts): DateTime {
   const dt = DateTime.fromComponents(
@@ -20,30 +20,23 @@ function fromParts(parts: Parts): DateTime {
   return dt;
 }
 
+/**
+ * True when the parsed date parts resolve to a container "uninitialized"
+ * timestamp. MP4/QuickTime files store zero for missing creation times, which
+ * maps to the MP4 epoch of 1904-01-01 UTC; Unix-style containers map zero to
+ * 1970-01-01 UTC. Because a timezone offset can shift the parsed wall-clock
+ * value by up to a day, we accept a small window around each epoch.
+ */
 function isUninitializedSentinel(parts: Parts): boolean {
   if (parts.year <= 0) return true;
 
-  if (
-    parts.year === 1904 &&
-    parts.month === 1 &&
-    parts.day === 1 &&
-    parts.hour === 0 &&
-    parts.minute === 0 &&
-    parts.second === 0
-  ) {
-    return true;
-  }
+  // MP4 epoch window: 1903-12-30 through 1904-01-02 (± timezone shift)
+  if (parts.year === 1903 && parts.month === 12 && parts.day >= 30) return true;
+  if (parts.year === 1904 && parts.month === 1 && parts.day <= 2) return true;
 
-  if (
-    parts.year === 1970 &&
-    parts.month === 1 &&
-    parts.day === 1 &&
-    parts.hour === 0 &&
-    parts.minute === 0 &&
-    parts.second === 0
-  ) {
-    return true;
-  }
+  // Unix epoch window: 1969-12-30 through 1970-01-02 (± timezone shift)
+  if (parts.year === 1969 && parts.month === 12 && parts.day >= 30) return true;
+  if (parts.year === 1970 && parts.month === 1 && parts.day <= 2) return true;
 
   return false;
 }
@@ -56,6 +49,7 @@ type ResolverCache = {
   height?: Integer;
   width?: Integer;
   codec?: string;
+  source?: FileSource;
 };
 
 /**
@@ -318,6 +312,34 @@ export class Resolver {
     return this.#cache.codec;
   }
 
+  /**
+   * Detect the originator of the file from metadata clues.
+   *
+   * Detection priority:
+   * 1. `Comment` matching TikTok's `vid:v...` content-ID pattern → `'tiktok'`
+   * 2. TikTok's `Aigc_info` tag present → `'tiktok'`
+   * 3. Filename matching WhatsApp's `IMG-/VID-YYYYMMDD-WA####` convention → `'whatsapp'`
+   * 4. `Make` or `Model` present → `'camera'`
+   * 5. Otherwise → `undefined`
+   */
+  get source(): FileSource | undefined {
+    if (!_.isDefined(this.#cache.source)) {
+      const m = this.meta;
+      if (m.Comment && /^vid:v\d+/i.test(m.Comment)) {
+        this.#cache.source = 'tiktok';
+      } else if (m.Aigc_info !== undefined) {
+        this.#cache.source = 'tiktok';
+      } else if (m.FileName && /^(?:IMG|VID)-\d{8}-WA\d{4,}\./i.test(m.FileName)) {
+        this.#cache.source = 'whatsapp';
+      } else if (m.Make || m.Model) {
+        this.#cache.source = 'camera';
+      } else {
+        this.#cache.source = undefined;
+      }
+    }
+    return this.#cache.source;
+  }
+
   // ==========================================================================
   // Write-prepare methods (return changeset to apply via File.applyTags)
   // ==========================================================================
@@ -355,6 +377,27 @@ export class Resolver {
       ...this.setDigitizedAt(dt),
       ...this.setModifiedAt(dt),
     };
+  }
+
+  /**
+   * Return tag changes that repair missing or uninitialized date tags using a
+   * fallback date (typically the filesystem timestamp of the file).
+   *
+   * Only applies when the file's {@link source} is a platform that stripped
+   * or corrupted the embedded dates (`'tiktok'` or `'whatsapp'`) AND no
+   * reliable embedded date could be resolved. Returns an empty changeset when
+   * there is nothing to repair.
+   *
+   * @param fallbackDate The replacement date/time to write, e.g. the file's
+   *                     filesystem modified date. Pass `undefined` when no
+   *                     reliable fallback is available.
+   */
+  repairDates(fallbackDate: DateTime | undefined): Record<string, string> {
+    const source = this.source;
+    if (source !== 'tiktok' && source !== 'whatsapp') return {};
+    if (!fallbackDate) return {};
+    if (this.originatedAt || this.digitizedAt || this.modifiedAt) return {};
+    return this.setAllDates(fallbackDate);
   }
 
   /**

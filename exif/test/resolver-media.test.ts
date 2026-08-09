@@ -1,4 +1,4 @@
-import type { ISOTZ } from '@epdoc/datetime';
+import { DateTime, type ISOTZ } from '@epdoc/datetime';
 import type * as FS from '@epdoc/fs/fs';
 import { assertEquals } from '@std/assert';
 import { Meta } from '../src/mod.ts';
@@ -155,6 +155,89 @@ Deno.test('Resolver.codec for audio', async (t) => {
     const codec = Meta.Resolver.from(meta).codec;
     assertEquals(typeof codec, 'string');
     assertEquals(codec!.length > 0, true);
+  });
+});
+
+// --- source() ---
+
+Deno.test('Resolver.source', async (t) => {
+  await t.step('detects camera from Make tag', () => {
+    const meta = imageMeta({ Make: 'Google', Model: 'Pixel 7' });
+    assertEquals(Meta.Resolver.from(meta).source, 'camera');
+  });
+
+  await t.step('detects camera from Model tag only', () => {
+    const meta = imageMeta({ Model: 'D7100' });
+    assertEquals(Meta.Resolver.from(meta).source, 'camera');
+  });
+
+  await t.step('detects tiktok from vid: comment', () => {
+    const meta = videoMeta({ Comment: 'vid:v15044gf0000d9n1eifog65t4dv1v2u0' });
+    assertEquals(Meta.Resolver.from(meta).source, 'tiktok');
+  });
+
+  await t.step('detects tiktok from Aigc_info tag', () => {
+    const meta = videoMeta({ Aigc_info: '{"aigc_label_type":0}' });
+    assertEquals(Meta.Resolver.from(meta).source, 'tiktok');
+  });
+
+  await t.step('detects whatsapp from IMG filename pattern', () => {
+    const meta = videoMeta({
+      FileName: 'IMG-20260406-WA0005.jpg',
+      SourceFile: sourceFile('/tmp/IMG-20260406-WA0005.jpg'),
+    });
+    assertEquals(Meta.Resolver.from(meta).source, 'whatsapp');
+  });
+
+  await t.step('detects whatsapp from VID filename pattern', () => {
+    const meta = videoMeta({
+      FileName: 'VID-20260519-WA0014.mp4',
+      SourceFile: sourceFile('/tmp/VID-20260519-WA0014.mp4'),
+    });
+    assertEquals(Meta.Resolver.from(meta).source, 'whatsapp');
+  });
+
+  await t.step('returns undefined when no source clues exist', () => {
+    assertEquals(Meta.Resolver.from(videoMeta()).source, undefined);
+  });
+});
+
+// --- repairDates() ---
+
+Deno.test('Resolver.repairDates', async (t) => {
+  await t.step('repairs whatsapp files with missing dates', () => {
+    const resolver = Meta.Resolver.from(videoMeta({
+      FileName: 'IMG-20260406-WA0005.jpg',
+      SourceFile: sourceFile('/tmp/IMG-20260406-WA0005.jpg'),
+    }));
+    const changes = resolver.repairDates(DateTime.from('2026-04-06T21:42:47'));
+    assertEquals(changes['DateTimeOriginal'], '2026:04:06 21:42:47');
+    assertEquals(changes['CreateDate'], '2026:04:06 21:42:47');
+    assertEquals(changes['ModifyDate'], '2026:04:06 21:42:47');
+  });
+
+  await t.step('does not repair camera files', () => {
+    const resolver = Meta.Resolver.from(imageMeta({ Make: 'Google', Model: 'Pixel 7' }));
+    const changes = resolver.repairDates(DateTime.from('2026-04-06T21:42:47'));
+    assertEquals(Object.keys(changes).length, 0);
+  });
+
+  await t.step('does not repair when a valid embedded date exists', () => {
+    const resolver = Meta.Resolver.from(videoMeta({
+      FileName: 'IMG-20260406-WA0005.jpg',
+      SourceFile: sourceFile('/tmp/IMG-20260406-WA0005.jpg'),
+      DateTimeOriginal: '2026:04:06 21:42:47',
+    }));
+    const changes = resolver.repairDates(DateTime.from('2026-04-06T21:42:47'));
+    assertEquals(Object.keys(changes).length, 0);
+  });
+
+  await t.step('returns empty changes without a fallback date', () => {
+    const resolver = Meta.Resolver.from(videoMeta({
+      FileName: 'IMG-20260406-WA0005.jpg',
+      SourceFile: sourceFile('/tmp/IMG-20260406-WA0005.jpg'),
+    }));
+    assertEquals(Object.keys(resolver.repairDates(undefined)).length, 0);
   });
 });
 

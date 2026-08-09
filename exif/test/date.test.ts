@@ -94,6 +94,22 @@ Deno.test('Resolver.buildDateTime', async (t) => {
   await t.step('returns undefined without a date', () => {
     assertEquals(Meta.Resolver.buildDateTime(undefined), undefined);
   });
+
+  await t.step('rejects the exact MP4 epoch (1904-01-01 UTC)', () => {
+    assertEquals(Meta.Resolver.buildDateTime('1904:01:01 00:00:00'), undefined);
+  });
+
+  await t.step('rejects the timezone-shifted MP4 epoch (1903-12-31 -05:37)', () => {
+    assertEquals(Meta.Resolver.buildDateTime('1903:12:31 18:23:47-05:37'), undefined);
+  });
+
+  await t.step('rejects the exact Unix epoch (1970-01-01 UTC)', () => {
+    assertEquals(Meta.Resolver.buildDateTime('1970:01:01 00:00:00'), undefined);
+  });
+
+  await t.step('accepts legitimate 1972 dates', () => {
+    assertEquals(Meta.Resolver.buildDateTime('1972:06:15 12:00:00')?.year, 1972);
+  });
 });
 
 Deno.test('Resolver.toExifDateTimeString', async (t) => {

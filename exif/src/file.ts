@@ -8,13 +8,14 @@ import * as Gps from './gps.ts';
 import type { Metadata } from './meta-types.ts';
 import * as Meta from './meta/mod.ts';
 import * as Normalize from './normalize.ts';
-import type { FileInfo, IDryRun } from './types.ts';
+import type { Digest, FileGetMetadataOptions, FileInfo, FileInfoOptions, IDryRun } from './types.ts';
 
 /** Flags passed to exiftool for JSON reading with QuickTime UTC normalization. */
 export const EXIFTOOL_READ_FLAGS = ['-j', '-struct', '-api', 'QuickTimeUTC=1'];
 
 type MetaCache = {
   file?: Schema.File;
+  digest?: Digest;
   video?: Schema.Video;
   image?: Schema.Image;
   audio?: Schema.Audio;
@@ -74,13 +75,20 @@ export class File {
     return this.#dirty;
   }
 
+  async getDigest(alg?: FS.DigestAlgorithmValues): Promise<Digest> {
+    if (!this.#cache.digest) {
+      this.#cache.digest = await this.#fsFile.digest(alg);
+    }
+    return this.#cache.digest;
+  }
+
   /**
    * Read JSON metadata from the file via exiftool.
    *
    * Dates are read in canonical EXIF form (`YYYY:MM:DD HH:MM:SS`) so that
    * missing timezones can be distinguished from explicit UTC offsets.
    */
-  async getMetadata(opts: { force?: boolean } = {}): Promise<Metadata | undefined> {
+  async getMetadata(opts: FileGetMetadataOptions = {}): Promise<Metadata | undefined> {
     if (this.#metadata && !opts.force) return this.#metadata;
 
     const isFile = await this.#fsFile.isFile();
@@ -127,11 +135,15 @@ export class File {
    *
    * @param opts.metadata Set to true to include the raw {@link Metadata} object.
    */
-  info(opts: { metadata: boolean } = { metadata: false }): FileInfo {
+  info(opts: FileInfoOptions = {}): FileInfo {
+    assert(this.#metadata, 'Metadata must be retrieved before calling this method');
     if (this.#info) return this.#info;
     const result: FileInfo = {
       file: collect(FileDef, this.#fsFile, this.metadata),
     };
+    if (this.#cache.digest) {
+      result.digest = this.#cache.digest;
+    }
     const id = this.id();
     if (id) result.id = id;
     if (this.camera && Object.keys(this.camera).length) result.camera = this.camera;
@@ -379,6 +391,32 @@ export class File {
     this.#pending.clear();
     this.#dirty = false;
     this.#metadata = undefined;
+  }
+
+  /**
+   * Repair missing or corrupted date metadata for files whose source platform
+   * stripped the embedded dates (e.g. TikTok, WhatsApp).
+   *
+   * Uses the filesystem modified/created timestamp as the replacement date.
+   * When the file was created with a dry-run flag, the changeset is computed
+   * and queued but the exiftool write is a no-op.
+   *
+   * @returns true when a repair changeset was applied (or queued in dry-run).
+   */
+  async repair(): Promise<boolean> {
+    if (!this.#fsFile.hasInfo()) {
+      await this.#fsFile.stats();
+    }
+    const fsDate = this.#fsFile.hasInfo()
+      ? (this.#fsFile.info.modifiedAt ?? this.#fsFile.info.createdAt ?? undefined)
+      : undefined;
+    const changes = this.resolver.repairDates(fsDate);
+    if (Object.keys(changes).length) {
+      this.applyTags(changes);
+      await this.write();
+      return true;
+    }
+    return false;
   }
 
   #cmd(args?: string[]): Cmd.Runner<Record<string, unknown>> {

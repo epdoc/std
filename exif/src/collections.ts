@@ -280,13 +280,21 @@ export const cameraDef: CameraDef = {
 export type Camera = InfoResult<typeof cameraDef>;
 
 export interface AppDef extends InfoSection {
-  application: InfoDef<string>;
+  /** The last known software that processed/edited the file (eg. Adobe Camera Raw, Lightroom, Snapseed, Google, FFmpeg). */
+  editor: InfoDef<string>;
+  /** The original source/origin of the file content: 'camera', 'tiktok', 'whatsapp', or undefined. */
+  originator: InfoDef<string>;
 }
 
 export const appDef: AppDef = {
-  application: {
-    value: (_fs: FS.File, m: Metadata): string | undefined => Normalize.application(m.Software || m.CreatorTool),
-    title: 'Application',
+  editor: {
+    value: (_fs: FS.File, m: Metadata): string | undefined =>
+      Normalize.application(m.Software || m.CreatorTool || m.Encoder),
+    title: 'Editor',
+  },
+  originator: {
+    value: (_fs: FS.File, m: Metadata): string | undefined => Meta.Resolver.from(m).source,
+    title: 'Originator',
   },
 };
 

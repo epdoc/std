@@ -464,6 +464,14 @@ export interface VideoAudioMetadata {
   Balance?: number;
   PreferredVolume?: string;
   HandlerDescription?: string;
+
+  // --- Platform / source identifiers ---
+  /** Free-form comment. TikTok writes a content ID here, e.g. "vid:v15044gf...". */
+  Comment?: string;
+  /** Encoder software string, e.g. "Lavf58.76.100" (FFmpeg libavformat). */
+  Encoder?: string;
+  /** TikTok AI-generated-content info JSON, e.g. '{"aigc_label_type":0}'. */
+  Aigc_info?: string;
 }
 
 /**
