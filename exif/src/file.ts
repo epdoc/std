@@ -488,6 +488,9 @@ export class File {
    * @returns true when a repair changeset was applied (or queued in dry-run).
    */
   async repair(): Promise<MetaModHistory[]> {
+    const resolver = this.#resolver;
+    if (!resolver) return [];
+
     if (!this.#fsFile.hasInfo()) {
       await this.#fsFile.stats();
     }
@@ -495,14 +498,14 @@ export class File {
       ? (this.#fsFile.info.modifiedAt ?? this.#fsFile.info.createdAt ??
         undefined)
       : undefined;
-    const changes: PendingMetaMod = this.resolver.repairDates(fsDate);
+    const changes: PendingMetaMod = resolver.repairDates(fsDate);
     if (!Object.keys(changes).length) return [];
 
-    const source = this.resolver.source;
-    if (source === 'whatsapp' && this.metadata.Software !== 'WhatsApp') {
+    const source = resolver.source;
+    if (source === 'whatsapp' && this.#metadata?.Software !== 'WhatsApp') {
       changes['Software'] = 'WhatsApp';
     } else if (
-      source === 'tiktok' && this.metadata.Software !== 'TikTok'
+      source === 'tiktok' && this.#metadata?.Software !== 'TikTok'
     ) {
       changes['Software'] = 'TikTok';
     }
