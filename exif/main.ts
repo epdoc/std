@@ -1,7 +1,7 @@
 import type { FilePath } from '@epdoc/fs/fs';
 import build from './build/build-info.json' with { type: 'json' };
 import pkg from './deno.json' with { type: 'json' };
-import { type FileInfo, Reader } from './src/mod.ts';
+import { type FileInfo, readFiles } from './src/mod.ts';
 
 const version = pkg.version;
 const buildNumber = build.build.number;
@@ -48,9 +48,8 @@ if (files.length === 0) {
   Deno.exit(1);
 }
 
-const reader = new Reader();
 try {
-  const results = await reader.read(files, { digest: digest ? 'sha1' : false });
+  const results = await readFiles(files, { digest: digest ? 'sha1' : false });
   const output = results.map((file) => {
     const result: FileInfo = file.info({ metadata: showMeta });
 

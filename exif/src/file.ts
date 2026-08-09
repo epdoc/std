@@ -116,7 +116,7 @@ export class File {
   }
 
   /**
-   * Construct a File from pre-loaded metadata (e.g. from {@link Reader.read}).
+   * Construct a File from pre-loaded metadata .
    */
   static fromMetadata(metadata: Metadata, opts?: IDryRun): File {
     const file = new File(metadata.SourceFile, opts);

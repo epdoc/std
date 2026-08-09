@@ -5,5 +5,5 @@ export * as Gps from './gps.ts';
 export type * from './meta-types.ts';
 export * as Meta from './meta/mod.ts';
 export type { FileSource } from './meta/types.ts';
-export { Reader } from './reader.ts';
+export { readFiles } from './read-files.ts';
 export type * from './types.ts';

@@ -391,7 +391,7 @@
                   },
                   {
                     "jsDoc": {
-                      "doc": "Construct a File from pre-loaded metadata (e.g. from {@link Reader.read})."
+                      "doc": "Construct a File from pre-loaded metadata ."
                     },
                     "isStatic": true,
                     "name": "fromMetadata",
@@ -449,7 +449,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 120,
                       "col": 2,
-                      "byteIndex": 3626
+                      "byteIndex": 3595
                     }
                   },
                   {
@@ -507,7 +507,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 137,
                       "col": 2,
-                      "byteIndex": 4305
+                      "byteIndex": 4274
                     }
                   },
                   {
@@ -532,7 +532,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 179,
                       "col": 2,
-                      "byteIndex": 5981
+                      "byteIndex": 5950
                     }
                   },
                   {
@@ -567,7 +567,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 185,
                       "col": 2,
-                      "byteIndex": 6171
+                      "byteIndex": 6140
                     }
                   },
                   {
@@ -602,7 +602,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 195,
                       "col": 2,
-                      "byteIndex": 6521
+                      "byteIndex": 6490
                     }
                   },
                   {
@@ -637,7 +637,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 206,
                       "col": 2,
-                      "byteIndex": 7034
+                      "byteIndex": 7003
                     }
                   },
                   {
@@ -672,7 +672,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 215,
                       "col": 2,
-                      "byteIndex": 7326
+                      "byteIndex": 7295
                     }
                   },
                   {
@@ -707,7 +707,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 224,
                       "col": 2,
-                      "byteIndex": 7604
+                      "byteIndex": 7573
                     }
                   },
                   {
@@ -742,7 +742,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 233,
                       "col": 2,
-                      "byteIndex": 7882
+                      "byteIndex": 7851
                     }
                   },
                   {
@@ -778,7 +778,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 242,
                       "col": 2,
-                      "byteIndex": 8181
+                      "byteIndex": 8150
                     }
                   },
                   {
@@ -813,7 +813,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 255,
                       "col": 2,
-                      "byteIndex": 8892
+                      "byteIndex": 8861
                     }
                   },
                   {
@@ -835,7 +835,7 @@
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                                     "line": 264,
                                     "col": 17,
-                                    "byteIndex": 9185
+                                    "byteIndex": 9154
                                   },
                                   "tsType": {
                                     "repr": "boolean",
@@ -866,7 +866,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 264,
                       "col": 2,
-                      "byteIndex": 9170
+                      "byteIndex": 9139
                     }
                   },
                   {
@@ -885,7 +885,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 272,
                       "col": 2,
-                      "byteIndex": 9427
+                      "byteIndex": 9396
                     }
                   },
                   {
@@ -920,7 +920,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 276,
                       "col": 2,
-                      "byteIndex": 9548
+                      "byteIndex": 9517
                     }
                   },
                   {
@@ -975,7 +975,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 295,
                       "col": 2,
-                      "byteIndex": 10285
+                      "byteIndex": 10254
                     }
                   },
                   {
@@ -1010,7 +1010,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 318,
                       "col": 2,
-                      "byteIndex": 11282
+                      "byteIndex": 11251
                     }
                   },
                   {
@@ -1042,7 +1042,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 336,
                       "col": 2,
-                      "byteIndex": 11850
+                      "byteIndex": 11819
                     }
                   },
                   {
@@ -1095,7 +1095,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 351,
                       "col": 2,
-                      "byteIndex": 12355
+                      "byteIndex": 12324
                     }
                   },
                   {
@@ -1142,7 +1142,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 363,
                       "col": 2,
-                      "byteIndex": 12692
+                      "byteIndex": 12661
                     }
                   },
                   {
@@ -1174,7 +1174,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 376,
                       "col": 2,
-                      "byteIndex": 13088
+                      "byteIndex": 13057
                     }
                   },
                   {
@@ -1212,7 +1212,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 405,
                       "col": 2,
-                      "byteIndex": 14065
+                      "byteIndex": 14034
                     }
                   }
                 ]
@@ -1275,162 +1275,131 @@
           ]
         },
         {
-          "name": "Reader",
+          "name": "readFiles",
           "declarations": [
             {
               "location": {
-                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/reader.ts",
-                "line": 15,
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/read-files.ts",
+                "line": 13,
                 "col": 0,
-                "byteIndex": 541
+                "byteIndex": 447
               },
               "declarationKind": "export",
               "jsDoc": {
-                "doc": "Factory for reading EXIF metadata from one or more files in a single\nexiftool invocation.\n\nAll write operations live on {@link File}; construct or obtain a File and\nuse its setters followed by {@link File.write}."
-              },
-              "kind": "class",
-              "def": {
-                "constructors": [
+                "doc": "Read JSON metadata for one or more files.\n",
+                "tags": [
                   {
-                    "hasBody": true,
-                    "name": "constructor",
-                    "params": [
+                    "kind": "return",
+                    "doc": "An array of {@link File} instances, one per input file (in input order)."
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "files",
+                    "optional": false,
+                    "tsType": {
+                      "kind": "array",
+                      "value": {
+                        "kind": "parenthesized",
+                        "value": {
+                          "kind": "union",
+                          "value": [
+                            {
+                              "repr": "FS.FilePath",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "FS.FilePath",
+                                "resolution": {
+                                  "kind": "import",
+                                  "specifier": "@epdoc/fs/fs"
+                                }
+                              }
+                            },
+                            {
+                              "repr": "FS.File",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "FS.File",
+                                "resolution": {
+                                  "kind": "import",
+                                  "specifier": "@epdoc/fs/fs"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "kind": "assign",
+                    "left": {
+                      "kind": "identifier",
+                      "name": "opts",
+                      "optional": false,
+                      "tsType": {
+                        "kind": "intersection",
+                        "value": [
+                          {
+                            "repr": "IDigest",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "IDigest",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./types.ts",
+                                "name": "IDigest"
+                              }
+                            }
+                          },
+                          {
+                            "repr": "IDryRun",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "IDryRun",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./types.ts",
+                                "name": "IDryRun"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "right": "[UNSUPPORTED]"
+                  }
+                ],
+                "returnType": {
+                  "repr": "Promise",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeParams": [
                       {
-                        "kind": "identifier",
-                        "name": "opts",
-                        "optional": true,
-                        "tsType": {
-                          "repr": "IDryRun",
+                        "kind": "array",
+                        "value": {
+                          "repr": "File",
                           "kind": "typeRef",
                           "value": {
-                            "typeName": "IDryRun",
+                            "typeName": "File",
                             "resolution": {
                               "kind": "import",
-                              "specifier": "./types.ts",
-                              "name": "IDryRun"
+                              "specifier": "./file.ts",
+                              "name": "File"
                             }
                           }
                         }
                       }
                     ],
-                    "location": {
-                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/reader.ts",
-                      "line": 18,
-                      "col": 2,
-                      "byteIndex": 586
-                    }
+                    "typeName": "Promise"
                   }
-                ],
-                "methods": [
-                  {
-                    "jsDoc": {
-                      "doc": "Read JSON metadata for one or more files.\n",
-                      "tags": [
-                        {
-                          "kind": "return",
-                          "doc": "An array of {@link File} instances, one per input file (in input order)."
-                        }
-                      ]
-                    },
-                    "name": "read",
-                    "kind": "method",
-                    "functionDef": {
-                      "params": [
-                        {
-                          "kind": "identifier",
-                          "name": "files",
-                          "optional": false,
-                          "tsType": {
-                            "kind": "array",
-                            "value": {
-                              "kind": "parenthesized",
-                              "value": {
-                                "kind": "union",
-                                "value": [
-                                  {
-                                    "repr": "FS.FilePath",
-                                    "kind": "typeRef",
-                                    "value": {
-                                      "typeName": "FS.FilePath",
-                                      "resolution": {
-                                        "kind": "import",
-                                        "specifier": "@epdoc/fs/fs"
-                                      }
-                                    }
-                                  },
-                                  {
-                                    "repr": "FS.File",
-                                    "kind": "typeRef",
-                                    "value": {
-                                      "typeName": "FS.File",
-                                      "resolution": {
-                                        "kind": "import",
-                                        "specifier": "@epdoc/fs/fs"
-                                      }
-                                    }
-                                  }
-                                ]
-                              }
-                            }
-                          }
-                        },
-                        {
-                          "kind": "assign",
-                          "left": {
-                            "kind": "identifier",
-                            "name": "opts",
-                            "optional": false,
-                            "tsType": {
-                              "repr": "IDigest",
-                              "kind": "typeRef",
-                              "value": {
-                                "typeName": "IDigest",
-                                "resolution": {
-                                  "kind": "import",
-                                  "specifier": "./types.ts",
-                                  "name": "IDigest"
-                                }
-                              }
-                            }
-                          },
-                          "right": "[UNSUPPORTED]"
-                        }
-                      ],
-                      "returnType": {
-                        "repr": "Promise",
-                        "kind": "typeRef",
-                        "value": {
-                          "typeParams": [
-                            {
-                              "kind": "array",
-                              "value": {
-                                "repr": "File",
-                                "kind": "typeRef",
-                                "value": {
-                                  "typeName": "File",
-                                  "resolution": {
-                                    "kind": "import",
-                                    "specifier": "./file.ts",
-                                    "name": "File"
-                                  }
-                                }
-                              }
-                            }
-                          ],
-                          "typeName": "Promise"
-                        }
-                      },
-                      "hasBody": true,
-                      "isAsync": true
-                    },
-                    "location": {
-                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/reader.ts",
-                      "line": 27,
-                      "col": 2,
-                      "byteIndex": 816
-                    }
-                  }
-                ]
+                },
+                "hasBody": true,
+                "isAsync": true
               }
             }
           ]
