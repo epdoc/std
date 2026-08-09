@@ -161,8 +161,9 @@ export class Resolver {
    * MIMEType is empty or missing.
    */
   get type(): string {
-    const [type] = this.meta.MIMEType?.split('/') ?? [];
-    return type ?? '';
+    const [type, subtype] = this.meta.MIMEType?.split('/') ?? [];
+    if (type === 'application') return subtype;
+    return type ?? 'unknown';
   }
 
   /**

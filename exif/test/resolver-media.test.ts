@@ -1,8 +1,8 @@
 import { DateTime, type ISOTZ } from '@epdoc/datetime';
 import type * as FS from '@epdoc/fs/fs';
 import { assertEquals } from '@std/assert';
-import { Meta } from '../src/mod.ts';
 import type { Metadata } from '../src/meta-types.ts';
+import { Meta } from '../src/mod.ts';
 
 function sourceFile(path: string): FS.FilePath {
   return path as FS.FilePath;
@@ -52,11 +52,11 @@ Deno.test('Resolver.type', async (t) => {
   });
 
   await t.step('returns "application" for application/pdf', () => {
-    assertEquals(Meta.Resolver.from(videoMeta({ MIMEType: 'application/pdf' })).type, 'application');
+    assertEquals(Meta.Resolver.from(videoMeta({ MIMEType: 'application/pdf' })).type, 'pdf');
   });
 
   await t.step('returns "application" for application/octet-stream', () => {
-    assertEquals(Meta.Resolver.from(videoMeta({ MIMEType: 'application/octet-stream' })).type, 'application');
+    assertEquals(Meta.Resolver.from(videoMeta({ MIMEType: 'application/octet-stream' })).type, 'octet-stream');
   });
 
   await t.step('returns empty string when MIMEType is empty', () => {
@@ -66,7 +66,7 @@ Deno.test('Resolver.type', async (t) => {
 
   await t.step('returns empty string when MIMEType is missing', () => {
     const meta: Metadata = { ...videoMeta(), MIMEType: undefined as unknown as string };
-    assertEquals(Meta.Resolver.from(meta).type, '');
+    assertEquals(Meta.Resolver.from(meta).type, 'unknown');
   });
 });
 

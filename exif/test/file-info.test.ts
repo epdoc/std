@@ -429,7 +429,7 @@ Deno.test('File.info', async (t) => {
   await t.step('returns structured info for documents', () => {
     const file = File.fromMetadata(pdfMeta());
     const info = file.info();
-    assertEquals(info.file.type, 'application');
+    assertEquals(info.file.type, 'pdf');
     assertEquals(typeof info.pdf, 'object');
     assertEquals(info.image, undefined);
     assertEquals(info.video, undefined);
