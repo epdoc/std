@@ -38,6 +38,8 @@ export interface ExifMetadata {
   Directory: string | { Item: Record<string, string> }[];
   MIMEType: string;
   FilePermissions?: string; // File access permissions, e.g. "rw-r--r--"
+  /** exiftool notice about data that was skipped, e.g. "[minor] The ExtractEmbedded option may find more tags in the movie data". */
+  Warning?: string;
 
   // --- Image dimensions ---
   ImageWidth?: Integer;
@@ -164,6 +166,8 @@ export interface ExifMetadata {
   // --- GPS ---
   GPSLatitude?: GpsCoordinate;
   GPSLongitude?: GpsCoordinate;
+  /** Full GPS position as a single DMS string, e.g. `"9 deg 8' 44.52" N, 83 deg 43' 41.52" W"` (QuickTime Keys composite, equivalent to `GPSPosition`). */
+  GPSCoordinates?: string;
   /** Altitude in meters; string form includes units, e.g. "192 m Above Sea Level". */
   GPSAltitude?: number | string;
   GPSLatitudeRef?: GpsLatitudeRef;
@@ -502,6 +506,55 @@ export interface VideoAudioMetadata {
   TrackModifyDate?: ExifDateTime;
   /** QuickTime media modification date */
   MediaModifyDate?: ExifDateTime;
+
+  // --- Container (MP4/QuickTime movie header) ---
+  /** File format brand, e.g. "MP4  Base Media v1 [IS0 14496-12:2003]". */
+  MajorBrand?: string;
+  /** Format minor version, e.g. "2.0.0". */
+  MinorVersion?: string;
+  /** Compatible format brands, e.g. `["isom", "iso2", "mp41"]`. */
+  CompatibleBrands?: string[];
+  /** Size in bytes of the movie data chunk. */
+  MovieDataSize?: number;
+  /** Byte offset of the movie data chunk. */
+  MovieDataOffset?: number;
+  /** Movie header version (0 or 1). */
+  MovieHeaderVersion?: number;
+  /** Time scale in units per second for the movie timeline. */
+  TimeScale?: number;
+  /** Preferred playback rate. */
+  PreferredRate?: number;
+  /** Time of the start of the preview, e.g. "0 s". */
+  PreviewTime?: string | number;
+  /** Preview duration, e.g. "0 s". */
+  PreviewDuration?: string | number;
+  /** Time of the poster/pause frame, e.g. "0 s". */
+  PosterTime?: string | number;
+  /** Time of the start of the selectable section, e.g. "0 s". */
+  SelectionTime?: string | number;
+  /** Duration of the selectable section, e.g. "0 s". */
+  SelectionDuration?: string | number;
+  /** Current movie time (usually 0), e.g. "0 s". */
+  CurrentTime?: string | number;
+  /** Next unused track ID. */
+  NextTrackID?: number;
+
+  // --- Track / media headers ---
+  /** Track header version (0 or 1). */
+  TrackHeaderVersion?: number;
+  /** Track ID number. */
+  TrackID?: number;
+  /** Track layer (z-order), 0 = front. */
+  TrackLayer?: number;
+  /** Media header version (0 or 1). */
+  MediaHeaderVersion?: number;
+  /** Time scale in units per second for the media timeline. */
+  MediaTimeScale?: number;
+  /** Track handler type, e.g. "vide", "soun", "mett", "NRT Metadata". */
+  HandlerType?: string;
+  /** Metadata format for timed metadata tracks, e.g. "mett". */
+  MetaFormat?: string;
+
   // --- Video ---
   VideoFrameRate?: number;
   CompressorID?: string;
@@ -544,6 +597,16 @@ export interface VideoAudioMetadata {
   Encoder?: string;
   /** TikTok AI-generated-content info JSON, e.g. '{"aigc_label_type":0}'. */
   Aigc_info?: string;
+
+  // --- Android (QuickTime Keys, com.android.*) ---
+  /** Android device manufacturer from the QuickTime Keys atom (`com.android.manufacturer`), e.g. "Google". */
+  ComAndroidManufacturer?: string;
+  /** Android device model from the QuickTime Keys atom (`com.android.model`), e.g. "Pixel 7". */
+  ComAndroidModel?: string;
+  /** Capture frame rate recorded by the Google Camera app (`com.android.capture.fps`). */
+  ComAndroidCaptureFps?: number;
+  /** Google Camera gallery special-type ID, e.g. "...SpecialType-TIMELAPSE". */
+  SpecialTypeID?: string;
 }
 
 /**

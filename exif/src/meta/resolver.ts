@@ -324,7 +324,7 @@ export class Resolver {
    * 2. TikTok's `Aigc_info` tag present → `'tiktok'`
    * 3. Filename matching WhatsApp's `IMG-/VID-YYYYMMDD-WA####` or
    *    `WhatsApp <Type> YYYY-MM-DD at HH.MM.SS` convention → `'whatsapp'`
-   * 4. `Make` or `Model` present → `'camera'`
+   * 4. `Make`, `Model`, `ComAndroidManufacturer`, or `ComAndroidModel` present → `'camera'`
    * 5. Otherwise → `undefined`
    */
   get source(): FileSource | undefined {
@@ -336,7 +336,7 @@ export class Resolver {
         this.#cache.source = 'tiktok';
       } else if (isWhatsAppFilename(m.FileName)) {
         this.#cache.source = 'whatsapp';
-      } else if (m.Make || m.Model) {
+      } else if (m.Make || m.Model || m.ComAndroidManufacturer || m.ComAndroidModel) {
         this.#cache.source = 'camera';
       } else {
         this.#cache.source = undefined;

@@ -180,6 +180,14 @@ Deno.test('Resolver.source', async (t) => {
     assertEquals(Meta.Resolver.from(meta).source, 'camera');
   });
 
+  await t.step('detects camera from Android video Keys tags (no Make/Model)', () => {
+    const meta = videoMeta({
+      ComAndroidManufacturer: 'Google',
+      ComAndroidModel: 'Pixel 7',
+    });
+    assertEquals(Meta.Resolver.from(meta).source, 'camera');
+  });
+
   await t.step('detects tiktok from vid: comment', () => {
     const meta = videoMeta({ Comment: 'vid:v15044gf0000d9n1eifog65t4dv1v2u0' });
     assertEquals(Meta.Resolver.from(meta).source, 'tiktok');

@@ -10,8 +10,8 @@ export const CODEC_AUDIO_UNKNOWN = 'Unknown Audio Codec';
 // ============================================================================
 
 export function cameraName(meta: Metadata): string | undefined {
-  const make = meta.Make;
-  const model = meta.Model?.toUpperCase();
+  const make = meta.Make ?? meta.ComAndroidManufacturer;
+  const model = (meta.Model ?? meta.ComAndroidModel)?.toUpperCase();
   if (make && model && CAMERA_MODEL_MAP[make]?.[model]) {
     return `${make} ${CAMERA_MODEL_MAP[make][model]}`;
   }

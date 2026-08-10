@@ -266,8 +266,8 @@ export interface CameraDef extends InfoSection {
 
 export const cameraDef: CameraDef = {
   name: { value: (_fs: FS.File, m: Metadata): string | undefined => Normalize.cameraName(m), title: 'Camera' },
-  make: { value: readTag('Make') },
-  model: { value: readTag('Model') },
+  make: { value: (_fs: FS.File, m: Metadata): string | undefined => m.Make ?? m.ComAndroidManufacturer },
+  model: { value: (_fs: FS.File, m: Metadata): string | undefined => m.Model ?? m.ComAndroidModel },
   lensMake: { value: readTag('LensMake') },
   lensModel: { value: readTag('LensModel') },
   serialNumber: { value: readTag('SerialNumber') },

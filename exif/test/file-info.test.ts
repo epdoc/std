@@ -232,6 +232,18 @@ Deno.test('File.camera section', async (t) => {
     const cam = file.camera;
     assert(!_.isDefined(cam));
   });
+
+  await t.step('reads make/model from Android video Keys tags', () => {
+    const file = File.fromMetadata(videoMeta({
+      ComAndroidManufacturer: 'Google',
+      ComAndroidModel: 'Pixel 7',
+    }));
+    const cam = file.camera;
+    assert(cam);
+    assertEquals(cam.make, 'Google');
+    assertEquals(cam.model, 'Pixel 7');
+    assertEquals(cam.name, 'Google Pixel 7');
+  });
 });
 
 // --- camera setter ---
