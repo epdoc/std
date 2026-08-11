@@ -283,7 +283,7 @@ export interface AppDef extends InfoSection {
   /** The last known software that processed/edited the file (eg. Adobe Camera Raw, Lightroom, Snapseed, Google, FFmpeg). */
   editor: InfoDef<string>;
   /** The original source/origin of the file content: 'camera', 'tiktok', 'whatsapp', or undefined. */
-  originator: InfoDef<string>;
+  producer: InfoDef<string>;
 }
 
 export const appDef: AppDef = {
@@ -292,9 +292,9 @@ export const appDef: AppDef = {
       Normalize.editor(m.Software || m.CreatorTool || m.Encoder),
     title: 'Editor',
   },
-  originator: {
-    value: (_fs: FS.File, m: Metadata): string | undefined => Meta.Resolver.from(m).originator,
-    title: 'Originator',
+  producer: {
+    value: (_fs: FS.File, m: Metadata): string | undefined => Meta.Resolver.from(m).producer,
+    title: 'Producer',
   },
 };
 

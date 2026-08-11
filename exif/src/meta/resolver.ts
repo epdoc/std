@@ -50,7 +50,7 @@ type ResolverCache = {
   height?: Integer;
   width?: Integer;
   codec?: string;
-  originator?: string;
+  producer?: string;
 };
 
 /**
@@ -317,7 +317,7 @@ export class Resolver {
   }
 
   /**
-   * Detect the originator of the file from metadata clues.
+   * Detect the producer of the file from metadata clues.
    *
    * Detection priority:
    * 1. `Comment` matching TikTok's `vid:v...` content-ID pattern → `'tiktok'`
@@ -327,23 +327,27 @@ export class Resolver {
    * 4. `Make`, `Model`, `ComAndroidManufacturer`, or `ComAndroidModel` present → `'camera'`
    * 5. Otherwise → `undefined`
    */
-  get originator(): string | undefined {
-    if (!_.isDefined(this.#cache.originator)) {
+  get producer(): string | undefined {
+    if (!_.isDefined(this.#cache.producer)) {
       const m = this.meta;
-      if (m.Comment && /^vid:v\d+/i.test(m.Comment)) {
-        this.#cache.originator = 'TikTok';
-      } else if (m.Aigc_info !== undefined) {
-        this.#cache.originator = 'TikTok';
-      } else if (isWhatsAppFilename(m.FileName)) {
-        this.#cache.originator = 'WhatsApp';
-      } else if (m.Make || m.Model || m.ComAndroidManufacturer || m.ComAndroidModel) {
-        const cameraName = Normalize.cameraName(m);
-        this.#cache.originator = cameraName ?? 'camera';
-      } else {
-        this.#cache.originator = undefined;
+      if (m.MIMEType === 'application/pdf') {
+        if (m.Producer) this.#cache.producer = m.Producer;
+      } else if (this.type === 'image' || this.type === 'video' || this.type === 'audio') {
+        if (m.Comment && /^vid:v\d+/i.test(m.Comment)) {
+          this.#cache.producer = 'TikTok';
+        } else if (m.Aigc_info !== undefined) {
+          this.#cache.producer = 'TikTok';
+        } else if (isWhatsAppFilename(m.FileName)) {
+          this.#cache.producer = 'WhatsApp';
+        } else if (m.Make || m.Model || m.ComAndroidManufacturer || m.ComAndroidModel) {
+          const cameraName = Normalize.cameraName(m);
+          this.#cache.producer = cameraName ?? 'camera';
+        } else {
+          this.#cache.producer = undefined;
+        }
       }
     }
-    return this.#cache.originator;
+    return this.#cache.producer;
   }
 
   // ==========================================================================
@@ -408,7 +412,7 @@ export class Resolver {
    *                     reliable fallback is available.
    */
   repairDates(fallbackDate: DateTime | undefined): PendingMetaMod {
-    const source = this.originator;
+    const source = this.producer;
     if (source !== 'TikTok' && source !== 'WhatsApp') return {};
     if (!fallbackDate) return {};
 

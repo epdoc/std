@@ -1457,60 +1457,6 @@
           ]
         },
         {
-          "name": "FileSource",
-          "declarations": [
-            {
-              "location": {
-                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/meta/types.ts",
-                "line": 22,
-                "col": 0,
-                "byteIndex": 690
-              },
-              "declarationKind": "export",
-              "jsDoc": {
-                "doc": "The detected originator of a media file.\n\n- `'camera'` — captured by a physical camera (Make/Model tags present; see\n  the `camera` section of `info()` for device details).\n- `'tiktok'` — downloaded from TikTok (metadata was stripped/replaced).\n- `'whatsapp'` — shared via WhatsApp (metadata was stripped).\n- `undefined` — origin could not be determined."
-              },
-              "kind": "typeAlias",
-              "def": {
-                "tsType": {
-                  "kind": "union",
-                  "value": [
-                    {
-                      "repr": "camera",
-                      "kind": "literal",
-                      "value": {
-                        "kind": "string",
-                        "string": "camera"
-                      }
-                    },
-                    {
-                      "repr": "tiktok",
-                      "kind": "literal",
-                      "value": {
-                        "kind": "string",
-                        "string": "tiktok"
-                      }
-                    },
-                    {
-                      "repr": "whatsapp",
-                      "kind": "literal",
-                      "value": {
-                        "kind": "string",
-                        "string": "whatsapp"
-                      }
-                    },
-                    {
-                      "repr": "undefined",
-                      "kind": "keyword",
-                      "value": "undefined"
-                    }
-                  ]
-                }
-              }
-            }
-          ]
-        },
-        {
           "name": "readFiles",
           "declarations": [
             {
@@ -13287,7 +13233,7 @@
                               }
                             },
                             {
-                              "name": "originator",
+                              "name": "producer",
                               "jsDoc": {
                                 "doc": "The original source/origin of the file content: 'camera', 'tiktok', 'whatsapp', or undefined."
                               },
@@ -13328,7 +13274,7 @@
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                           "line": 288,
                           "col": 13,
-                          "byteIndex": 12091
+                          "byteIndex": 12089
                         },
                         "declarationKind": "export",
                         "kind": "variable",
@@ -13356,7 +13302,7 @@
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                           "line": 300,
                           "col": 0,
-                          "byteIndex": 12422
+                          "byteIndex": 12414
                         },
                         "declarationKind": "export",
                         "kind": "typeAlias",
@@ -13390,7 +13336,7 @@
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                           "line": 309,
                           "col": 0,
-                          "byteIndex": 12786
+                          "byteIndex": 12778
                         },
                         "declarationKind": "export",
                         "jsDoc": {
@@ -13417,7 +13363,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                                 "line": 310,
                                 "col": 2,
-                                "byteIndex": 12834
+                                "byteIndex": 12826
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13443,7 +13389,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                                 "line": 311,
                                 "col": 2,
-                                "byteIndex": 12860
+                                "byteIndex": 12852
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13469,7 +13415,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                                 "line": 312,
                                 "col": 2,
-                                "byteIndex": 12887
+                                "byteIndex": 12879
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13495,7 +13441,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                                 "line": 313,
                                 "col": 2,
-                                "byteIndex": 12915
+                                "byteIndex": 12907
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13534,7 +13480,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                                 "line": 314,
                                 "col": 2,
-                                "byteIndex": 12955
+                                "byteIndex": 12947
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13567,7 +13513,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                                 "line": 315,
                                 "col": 2,
-                                "byteIndex": 12987
+                                "byteIndex": 12979
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13600,7 +13546,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                                 "line": 316,
                                 "col": 2,
-                                "byteIndex": 13020
+                                "byteIndex": 13012
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13626,7 +13572,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                                 "line": 317,
                                 "col": 2,
-                                "byteIndex": 13050
+                                "byteIndex": 13042
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13652,7 +13598,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                                 "line": 318,
                                 "col": 2,
-                                "byteIndex": 13079
+                                "byteIndex": 13071
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13678,7 +13624,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                                 "line": 319,
                                 "col": 2,
-                                "byteIndex": 13111
+                                "byteIndex": 13103
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13704,7 +13650,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                                 "line": 320,
                                 "col": 2,
-                                "byteIndex": 13139
+                                "byteIndex": 13131
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13730,7 +13676,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                                 "line": 321,
                                 "col": 2,
-                                "byteIndex": 13170
+                                "byteIndex": 13162
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13763,7 +13709,7 @@
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                           "line": 324,
                           "col": 13,
-                          "byteIndex": 13215
+                          "byteIndex": 13207
                         },
                         "declarationKind": "export",
                         "kind": "variable",
@@ -13791,7 +13737,7 @@
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                           "line": 339,
                           "col": 0,
-                          "byteIndex": 13823
+                          "byteIndex": 13815
                         },
                         "declarationKind": "export",
                         "kind": "typeAlias",
@@ -13825,7 +13771,7 @@
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                           "line": 348,
                           "col": 0,
-                          "byteIndex": 14187
+                          "byteIndex": 14179
                         },
                         "declarationKind": "export",
                         "jsDoc": {
@@ -13852,7 +13798,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                                 "line": 349,
                                 "col": 2,
-                                "byteIndex": 14235
+                                "byteIndex": 14227
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13878,7 +13824,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                                 "line": 350,
                                 "col": 2,
-                                "byteIndex": 14261
+                                "byteIndex": 14253
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13904,7 +13850,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                                 "line": 351,
                                 "col": 2,
-                                "byteIndex": 14288
+                                "byteIndex": 14280
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13930,7 +13876,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                                 "line": 352,
                                 "col": 2,
-                                "byteIndex": 14316
+                                "byteIndex": 14308
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13969,7 +13915,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                                 "line": 353,
                                 "col": 2,
-                                "byteIndex": 14356
+                                "byteIndex": 14348
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -14002,7 +13948,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                                 "line": 354,
                                 "col": 2,
-                                "byteIndex": 14391
+                                "byteIndex": 14383
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -14035,7 +13981,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                                 "line": 355,
                                 "col": 2,
-                                "byteIndex": 14425
+                                "byteIndex": 14417
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -14068,7 +14014,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                                 "line": 356,
                                 "col": 2,
-                                "byteIndex": 14458
+                                "byteIndex": 14450
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -14094,7 +14040,7 @@
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                                 "line": 357,
                                 "col": 2,
-                                "byteIndex": 14488
+                                "byteIndex": 14480
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -14127,7 +14073,7 @@
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                           "line": 360,
                           "col": 13,
-                          "byteIndex": 14531
+                          "byteIndex": 14523
                         },
                         "declarationKind": "export",
                         "kind": "variable",
@@ -14155,7 +14101,7 @@
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                           "line": 372,
                           "col": 0,
-                          "byteIndex": 14996
+                          "byteIndex": 14988
                         },
                         "declarationKind": "export",
                         "kind": "typeAlias",
@@ -14189,7 +14135,7 @@
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                           "line": 374,
                           "col": 0,
-                          "byteIndex": 15042
+                          "byteIndex": 15034
                         },
                         "declarationKind": "export",
                         "kind": "typeAlias",
@@ -14204,7 +14150,7 @@
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                                     "line": 375,
                                     "col": 2,
-                                    "byteIndex": 15067
+                                    "byteIndex": 15059
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -14219,7 +14165,7 @@
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
                                     "line": 376,
                                     "col": 2,
-                                    "byteIndex": 15090
+                                    "byteIndex": 15082
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -14867,32 +14813,6 @@
                               }
                             }
                           ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "name": "FileSource",
-                    "declarations": [
-                      {
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/mod.ts",
-                          "line": 6,
-                          "col": 7,
-                          "byteIndex": 265
-                        },
-                        "declarationKind": "export",
-                        "jsDoc": {
-                          "doc": "The detected originator of a media file.\n\n- `'camera'` — captured by a physical camera (Make/Model tags present; see\n  the `camera` section of `info()` for device details).\n- `'tiktok'` — downloaded from TikTok (metadata was stripped/replaced).\n- `'whatsapp'` — shared via WhatsApp (metadata was stripped).\n- `undefined` — origin could not be determined."
-                        },
-                        "kind": "reference",
-                        "def": {
-                          "target": {
-                            "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/meta/types.ts",
-                            "line": 22,
-                            "col": 0,
-                            "byteIndex": 690
-                          }
                         }
                       }
                     ]
