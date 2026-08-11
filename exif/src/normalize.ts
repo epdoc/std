@@ -39,6 +39,18 @@ export function editor(software: string | undefined): string | undefined {
   return software;
 }
 
+export function isSaveForWeb(meta: Metadata): boolean {
+  // Adobe APP14 segment present during JPEG web export
+  const hasAdobeJpegEncoding = meta.DCTEncodeVersion !== undefined || meta.APP14Flags0 !== undefined;
+
+  // Check CreatorTool or Software strings
+  const creator = meta.CreatorTool ?? meta.Software;
+  const hasAdobeCreator = typeof creator === 'string' && /adobe|photoshop|save for web/i.test(creator);
+
+  // Match if APP14 JPEG encoding markers exist OR Adobe creator is paired with XMP derivative metadata
+  return hasAdobeJpegEncoding || (hasAdobeCreator && meta.DerivedFrom !== undefined);
+}
+
 export function videoCodec(meta: Metadata): string | undefined {
   const raw = meta.VideoCodecID ??
     meta.CompressorName ??

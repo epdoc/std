@@ -342,6 +342,8 @@ export class Resolver {
         } else if (m.Make || m.Model || m.ComAndroidManufacturer || m.ComAndroidModel) {
           const cameraName = Normalize.cameraName(m);
           this.#cache.producer = cameraName ?? 'camera';
+        } else if (Normalize.isSaveForWeb(m)) {
+          this.#cache.producer = 'Save for Web';
         } else {
           this.#cache.producer = undefined;
         }
