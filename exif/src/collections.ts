@@ -31,7 +31,7 @@ export interface InfoDef<T = unknown, F = T> {
 export type InfoSection = Record<string, InfoDef>;
 
 /** Extract the value type from an InfoDef. */
-type DefValue<D> = D extends InfoDef<infer T> ? T : never;
+type DefValue<D> = D extends InfoDef<infer T, unknown> ? T : never;
 
 /** The result object type for a section: all keys optional (undefined dropped). */
 export type InfoResult<S extends InfoSection> = { [K in keyof S]?: DefValue<S[K]> };
