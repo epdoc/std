@@ -169,15 +169,15 @@ Deno.test('Resolver.codec for audio', async (t) => {
 
 // --- source() ---
 
-Deno.test('Resolver.source', async (t) => {
+Deno.test('Resolver.originator', async (t) => {
   await t.step('detects camera from Make tag', () => {
     const meta = imageMeta({ Make: 'Google', Model: 'Pixel 7' });
-    assertEquals(Meta.Resolver.from(meta).source, 'camera');
+    assertEquals(Meta.Resolver.from(meta).originator, 'Google Pixel 7');
   });
 
   await t.step('detects camera from Model tag only', () => {
     const meta = imageMeta({ Model: 'D7100' });
-    assertEquals(Meta.Resolver.from(meta).source, 'camera');
+    assertEquals(Meta.Resolver.from(meta).originator, 'camera');
   });
 
   await t.step('detects camera from Android video Keys tags (no Make/Model)', () => {
@@ -185,17 +185,17 @@ Deno.test('Resolver.source', async (t) => {
       ComAndroidManufacturer: 'Google',
       ComAndroidModel: 'Pixel 7',
     });
-    assertEquals(Meta.Resolver.from(meta).source, 'camera');
+    assertEquals(Meta.Resolver.from(meta).originator, 'Google Pixel 7');
   });
 
   await t.step('detects tiktok from vid: comment', () => {
-    const meta = videoMeta({ Comment: 'vid:v15044gf0000d9n1eifog65t4dv1v2u0' });
-    assertEquals(Meta.Resolver.from(meta).source, 'tiktok');
+    const meta = videoMeta({ Comment: 'vid:v15044gf000originatorifog65t4dv1v2u0' });
+    assertEquals(Meta.Resolver.from(meta).originator, 'TikTok');
   });
 
   await t.step('detects tiktok from Aigc_info tag', () => {
     const meta = videoMeta({ Aigc_info: '{"aigc_label_type":0}' });
-    assertEquals(Meta.Resolver.from(meta).source, 'tiktok');
+    assertEquals(Meta.Resolver.from(meta).originator, 'TikTok');
   });
 
   await t.step('detects whatsapp from IMG filename pattern', () => {
@@ -203,7 +203,7 @@ Deno.test('Resolver.source', async (t) => {
       FileName: 'IMG-20260406-WA0005.jpg',
       SourceFile: sourceFile('/tmp/IMG-20260406-WA0005.jpg'),
     });
-    assertEquals(Meta.Resolver.from(meta).source, 'whatsapp');
+    assertEquals(Meta.Resolver.from(meta).originator, 'WhatsApp');
   });
 
   await t.step('detects whatsapp from VID filename pattern', () => {
@@ -211,19 +211,19 @@ Deno.test('Resolver.source', async (t) => {
       FileName: 'VID-20260519-WA0014.mp4',
       SourceFile: sourceFile('/tmp/VID-20260519-WA0014.mp4'),
     });
-    assertEquals(Meta.Resolver.from(meta).source, 'whatsapp');
+    assertEquals(Meta.Resolver.from(meta).originator, 'WhatsApp');
   });
 
-  await t.step('detects whatsapp from macOS desktop filename pattern', () => {
+  await t.step('detects whatsapp from desktop filename pattern', () => {
     const meta = imageMeta({
       FileName: 'WhatsApp Image 2026-06-29 at 17.20.56.jpeg',
       SourceFile: sourceFile('/tmp/WhatsApp Image 2026-06-29 at 17.20.56.jpeg'),
     });
-    assertEquals(Meta.Resolver.from(meta).source, 'whatsapp');
+    assertEquals(Meta.Resolver.from(meta).originator, 'WhatsApp');
   });
 
   await t.step('returns undefined when no source clues exist', () => {
-    assertEquals(Meta.Resolver.from(videoMeta()).source, undefined);
+    assertEquals(Meta.Resolver.from(videoMeta()).originator, undefined);
   });
 });
 

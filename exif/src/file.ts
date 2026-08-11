@@ -501,11 +501,11 @@ export class File {
     const changes: PendingMetaMod = resolver.repairDates(fsDate);
     if (!Object.keys(changes).length) return [];
 
-    const source = resolver.source;
-    if (source === 'whatsapp' && this.#metadata?.Software !== 'WhatsApp') {
+    const source = resolver.originator;
+    if (source === 'WhatsApp' && this.#metadata?.Software !== 'WhatsApp') {
       changes['Software'] = 'WhatsApp';
     } else if (
-      source === 'tiktok' && this.#metadata?.Software !== 'TikTok'
+      source === 'TikTok' && this.#metadata?.Software !== 'TikTok'
     ) {
       changes['Software'] = 'TikTok';
     }

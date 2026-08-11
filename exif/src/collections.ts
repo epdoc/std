@@ -289,11 +289,11 @@ export interface AppDef extends InfoSection {
 export const appDef: AppDef = {
   editor: {
     value: (_fs: FS.File, m: Metadata): string | undefined =>
-      Normalize.application(m.Software || m.CreatorTool || m.Encoder),
+      Normalize.editor(m.Software || m.CreatorTool || m.Encoder),
     title: 'Editor',
   },
   originator: {
-    value: (_fs: FS.File, m: Metadata): string | undefined => Meta.Resolver.from(m).source,
+    value: (_fs: FS.File, m: Metadata): string | undefined => Meta.Resolver.from(m).originator,
     title: 'Originator',
   },
 };

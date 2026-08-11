@@ -1,5 +1,5 @@
-import { _ } from '@epdoc/type';
 import type { Integer } from '@epdoc/type';
+import { _ } from '@epdoc/type';
 import { APP_NORMALIZE_RULES, CAMERA_MODEL_MAP } from './consts.ts';
 import type { Metadata } from './meta-types.ts';
 
@@ -17,7 +17,7 @@ export function cameraName(meta: Metadata): string | undefined {
   }
 }
 
-export function application(software: string | undefined): string | undefined {
+export function editor(software: string | undefined): string | undefined {
   if (!software) return undefined;
   for (const rule of APP_NORMALIZE_RULES) {
     if (rule.pattern.test(software)) {

@@ -5,7 +5,7 @@ import type { Metadata } from '../meta-types.ts';
 import * as Normalize from '../normalize.ts';
 import type { MetadataKey, PendingMetaMod, Seconds } from '../types.ts';
 import * as Parse from './parse.ts';
-import type { FileSource, Parts } from './types.ts';
+import type { Parts } from './types.ts';
 
 function fromParts(parts: Parts): DateTime {
   const dt = DateTime.fromComponents(
@@ -50,7 +50,7 @@ type ResolverCache = {
   height?: Integer;
   width?: Integer;
   codec?: string;
-  source?: FileSource;
+  originator?: string;
 };
 
 /**
@@ -327,22 +327,23 @@ export class Resolver {
    * 4. `Make`, `Model`, `ComAndroidManufacturer`, or `ComAndroidModel` present → `'camera'`
    * 5. Otherwise → `undefined`
    */
-  get source(): FileSource | undefined {
-    if (!_.isDefined(this.#cache.source)) {
+  get originator(): string | undefined {
+    if (!_.isDefined(this.#cache.originator)) {
       const m = this.meta;
       if (m.Comment && /^vid:v\d+/i.test(m.Comment)) {
-        this.#cache.source = 'tiktok';
+        this.#cache.originator = 'TikTok';
       } else if (m.Aigc_info !== undefined) {
-        this.#cache.source = 'tiktok';
+        this.#cache.originator = 'TikTok';
       } else if (isWhatsAppFilename(m.FileName)) {
-        this.#cache.source = 'whatsapp';
+        this.#cache.originator = 'WhatsApp';
       } else if (m.Make || m.Model || m.ComAndroidManufacturer || m.ComAndroidModel) {
-        this.#cache.source = 'camera';
+        const cameraName = Normalize.cameraName(m);
+        this.#cache.originator = cameraName ?? 'camera';
       } else {
-        this.#cache.source = undefined;
+        this.#cache.originator = undefined;
       }
     }
-    return this.#cache.source;
+    return this.#cache.originator;
   }
 
   // ==========================================================================
@@ -407,11 +408,11 @@ export class Resolver {
    *                     reliable fallback is available.
    */
   repairDates(fallbackDate: DateTime | undefined): PendingMetaMod {
-    const source = this.source;
-    if (source !== 'tiktok' && source !== 'whatsapp') return {};
+    const source = this.originator;
+    if (source !== 'TikTok' && source !== 'WhatsApp') return {};
     if (!fallbackDate) return {};
 
-    if (source === 'whatsapp') {
+    if (source === 'WhatsApp') {
       if (this.originatedAt || this.digitizedAt || this.modifiedAt) return {};
       const originalDate = dateFromFilename(this.meta.FileName)?.withTz('local') ?? fallbackDate;
       return {
