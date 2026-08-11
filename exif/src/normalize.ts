@@ -12,9 +12,21 @@ export const CODEC_AUDIO_UNKNOWN = 'Unknown Audio Codec';
 export function cameraName(meta: Metadata): string | undefined {
   const make = meta.Make ?? meta.ComAndroidManufacturer;
   const model = (meta.Model ?? meta.ComAndroidModel)?.toUpperCase();
-  if (make && model && CAMERA_MODEL_MAP[make]?.[model]) {
-    return `${make} ${CAMERA_MODEL_MAP[make][model]}`;
+  const result = [];
+  if (make) {
+    result.push(make);
+    if (model) {
+      if (CAMERA_MODEL_MAP[make]?.[model]) {
+        result.push(CAMERA_MODEL_MAP[make][model]);
+      } else {
+        result.push(model);
+      }
+    }
+  } else if (model) {
+    result.push(model);
   }
+
+  return result.length ? result.join(' ') : undefined;
 }
 
 export function editor(software: string | undefined): string | undefined {

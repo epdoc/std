@@ -177,7 +177,7 @@ Deno.test('Resolver.originator', async (t) => {
 
   await t.step('detects camera from Model tag only', () => {
     const meta = imageMeta({ Model: 'D7100' });
-    assertEquals(Meta.Resolver.from(meta).producer, 'camera');
+    assertEquals(Meta.Resolver.from(meta).producer, 'D7100');
   });
 
   await t.step('detects camera from Android video Keys tags (no Make/Model)', () => {
