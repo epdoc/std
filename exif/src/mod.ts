@@ -1,4 +1,5 @@
 export type * as Def from './collections.ts';
+export { REPAIRABLE } from './consts.ts';
 export { File } from './file.ts';
 export { dateFromFilename, isWhatsAppFilename } from './filename.ts';
 export * as Geo from './geo/mod.ts';

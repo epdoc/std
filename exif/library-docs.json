@@ -4,6 +4,32 @@
     "file:///Users/jpravetz/dev/@epdoc/std/exif/src/mod.ts": {
       "symbols": [
         {
+          "name": "REPAIRABLE",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/consts.ts",
+                "line": 80,
+                "col": 13,
+                "byteIndex": 2279
+              },
+              "declarationKind": "export",
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "kind": "array",
+                  "value": {
+                    "repr": "string",
+                    "kind": "keyword",
+                    "value": "string"
+                  }
+                },
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
           "name": "File",
           "declarations": [
             {
@@ -14255,9 +14281,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/mod.ts",
-                "line": 3,
+                "line": 4,
                 "col": 7,
-                "byteIndex": 157
+                "byteIndex": 199
               },
               "declarationKind": "export",
               "kind": "namespace",
@@ -14273,9 +14299,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/mod.ts",
-                "line": 4,
+                "line": 5,
                 "col": 7,
-                "byteIndex": 194
+                "byteIndex": 236
               },
               "declarationKind": "export",
               "kind": "namespace",
@@ -14733,9 +14759,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/mod.ts",
-                "line": 6,
+                "line": 7,
                 "col": 7,
-                "byteIndex": 265
+                "byteIndex": 307
               },
               "declarationKind": "export",
               "kind": "namespace",
