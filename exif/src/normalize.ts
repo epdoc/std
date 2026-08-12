@@ -1,43 +1,54 @@
 import type { Integer } from '@epdoc/type';
 import { _ } from '@epdoc/type';
-import { APP_NORMALIZE_RULES, CAMERA_MODEL_MAP } from './consts.ts';
+import { APP_NORMALIZE_RULES, CAMERA_MAP } from './consts.ts';
 import type { Metadata } from './meta-types.ts';
 
 export const CODEC_AUDIO_UNKNOWN = 'Unknown Audio Codec';
-
-/** Normalize verbose manufacturer strings to their common brand name. */
-const CAMERA_MAKE_MAP: Record<string, string> = {
-  'NIKON CORPORATION': 'Nikon',
-};
 
 // ============================================================================
 // Normalization helpers (moved from file.ts so defs can use them)
 // ============================================================================
 
 export function cameraName(meta: Metadata): string | undefined {
-  let make = meta.Make ?? meta.ComAndroidManufacturer;
-  let model = (meta.Model ?? meta.ComAndroidModel)?.toUpperCase();
-  if (make) {
-    make = CAMERA_MAKE_MAP[make] ?? make;
-    if (model) {
-      // Drop a leading brand name from the model to avoid duplication
-      // (e.g. Make "NIKON CORPORATION" + Model "NIKON D7100" → "Nikon D7100").
-      const makeUpper = make.toUpperCase();
-      if (model.length > makeUpper.length && model.startsWith(makeUpper)) {
-        model = model.slice(makeUpper.length).trimStart();
-      }
-      if (CAMERA_MODEL_MAP[make]?.[model]) {
-        return `${make} ${CAMERA_MODEL_MAP[make][model]}`;
-      }
-      return model ? `${make} ${model}` : make;
+  const rawMake = (meta.Make ?? meta.ComAndroidManufacturer)?.trim();
+  const rawModel = (meta.Model ?? meta.ComAndroidModel)?.trim();
+
+  if (!rawMake && !rawModel) return undefined;
+
+  // 1. Find matching config via regex test or direct key lookup
+  const matchedConfig = rawMake
+    ? Object.values(CAMERA_MAP).find((config) => config.test?.test(rawMake)) ??
+      CAMERA_MAP[rawMake.toLowerCase()]
+    : undefined;
+
+  // 2. Resolve clean Make Name
+  const makeName = matchedConfig?.name ?? rawMake;
+
+  // 3. Resolve clean Model Name: exact models lookup first, then the config's
+  //    model fn (e.g. strip the make from "NIKON D7100"), then the raw model
+  const modelKey = rawModel?.toUpperCase();
+  const modelName = (matchedConfig?.models && modelKey ? matchedConfig.models[modelKey] : undefined) ??
+    matchedConfig?.model?.(meta) ??
+    rawModel;
+
+  // 4. Combine Make & Model
+  if (makeName && modelName) {
+    if (modelName.toLowerCase().startsWith(makeName.toLowerCase())) {
+      return modelName;
     }
-    return make;
+    return `${makeName} ${modelName}`;
   }
-  return model;
+
+  return makeName ?? modelName;
 }
 
-export function editor(software: string | undefined): string | undefined {
-  if (!software) return undefined;
+export function editor(m: Metadata): string | undefined {
+  const s = m.Software ?? m.CreatorTool ?? m.Encoder ?? undefined;
+  if (!s) return undefined;
+  const software = s?.trim();
+  if (m.Make === 'samsung' && /^[A-Z0-9]{12,15}$/.test(software)) {
+    return undefined;
+  }
   for (const rule of APP_NORMALIZE_RULES) {
     if (rule.pattern.test(software)) {
       return rule.label;

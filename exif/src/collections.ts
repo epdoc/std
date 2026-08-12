@@ -288,8 +288,7 @@ export interface AppDef extends InfoSection {
 
 export const appDef: AppDef = {
   editor: {
-    value: (_fs: FS.File, m: Metadata): string | undefined =>
-      Normalize.editor(m.Software || m.CreatorTool || m.Encoder),
+    value: (_fs: FS.File, m: Metadata): string | undefined => Normalize.editor(m),
     title: 'Editor',
   },
   producer: {
