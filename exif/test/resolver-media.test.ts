@@ -193,6 +193,27 @@ Deno.test('Resolver.originator', async (t) => {
     assertEquals(Meta.Resolver.from(meta).producer, 'Nikon D7100');
   });
 
+  await t.step('detects Apple iPhone from Display P3 profile + 12MP resolution', () => {
+    const meta = imageMeta({
+      ProfileDescription: 'Display P3',
+      ProfileCMMType: 'Apple Computer Inc.',
+      DeviceManufacturer: 'Apple Computer Inc.',
+      ImageWidth: 3024,
+      ImageHeight: 4032,
+    });
+    assertEquals(Meta.Resolver.from(meta).producer, 'Apple iPhone');
+  });
+
+  await t.step('does not detect Apple iPhone without the 12MP resolution', () => {
+    const meta = imageMeta({
+      ProfileDescription: 'Display P3',
+      ProfileCMMType: 'Apple Computer Inc.',
+      ImageWidth: 1920,
+      ImageHeight: 1080,
+    });
+    assertEquals(Meta.Resolver.from(meta).producer, undefined);
+  });
+
   await t.step('prefers camera over a Facebook marker', () => {
     const meta = imageMeta({
       Make: 'NIKON CORPORATION',

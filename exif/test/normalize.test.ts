@@ -59,3 +59,44 @@ Deno.test('Normalize.cameraName', async (t) => {
     );
   });
 });
+
+Deno.test('Normalize.isAppleIphone', async (t) => {
+  const iphone = {
+    ProfileDescription: 'Display P3',
+    ProfileCMMType: 'Apple Computer Inc.',
+    ImageWidth: 3024,
+    ImageHeight: 4032,
+  };
+
+  await t.step('matches Display P3 + 12MP portrait resolution', () => {
+    assertEquals(Normalize.isAppleIphone(cameraMeta(iphone)), true);
+  });
+
+  await t.step('matches Display P3 + 12MP landscape resolution', () => {
+    assertEquals(
+      Normalize.isAppleIphone(cameraMeta({ ...iphone, ImageWidth: 4032, ImageHeight: 3024 })),
+      true,
+    );
+  });
+
+  await t.step('requires an Apple profile author', () => {
+    assertEquals(
+      Normalize.isAppleIphone(cameraMeta({ ...iphone, ProfileCMMType: 'Adobe Systems Inc.' })),
+      false,
+    );
+  });
+
+  await t.step('requires the Display P3 profile', () => {
+    assertEquals(
+      Normalize.isAppleIphone(cameraMeta({ ...iphone, ProfileDescription: 'Adobe RGB (1998)' })),
+      false,
+    );
+  });
+
+  await t.step('requires the 12MP resolution', () => {
+    assertEquals(
+      Normalize.isAppleIphone(cameraMeta({ ...iphone, ImageWidth: 1920, ImageHeight: 1080 })),
+      false,
+    );
+  });
+});

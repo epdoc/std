@@ -325,18 +325,20 @@ export class Resolver {
    * 2. Camera `Make`/`Model`/`ComAndroid*` — the original capture device.
    *    Always preferred when present; platform/app markers are only consulted
    *    because these re-encoders strip camera metadata.
-   * 3. `Comment` matching TikTok's `vid:v...` pattern, or `Aigc_info` present → `'TikTok'`.
-   * 4. Filename matching WhatsApp conventions (`IMG-/VID-...WA####`,
+   * 3. Apple Display P3 ICC profile + 12MP (4032x3024) resolution → `'Apple iPhone'`.
+   *    Detects iPhone captures whose `Make`/`Model` were stripped by re-encoding.
+   * 4. `Comment` matching TikTok's `vid:v...` pattern, or `Aigc_info` present → `'TikTok'`.
+   * 5. Filename matching WhatsApp conventions (`IMG-/VID-...WA####`,
    *    `WhatsApp <Type> ...`, or a `wapp` suffix) → `'WhatsApp'`.
-   * 5. Facebook markers (`SpecialInstructions` `FBMD` blob, `ProfileCopyright`
+   * 6. Facebook markers (`SpecialInstructions` `FBMD` blob, `ProfileCopyright`
    *    `"FB"`, `OriginalTransmissionReference`, `FB_IMG_`/`_n`/`_o` filenames) → `'Facebook'`.
-   * 6. Adobe JPEG APP14 markers / `CreatorTool` + `DerivedFrom` → `'Save for Web'`.
-   * 7. `Comment` reporting the PHP GD encoder → `'PHP GD'`.
-   * 8. `pagespeed_ic` filename → `'Google PageSpeed'`.
-   * 9. `PXL_` filename → `'Google Pixel'`.
-   * 10. `P########.jpg` filename → `'Panasonic Lumix'`.
-   * 11. `Image uploaded from iOS.jpg` filename → `'iOS'`.
-   * 12. Otherwise → `undefined`.
+   * 7. Adobe JPEG APP14 markers / `CreatorTool` + `DerivedFrom` → `'Save for Web'`.
+   * 8. `Comment` reporting the PHP GD encoder → `'PHP GD'`.
+   * 9. `pagespeed_ic` filename → `'Google PageSpeed'`.
+   * 10. `PXL_` filename → `'Google Pixel'`.
+   * 11. `P########.jpg` filename → `'Panasonic Lumix'`.
+   * 12. `Image uploaded from iOS.jpg` filename → `'iOS'`.
+   * 13. Otherwise → `undefined`.
    */
   get producer(): string | undefined {
     if (!_.isDefined(this.#cache.producer)) {
@@ -347,6 +349,8 @@ export class Resolver {
         if (m.Make || m.Model || m.ComAndroidManufacturer || m.ComAndroidModel) {
           const cameraName = Normalize.cameraName(m);
           this.#cache.producer = cameraName ?? 'camera';
+        } else if (Normalize.isAppleIphone(m)) {
+          this.#cache.producer = 'Apple iPhone';
         } else if (m.Comment && /^vid:v\d+/i.test(m.Comment)) {
           this.#cache.producer = 'TikTok';
         } else if (m.Aigc_info !== undefined) {

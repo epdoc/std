@@ -98,6 +98,23 @@ export function isGdJpeg(meta: Metadata): boolean {
   return _.isString(meta.Comment) && /CREATOR: gd-jpeg v1\.0/i.test(meta.Comment);
 }
 
+/**
+ * True when the metadata points to an Apple iPhone capture that has been
+ * re-encoded (stripping `Make`/`Model`), identified by Apple's standard
+ * Display P3 ICC profile combined with the 12MP (4032x3024) sensor resolution
+ * shared by iPhone 6s through iPhone 14.
+ */
+export function isAppleIphone(meta: Metadata): boolean {
+  if (meta.ProfileDescription !== 'Display P3') return false;
+  const isApple = meta.ProfileCMMType === 'Apple Computer Inc.' ||
+    meta.DeviceManufacturer === 'Apple Computer Inc.' ||
+    meta.ProfileCreator === 'Apple Computer Inc.';
+  if (!isApple) return false;
+  const w = meta.ImageWidth;
+  const h = meta.ImageHeight;
+  return (w === 4032 && h === 3024) || (w === 3024 && h === 4032);
+}
+
 export function videoCodec(meta: Metadata): string | undefined {
   const raw = meta.VideoCodecID ??
     meta.CompressorName ??
