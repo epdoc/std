@@ -77,3 +77,5 @@ export const CODEC_MAP: Record<string, string> = {
   'Progressive DCT, Huffman coding': 'pJPEG',
   'Baseline DCT, Huffman coding': 'JPEG',
 };
+
+export const REPAIRABLE: string[] = ['WhatsApp', 'TikTok'];

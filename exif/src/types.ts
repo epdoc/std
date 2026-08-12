@@ -29,6 +29,8 @@ export type FileGetMetadataOptions = IDigest & {
  * Options to File.info() method.
  */
 export type FileInfoOptions = {
+  /** Include all the resolved info objects */
+  resolved?: boolean;
   /** Include a top-level metadata object with the raw exiftool metadata */
   metadata?: boolean;
   /** Compute and include a digest in the top-level file object. */
@@ -39,10 +41,15 @@ export type FileInfoOptions = {
  * Represents one key/value change to the Metadata
  */
 export type MetaModHistory = MetaMod & {
+  /** The previous value of the field */
   previousValue: MetadataValue;
+  /** Did we make the change to the metadata? */
+  // modified: boolean;
 };
 export type MetaMod = {
+  /** The EXIF field name */
   tag: WriteTag;
+  /** The new value of the field */
   value: MetadataValue;
 };
 export type PendingMetaMod = Partial<Record<WriteTag, MetadataValue>>;

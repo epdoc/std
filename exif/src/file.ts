@@ -3,7 +3,8 @@ import * as FS from '@epdoc/fs/fs';
 import { _ } from '@epdoc/type';
 import { assert } from '@std/assert';
 import * as Schema from './collections.ts';
-import { collect, fileDef as FileDef } from './collections.ts';
+import { collect } from './collections.ts';
+import { REPAIRABLE } from './consts.ts';
 import * as Gps from './gps.ts';
 import type { Metadata } from './meta-types.ts';
 import * as Meta from './meta/mod.ts';
@@ -54,6 +55,7 @@ export class File {
   #dryRun: boolean;
   #dirty = false;
   #pending = new Map<WriteTag, MetadataValue>();
+  #same = new Map<WriteTag, MetadataValue>();
 
   constructor(file: FS.FilePath | FS.File, opts?: IDryRun) {
     this.#fsFile = _.isString(file) ? new FS.File(file) : file;
@@ -167,9 +169,7 @@ export class File {
       'Metadata must be retrieved before calling this method',
     );
     if (this.#info) return this.#info;
-    const result: FileInfo = {
-      file: collect(FileDef, this.#fsFile, this.metadata),
-    };
+    const result: FileInfo = { file: this.file };
     if (this.#cache.digest) {
       result.file.digest = this.#cache.digest;
     }
@@ -212,6 +212,7 @@ export class File {
       }
     }
     if (this.gps && Object.keys(this.gps)) result.gps = this.gps;
+
     if (opts.metadata) result.metadata = this.metadata;
 
     this.#info = result;
@@ -468,6 +469,7 @@ export class File {
     }
 
     this.#pending.clear();
+    this.#same.clear();
     this.#dirty = false;
     this.#metadata = undefined;
     return diffs;
@@ -502,12 +504,12 @@ export class File {
     if (!Object.keys(changes).length) return [];
 
     const producer = resolver.producer;
-    if (producer === 'WhatsApp' && this.#metadata?.Software !== 'WhatsApp') {
-      changes['Software'] = 'WhatsApp';
-    } else if (
-      producer === 'TikTok' && this.#metadata?.Software !== 'TikTok'
-    ) {
-      changes['Software'] = 'TikTok';
+    if (producer && REPAIRABLE.includes(producer)) {
+      if (this.#metadata?.Software === producer) {
+        this.#same.set('Software', producer);
+      } else {
+        changes['Software'] = producer;
+      }
     }
 
     this.applyTags(changes);

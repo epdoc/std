@@ -1,6 +1,6 @@
 import { DateTime, type ISOTZ } from '@epdoc/datetime';
 import { _, type Integer } from '@epdoc/type';
-import { CODEC_MAP } from '../consts.ts';
+import { CODEC_MAP, REPAIRABLE } from '../consts.ts';
 import { dateFromFilename, isWhatsAppFilename } from '../filename.ts';
 import type { Metadata } from '../meta-types.ts';
 import * as Normalize from '../normalize.ts';
@@ -444,11 +444,11 @@ export class Resolver {
    *                     reliable fallback is available.
    */
   repairDates(fallbackDate: DateTime | undefined): PendingMetaMod {
-    const source = this.producer;
-    if (source !== 'TikTok' && source !== 'WhatsApp') return {};
+    const producer = this.producer;
+    if (!producer || !REPAIRABLE.includes(producer)) return {};
     if (!fallbackDate) return {};
 
-    if (source === 'WhatsApp') {
+    if (producer === 'WhatsApp') {
       if (this.originatedAt || this.digitizedAt || this.modifiedAt) return {};
       const originalDate = dateFromFilename(this.meta.FileName)?.withTz('local') ?? fallbackDate;
       return {
