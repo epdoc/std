@@ -1,5 +1,6 @@
 import { DateTime, type ISOTZ } from '@epdoc/datetime';
 import { _, type Integer } from '@epdoc/type';
+import { CODEC_MAP } from '../consts.ts';
 import { dateFromFilename, isWhatsAppFilename } from '../filename.ts';
 import type { Metadata } from '../meta-types.ts';
 import * as Normalize from '../normalize.ts';
@@ -304,7 +305,9 @@ export class Resolver {
       const m = this.meta;
       const codec: string[] = [];
       if (this.type === 'image') {
-        if (m.EncodingProcess) codec.push(m.EncodingProcess);
+        if (m.EncodingProcess) {
+          codec.push(CODEC_MAP[m.EncodingProcess] ?? m.EncodingProcess);
+        }
       } else if (this.type === 'video' || this.type === 'audio') {
         const videoCodec = Normalize.videoCodec(m);
         const audioCodec = Normalize.audioCodec(m);

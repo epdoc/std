@@ -3,7 +3,7 @@ import { _ } from '@epdoc/type';
 import { APP_NORMALIZE_RULES, CAMERA_MAP } from './consts.ts';
 import type { Metadata } from './meta-types.ts';
 
-export const CODEC_AUDIO_UNKNOWN = 'Unknown Audio Codec';
+export const CODEC_AUDIO_UNKNOWN = '--';
 
 // ============================================================================
 // Normalization helpers (moved from file.ts so defs can use them)
@@ -125,8 +125,8 @@ export function videoCodec(meta: Metadata): string | undefined {
   if (!raw) return 'Unknown Video Codec';
 
   // Matroska / ISO Identifiers & Common Strings
-  if (/HEVC|H265|V_MPEGH\/ISO\/HEVC/i.test(raw)) return 'H.265 / HEVC';
-  if (/AVC|H264|V_MPEG4\/ISO\/AVC|avc1/i.test(raw)) return 'H.264 / AVC';
+  if (/HEVC|H265|V_MPEGH\/ISO\/HEVC/i.test(raw)) return 'H.265/HEVC';
+  if (/AVC|H264|V_MPEG4\/ISO\/AVC|avc1/i.test(raw)) return 'H.264/AVC';
   if (/VP9|V_VP9/i.test(raw)) return 'VP9';
   if (/VP8|V_VP8/i.test(raw)) return 'VP8';
   if (/AV1|V_AV1|av01/i.test(raw)) return 'AV1';

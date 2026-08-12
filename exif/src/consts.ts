@@ -72,3 +72,8 @@ export const CAMERA_MAP: Record<string, MakeConfig> = {
     },
   },
 };
+
+export const CODEC_MAP: Record<string, string> = {
+  'Progressive DCT, Huffman coding': 'Progressive JPEG',
+  'Baseline DCT, Huffman coding': 'JPEG',
+};

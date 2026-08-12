@@ -147,7 +147,7 @@ Deno.test('Resolver.duration', async (t) => {
 Deno.test('Resolver.codec for images', async (t) => {
   await t.step('returns the encoding process for JPEG images', () => {
     const meta = imageMeta({ EncodingProcess: 'Baseline DCT, Huffman coding' });
-    assertEquals(Meta.Resolver.from(meta).codec, 'Baseline DCT, Huffman coding');
+    assertEquals(Meta.Resolver.from(meta).codec, 'JPEG');
   });
 
   await t.step('returns undefined when no encoding process is set', () => {
