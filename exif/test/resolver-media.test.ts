@@ -188,6 +188,80 @@ Deno.test('Resolver.originator', async (t) => {
     assertEquals(Meta.Resolver.from(meta).producer, 'Google Pixel 7');
   });
 
+  await t.step('maps NIKON CORPORATION make to Nikon', () => {
+    const meta = imageMeta({ Make: 'NIKON CORPORATION', Model: 'NIKON D7100' });
+    assertEquals(Meta.Resolver.from(meta).producer, 'Nikon D7100');
+  });
+
+  await t.step('prefers camera over a Facebook marker', () => {
+    const meta = imageMeta({
+      Make: 'NIKON CORPORATION',
+      Model: 'NIKON D7100',
+      OriginalTransmissionReference: 'QeBpulsyRnJrj-v1m3WK',
+    });
+    assertEquals(Meta.Resolver.from(meta).producer, 'Nikon D7100');
+  });
+
+  await t.step('detects facebook from FBMD SpecialInstructions', () => {
+    const meta = imageMeta({ SpecialInstructions: 'FBMD01000a9c0d00003f890000e4390100233d0100' });
+    assertEquals(Meta.Resolver.from(meta).producer, 'Facebook');
+  });
+
+  await t.step('detects facebook from ProfileCopyright', () => {
+    const meta = imageMeta({ ProfileCopyright: 'FB' });
+    assertEquals(Meta.Resolver.from(meta).producer, 'Facebook');
+  });
+
+  await t.step('detects facebook from OriginalTransmissionReference', () => {
+    const meta = imageMeta({ OriginalTransmissionReference: 'QeBpulsyRnJrj-v1m3WK' });
+    assertEquals(Meta.Resolver.from(meta).producer, 'Facebook');
+  });
+
+  await t.step('detects facebook from FB_IMG filename', () => {
+    const meta = imageMeta({ FileName: 'FB_IMG_1575549196826.jpg' });
+    assertEquals(Meta.Resolver.from(meta).producer, 'Facebook');
+  });
+
+  await t.step('detects facebook from _n/_o filename suffix', () => {
+    const meta = imageMeta({ FileName: '103735258_4310676782279345_4348870386048608559_n.jpg' });
+    assertEquals(Meta.Resolver.from(meta).producer, 'Facebook');
+  });
+
+  await t.step('detects Save for Web from APP14 markers', () => {
+    const meta = imageMeta({ APP14Flags0: '(none)', DCTEncodeVersion: 100 });
+    assertEquals(Meta.Resolver.from(meta).producer, 'Save for Web');
+  });
+
+  await t.step('detects PHP GD from gd-jpeg comment', () => {
+    const meta = imageMeta({ Comment: 'CREATOR: gd-jpeg v1.0 (using IJG JPEG v62), quality = 75\n' });
+    assertEquals(Meta.Resolver.from(meta).producer, 'PHP GD');
+  });
+
+  await t.step('detects Google Pixel from PXL filename', () => {
+    const meta = imageMeta({ FileName: 'PXL_20221201_131723431.jpg' });
+    assertEquals(Meta.Resolver.from(meta).producer, 'Google Pixel');
+  });
+
+  await t.step('detects Google PageSpeed from pagespeed_ic filename', () => {
+    const meta = imageMeta({ FileName: 'xquirky-metal-tshirts_jpeg_pagespeed_ic_sK2sFuoUUZ.jpg' });
+    assertEquals(Meta.Resolver.from(meta).producer, 'Google PageSpeed');
+  });
+
+  await t.step('detects Panasonic Lumix from P###### filename', () => {
+    const meta = imageMeta({ FileName: 'P1040287.jpg' });
+    assertEquals(Meta.Resolver.from(meta).producer, 'Panasonic Lumix');
+  });
+
+  await t.step('detects iOS from "Image uploaded from iOS" filename', () => {
+    const meta = imageMeta({ FileName: 'Image uploaded from iOS.jpg' });
+    assertEquals(Meta.Resolver.from(meta).producer, 'iOS');
+  });
+
+  await t.step('detects whatsapp from a _wapp filename suffix', () => {
+    const meta = imageMeta({ FileName: '20201126_001000_wapp.jpg' });
+    assertEquals(Meta.Resolver.from(meta).producer, 'WhatsApp');
+  });
+
   await t.step('detects tiktok from vid: comment', () => {
     const meta = videoMeta({ Comment: 'vid:v15044gf000originatorifog65t4dv1v2u0' });
     assertEquals(Meta.Resolver.from(meta).producer, 'TikTok');

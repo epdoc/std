@@ -317,15 +317,26 @@ export class Resolver {
   }
 
   /**
-   * Detect the producer of the file from metadata clues.
+   * Detect the producer of the file — the app or device at the top of the
+   * chain that created the content, i.e. the "highest level" producer.
    *
    * Detection priority:
-   * 1. `Comment` matching TikTok's `vid:v...` content-ID pattern → `'tiktok'`
-   * 2. TikTok's `Aigc_info` tag present → `'tiktok'`
-   * 3. Filename matching WhatsApp's `IMG-/VID-YYYYMMDD-WA####` or
-   *    `WhatsApp <Type> YYYY-MM-DD at HH.MM.SS` convention → `'whatsapp'`
-   * 4. `Make`, `Model`, `ComAndroidManufacturer`, or `ComAndroidModel` present → `'camera'`
-   * 5. Otherwise → `undefined`
+   * 1. PDF `Producer` tag (for PDFs).
+   * 2. Camera `Make`/`Model`/`ComAndroid*` — the original capture device.
+   *    Always preferred when present; platform/app markers are only consulted
+   *    because these re-encoders strip camera metadata.
+   * 3. `Comment` matching TikTok's `vid:v...` pattern, or `Aigc_info` present → `'TikTok'`.
+   * 4. Filename matching WhatsApp conventions (`IMG-/VID-...WA####`,
+   *    `WhatsApp <Type> ...`, or a `wapp` suffix) → `'WhatsApp'`.
+   * 5. Facebook markers (`SpecialInstructions` `FBMD` blob, `ProfileCopyright`
+   *    `"FB"`, `OriginalTransmissionReference`, `FB_IMG_`/`_n`/`_o` filenames) → `'Facebook'`.
+   * 6. Adobe JPEG APP14 markers / `CreatorTool` + `DerivedFrom` → `'Save for Web'`.
+   * 7. `Comment` reporting the PHP GD encoder → `'PHP GD'`.
+   * 8. `pagespeed_ic` filename → `'Google PageSpeed'`.
+   * 9. `PXL_` filename → `'Google Pixel'`.
+   * 10. `P########.jpg` filename → `'Panasonic Lumix'`.
+   * 11. `Image uploaded from iOS.jpg` filename → `'iOS'`.
+   * 12. Otherwise → `undefined`.
    */
   get producer(): string | undefined {
     if (!_.isDefined(this.#cache.producer)) {
@@ -333,17 +344,29 @@ export class Resolver {
       if (m.MIMEType === 'application/pdf') {
         if (m.Producer) this.#cache.producer = m.Producer;
       } else if (this.type === 'image' || this.type === 'video' || this.type === 'audio') {
-        if (m.Comment && /^vid:v\d+/i.test(m.Comment)) {
+        if (m.Make || m.Model || m.ComAndroidManufacturer || m.ComAndroidModel) {
+          const cameraName = Normalize.cameraName(m);
+          this.#cache.producer = cameraName ?? 'camera';
+        } else if (m.Comment && /^vid:v\d+/i.test(m.Comment)) {
           this.#cache.producer = 'TikTok';
         } else if (m.Aigc_info !== undefined) {
           this.#cache.producer = 'TikTok';
         } else if (isWhatsAppFilename(m.FileName)) {
           this.#cache.producer = 'WhatsApp';
-        } else if (m.Make || m.Model || m.ComAndroidManufacturer || m.ComAndroidModel) {
-          const cameraName = Normalize.cameraName(m);
-          this.#cache.producer = cameraName ?? 'camera';
+        } else if (Normalize.isFacebook(m)) {
+          this.#cache.producer = 'Facebook';
         } else if (Normalize.isSaveForWeb(m)) {
           this.#cache.producer = 'Save for Web';
+        } else if (Normalize.isGdJpeg(m)) {
+          this.#cache.producer = 'PHP GD';
+        } else if (/pagespeed/i.test(m.FileName ?? '')) {
+          this.#cache.producer = 'Google PageSpeed';
+        } else if (/^PXL_\d{8}_/i.test(m.FileName ?? '')) {
+          this.#cache.producer = 'Google Pixel';
+        } else if (/^P\d{7}\.jpg$/i.test(m.FileName ?? '')) {
+          this.#cache.producer = 'Panasonic Lumix';
+        } else if (/^Image uploaded from iOS\.jpg$/i.test(m.FileName ?? '')) {
+          this.#cache.producer = 'iOS';
         } else {
           this.#cache.producer = undefined;
         }

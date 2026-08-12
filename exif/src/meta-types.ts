@@ -196,6 +196,10 @@ export interface IptcMetadata {
   // --- Author / credit ---
   /** Author/byline (IPTC By-line). */
   'By-line'?: string;
+  /** IPTC Special Instructions (record 2:40). Facebook populates this with an `FBMD` metadata blob. */
+  SpecialInstructions?: string;
+  /** IPTC Original Transmission Reference (record 2:103). Facebook writes an opaque content reference here. */
+  OriginalTransmissionReference?: string;
   /** Job title of the byline (IPTC By-lineTitle). */
   'By-lineTitle'?: string;
   /** Credit to the provider (IPTC Credit). */

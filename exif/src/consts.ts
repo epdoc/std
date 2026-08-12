@@ -21,6 +21,7 @@ export const CAMERA_MODEL_MAP: Record<string, Record<string, string>> = {
     FC8482: 'Mini 4 Pro',
   },
   Google: {
+    'PIXEL 3': 'Pixel 3',
     'PIXEL 7': 'Pixel 7',
     'PIXEL 7 PRO': 'Pixel 7 Pro',
     'PIXEL 8': 'Pixel 8',

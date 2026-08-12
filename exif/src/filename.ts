@@ -10,6 +10,9 @@ const REG_WHATSAPP_NEW =
 /** Signal desktop: "signal-2026-06-29-17-20-56-123.png". */
 const REG_SIGNAL = /^signal-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})-(\d{2})(?:-(\d{3}))?/i;
 
+/** User-renamed WhatsApp files: "20201126_001000_wapp.jpg" — a `wapp` marker in the basename. */
+const REG_WHATSAPP_WAPP = /wapp/i;
+
 /** 13-digit Unix epoch milliseconds embedded in the filename. */
 const REG_EPOCH = /(?:^|[^0-9])(\d{13})(?:[^0-9]|$)/;
 
@@ -36,14 +39,15 @@ function build(
 /**
  * True when the filename follows a WhatsApp naming convention.
  *
- * Matches both the mobile pattern (`IMG-YYYYMMDD-WA####`, date only) and the
- * macOS desktop pattern (`WhatsApp Image YYYY-MM-DD at HH.MM.SS`).
+ * Matches the mobile pattern (`IMG-YYYYMMDD-WA####`, date only), the
+ * macOS desktop pattern (`WhatsApp Image YYYY-MM-DD at HH.MM.SS`), and
+ * user-renamed files carrying a `wapp` suffix (e.g. `20201126_001000_wapp.jpg`).
  *
  * @param fileName The basename (with extension) of the file.
  */
 export function isWhatsAppFilename(fileName: string | undefined): boolean {
   return !!fileName &&
-    (REG_WHATSAPP_OLD.test(fileName) || REG_WHATSAPP_NEW.test(fileName));
+    (REG_WHATSAPP_OLD.test(fileName) || REG_WHATSAPP_NEW.test(fileName) || REG_WHATSAPP_WAPP.test(fileName));
 }
 
 /**
