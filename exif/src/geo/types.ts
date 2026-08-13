@@ -6,6 +6,7 @@ export type NominatimResponse = {
   error?: string;
 };
 
+/** Normalized address extracted from reverse-geocoding (e.g., Nominatim/OSM) */
 export type AddressComponents = {
   houseNumber?: string;
   road?: string;
@@ -14,7 +15,10 @@ export type AddressComponents = {
   city?: string;
   town?: string;
   village?: string;
+  hamlet?: string;
+  county?: string;
   state?: string;
+  postcode?: string;
   country: string;
   countryCode: string;
 };
@@ -24,4 +28,35 @@ export type GeocodeResult = {
   lat: string;
   lon: string;
   address: AddressComponents;
+};
+
+/**
+ * Combined map of ExifTool-compatible location tags covering EXIF, IPTC IIM, and XMP.
+ */
+export type ExifToolLocationTags = {
+  // GPS Coordinates
+  GPSLatitude?: number;
+  GPSLatitudeRef?: 'N' | 'S';
+  GPSLongitude?: number;
+  GPSLongitudeRef?: 'E' | 'W';
+  GPSAltitude?: number;
+  GPSAltitudeRef?: number; // 0 = Above Sea Level, 1 = Below
+
+  // MWG / IPTC / Photoshop Standard Tags
+  Country?: string;
+  CountryCode?: string;
+  'Country-PrimaryLocationName'?: string;
+  'Country-PrimaryLocationCode'?: string;
+  State?: string;
+  'Province-State'?: string;
+  City?: string;
+  Location?: string;
+  'Sub-location'?: string;
+
+  // XMP IPTC Core / Extension explicitly qualified tags (optional targets)
+  'XMP-photoshop:Country'?: string;
+  'XMP-iptcCore:CountryCode'?: string;
+  'XMP-photoshop:State'?: string;
+  'XMP-photoshop:City'?: string;
+  'XMP-iptcCore:Location'?: string;
 };

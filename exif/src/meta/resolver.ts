@@ -4,7 +4,7 @@ import { CODEC_MAP, REPAIRABLE } from '../consts.ts';
 import { dateFromFilename, isWhatsAppFilename } from '../filename.ts';
 import type { Metadata } from '../meta-types.ts';
 import * as Normalize from '../normalize.ts';
-import type { MetadataKey, PendingMetaMod, Seconds } from '../types.ts';
+import type { MetadataKey, MetaTagDict, Seconds } from '../types.ts';
 import * as Parse from './parse.ts';
 import type { Parts } from './types.ts';
 
@@ -135,8 +135,8 @@ export class Resolver {
     subSecTag: MetadataKey,
     offsetTag: MetadataKey,
     dt: DateTime,
-  ): PendingMetaMod {
-    const changes: PendingMetaMod = {};
+  ): MetaTagDict {
+    const changes: MetaTagDict = {};
     changes[dateTag] = Resolver.toExifDateTimeString(dt);
 
     const ms = dt.millisecond;
@@ -390,7 +390,7 @@ export class Resolver {
    * Return tag changes for setting the original capture date/time.
    * Writes to DateTimeOriginal, SubSecTimeOriginal, OffsetTimeOriginal.
    */
-  setOriginatedAt(dt: DateTime): PendingMetaMod {
+  setOriginatedAt(dt: DateTime): MetaTagDict {
     return Resolver.prepareDateTags('DateTimeOriginal', 'SubSecTimeOriginal', 'OffsetTimeOriginal', dt);
   }
 
@@ -398,7 +398,7 @@ export class Resolver {
    * Return tag changes for setting the digitization date/time.
    * Writes to CreateDate, SubSecTimeDigitized, OffsetTimeDigitized.
    */
-  setDigitizedAt(dt: DateTime): PendingMetaMod {
+  setDigitizedAt(dt: DateTime): MetaTagDict {
     return Resolver.prepareDateTags('CreateDate', 'SubSecTimeDigitized', 'OffsetTimeDigitized', dt);
   }
 
@@ -406,14 +406,14 @@ export class Resolver {
    * Return tag changes for setting the modification date/time.
    * Writes to ModifyDate, SubSecTime, OffsetTime.
    */
-  setModifiedAt(dt: DateTime): PendingMetaMod {
+  setModifiedAt(dt: DateTime): MetaTagDict {
     return Resolver.prepareDateTags('ModifyDate', 'SubSecTime', 'OffsetTime', dt);
   }
 
   /**
    * Return tag changes for setting all date/time tags to the same value.
    */
-  setAllDates(dt: DateTime): PendingMetaMod {
+  setAllDates(dt: DateTime): MetaTagDict {
     return {
       ...this.setOriginatedAt(dt),
       ...this.setDigitizedAt(dt),
@@ -443,7 +443,7 @@ export class Resolver {
    *                     filesystem modified date. Pass `undefined` when no
    *                     reliable fallback is available.
    */
-  repairDates(fallbackDate: DateTime | undefined): PendingMetaMod {
+  repairDates(fallbackDate: DateTime | undefined): MetaTagDict {
     const producer = this.producer;
     if (!producer || !REPAIRABLE.includes(producer)) return {};
     if (!fallbackDate) return {};
@@ -475,7 +475,7 @@ export class Resolver {
    * timestamps by a relative duration. Useful for correcting camera clock drift
    * across a batch of photos.
    */
-  adjustAllDates(duration: Temporal.DurationLike): PendingMetaMod {
+  adjustAllDates(duration: Temporal.DurationLike): MetaTagDict {
     const changes: Record<string, string> = {};
     const originated = this.originatedAt;
     if (originated) Object.assign(changes, this.setOriginatedAt(originated.add(duration)));
@@ -494,7 +494,7 @@ export class Resolver {
    * Example: Camera was set to NY (17:00 -05:00). Re-basing to SFO (-07:00)
    * updates wall-clock to 14:00 and offset tags to "-07:00".
    */
-  shiftTimezone(tz: ISOTZ): PendingMetaMod {
+  shiftTimezone(tz: ISOTZ): MetaTagDict {
     const changes: Record<string, string> = {};
     const originated = this.originatedAt;
     if (originated) Object.assign(changes, this.setOriginatedAt(originated.withTz(tz)));
@@ -511,7 +511,7 @@ export class Resolver {
    * Standard EXIF tags receive a padded DateTime (e.g. 1975 -> 1975:01:01 00:00:00),
    * while XMP tags store the exact partial ISO string ("1975" or "1975-06").
    */
-  setPartialDate(date: { year: number; month?: number; day?: number }): PendingMetaMod {
+  setPartialDate(date: { year: number; month?: number; day?: number }): MetaTagDict {
     const month = date.month ?? 1;
     const day = date.day ?? 1;
 
@@ -535,7 +535,7 @@ export class Resolver {
    * Return tag changes for setting timezone offset tags without changing
    * wall-clock date/time values.
    */
-  setTimezoneOffset(offset: string): PendingMetaMod {
+  setTimezoneOffset(offset: string): MetaTagDict {
     const normalized = Resolver.normalizeOffset(offset);
     return {
       OffsetTimeOriginal: normalized,

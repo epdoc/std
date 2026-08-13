@@ -1,7 +1,7 @@
 import { assertEquals } from '@std/assert';
-import { Geo } from '../src/mod.ts';
 import type { AddressComponents } from '../src/geo/types.ts';
 import { extractAddress } from '../src/geo/utils.ts';
+import { Geo } from '../src/mod.ts';
 
 // --- buildLocationTags ---
 
@@ -21,7 +21,10 @@ Deno.test('Geo.buildLocationTags', async (t) => {
 
   await t.step('country granularity returns only country tags', () => {
     const tags = Geo.buildLocationTags(addr, Geo.LocationGranularity.country);
-    assertEquals(Object.keys(tags).sort(), ['Country', 'CountryCode'].sort());
+    assertEquals(
+      Object.keys(tags).sort(),
+      ['Country', 'CountryCode', 'Country-PrimaryLocationCode', 'Country-PrimaryLocationName'].sort(),
+    );
     assertEquals(tags['Country'], 'United Kingdom');
     assertEquals(tags['CountryCode'], 'GB');
   });

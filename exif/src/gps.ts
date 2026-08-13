@@ -4,6 +4,16 @@ export type Location = {
   lat: number;
   lng: number;
   alt?: number;
+  houseNumber?: number;
+  road?: string;
+  neighbourhood?: string;
+  suburb?: string;
+  city?: string;
+  town?: string;
+  village?: string;
+  state?: string;
+  country?: string;
+  countryCode?: string;
 };
 
 export interface Options {

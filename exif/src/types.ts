@@ -52,7 +52,7 @@ export type MetaMod = {
   /** The new value of the field */
   value: MetadataValue;
 };
-export type PendingMetaMod = Partial<Record<WriteTag, MetadataValue>>;
+export type MetaTagDict = Partial<Record<WriteTag, MetadataValue>>;
 export type MetadataKey = keyof Metadata;
 export type MetadataValue = string | number | undefined;
 

@@ -5,6 +5,7 @@ import { assert } from '@std/assert';
 import * as Schema from './collections.ts';
 import { collect } from './collections.ts';
 import { REPAIRABLE } from './consts.ts';
+import * as Geo from './geo/mod.ts';
 import * as Gps from './gps.ts';
 import type { Metadata } from './meta-types.ts';
 import * as Meta from './meta/mod.ts';
@@ -18,7 +19,7 @@ import type {
   MetadataKey,
   MetadataValue,
   MetaModHistory,
-  PendingMetaMod,
+  MetaTagDict,
   WriteTag,
 } from './types.ts';
 
@@ -295,17 +296,17 @@ export class File {
     if (value.model !== undefined) this.#setTag('Model', value.model);
     if (value.lensMake !== undefined) this.#setTag('LensMake', value.lensMake);
     if (value.lensModel !== undefined) {
-      this.#setTag('LensModel', value.lensModel);
+      this.setTag('LensModel', value.lensModel);
     }
     if (value.serialNumber !== undefined) {
-      this.#setTag('SerialNumber', value.serialNumber);
+      this.setTag('SerialNumber', value.serialNumber);
     }
     if (value.makerNotes !== undefined) {
-      this.#setTag('MakerNote', value.makerNotes);
+      this.setTag('MakerNote', value.makerNotes);
     }
     if (value.focalLength35mm !== undefined) {
       const formattedNum = Number(value.focalLength35mm.toFixed(1));
-      this.#setTag('FocalLengthIn35mmFormat', `${formattedNum} mm`);
+      this.setTag('FocalLengthIn35mmFormat', `${formattedNum} mm`);
     }
   }
 
@@ -350,6 +351,7 @@ export class File {
       : undefined;
 
     this.#cache.gps = { lat, lng, alt };
+
     return this.#cache.gps;
   }
 
@@ -376,6 +378,21 @@ export class File {
         location.alt < 0 ? 'Below Sea Level' : 'Above Sea Level',
       );
     }
+  }
+
+  async lookupAddress(): Promise<Geo.GeocodeResult | undefined> {
+    const gps = this.#cache.gps;
+    if (!gps) return;
+    const api: Geo.NominatimApi = new Geo.NominatimApi();
+    return await api.reverse(gps.lat, gps.lng);
+  }
+
+  setAddress(
+    addr: Geo.AddressComponents,
+    granularity: Geo.LocationGranularityType = Geo.LocationGranularity.sublocation,
+  ): void {
+    const tags: MetaTagDict = Geo.buildLocationTags(addr, granularity);
+    this.applyTags(tags);
   }
 
   // ============================================================================
@@ -431,7 +448,7 @@ export class File {
    * Merge a changeset (tag→value map) from {@link Meta.Resolver} into the
    * pending tag buffer. Empty-string values delete the corresponding tag.
    */
-  applyTags(changes: PendingMetaMod): void {
+  applyTags(changes: MetaTagDict): void {
     for (const [tag, value] of Object.entries(changes)) {
       this.#setTag(tag as WriteTag, value);
     }
@@ -469,7 +486,6 @@ export class File {
     }
 
     this.#pending.clear();
-    this.#same.clear();
     this.#dirty = false;
     this.#metadata = undefined;
     return diffs;
@@ -500,7 +516,7 @@ export class File {
       ? (this.#fsFile.info.modifiedAt ?? this.#fsFile.info.createdAt ??
         undefined)
       : undefined;
-    const changes: PendingMetaMod = resolver.repairDates(fsDate);
+    const changes: MetaTagDict = resolver.repairDates(fsDate);
     if (!Object.keys(changes).length) return [];
 
     const producer = resolver.producer;
@@ -522,6 +538,11 @@ export class File {
     ).cwd(FS.cwd());
   }
 
+  /**
+   * This just sets a value in this.#pending. Then write will apply them to the file.
+   * @param tag
+   * @param value
+   */
   #setTag(tag: WriteTag, value: MetadataValue): void {
     this.#pending.set(tag, value);
     this.#dirty = true;
