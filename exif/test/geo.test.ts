@@ -1,12 +1,12 @@
 import { assertEquals } from '@std/assert';
-import type { AddressComponents } from '../src/geo/types.ts';
-import { extractAddress } from '../src/geo/utils.ts';
+import type { AddressDef } from '../src/geo/types.ts';
+import { apiResponse2address } from '../src/geo/utils.ts';
 import { Geo } from '../src/mod.ts';
 
 // --- buildLocationTags ---
 
 Deno.test('Geo.buildLocationTags', async (t) => {
-  const addr: AddressComponents = {
+  const addr: AddressDef = {
     houseNumber: '10',
     road: 'Downing Street',
     neighbourhood: 'Westminster',
@@ -42,7 +42,7 @@ Deno.test('Geo.buildLocationTags', async (t) => {
   });
 
   await t.step('city granularity uses town if city is missing', () => {
-    const townAddr: AddressComponents = {
+    const townAddr: AddressDef = {
       ...addr,
       city: undefined,
       town: 'Brighton',
@@ -52,7 +52,7 @@ Deno.test('Geo.buildLocationTags', async (t) => {
   });
 
   await t.step('city granularity uses village if city and town are missing', () => {
-    const villageAddr: AddressComponents = {
+    const villageAddr: AddressDef = {
       ...addr,
       city: undefined,
       town: undefined,
@@ -69,7 +69,7 @@ Deno.test('Geo.buildLocationTags', async (t) => {
   });
 
   await t.step('sublocation granularity uses suburb if neighbourhood is missing', () => {
-    const suburbAddr: AddressComponents = {
+    const suburbAddr: AddressDef = {
       ...addr,
       neighbourhood: undefined,
       suburb: 'Mayfair',
@@ -84,20 +84,20 @@ Deno.test('Geo.buildLocationTags', async (t) => {
   });
 
   await t.step('exact granularity without house number falls back to sublocation behaviour', () => {
-    const noHouse: AddressComponents = { ...addr, houseNumber: undefined };
+    const noHouse: AddressDef = { ...addr, houseNumber: undefined };
     const tags = Geo.buildLocationTags(noHouse, Geo.LocationGranularity.exact);
     assertEquals(tags['Sub-location'], 'Downing Street, Westminster');
   });
 
   await t.step('omits State when state is undefined', () => {
-    const noState: AddressComponents = { ...addr, state: undefined };
+    const noState: AddressDef = { ...addr, state: undefined };
     const tags = Geo.buildLocationTags(noState, Geo.LocationGranularity.state);
     assertEquals('State' in tags, false);
     assertEquals(tags['Country'], 'United Kingdom');
   });
 
   await t.step('omits Sub-location when no road or area is available', () => {
-    const bare: AddressComponents = {
+    const bare: AddressDef = {
       houseNumber: undefined,
       road: undefined,
       neighbourhood: undefined,
@@ -119,7 +119,7 @@ Deno.test('Geo.buildLocationTags', async (t) => {
 
 Deno.test('extractAddress', async (t) => {
   await t.step('extracts all fields from a full Nominatim address', () => {
-    const result = extractAddress({
+    const result = apiResponse2address({
       house_number: '10',
       road: 'Downing Street',
       neighbourhood: 'Westminster',
@@ -140,7 +140,7 @@ Deno.test('extractAddress', async (t) => {
   });
 
   await t.step('uses pedestrian tag as road fallback', () => {
-    const result = extractAddress({
+    const result = apiResponse2address({
       pedestrian: 'Oxford Street',
       country: 'UK',
       country_code: 'gb',
@@ -149,7 +149,7 @@ Deno.test('extractAddress', async (t) => {
   });
 
   await t.step('uses street tag as road fallback', () => {
-    const result = extractAddress({
+    const result = apiResponse2address({
       street: 'Baker Street',
       country: 'UK',
       country_code: 'gb',
@@ -158,7 +158,7 @@ Deno.test('extractAddress', async (t) => {
   });
 
   await t.step('picks town as city fallback', () => {
-    const result = extractAddress({
+    const result = apiResponse2address({
       town: 'Brighton',
       country: 'UK',
       country_code: 'gb',
@@ -167,7 +167,7 @@ Deno.test('extractAddress', async (t) => {
   });
 
   await t.step('picks village as city fallback', () => {
-    const result = extractAddress({
+    const result = apiResponse2address({
       village: 'Cotswolds',
       country: 'UK',
       country_code: 'gb',
@@ -176,7 +176,7 @@ Deno.test('extractAddress', async (t) => {
   });
 
   await t.step('picks municipality as city fallback', () => {
-    const result = extractAddress({
+    const result = apiResponse2address({
       municipality: 'Borough',
       country: 'UK',
       country_code: 'gb',
@@ -185,7 +185,7 @@ Deno.test('extractAddress', async (t) => {
   });
 
   await t.step('city takes priority over town/village/municipality', () => {
-    const result = extractAddress({
+    const result = apiResponse2address({
       city: 'London',
       town: 'Brighton',
       village: 'Cotswolds',
@@ -197,13 +197,13 @@ Deno.test('extractAddress', async (t) => {
   });
 
   await t.step('handles missing country and country code', () => {
-    const result = extractAddress({});
+    const result = apiResponse2address({});
     assertEquals(result.country, '');
     assertEquals(result.countryCode, '');
   });
 
   await t.step('uppercases country code', () => {
-    const result = extractAddress({
+    const result = apiResponse2address({
       country_code: 'de',
       country: 'Germany',
     });
@@ -217,10 +217,7 @@ Deno.test('Geo.NominatimApi.reverse dry-run', async (t) => {
   await t.step('returns a synthetic result without making a network call', async () => {
     const api = new Geo.NominatimApi({ dryRun: true });
     const result = await api.reverse(51.5074, -0.1278);
-    assertEquals(result.displayName, '[DRYRUN] 51.5074,-0.1278');
-    assertEquals(result.lat, '51.5074');
-    assertEquals(result.lon, '-0.1278');
-    assertEquals(result.address.country, '[DRYRUN]');
-    assertEquals(result.address.countryCode, 'XX');
+    assertEquals(result.country, '[DRYRUN]');
+    assertEquals(result.countryCode, 'XX');
   });
 });

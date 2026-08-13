@@ -1,5 +1,6 @@
-import type { GeocodeResult, NominatimResponse } from './types.ts';
-import { extractAddress } from './utils.ts';
+import type { AddressDef } from './mod.ts';
+import type { NominatimResponse } from './types.ts';
+import { apiResponse2address } from './utils.ts';
 
 export class NominatimApi {
   #baseUrl: string;
@@ -12,16 +13,11 @@ export class NominatimApi {
     this.#dryRun = opts?.dryRun ?? false;
   }
 
-  async reverse(lat: number, lng: number): Promise<GeocodeResult> {
+  async reverse(lat: number, lng: number): Promise<AddressDef> {
     if (this.#dryRun) {
       return {
-        displayName: `[DRYRUN] ${lat},${lng}`,
-        lat: String(lat),
-        lon: String(lng),
-        address: {
-          country: '[DRYRUN]',
-          countryCode: 'XX',
-        },
+        country: '[DRYRUN]',
+        countryCode: 'XX',
       };
     }
 
@@ -39,11 +35,8 @@ export class NominatimApi {
       throw new Error(data?.error ?? 'Nominatim returned no data');
     }
 
-    return {
-      displayName: data.display_name ?? '',
-      lat: data.lat ?? '',
-      lon: data.lon ?? '',
-      address: extractAddress(data.address ?? {}),
-    };
+    const result = apiResponse2address(data.address ?? {});
+    if (data.display_name) result.displayName = data.display_name;
+    return result;
   }
 }

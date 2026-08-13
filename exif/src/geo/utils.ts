@@ -1,6 +1,6 @@
 import type { MetaTagDict } from '../types.ts';
 import type { LocationGranularityType } from './enums.ts';
-import type { AddressComponents } from './types.ts';
+import type { AddressDef } from './types.ts';
 
 /** Helper to pick the first non-empty string key from a raw object */
 function pickFirst(raw: Record<string, string | undefined>, ...keys: string[]): string | undefined {
@@ -14,7 +14,7 @@ function pickFirst(raw: Record<string, string | undefined>, ...keys: string[]): 
  * Normalizes raw reverse-geocode address attributes into structured AddressComponents. Used to
  * process API return values.
  */
-export function extractAddress(raw: Record<string, string | undefined>): AddressComponents {
+export function apiResponse2address(raw: Record<string, string | undefined>): AddressDef {
   return {
     houseNumber: raw.house_number ?? raw.house_name ?? raw.building,
     road: pickFirst(raw, 'road', 'pedestrian', 'street', 'footway', 'path', 'square'),
@@ -39,7 +39,7 @@ export function extractAddress(raw: Record<string, string | undefined>): Address
  * maximize compatibility across photo management clients.
  */
 export function buildLocationTags(
-  addr: AddressComponents,
+  addr: AddressDef,
   granularity: LocationGranularityType,
 ): MetaTagDict {
   const tags: MetaTagDict = {};

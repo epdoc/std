@@ -35,9 +35,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                "line": 49,
+                "line": 50,
                 "col": 0,
-                "byteIndex": 1450
+                "byteIndex": 1478
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -102,9 +102,9 @@
                     ],
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 60,
+                      "line": 61,
                       "col": 2,
-                      "byteIndex": 1725
+                      "byteIndex": 1753
                     }
                   }
                 ],
@@ -179,9 +179,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 65,
+                      "line": 66,
                       "col": 2,
-                      "byteIndex": 1897
+                      "byteIndex": 1925
                     }
                   },
                   {
@@ -204,9 +204,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 69,
+                      "line": 70,
                       "col": 2,
-                      "byteIndex": 2002
+                      "byteIndex": 2030
                     }
                   },
                   {
@@ -229,9 +229,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 73,
+                      "line": 74,
                       "col": 2,
-                      "byteIndex": 2058
+                      "byteIndex": 2086
                     }
                   },
                   {
@@ -255,9 +255,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 77,
+                      "line": 78,
                       "col": 2,
-                      "byteIndex": 2121
+                      "byteIndex": 2149
                     }
                   },
                   {
@@ -280,9 +280,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 85,
+                      "line": 86,
                       "col": 2,
-                      "byteIndex": 2292
+                      "byteIndex": 2320
                     }
                   },
                   {
@@ -299,9 +299,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 93,
+                      "line": 94,
                       "col": 2,
-                      "byteIndex": 2468
+                      "byteIndex": 2496
                     }
                   },
                   {
@@ -356,9 +356,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 97,
+                      "line": 98,
                       "col": 2,
-                      "byteIndex": 2522
+                      "byteIndex": 2550
                     }
                   },
                   {
@@ -441,9 +441,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 115,
+                      "line": 116,
                       "col": 2,
-                      "byteIndex": 3160
+                      "byteIndex": 3188
                     }
                   },
                   {
@@ -504,9 +504,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 149,
+                      "line": 150,
                       "col": 2,
-                      "byteIndex": 4068
+                      "byteIndex": 4096
                     }
                   },
                   {
@@ -562,9 +562,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 166,
+                      "line": 167,
                       "col": 2,
-                      "byteIndex": 4747
+                      "byteIndex": 4775
                     }
                   },
                   {
@@ -587,9 +587,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 222,
+                      "line": 224,
                       "col": 2,
-                      "byteIndex": 6506
+                      "byteIndex": 6601
                     }
                   },
                   {
@@ -622,9 +622,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 228,
+                      "line": 230,
                       "col": 2,
-                      "byteIndex": 6696
+                      "byteIndex": 6791
                     }
                   },
                   {
@@ -657,9 +657,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 238,
+                      "line": 240,
                       "col": 2,
-                      "byteIndex": 7046
+                      "byteIndex": 7141
                     }
                   },
                   {
@@ -692,9 +692,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 257,
+                      "line": 259,
                       "col": 2,
-                      "byteIndex": 7609
+                      "byteIndex": 7704
                     }
                   },
                   {
@@ -727,9 +727,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 266,
+                      "line": 268,
                       "col": 2,
-                      "byteIndex": 7901
+                      "byteIndex": 7996
                     }
                   },
                   {
@@ -762,9 +762,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 275,
+                      "line": 277,
                       "col": 2,
-                      "byteIndex": 8179
+                      "byteIndex": 8274
                     }
                   },
                   {
@@ -797,9 +797,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 284,
+                      "line": 286,
                       "col": 2,
-                      "byteIndex": 8457
+                      "byteIndex": 8552
                     }
                   },
                   {
@@ -833,9 +833,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 293,
+                      "line": 295,
                       "col": 2,
-                      "byteIndex": 8756
+                      "byteIndex": 8851
                     }
                   },
                   {
@@ -868,9 +868,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 312,
+                      "line": 314,
                       "col": 2,
-                      "byteIndex": 9505
+                      "byteIndex": 9600
                     }
                   },
                   {
@@ -890,9 +890,9 @@
                                   "name": "metadata",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                                    "line": 321,
+                                    "line": 323,
                                     "col": 17,
-                                    "byteIndex": 9798
+                                    "byteIndex": 9893
                                   },
                                   "tsType": {
                                     "repr": "boolean",
@@ -921,9 +921,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 321,
+                      "line": 323,
                       "col": 2,
-                      "byteIndex": 9783
+                      "byteIndex": 9878
                     }
                   },
                   {
@@ -940,9 +940,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 329,
+                      "line": 331,
                       "col": 2,
-                      "byteIndex": 10040
+                      "byteIndex": 10135
                     }
                   },
                   {
@@ -975,9 +975,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 334,
+                      "line": 336,
                       "col": 2,
-                      "byteIndex": 10167
+                      "byteIndex": 10262
                     }
                   },
                   {
@@ -1030,13 +1030,13 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 360,
+                      "line": 362,
                       "col": 2,
-                      "byteIndex": 10943
+                      "byteIndex": 11038
                     }
                   },
                   {
-                    "name": "lookupAddress",
+                    "name": "getAddress",
                     "kind": "method",
                     "functionDef": {
                       "params": [],
@@ -1049,10 +1049,10 @@
                               "kind": "union",
                               "value": [
                                 {
-                                  "repr": "Geo.GeocodeResult",
+                                  "repr": "Geo.AddressDef",
                                   "kind": "typeRef",
                                   "value": {
-                                    "typeName": "Geo.GeocodeResult",
+                                    "typeName": "Geo.AddressDef",
                                     "resolution": {
                                       "kind": "import",
                                       "specifier": "./geo/mod.ts"
@@ -1075,9 +1075,54 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 382,
+                      "line": 384,
                       "col": 2,
-                      "byteIndex": 11786
+                      "byteIndex": 11881
+                    }
+                  },
+                  {
+                    "name": "lookupAddress",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "Promise",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeParams": [
+                            {
+                              "kind": "union",
+                              "value": [
+                                {
+                                  "repr": "Geo.AddressDef",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "Geo.AddressDef",
+                                    "resolution": {
+                                      "kind": "import",
+                                      "specifier": "./geo/mod.ts"
+                                    }
+                                  }
+                                },
+                                {
+                                  "repr": "undefined",
+                                  "kind": "keyword",
+                                  "value": "undefined"
+                                }
+                              ]
+                            }
+                          ],
+                          "typeName": "Promise"
+                        }
+                      },
+                      "hasBody": true,
+                      "isAsync": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
+                      "line": 393,
+                      "col": 2,
+                      "byteIndex": 12211
                     }
                   },
                   {
@@ -1090,10 +1135,10 @@
                           "name": "addr",
                           "optional": false,
                           "tsType": {
-                            "repr": "Geo.AddressComponents",
+                            "repr": "Geo.AddressDef",
                             "kind": "typeRef",
                             "value": {
-                              "typeName": "Geo.AddressComponents",
+                              "typeName": "Geo.AddressDef",
                               "resolution": {
                                 "kind": "import",
                                 "specifier": "./geo/mod.ts"
@@ -1131,9 +1176,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 389,
+                      "line": 400,
                       "col": 2,
-                      "byteIndex": 12018
+                      "byteIndex": 12440
                     }
                   },
                   {
@@ -1166,9 +1211,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 401,
+                      "line": 412,
                       "col": 2,
-                      "byteIndex": 12443
+                      "byteIndex": 12858
                     }
                   },
                   {
@@ -1198,9 +1243,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 419,
+                      "line": 430,
                       "col": 2,
-                      "byteIndex": 13011
+                      "byteIndex": 13426
                     }
                   },
                   {
@@ -1245,9 +1290,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 427,
+                      "line": 438,
                       "col": 2,
-                      "byteIndex": 13283
+                      "byteIndex": 13698
                     }
                   },
                   {
@@ -1312,9 +1357,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 438,
+                      "line": 449,
                       "col": 2,
-                      "byteIndex": 13595
+                      "byteIndex": 14010
                     }
                   },
                   {
@@ -1352,9 +1397,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 450,
+                      "line": 461,
                       "col": 2,
-                      "byteIndex": 13941
+                      "byteIndex": 14356
                     }
                   },
                   {
@@ -1394,9 +1439,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 463,
+                      "line": 474,
                       "col": 2,
-                      "byteIndex": 14338
+                      "byteIndex": 14753
                     }
                   },
                   {
@@ -1442,9 +1487,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 507,
+                      "line": 518,
                       "col": 2,
-                      "byteIndex": 15847
+                      "byteIndex": 16262
                     }
                   }
                 ]
@@ -8973,9 +9018,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                "line": 7,
+                "line": 8,
                 "col": 0,
-                "byteIndex": 211
+                "byteIndex": 251
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -8988,9 +9033,9 @@
                     "name": "dryRun",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                      "line": 8,
+                      "line": 9,
                       "col": 2,
-                      "byteIndex": 240
+                      "byteIndex": 280
                     },
                     "optional": true,
                     "tsType": {
@@ -9010,9 +9055,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                "line": 11,
+                "line": 12,
                 "col": 0,
-                "byteIndex": 261
+                "byteIndex": 301
               },
               "declarationKind": "export",
               "kind": "interface",
@@ -9025,9 +9070,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                      "line": 13,
+                      "line": 14,
                       "col": 2,
-                      "byteIndex": 358
+                      "byteIndex": 398
                     },
                     "optional": true,
                     "tsType": {
@@ -9057,9 +9102,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                "line": 16,
+                "line": 17,
                 "col": 0,
-                "byteIndex": 388
+                "byteIndex": 428
               },
               "declarationKind": "export",
               "kind": "typeAlias",
@@ -9079,9 +9124,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                "line": 17,
+                "line": 18,
                 "col": 0,
-                "byteIndex": 418
+                "byteIndex": 458
               },
               "declarationKind": "export",
               "kind": "typeAlias",
@@ -9101,9 +9146,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                "line": 22,
+                "line": 23,
                 "col": 0,
-                "byteIndex": 507
+                "byteIndex": 547
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -9135,9 +9180,9 @@
                             },
                             "location": {
                               "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                              "line": 24,
+                              "line": 25,
                               "col": 2,
-                              "byteIndex": 633
+                              "byteIndex": 673
                             },
                             "optional": true,
                             "tsType": {
@@ -9161,9 +9206,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                "line": 30,
+                "line": 31,
                 "col": 0,
-                "byteIndex": 696
+                "byteIndex": 736
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -9176,33 +9221,15 @@
                   "value": {
                     "properties": [
                       {
-                        "name": "resolved",
-                        "jsDoc": {
-                          "doc": "Include all the resolved info objects"
-                        },
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 32,
-                          "col": 2,
-                          "byteIndex": 777
-                        },
-                        "optional": true,
-                        "tsType": {
-                          "repr": "boolean",
-                          "kind": "keyword",
-                          "value": "boolean"
-                        }
-                      },
-                      {
                         "name": "metadata",
                         "jsDoc": {
                           "doc": "Include a top-level metadata object with the raw exiftool metadata"
                         },
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 34,
+                          "line": 33,
                           "col": 2,
-                          "byteIndex": 875
+                          "byteIndex": 846
                         },
                         "optional": true,
                         "tsType": {
@@ -9218,9 +9245,27 @@
                         },
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 36,
+                          "line": 35,
                           "col": 2,
-                          "byteIndex": 965
+                          "byteIndex": 936
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "boolean",
+                          "kind": "keyword",
+                          "value": "boolean"
+                        }
+                      },
+                      {
+                        "name": "address",
+                        "jsDoc": {
+                          "doc": "Compute and include the address, given GPS coordinates"
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
+                          "line": 37,
+                          "col": 2,
+                          "byteIndex": 1020
                         },
                         "optional": true,
                         "tsType": {
@@ -9242,9 +9287,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                "line": 42,
+                "line": 43,
                 "col": 0,
-                "byteIndex": 1046
+                "byteIndex": 1102
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -9276,9 +9321,9 @@
                             },
                             "location": {
                               "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                              "line": 44,
+                              "line": 45,
                               "col": 2,
-                              "byteIndex": 1130
+                              "byteIndex": 1186
                             },
                             "tsType": {
                               "repr": "MetadataValue",
@@ -9306,9 +9351,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                "line": 48,
+                "line": 49,
                 "col": 0,
-                "byteIndex": 1236
+                "byteIndex": 1292
               },
               "declarationKind": "export",
               "kind": "typeAlias",
@@ -9324,9 +9369,9 @@
                         },
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 50,
+                          "line": 51,
                           "col": 2,
-                          "byteIndex": 1291
+                          "byteIndex": 1347
                         },
                         "tsType": {
                           "repr": "WriteTag",
@@ -9346,9 +9391,9 @@
                         },
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 52,
+                          "line": 53,
                           "col": 2,
-                          "byteIndex": 1344
+                          "byteIndex": 1400
                         },
                         "tsType": {
                           "repr": "MetadataValue",
@@ -9374,9 +9419,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                "line": 54,
+                "line": 55,
                 "col": 0,
-                "byteIndex": 1369
+                "byteIndex": 1425
               },
               "declarationKind": "export",
               "kind": "typeAlias",
@@ -9429,9 +9474,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                "line": 55,
+                "line": 56,
                 "col": 0,
-                "byteIndex": 1437
+                "byteIndex": 1493
               },
               "declarationKind": "export",
               "kind": "typeAlias",
@@ -9464,9 +9509,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                "line": 56,
+                "line": 57,
                 "col": 0,
-                "byteIndex": 1479
+                "byteIndex": 1535
               },
               "declarationKind": "export",
               "kind": "typeAlias",
@@ -9501,9 +9546,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                "line": 65,
+                "line": 66,
                 "col": 0,
-                "byteIndex": 1883
+                "byteIndex": 1939
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -9578,9 +9623,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                "line": 72,
+                "line": 73,
                 "col": 0,
-                "byteIndex": 2131
+                "byteIndex": 2187
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -9596,9 +9641,9 @@
                         "name": "file",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 73,
+                          "line": 74,
                           "col": 2,
-                          "byteIndex": 2158
+                          "byteIndex": 2214
                         },
                         "tsType": {
                           "repr": "Schema.File",
@@ -9616,9 +9661,9 @@
                         "name": "image",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 74,
+                          "line": 75,
                           "col": 2,
-                          "byteIndex": 2179
+                          "byteIndex": 2235
                         },
                         "optional": true,
                         "tsType": {
@@ -9637,9 +9682,9 @@
                         "name": "video",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 75,
+                          "line": 76,
                           "col": 2,
-                          "byteIndex": 2203
+                          "byteIndex": 2259
                         },
                         "optional": true,
                         "tsType": {
@@ -9658,9 +9703,9 @@
                         "name": "audio",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 76,
+                          "line": 77,
                           "col": 2,
-                          "byteIndex": 2227
+                          "byteIndex": 2283
                         },
                         "optional": true,
                         "tsType": {
@@ -9679,9 +9724,9 @@
                         "name": "doc",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 77,
+                          "line": 78,
                           "col": 2,
-                          "byteIndex": 2251
+                          "byteIndex": 2307
                         },
                         "optional": true,
                         "tsType": {
@@ -9700,9 +9745,9 @@
                         "name": "camera",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 78,
+                          "line": 79,
                           "col": 2,
-                          "byteIndex": 2271
+                          "byteIndex": 2327
                         },
                         "optional": true,
                         "tsType": {
@@ -9721,9 +9766,9 @@
                         "name": "app",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 79,
+                          "line": 80,
                           "col": 2,
-                          "byteIndex": 2297
+                          "byteIndex": 2353
                         },
                         "optional": true,
                         "tsType": {
@@ -9742,9 +9787,9 @@
                         "name": "createdAt",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 80,
+                          "line": 81,
                           "col": 2,
-                          "byteIndex": 2317
+                          "byteIndex": 2373
                         },
                         "optional": true,
                         "tsType": {
@@ -9757,9 +9802,9 @@
                         "name": "digitizedAt",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 81,
+                          "line": 82,
                           "col": 2,
-                          "byteIndex": 2339
+                          "byteIndex": 2395
                         },
                         "optional": true,
                         "tsType": {
@@ -9772,9 +9817,9 @@
                         "name": "modifiedAt",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 82,
+                          "line": 83,
                           "col": 2,
-                          "byteIndex": 2363
+                          "byteIndex": 2419
                         },
                         "optional": true,
                         "tsType": {
@@ -9787,9 +9832,9 @@
                         "name": "hasTimezone",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 83,
+                          "line": 84,
                           "col": 2,
-                          "byteIndex": 2386
+                          "byteIndex": 2442
                         },
                         "optional": true,
                         "tsType": {
@@ -9802,9 +9847,9 @@
                         "name": "tzOffset",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 84,
+                          "line": 85,
                           "col": 2,
-                          "byteIndex": 2411
+                          "byteIndex": 2467
                         },
                         "optional": true,
                         "tsType": {
@@ -9817,9 +9862,9 @@
                         "name": "gps",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 85,
+                          "line": 86,
                           "col": 2,
-                          "byteIndex": 2432
+                          "byteIndex": 2488
                         },
                         "optional": true,
                         "tsType": {
@@ -9838,9 +9883,9 @@
                         "name": "id",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 86,
+                          "line": 87,
                           "col": 2,
-                          "byteIndex": 2454
+                          "byteIndex": 2510
                         },
                         "optional": true,
                         "tsType": {
@@ -9859,9 +9904,9 @@
                         "name": "metadata",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 87,
+                          "line": 88,
                           "col": 2,
-                          "byteIndex": 2476
+                          "byteIndex": 2532
                         },
                         "optional": true,
                         "tsType": {
@@ -9890,9 +9935,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                "line": 91,
+                "line": 92,
                 "col": 0,
-                "byteIndex": 2541
+                "byteIndex": 2597
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -9905,9 +9950,9 @@
                     "name": "includeMetadata",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                      "line": 92,
+                      "line": 93,
                       "col": 2,
-                      "byteIndex": 2576
+                      "byteIndex": 2632
                     },
                     "optional": true,
                     "tsType": {
@@ -9927,9 +9972,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                "line": 95,
+                "line": 96,
                 "col": 0,
-                "byteIndex": 2606
+                "byteIndex": 2662
               },
               "declarationKind": "export",
               "kind": "typeAlias",
@@ -9942,9 +9987,9 @@
                         "name": "id",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 96,
+                          "line": 97,
                           "col": 2,
-                          "byteIndex": 2633
+                          "byteIndex": 2689
                         },
                         "optional": true,
                         "tsType": {
@@ -9955,9 +10000,9 @@
                                 "name": "documentId",
                                 "location": {
                                   "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                                  "line": 96,
+                                  "line": 97,
                                   "col": 9,
-                                  "byteIndex": 2640
+                                  "byteIndex": 2696
                                 },
                                 "optional": true,
                                 "tsType": {
@@ -9970,9 +10015,9 @@
                                 "name": "instanceId",
                                 "location": {
                                   "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                                  "line": 96,
+                                  "line": 97,
                                   "col": 30,
-                                  "byteIndex": 2661
+                                  "byteIndex": 2717
                                 },
                                 "optional": true,
                                 "tsType": {
@@ -9989,9 +10034,9 @@
                         "name": "file",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 97,
+                          "line": 98,
                           "col": 2,
-                          "byteIndex": 2686
+                          "byteIndex": 2742
                         },
                         "tsType": {
                           "kind": "intersection",
@@ -10015,9 +10060,9 @@
                                     "name": "digest",
                                     "location": {
                                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                                      "line": 97,
+                                      "line": 98,
                                       "col": 24,
-                                      "byteIndex": 2708
+                                      "byteIndex": 2764
                                     },
                                     "optional": true,
                                     "tsType": {
@@ -10036,9 +10081,9 @@
                         "name": "camera",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 98,
+                          "line": 99,
                           "col": 2,
-                          "byteIndex": 2729
+                          "byteIndex": 2785
                         },
                         "optional": true,
                         "tsType": {
@@ -10057,9 +10102,9 @@
                         "name": "app",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 99,
+                          "line": 100,
                           "col": 2,
-                          "byteIndex": 2755
+                          "byteIndex": 2811
                         },
                         "optional": true,
                         "tsType": {
@@ -10078,9 +10123,9 @@
                         "name": "gps",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 100,
+                          "line": 101,
                           "col": 2,
-                          "byteIndex": 2775
+                          "byteIndex": 2831
                         },
                         "optional": true,
                         "tsType": {
@@ -10096,12 +10141,34 @@
                         }
                       },
                       {
+                        "name": "address",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
+                          "line": 102,
+                          "col": 2,
+                          "byteIndex": 2853
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "Geo.AddressDef",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "Geo.AddressDef",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "@epdoc/exif",
+                              "name": "Geo"
+                            }
+                          }
+                        }
+                      },
+                      {
                         "name": "image",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 101,
+                          "line": 103,
                           "col": 2,
-                          "byteIndex": 2797
+                          "byteIndex": 2881
                         },
                         "optional": true,
                         "tsType": {
@@ -10120,9 +10187,9 @@
                         "name": "video",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 102,
+                          "line": 104,
                           "col": 2,
-                          "byteIndex": 2821
+                          "byteIndex": 2905
                         },
                         "optional": true,
                         "tsType": {
@@ -10141,9 +10208,9 @@
                         "name": "audio",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 103,
+                          "line": 105,
                           "col": 2,
-                          "byteIndex": 2845
+                          "byteIndex": 2929
                         },
                         "optional": true,
                         "tsType": {
@@ -10162,9 +10229,9 @@
                         "name": "pdf",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 104,
+                          "line": 106,
                           "col": 2,
-                          "byteIndex": 2869
+                          "byteIndex": 2953
                         },
                         "optional": true,
                         "tsType": {
@@ -10183,9 +10250,9 @@
                         "name": "doc",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 105,
+                          "line": 107,
                           "col": 2,
-                          "byteIndex": 2889
+                          "byteIndex": 2973
                         },
                         "optional": true,
                         "tsType": {
@@ -10204,9 +10271,9 @@
                         "name": "metadata",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                          "line": 106,
+                          "line": 108,
                           "col": 2,
-                          "byteIndex": 2909
+                          "byteIndex": 2993
                         },
                         "optional": true,
                         "tsType": {
@@ -10235,9 +10302,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                "line": 108,
+                "line": 110,
                 "col": 0,
-                "byteIndex": 2933
+                "byteIndex": 3017
               },
               "declarationKind": "export",
               "kind": "typeAlias",
@@ -10268,9 +10335,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/types.ts",
-                "line": 109,
+                "line": 111,
                 "col": 13,
-                "byteIndex": 2988
+                "byteIndex": 3072
               },
               "declarationKind": "export",
               "kind": "variable",

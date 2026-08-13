@@ -1,3 +1,4 @@
+import type { Geo } from '@epdoc/exif';
 import type * as Schema from './collections.ts';
 import type * as Gps from './gps.ts';
 import type { Metadata } from './meta-types.ts';
@@ -29,12 +30,12 @@ export type FileGetMetadataOptions = IDigest & {
  * Options to File.info() method.
  */
 export type FileInfoOptions = {
-  /** Include all the resolved info objects */
-  resolved?: boolean;
   /** Include a top-level metadata object with the raw exiftool metadata */
   metadata?: boolean;
   /** Compute and include a digest in the top-level file object. */
   digest?: boolean;
+  /** Compute and include the address, given GPS coordinates */
+  address?: boolean;
 };
 
 /**
@@ -99,6 +100,7 @@ export type FileInfo = {
   camera?: Schema.Camera;
   app?: Schema.App;
   gps?: Gps.Location;
+  address?: Geo.AddressDef;
   image?: Schema.Image;
   video?: Schema.Video;
   audio?: Schema.Audio;

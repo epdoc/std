@@ -36,6 +36,7 @@ type MetaCache = {
   pdf?: Schema.Pdf;
   doc?: Schema.Doc;
   gps?: Gps.Location;
+  address?: Geo.AddressDef;
   app?: Schema.App;
 };
 
@@ -213,6 +214,7 @@ export class File {
       }
     }
     if (this.gps && Object.keys(this.gps)) result.gps = this.gps;
+    if (this.#cache.address) result.address = this.#cache.address;
 
     if (opts.metadata) result.metadata = this.metadata;
 
@@ -380,7 +382,16 @@ export class File {
     }
   }
 
-  async lookupAddress(): Promise<Geo.GeocodeResult | undefined> {
+  async getAddress(): Promise<Geo.AddressDef | undefined> {
+    if (this.#cache.address) return this.#cache.address;
+    const gps = this.#cache.gps;
+    if (!gps) return;
+    const api: Geo.NominatimApi = new Geo.NominatimApi();
+    this.#cache.address = await api.reverse(gps.lat, gps.lng);
+    return this.#cache.address;
+  }
+
+  async lookupAddress(): Promise<Geo.AddressDef | undefined> {
     const gps = this.#cache.gps;
     if (!gps) return;
     const api: Geo.NominatimApi = new Geo.NominatimApi();
@@ -388,7 +399,7 @@ export class File {
   }
 
   setAddress(
-    addr: Geo.AddressComponents,
+    addr: Geo.AddressDef,
     granularity: Geo.LocationGranularityType = Geo.LocationGranularity.sublocation,
   ): void {
     const tags: MetaTagDict = Geo.buildLocationTags(addr, granularity);

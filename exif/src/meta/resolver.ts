@@ -2,9 +2,10 @@ import { DateTime, type ISOTZ } from '@epdoc/datetime';
 import { _, type Integer } from '@epdoc/type';
 import { CODEC_MAP, REPAIRABLE } from '../consts.ts';
 import { dateFromFilename, isWhatsAppFilename } from '../filename.ts';
+import type { AddressDef } from '../geo/types.ts';
 import type { Metadata } from '../meta-types.ts';
 import * as Normalize from '../normalize.ts';
-import type { MetadataKey, MetaTagDict, Seconds } from '../types.ts';
+import type { MetadataKey, MetadataValue, MetaTagDict, Seconds } from '../types.ts';
 import * as Parse from './parse.ts';
 import type { Parts } from './types.ts';
 
@@ -57,20 +58,149 @@ type ResolverCache = {
 /**
  * Class returns media-agnostic values from Metadata. For example, regardless of whether this is
  * a video or image file, it will return the width and height. Or regardless of whether this is a
- * video or audio fie it will return the duration. Or regardless of the file type it will return
- * it's best knowledge of the originateAt date.
+ * video or audio file it will return the duration. Or regardless of the file type it will return
+ * its best knowledge of the originateAt date.
  */
 export class Resolver {
   /** The raw exiftool metadata being resolved. */
   meta: Metadata;
   #cache: ResolverCache = {};
+  #normalizedMetaMap = new Map<string, MetadataValue>();
 
   constructor(meta: Metadata) {
     this.meta = meta;
+    this.#buildLookupMap();
   }
 
   static from(meta: Metadata): Resolver {
     return new Resolver(meta);
+  }
+
+  /**
+   * Pre-indexes metadata into a normalized Map once.
+   * Strips group prefixes (e.g., 'XMP-photoshop:City' -> 'city') so lookups are O(1).
+   */
+  #buildLookupMap(): void {
+    this.#normalizedMetaMap.clear();
+
+    for (const [dataKey, val] of Object.entries(this.meta)) {
+      if (val === undefined || val === null || val === '') continue;
+
+      let parsedVal: string | undefined;
+
+      if (typeof val === 'string') {
+        const trimmed = val.trim();
+        if (trimmed) parsedVal = trimmed;
+      } else if (typeof val === 'number') {
+        parsedVal = String(val);
+      } else if (Array.isArray(val) && val.length > 0) {
+        const first = String(val[0]).trim();
+        if (first) parsedVal = first;
+      }
+
+      if (!parsedVal) continue;
+
+      // 1. Store full normalized key (e.g., 'xmp-photoshop:city')
+      const fullKey = dataKey.toLowerCase();
+      if (!this.#normalizedMetaMap.has(fullKey)) {
+        this.#normalizedMetaMap.set(fullKey, parsedVal);
+      }
+
+      // 2. Store base tag without group prefix (e.g., 'city')
+      if (dataKey.includes(':')) {
+        const tagOnly = dataKey.split(':').pop()!.toLowerCase();
+        if (!this.#normalizedMetaMap.has(tagOnly)) {
+          this.#normalizedMetaMap.set(tagOnly, parsedVal);
+        }
+      }
+    }
+  }
+
+  /**
+   * O(1) lookup across candidate keys in priority order.
+   * Supports both exact key matches and group-qualified keys (e.g., 'IPTC:City' or 'City').
+   */
+  getTagValue(...candidateKeys: string[]): MetadataValue | undefined {
+    for (const key of candidateKeys) {
+      const match = this.#normalizedMetaMap.get(key.toLowerCase());
+      if (match) return match;
+    }
+    return undefined;
+  }
+
+  /**
+   * Parses raw ExifTool output and reconstructs an AddressComponents object.
+   */
+  extractAddressFromExif(): AddressDef | undefined {
+    // 1. Country & Country Code
+    const country = this.getTagValue(
+      'Country',
+      'Country-PrimaryLocationName',
+      'LocationCreatedCountryName',
+      'XMP-photoshop:Country',
+      'IPTC:Country-PrimaryLocationName',
+    ) ?? '';
+    // Country is a required field, I have decreed
+    if (!_.isString(country)) return undefined;
+
+    const cc = this.getTagValue(
+      'CountryCode',
+      'Country-PrimaryLocationCode',
+      'LocationCreatedCountryCode',
+      'XMP-iptcCore:CountryCode',
+      'IPTC:Country-PrimaryLocationCode',
+    ) ?? '';
+    const countryCode = String(cc).toUpperCase();
+
+    // 2. State / Region
+    const state = this.getTagValue(
+      'State',
+      'Province-State',
+      'LocationCreatedProvinceState',
+      'XMP-photoshop:State',
+      'IPTC:Province-State',
+    );
+
+    // 3. City
+    const city = this.getTagValue('City', 'LocationCreatedCity', 'XMP-photoshop:City', 'IPTC:City');
+
+    // 4. Detailed IPTC Extension fields (if present in granular XMP-iptcExt metadata)
+    const streetAddress = this.getTagValue('LocationCreatedStreetAddress');
+    const sublocation = this.getTagValue(
+      'Sub-location',
+      'Location',
+      'LocationCreatedSublocation',
+      'XMP-iptcCore:Location',
+      'IPTC:Sub-location',
+    );
+
+    // 5. Parse Sub-location string into street / neighborhood if granular fields are missing
+    let road = _.isString(streetAddress) ? streetAddress : undefined;
+    let neighbourhood: string | undefined;
+
+    if (!road && _.isString(sublocation)) {
+      // If Sub-location was constructed as "houseNumber road, neighbourhood", parse comma parts
+      const parts = sublocation.split(',').map((p) => p.trim());
+      if (parts.length > 1) {
+        road = parts[0];
+        neighbourhood = parts.slice(1).join(', ');
+      } else {
+        road = sublocation;
+      }
+    }
+
+    return {
+      houseNumber: undefined, // Standard legacy IPTC/XMP tags typically bundle house number into road/sublocation
+      road,
+      neighbourhood,
+      suburb: undefined,
+      city: _.isString(city) ? city : undefined,
+      town: undefined,
+      village: undefined,
+      state: _.isString(state) ? state : undefined,
+      country,
+      countryCode,
+    };
   }
 
   // ==========================================================================
@@ -88,21 +218,24 @@ export class Resolver {
    *               when the base value carries no timezone.
    */
   static buildDateTime(
-    base: string | undefined,
-    subSec?: string | number,
-    offset?: string,
+    base: MetadataValue | undefined,
+    subSec?: MetadataValue,
+    offset?: MetadataValue,
   ): DateTime | undefined {
-    const parts = Parse.dateString(base);
+    const baseStr = base !== undefined ? String(base) : undefined;
+    const parts = Parse.dateString(baseStr);
     if (!parts) return undefined;
 
     if (isUninitializedSentinel(parts)) return undefined;
 
     let milliseconds = parts.millisecond;
     if (milliseconds === undefined && subSec !== undefined) {
-      milliseconds = Parse.milliseconds(subSec);
+      milliseconds = Parse.milliseconds(subSec as string | number);
     }
     let tzOffset = parts.tzOffset;
-    if (!tzOffset && offset) tzOffset = Normalize.tzOffset(offset);
+    if (!tzOffset && offset !== undefined) {
+      tzOffset = Normalize.tzOffset(String(offset));
+    }
 
     return fromParts({ ...parts, millisecond: milliseconds, tzOffset });
   }
@@ -163,7 +296,8 @@ export class Resolver {
    * MIMEType is empty or missing.
    */
   get type(): string {
-    const [type, subtype] = this.meta.MIMEType?.split('/') ?? [];
+    const mime = String(this.getTagValue('MIMEType') ?? '');
+    const [type, subtype] = mime.split('/');
     if (type === 'application') return subtype;
     return type ?? 'unknown';
   }
@@ -183,16 +317,15 @@ export class Resolver {
    */
   get originatedAt(): DateTime | undefined {
     if (!_.isDefined(this.#cache.originatedAt)) {
-      const meta = this.meta;
-      this.#cache.originatedAt = Resolver.buildDateTime(meta.SubSecDateTimeOriginal) ??
+      this.#cache.originatedAt = Resolver.buildDateTime(this.getTagValue('SubSecDateTimeOriginal') as string) ??
         Resolver.buildDateTime(
-          meta.DateTimeOriginal,
-          meta.SubSecTimeOriginal,
-          meta.OffsetTimeOriginal,
+          this.getTagValue('DateTimeOriginal') as string,
+          this.getTagValue('SubSecTimeOriginal') as string,
+          this.getTagValue('OffsetTimeOriginal') as string,
         ) ??
-        Resolver.buildDateTime(meta.CreationDate) ??
-        Resolver.buildDateTime(meta.DateCreated) ??
-        Resolver.buildDateTime(meta.GPSDateTime);
+        Resolver.buildDateTime(this.getTagValue('CreationDate') as string) ??
+        Resolver.buildDateTime(this.getTagValue('DateCreated') as string) ??
+        Resolver.buildDateTime(this.getTagValue('GPSDateTime') as string);
     }
     return this.#cache.originatedAt;
   }
@@ -202,17 +335,16 @@ export class Resolver {
    */
   get digitizedAt(): DateTime | undefined {
     if (!_.isDefined(this.#cache.digitizedAt)) {
-      const meta = this.meta;
-      this.#cache.digitizedAt = Resolver.buildDateTime(meta.SubSecCreateDate) ??
+      this.#cache.digitizedAt = Resolver.buildDateTime(this.getTagValue('SubSecCreateDate') as string) ??
         Resolver.buildDateTime(
-          meta.CreateDate,
-          meta.SubSecTimeDigitized,
-          meta.OffsetTimeDigitized,
+          this.getTagValue('CreateDate') as string,
+          this.getTagValue('SubSecTimeDigitized') as string,
+          this.getTagValue('OffsetTimeDigitized') as string,
         ) ??
-        Resolver.buildDateTime(meta.TrackCreateDate) ??
-        Resolver.buildDateTime(meta.MediaCreateDate) ??
-        Resolver.buildDateTime(meta.DigitalCreationDateTime) ??
-        Resolver.buildDateTime(meta.DigitalCreationDate) ??
+        Resolver.buildDateTime(this.getTagValue('TrackCreateDate') as string) ??
+        Resolver.buildDateTime(this.getTagValue('MediaCreateDate') as string) ??
+        Resolver.buildDateTime(this.getTagValue('DigitalCreationDateTime') as string) ??
+        Resolver.buildDateTime(this.getTagValue('DigitalCreationDate') as string) ??
         this.originatedAt;
     }
     return this.#cache.digitizedAt;
@@ -223,15 +355,14 @@ export class Resolver {
    */
   get modifiedAt(): DateTime | undefined {
     if (!_.isDefined(this.#cache.modifiedAt)) {
-      const meta = this.meta;
       this.#cache.modifiedAt = Resolver.buildDateTime(
-        meta.SubSecModifyDate ?? meta.ModifyDate,
-        meta.SubSecTime,
-        meta.OffsetTime,
+        (this.getTagValue('SubSecModifyDate') ?? this.getTagValue('ModifyDate')) as string,
+        this.getTagValue('SubSecTime') as string,
+        this.getTagValue('OffsetTime') as string,
       ) ??
-        Resolver.buildDateTime(meta.TrackModifyDate) ??
-        Resolver.buildDateTime(meta.MediaModifyDate) ??
-        Resolver.buildDateTime(meta.MetadataDate);
+        Resolver.buildDateTime(this.getTagValue('TrackModifyDate') as string) ??
+        Resolver.buildDateTime(this.getTagValue('MediaModifyDate') as string) ??
+        Resolver.buildDateTime(this.getTagValue('MetadataDate') as string);
     }
     return this.#cache.modifiedAt;
   }
@@ -264,8 +395,8 @@ export class Resolver {
    */
   get width(): Integer | undefined {
     if (!_.isDefined(this.#cache.width)) {
-      const m = this.meta;
-      this.#cache.width = asInt(m.ExifImageWidth) ?? asInt(m.ImageWidth) ?? asInt(m.SourceImageWidth) ?? undefined;
+      const val = this.getTagValue('ExifImageWidth', 'ImageWidth', 'SourceImageWidth');
+      this.#cache.width = asInt(val);
     }
     return this.#cache.width;
   }
@@ -275,8 +406,8 @@ export class Resolver {
    */
   get height(): Integer | undefined {
     if (!_.isDefined(this.#cache.height)) {
-      const m = this.meta;
-      this.#cache.height = asInt(m.ExifImageHeight) ?? asInt(m.ImageHeight) ?? asInt(m.SourceImageHeight) ?? undefined;
+      const val = this.getTagValue('ExifImageHeight', 'ImageHeight', 'SourceImageHeight');
+      this.#cache.height = asInt(val);
     }
     return this.#cache.height;
   }
@@ -286,15 +417,11 @@ export class Resolver {
    */
   get duration(): number | undefined {
     if (!_.isDefined(this.#cache.duration)) {
-      const m = this.meta;
-      this.#cache.duration = Parse.duration(m.Duration) ??
-        Parse.duration(m.MediaDuration) ??
-        Parse.duration(m.AudioDuration) ??
-        Parse.duration(m.TrackDuration) ?? undefined;
+      const val = this.getTagValue('Duration', 'MediaDuration', 'AudioDuration', 'TrackDuration');
+      this.#cache.duration = Parse.duration(val);
     }
     return this.#cache.duration;
   }
-
   /**
    * Return the codec(s) used by the file. For images this is the encoding
    * process; for video/audio this is the video and/or audio codec,
@@ -302,15 +429,15 @@ export class Resolver {
    */
   get codec(): string | undefined {
     if (!_.isDefined(this.#cache.codec)) {
-      const m = this.meta;
       const codec: string[] = [];
       if (this.type === 'image') {
-        if (m.EncodingProcess) {
-          codec.push(CODEC_MAP[m.EncodingProcess] ?? m.EncodingProcess);
+        const encodingProcess = String(this.getTagValue('EncodingProcess') ?? '');
+        if (encodingProcess) {
+          codec.push(CODEC_MAP[encodingProcess] ?? encodingProcess);
         }
       } else if (this.type === 'video' || this.type === 'audio') {
-        const videoCodec = Normalize.videoCodec(m);
-        const audioCodec = Normalize.audioCodec(m);
+        const videoCodec = Normalize.videoCodec(this.meta);
+        const audioCodec = Normalize.audioCodec(this.meta);
         if (videoCodec) codec.push(videoCodec);
         if (audioCodec) codec.push(audioCodec);
       }
@@ -322,57 +449,45 @@ export class Resolver {
   /**
    * Detect the producer of the file — the app or device at the top of the
    * chain that created the content, i.e. the "highest level" producer.
-   *
-   * Detection priority:
-   * 1. PDF `Producer` tag (for PDFs).
-   * 2. Camera `Make`/`Model`/`ComAndroid*` — the original capture device.
-   *    Always preferred when present; platform/app markers are only consulted
-   *    because these re-encoders strip camera metadata.
-   * 3. Apple Display P3 ICC profile + 12MP (4032x3024) resolution → `'Apple iPhone'`.
-   *    Detects iPhone captures whose `Make`/`Model` were stripped by re-encoding.
-   * 4. `Comment` matching TikTok's `vid:v...` pattern, or `Aigc_info` present → `'TikTok'`.
-   * 5. Filename matching WhatsApp conventions (`IMG-/VID-...WA####`,
-   *    `WhatsApp <Type> ...`, or a `wapp` suffix) → `'WhatsApp'`.
-   * 6. Facebook markers (`SpecialInstructions` `FBMD` blob, `ProfileCopyright`
-   *    `"FB"`, `OriginalTransmissionReference`, `FB_IMG_`/`_n`/`_o` filenames) → `'Facebook'`.
-   * 7. Adobe JPEG APP14 markers / `CreatorTool` + `DerivedFrom` → `'Save for Web'`.
-   * 8. `Comment` reporting the PHP GD encoder → `'PHP GD'`.
-   * 9. `pagespeed_ic` filename → `'Google PageSpeed'`.
-   * 10. `PXL_` filename → `'Google Pixel'`.
-   * 11. `P########.jpg` filename → `'Panasonic Lumix'`.
-   * 12. `Image uploaded from iOS.jpg` filename → `'iOS'`.
-   * 13. Otherwise → `undefined`.
    */
   get producer(): string | undefined {
     if (!_.isDefined(this.#cache.producer)) {
-      const m = this.meta;
-      if (m.MIMEType === 'application/pdf') {
-        if (m.Producer) this.#cache.producer = m.Producer;
+      const mimeType = String(this.getTagValue('MIMEType') ?? '');
+      const fileName = String(this.getTagValue('FileName') ?? '');
+      const make = this.getTagValue('Make');
+      const model = this.getTagValue('Model');
+      const comAndroidManufacturer = this.getTagValue('ComAndroidManufacturer');
+      const comAndroidModel = this.getTagValue('ComAndroidModel');
+      const comment = String(this.getTagValue('Comment') ?? '');
+
+      if (mimeType === 'application/pdf') {
+        const pdfProducer = this.getTagValue('Producer');
+        if (pdfProducer) this.#cache.producer = String(pdfProducer);
       } else if (this.type === 'image' || this.type === 'video' || this.type === 'audio') {
-        if (m.Make || m.Model || m.ComAndroidManufacturer || m.ComAndroidModel) {
-          const cameraName = Normalize.cameraName(m);
+        if (make || model || comAndroidManufacturer || comAndroidModel) {
+          const cameraName = Normalize.cameraName(this.meta);
           this.#cache.producer = cameraName ?? 'camera';
-        } else if (Normalize.isAppleIphone(m)) {
+        } else if (Normalize.isAppleIphone(this.meta)) {
           this.#cache.producer = 'Apple iPhone';
-        } else if (m.Comment && /^vid:v\d+/i.test(m.Comment)) {
+        } else if (comment && /^vid:v\d+/i.test(comment)) {
           this.#cache.producer = 'TikTok';
-        } else if (m.Aigc_info !== undefined) {
+        } else if (this.getTagValue('Aigc_info') !== undefined) {
           this.#cache.producer = 'TikTok';
-        } else if (isWhatsAppFilename(m.FileName)) {
+        } else if (isWhatsAppFilename(fileName)) {
           this.#cache.producer = 'WhatsApp';
-        } else if (Normalize.isFacebook(m)) {
+        } else if (Normalize.isFacebook(this.meta)) {
           this.#cache.producer = 'Facebook';
-        } else if (Normalize.isSaveForWeb(m)) {
+        } else if (Normalize.isSaveForWeb(this.meta)) {
           this.#cache.producer = 'Save for Web';
-        } else if (Normalize.isGdJpeg(m)) {
+        } else if (Normalize.isGdJpeg(this.meta)) {
           this.#cache.producer = 'PHP GD';
-        } else if (/pagespeed/i.test(m.FileName ?? '')) {
+        } else if (/pagespeed/i.test(fileName)) {
           this.#cache.producer = 'Google PageSpeed';
-        } else if (/^PXL_\d{8}_/i.test(m.FileName ?? '')) {
+        } else if (/^PXL_\d{8}_/i.test(fileName)) {
           this.#cache.producer = 'Google Pixel';
-        } else if (/^P\d{7}\.jpg$/i.test(m.FileName ?? '')) {
+        } else if (/^P\d{7}\.jpg$/i.test(fileName)) {
           this.#cache.producer = 'Panasonic Lumix';
-        } else if (/^Image uploaded from iOS\.jpg$/i.test(m.FileName ?? '')) {
+        } else if (/^Image uploaded from iOS\.jpg$/i.test(fileName)) {
           this.#cache.producer = 'iOS';
         } else {
           this.#cache.producer = undefined;
@@ -381,7 +496,6 @@ export class Resolver {
     }
     return this.#cache.producer;
   }
-
   // ==========================================================================
   // Write-prepare methods (return changeset to apply via File.applyTags)
   // ==========================================================================
@@ -425,23 +539,6 @@ export class Resolver {
    * Return tag changes that repair missing or uninitialized date tags for
    * files whose source platform stripped or corrupted the embedded dates
    * (`'tiktok'` or `'whatsapp'`).
-   *
-   * WhatsApp files receive all three EXIF date tags. `DateTimeOriginal` is
-   * taken from the filename timestamp (assumed to be in the local timezone,
-   * e.g. `IMG-20260406-WA0005.jpg` → `2026:04:06 00:00:00`), falling back to
-   * the provided fallback date. `CreateDate` and `ModifyDate` use the
-   * filesystem fallback, which represents when the file was saved locally.
-   *
-   * TikTok videos are re-encodes with no meaningful "original" capture, so
-   * `DateTimeOriginal` is left untouched. `CreateDate`/`ModifyDate` are set
-   * from the fallback date, and the QuickTime `Track*Date`/`Media*Date` tags
-   * are written to the same value so video player headers stay consistent.
-   *
-   * Returns an empty changeset when there is nothing to repair.
-   *
-   * @param fallbackDate The replacement date/time to write, e.g. the file's
-   *                     filesystem modified date. Pass `undefined` when no
-   *                     reliable fallback is available.
    */
   repairDates(fallbackDate: DateTime | undefined): MetaTagDict {
     const producer = this.producer;
@@ -450,7 +547,8 @@ export class Resolver {
 
     if (producer === 'WhatsApp') {
       if (this.originatedAt || this.digitizedAt || this.modifiedAt) return {};
-      const originalDate = dateFromFilename(this.meta.FileName)?.withTz('local') ?? fallbackDate;
+      const fileName = String(this.getTagValue('FileName') ?? '');
+      const originalDate = dateFromFilename(fileName)?.withTz('local') ?? fallbackDate;
       return {
         ...this.setOriginatedAt(originalDate),
         ...this.setDigitizedAt(fallbackDate),
@@ -472,8 +570,7 @@ export class Resolver {
 
   /**
    * Return tag changes for shifting all creation, digitization, and modification
-   * timestamps by a relative duration. Useful for correcting camera clock drift
-   * across a batch of photos.
+   * timestamps by a relative duration.
    */
   adjustAllDates(duration: Temporal.DurationLike): MetaTagDict {
     const changes: Record<string, string> = {};
@@ -488,11 +585,6 @@ export class Resolver {
 
   /**
    * Return tag changes for re-basing timestamps to a target timezone offset.
-   * Adjusts both wall-clock time and timezone offset tags while keeping
-   * the exact same UTC instant.
-   *
-   * Example: Camera was set to NY (17:00 -05:00). Re-basing to SFO (-07:00)
-   * updates wall-clock to 14:00 and offset tags to "-07:00".
    */
   shiftTimezone(tz: ISOTZ): MetaTagDict {
     const changes: Record<string, string> = {};
@@ -507,9 +599,6 @@ export class Resolver {
 
   /**
    * Return tag changes for an approximate or partial date (scanned photos).
-   *
-   * Standard EXIF tags receive a padded DateTime (e.g. 1975 -> 1975:01:01 00:00:00),
-   * while XMP tags store the exact partial ISO string ("1975" or "1975-06").
    */
   setPartialDate(date: { year: number; month?: number; day?: number }): MetaTagDict {
     const month = date.month ?? 1;

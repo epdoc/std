@@ -66,7 +66,7 @@ Deno.test('Resolver.type', async (t) => {
 
   await t.step('returns empty string when MIMEType is missing', () => {
     const meta: Metadata = { ...videoMeta(), MIMEType: undefined as unknown as string };
-    assertEquals(Meta.Resolver.from(meta).type, 'unknown');
+    assertEquals(Meta.Resolver.from(meta).type, '');
   });
 });
 

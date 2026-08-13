@@ -7,7 +7,8 @@ export type NominatimResponse = {
 };
 
 /** Normalized address extracted from reverse-geocoding (e.g., Nominatim/OSM) */
-export type AddressComponents = {
+export type AddressDef = {
+  displayName?: string;
   houseNumber?: string;
   road?: string;
   neighbourhood?: string;
@@ -23,12 +24,12 @@ export type AddressComponents = {
   countryCode: string;
 };
 
-export type GeocodeResult = {
-  displayName: string;
-  lat: string;
-  lon: string;
-  address: AddressComponents;
-};
+// export type GeocodeResult = {
+//   displayName: string;
+//   lat: string;
+//   lon: string;
+//   address: AddressComponents;
+// };
 
 /**
  * Combined map of ExifTool-compatible location tags covering EXIF, IPTC IIM, and XMP.
