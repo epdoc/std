@@ -14,7 +14,7 @@ function pickFirst(raw: Record<string, string | undefined>, ...keys: string[]): 
  * Normalizes raw reverse-geocode address attributes into structured AddressComponents. Used to
  * process API return values.
  */
-export function apiResponse2address(raw: Record<string, string | undefined>): AddressDef {
+export function apiResponse2addressDef(raw: Record<string, string | undefined>): AddressDef {
   return {
     houseNumber: raw.house_number ?? raw.house_name ?? raw.building,
     road: pickFirst(raw, 'road', 'pedestrian', 'street', 'footway', 'path', 'square'),
@@ -38,7 +38,7 @@ export function apiResponse2address(raw: Record<string, string | undefined>): Ad
  * Populates legacy IPTC IIM and standard XMP/MWG fields simultaneously to
  * maximize compatibility across photo management clients.
  */
-export function buildLocationTags(
+export function addressDef2Exif(
   addr: AddressDef,
   granularity: LocationGranularityType,
 ): MetaTagDict {

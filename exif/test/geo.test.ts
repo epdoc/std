@@ -1,6 +1,6 @@
 import { assertEquals } from '@std/assert';
 import type { AddressDef } from '../src/geo/types.ts';
-import { apiResponse2address } from '../src/geo/utils.ts';
+import { apiResponse2addressDef } from '../src/geo/utils.ts';
 import { Geo } from '../src/mod.ts';
 
 // --- buildLocationTags ---
@@ -119,7 +119,7 @@ Deno.test('Geo.buildLocationTags', async (t) => {
 
 Deno.test('extractAddress', async (t) => {
   await t.step('extracts all fields from a full Nominatim address', () => {
-    const result = apiResponse2address({
+    const result = apiResponse2addressDef({
       house_number: '10',
       road: 'Downing Street',
       neighbourhood: 'Westminster',
@@ -140,7 +140,7 @@ Deno.test('extractAddress', async (t) => {
   });
 
   await t.step('uses pedestrian tag as road fallback', () => {
-    const result = apiResponse2address({
+    const result = apiResponse2addressDef({
       pedestrian: 'Oxford Street',
       country: 'UK',
       country_code: 'gb',
@@ -149,7 +149,7 @@ Deno.test('extractAddress', async (t) => {
   });
 
   await t.step('uses street tag as road fallback', () => {
-    const result = apiResponse2address({
+    const result = apiResponse2addressDef({
       street: 'Baker Street',
       country: 'UK',
       country_code: 'gb',
@@ -158,7 +158,7 @@ Deno.test('extractAddress', async (t) => {
   });
 
   await t.step('picks town as city fallback', () => {
-    const result = apiResponse2address({
+    const result = apiResponse2addressDef({
       town: 'Brighton',
       country: 'UK',
       country_code: 'gb',
@@ -167,7 +167,7 @@ Deno.test('extractAddress', async (t) => {
   });
 
   await t.step('picks village as city fallback', () => {
-    const result = apiResponse2address({
+    const result = apiResponse2addressDef({
       village: 'Cotswolds',
       country: 'UK',
       country_code: 'gb',
@@ -176,7 +176,7 @@ Deno.test('extractAddress', async (t) => {
   });
 
   await t.step('picks municipality as city fallback', () => {
-    const result = apiResponse2address({
+    const result = apiResponse2addressDef({
       municipality: 'Borough',
       country: 'UK',
       country_code: 'gb',
@@ -185,7 +185,7 @@ Deno.test('extractAddress', async (t) => {
   });
 
   await t.step('city takes priority over town/village/municipality', () => {
-    const result = apiResponse2address({
+    const result = apiResponse2addressDef({
       city: 'London',
       town: 'Brighton',
       village: 'Cotswolds',
@@ -197,13 +197,13 @@ Deno.test('extractAddress', async (t) => {
   });
 
   await t.step('handles missing country and country code', () => {
-    const result = apiResponse2address({});
+    const result = apiResponse2addressDef({});
     assertEquals(result.country, '');
     assertEquals(result.countryCode, '');
   });
 
   await t.step('uppercases country code', () => {
-    const result = apiResponse2address({
+    const result = apiResponse2addressDef({
       country_code: 'de',
       country: 'Germany',
     });

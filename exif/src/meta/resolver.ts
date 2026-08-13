@@ -131,7 +131,7 @@ export class Resolver {
   /**
    * Parses raw ExifTool output and reconstructs an AddressComponents object.
    */
-  extractAddressFromExif(): AddressDef | undefined {
+  getAddressDef(): AddressDef | undefined {
     // 1. Country & Country Code
     const country = this.getTagValue(
       'Country',
@@ -189,6 +189,8 @@ export class Resolver {
       }
     }
 
+    const displayName = [road, neighbourhood, city, state, country, countryCode].join(', ');
+
     return {
       houseNumber: undefined, // Standard legacy IPTC/XMP tags typically bundle house number into road/sublocation
       road,
@@ -200,6 +202,7 @@ export class Resolver {
       state: _.isString(state) ? state : undefined,
       country,
       countryCode,
+      displayName,
     };
   }
 

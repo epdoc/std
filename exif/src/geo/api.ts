@@ -1,6 +1,6 @@
 import type { AddressDef } from './mod.ts';
 import type { NominatimResponse } from './types.ts';
-import { apiResponse2address } from './utils.ts';
+import { apiResponse2addressDef } from './utils.ts';
 
 export class NominatimApi {
   #baseUrl: string;
@@ -35,7 +35,7 @@ export class NominatimApi {
       throw new Error(data?.error ?? 'Nominatim returned no data');
     }
 
-    const result = apiResponse2address(data.address ?? {});
+    const result = apiResponse2addressDef(data.address ?? {});
     if (data.display_name) result.displayName = data.display_name;
     return result;
   }
