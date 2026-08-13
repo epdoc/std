@@ -402,7 +402,7 @@ export class File {
     addr: Geo.AddressDef,
     granularity: Geo.LocationGranularityType = Geo.LocationGranularity.sublocation,
   ): void {
-    const tags: MetaTagDict = Geo.buildLocationTags(addr, granularity);
+    const tags: MetaTagDict = Geo.addressDef2exifTags(addr, granularity);
     this.applyTags(tags);
   }
 

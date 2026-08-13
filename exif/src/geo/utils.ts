@@ -38,7 +38,7 @@ export function apiResponse2addressDef(raw: Record<string, string | undefined>):
  * Populates legacy IPTC IIM and standard XMP/MWG fields simultaneously to
  * maximize compatibility across photo management clients.
  */
-export function addressDef2Exif(
+export function addressDef2exifTags(
   addr: AddressDef,
   granularity: LocationGranularityType,
 ): MetaTagDict {

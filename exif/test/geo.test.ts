@@ -20,7 +20,7 @@ Deno.test('Geo.buildLocationTags', async (t) => {
   };
 
   await t.step('country granularity returns only country tags', () => {
-    const tags = Geo.buildLocationTags(addr, Geo.LocationGranularity.country);
+    const tags = Geo.addressDef2exifTags(addr, Geo.LocationGranularity.country);
     assertEquals(
       Object.keys(tags).sort(),
       ['Country', 'CountryCode', 'Country-PrimaryLocationCode', 'Country-PrimaryLocationName'].sort(),
@@ -30,13 +30,13 @@ Deno.test('Geo.buildLocationTags', async (t) => {
   });
 
   await t.step('state granularity adds State', () => {
-    const tags = Geo.buildLocationTags(addr, Geo.LocationGranularity.state);
+    const tags = Geo.addressDef2exifTags(addr, Geo.LocationGranularity.state);
     assertEquals(tags['State'], 'England');
     assertEquals(tags['Country'], 'United Kingdom');
   });
 
   await t.step('city granularity adds City', () => {
-    const tags = Geo.buildLocationTags(addr, Geo.LocationGranularity.city);
+    const tags = Geo.addressDef2exifTags(addr, Geo.LocationGranularity.city);
     assertEquals(tags['City'], 'London');
     assertEquals(tags['State'], 'England');
   });
@@ -47,7 +47,7 @@ Deno.test('Geo.buildLocationTags', async (t) => {
       city: undefined,
       town: 'Brighton',
     };
-    const tags = Geo.buildLocationTags(townAddr, Geo.LocationGranularity.city);
+    const tags = Geo.addressDef2exifTags(townAddr, Geo.LocationGranularity.city);
     assertEquals(tags['City'], 'Brighton');
   });
 
@@ -58,12 +58,12 @@ Deno.test('Geo.buildLocationTags', async (t) => {
       town: undefined,
       village: 'Cotswolds',
     };
-    const tags = Geo.buildLocationTags(villageAddr, Geo.LocationGranularity.city);
+    const tags = Geo.addressDef2exifTags(villageAddr, Geo.LocationGranularity.city);
     assertEquals(tags['City'], 'Cotswolds');
   });
 
   await t.step('sublocation granularity adds Sub-location with road and neighbourhood', () => {
-    const tags = Geo.buildLocationTags(addr, Geo.LocationGranularity.sublocation);
+    const tags = Geo.addressDef2exifTags(addr, Geo.LocationGranularity.sublocation);
     assertEquals(tags['Sub-location'], 'Downing Street, Westminster');
     assertEquals(tags['City'], 'London');
   });
@@ -74,24 +74,24 @@ Deno.test('Geo.buildLocationTags', async (t) => {
       neighbourhood: undefined,
       suburb: 'Mayfair',
     };
-    const tags = Geo.buildLocationTags(suburbAddr, Geo.LocationGranularity.sublocation);
+    const tags = Geo.addressDef2exifTags(suburbAddr, Geo.LocationGranularity.sublocation);
     assertEquals(tags['Sub-location'], 'Downing Street, Mayfair');
   });
 
   await t.step('exact granularity includes house number', () => {
-    const tags = Geo.buildLocationTags(addr, Geo.LocationGranularity.exact);
+    const tags = Geo.addressDef2exifTags(addr, Geo.LocationGranularity.exact);
     assertEquals(tags['Sub-location'], '10, Downing Street, Westminster');
   });
 
   await t.step('exact granularity without house number falls back to sublocation behaviour', () => {
     const noHouse: AddressDef = { ...addr, houseNumber: undefined };
-    const tags = Geo.buildLocationTags(noHouse, Geo.LocationGranularity.exact);
+    const tags = Geo.addressDef2exifTags(noHouse, Geo.LocationGranularity.exact);
     assertEquals(tags['Sub-location'], 'Downing Street, Westminster');
   });
 
   await t.step('omits State when state is undefined', () => {
     const noState: AddressDef = { ...addr, state: undefined };
-    const tags = Geo.buildLocationTags(noState, Geo.LocationGranularity.state);
+    const tags = Geo.addressDef2exifTags(noState, Geo.LocationGranularity.state);
     assertEquals('State' in tags, false);
     assertEquals(tags['Country'], 'United Kingdom');
   });
@@ -109,7 +109,7 @@ Deno.test('Geo.buildLocationTags', async (t) => {
       country: 'Japan',
       countryCode: 'JP',
     };
-    const tags = Geo.buildLocationTags(bare, Geo.LocationGranularity.exact);
+    const tags = Geo.addressDef2exifTags(bare, Geo.LocationGranularity.exact);
     assertEquals(tags['City'], 'Tokyo');
     assertEquals('Sub-location' in tags, false);
   });
