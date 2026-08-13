@@ -1041,37 +1041,27 @@
                     "functionDef": {
                       "params": [],
                       "returnType": {
-                        "repr": "Promise",
-                        "kind": "typeRef",
-                        "value": {
-                          "typeParams": [
-                            {
-                              "kind": "union",
-                              "value": [
-                                {
-                                  "repr": "Geo.AddressDef",
-                                  "kind": "typeRef",
-                                  "value": {
-                                    "typeName": "Geo.AddressDef",
-                                    "resolution": {
-                                      "kind": "import",
-                                      "specifier": "./geo/mod.ts"
-                                    }
-                                  }
-                                },
-                                {
-                                  "repr": "undefined",
-                                  "kind": "keyword",
-                                  "value": "undefined"
-                                }
-                              ]
+                        "kind": "union",
+                        "value": [
+                          {
+                            "repr": "Geo.AddressDef",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "Geo.AddressDef",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./geo/mod.ts"
+                              }
                             }
-                          ],
-                          "typeName": "Promise"
-                        }
+                          },
+                          {
+                            "repr": "undefined",
+                            "kind": "keyword",
+                            "value": "undefined"
+                          }
+                        ]
                       },
-                      "hasBody": true,
-                      "isAsync": true
+                      "hasBody": true
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
@@ -1122,7 +1112,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 393,
                       "col": 2,
-                      "byteIndex": 12211
+                      "byteIndex": 12202
                     }
                   },
                   {
@@ -1178,7 +1168,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 400,
                       "col": 2,
-                      "byteIndex": 12440
+                      "byteIndex": 12431
                     }
                   },
                   {
@@ -1213,7 +1203,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 412,
                       "col": 2,
-                      "byteIndex": 12860
+                      "byteIndex": 12851
                     }
                   },
                   {
@@ -1245,7 +1235,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 430,
                       "col": 2,
-                      "byteIndex": 13428
+                      "byteIndex": 13419
                     }
                   },
                   {
@@ -1292,7 +1282,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 438,
                       "col": 2,
-                      "byteIndex": 13700
+                      "byteIndex": 13691
                     }
                   },
                   {
@@ -1359,7 +1349,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 449,
                       "col": 2,
-                      "byteIndex": 14012
+                      "byteIndex": 14003
                     }
                   },
                   {
@@ -1399,7 +1389,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 461,
                       "col": 2,
-                      "byteIndex": 14358
+                      "byteIndex": 14349
                     }
                   },
                   {
@@ -1441,7 +1431,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 474,
                       "col": 2,
-                      "byteIndex": 14755
+                      "byteIndex": 14746
                     }
                   },
                   {
@@ -1489,7 +1479,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
                       "line": 518,
                       "col": 2,
-                      "byteIndex": 16264
+                      "byteIndex": 16255
                     }
                   }
                 ]

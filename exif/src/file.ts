@@ -382,12 +382,12 @@ export class File {
     }
   }
 
-  async getAddress(): Promise<Geo.AddressDef | undefined> {
+  getAddress(): Geo.AddressDef | undefined {
     if (this.#cache.address) return this.#cache.address;
     const gps = this.#cache.gps;
     if (!gps) return;
-    const api: Geo.NominatimApi = new Geo.NominatimApi();
-    this.#cache.address = await api.reverse(gps.lat, gps.lng);
+    // const api: Geo.NominatimApi = new Geo.NominatimApi();
+    // this.#cache.address = await api.reverse(gps.lat, gps.lng);
     return this.#cache.address;
   }
 
