@@ -78,6 +78,7 @@ export class File {
   #dirty = false;
   #pending = new Map<WriteTag, MetadataValue>();
   #api?: Geo.AddressLookup;
+  #address?: Geo.AddressDef;
 
   /**
    * Create a File for the given media file.
@@ -300,8 +301,12 @@ export class File {
       }
     }
     if (this.gps && Object.keys(this.gps)) result.gps = this.gps;
-    if (this.#cache.address) result.address = this.#cache.address;
-    if (this.#cache.lookup) result.lookup = this.#cache.lookup;
+    if (this.address && Object.keys(this.address).length) {
+      result.address = this.address;
+    }
+    if (this.lookup && Object.keys(this.lookup).length) {
+      result.lookup = this.lookup;
+    }
 
     if (opts.metadata) result.metadata = this.metadata;
 
@@ -515,17 +520,18 @@ export class File {
     }
   }
 
-  /**
-   * The cached reverse-geocoded address, when one has been looked up.
-   *
-   * @deprecated Use {@link lookupAddress} to populate the address from the
-   *   current GPS coordinates.
-   */
-  getAddress(): Geo.AddressDef | undefined {
+  get address(): Geo.AddressDef | undefined {
     if (this.#cache.address) return this.#cache.address;
-    const gps = this.#cache.gps;
-    if (!gps) return;
+    const result = this.resolver.getAddressDef();
+    if (result && Object.keys(result).length) {
+      this.#cache.address = result;
+    }
     return this.#cache.address;
+  }
+
+  get lookup(): Geo.AddressDef | undefined {
+    // We need to pre-fetch this if we want it as part of info
+    return this.#cache.lookup;
   }
 
   /**
