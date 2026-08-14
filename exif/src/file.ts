@@ -37,8 +37,8 @@ type MetaCache = {
   pdf?: Schema.Pdf;
   doc?: Schema.Doc;
   gps?: Gps.Location;
-  address?: Geo.AddressHuman;
-  lookup?: Geo.AddressHuman;
+  address?: Geo.AddressDef;
+  lookup?: Geo.AddressDef;
   app?: Schema.App;
 };
 
@@ -390,7 +390,7 @@ export class File {
     }
   }
 
-  getAddress(): Geo.AddressHuman | undefined {
+  getAddress(): Geo.AddressDef | undefined {
     if (this.#cache.address) return this.#cache.address;
     const gps = this.#cache.gps;
     if (!gps) return;
@@ -399,7 +399,7 @@ export class File {
     return this.#cache.address;
   }
 
-  async lookupAddress(userAgent: string): Promise<Geo.AddressHuman | undefined> {
+  async lookupAddress(userAgent: string): Promise<Geo.AddressDef | undefined> {
     if (this.#cache.lookup) return this.#cache.lookup;
     if (!this.gps) return;
     await this.#api.lookup(userAgent, this.gps.lat, this.gps.lng);
@@ -407,7 +407,7 @@ export class File {
     return this.#cache.lookup;
   }
 
-  setAddressFromLookup(granularity: Geo.LocationGranularityType = Geo.LocationGranularity.location): void {
+  setAddressFromLookup(granularity: Geo.LevelType = Geo.Level.location): void {
     const tags: MetaTagDict = this.#api.getTags(granularity);
     this.applyTags(tags);
   }

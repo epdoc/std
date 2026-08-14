@@ -1,14 +1,14 @@
 import { assert } from '@std/assert/assert';
 import type { MetaTagDict } from '../types.ts';
-import { LevelFilter, type LocationGranularityType } from './enums.ts';
-import type { AddressHuman, NominatimResponse } from './types.ts';
+import { LevelOrder, type LevelType } from './enums.ts';
+import type { AddressDef, NominatimResponse } from './types.ts';
 
 const ERR_NOT_CALLED = 'Must call address lookup before accessing response data';
 
 export class AddressLookup {
   #baseUrl: string;
   #response?: NominatimResponse;
-  #address?: AddressHuman;
+  #address?: AddressDef;
   #tags?: MetaTagDict;
   #displayName?: string;
 
@@ -73,7 +73,7 @@ export class AddressLookup {
   /**
    * All fields that we have parsed from the raw API response.
    */
-  get address(): AddressHuman {
+  get address(): AddressDef {
     assert(this.#address, ERR_NOT_CALLED);
     return this.#address;
   }
@@ -96,11 +96,11 @@ export class AddressLookup {
    * @param level
    * @returns
    */
-  getTags(level?: LocationGranularityType): MetaTagDict {
-    const filter = level ? LevelFilter[level] : 0;
+  getTags(level?: LevelType): MetaTagDict {
+    const filter = level ? LevelOrder[level] : 0;
     const addr = this.response.address || {};
     const tags: MetaTagDict = {};
-    const address: AddressHuman = {};
+    const address: AddressDef = {};
 
     // Helper to pick first non-empty value in priority order
     const getFirstMatch = (keys: string[]): string | undefined => {
@@ -123,7 +123,7 @@ export class AddressLookup {
       address.countryCode = addr.country_code.trim().toUpperCase();
     }
 
-    if (filter > LevelFilter.state) return tags;
+    if (filter > LevelOrder.state) return tags;
 
     // 2. State / Region / Province
     const state = getFirstMatch(['state', 'province', 'state_district', 'region']);
@@ -132,7 +132,7 @@ export class AddressLookup {
       address.state = state;
     }
 
-    if (filter > LevelFilter.county) return tags;
+    if (filter > LevelOrder.county) return tags;
 
     // 2. County
     const county = getFirstMatch(['county', 'region']);
@@ -141,7 +141,7 @@ export class AddressLookup {
       address.county = county;
     }
 
-    if (filter > LevelFilter.city) return tags;
+    if (filter > LevelOrder.city) return tags;
 
     // 3. City / Town / Village
     const city = getFirstMatch(['hamlet', 'village', 'town', 'city', 'municipality']);
@@ -150,7 +150,7 @@ export class AddressLookup {
       address.city = city;
     }
 
-    if (filter > LevelFilter.location) return tags;
+    if (filter > LevelOrder.location) return tags;
 
     // 4. Location / Sublocation / District
     const location = getFirstMatch([
@@ -174,7 +174,7 @@ export class AddressLookup {
       address.postalCode = addr.postcode.trim();
     }
 
-    if (filter > LevelFilter.exact) return tags;
+    if (filter > LevelOrder.exact) return tags;
 
     // 6. Street Address
     const houseNumber = getFirstMatch(['house_number', 'house_name', 'building']);

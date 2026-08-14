@@ -96,7 +96,7 @@ Deno.test('Geo.AddressLookup.getTags granularity', async (t) => {
   const api = lookupFrom(FULL_ADDRESS);
 
   await t.step('country granularity returns only country tags', () => {
-    const tags = api.getTags(Geo.LocationGranularity.country);
+    const tags = api.getTags(Geo.Level.country);
     assertEquals(
       Object.keys(tags).sort(),
       ['MWG:Country', 'MWG:CountryCode'].sort(),
@@ -106,35 +106,35 @@ Deno.test('Geo.AddressLookup.getTags granularity', async (t) => {
   });
 
   await t.step('state granularity adds State', () => {
-    const tags = api.getTags(Geo.LocationGranularity.state);
+    const tags = api.getTags(Geo.Level.state);
     assertEquals(tags['MWG:State'], 'England');
     assertEquals(tags['MWG:Country'], 'United Kingdom');
     assertEquals('MWG:County' in tags, false);
   });
 
   await t.step('county granularity adds County', () => {
-    const tags = api.getTags(Geo.LocationGranularity.county);
+    const tags = api.getTags(Geo.Level.county);
     assertEquals(tags['MWG:County'], 'Greater London');
     assertEquals(tags['MWG:State'], 'England');
     assertEquals('MWG:City' in tags, false);
   });
 
   await t.step('city granularity adds City', () => {
-    const tags = api.getTags(Geo.LocationGranularity.city);
+    const tags = api.getTags(Geo.Level.city);
     assertEquals(tags['MWG:City'], 'London');
     assertEquals(tags['MWG:County'], 'Greater London');
     assertEquals('MWG:Location' in tags, false);
   });
 
   await t.step('location granularity adds Location and PostalCode', () => {
-    const tags = api.getTags(Geo.LocationGranularity.location);
+    const tags = api.getTags(Geo.Level.location);
     assertEquals(tags['MWG:Location'], 'City of Westminster');
     assertEquals(tags['XMP-iptcCore:PostalCode'], 'SW1A 2AA');
     assertEquals('XMP-iptcCore:StreetAddress' in tags, false);
   });
 
   await t.step('exact granularity adds StreetAddress', () => {
-    const tags = api.getTags(Geo.LocationGranularity.exact);
+    const tags = api.getTags(Geo.Level.exact);
     assertEquals(tags['XMP-iptcCore:StreetAddress'], '10 Downing Street');
     assertEquals(tags['MWG:City'], 'London');
   });

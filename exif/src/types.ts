@@ -100,8 +100,8 @@ export type FileInfo = {
   camera?: Schema.Camera;
   app?: Schema.App;
   gps?: Gps.Location;
-  address?: Geo.AddressHuman;
-  lookup?: Geo.AddressHuman;
+  address?: Geo.AddressDef;
+  lookup?: Geo.AddressDef;
   image?: Schema.Image;
   video?: Schema.Video;
   audio?: Schema.Audio;
