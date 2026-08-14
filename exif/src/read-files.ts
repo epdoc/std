@@ -7,9 +7,20 @@ import { json as parseJson } from './meta/parse.ts';
 import type { IDigest, IDryRun } from './types.ts';
 
 /**
- * Read JSON metadata for one or more files.
+ * Read JSON metadata for one or more files in a single exiftool invocation.
  *
- * @returns An array of {@link File} instances, one per input file (in input order).
+ * File stats (and digests, when requested) are computed in parallel after the
+ * exiftool read. This is the recommended way to bulk-read metadata; it replaces
+ * the former `Reader` class.
+ *
+ * @param files Paths or {@link FS.File} instances to read.
+ * @param [opts.dryRun=false] When true, the returned {@link File} instances
+ *   have {@link File.write} and {@link File.repair} as no-ops on the binary.
+ * @param [opts.digest] Compute a digest per file; a string names the
+ *   algorithm, `true` uses the default (`sha1`). Exposed via
+ *   {@link File.info} as `file.digest`.
+ * @returns An array of {@link File} instances, one per input file (in input
+ *   order). Files whose metadata could not be read still appear in the result.
  */
 export async function readFiles(files: (FS.FilePath | FS.File)[], opts: IDigest & IDryRun = {}): Promise<File[]> {
   const paths = files.map((f) => (_.isString(f) ? f : f.path));

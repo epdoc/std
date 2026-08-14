@@ -1,5 +1,12 @@
 import { _ } from '@epdoc/type';
 
+/**
+ * Decimal GPS coordinates.
+ *
+ * `lat`/`lng` are required and signed (negative = south/west). The remaining
+ * fields are optional location-name components; only the numeric coordinates
+ * are written by {@link File.setGPS}.
+ */
 export type Location = {
   lat: number;
   lng: number;
@@ -21,8 +28,11 @@ export interface Options {
   secondPrecision?: number;
 }
 
+/** The exiftool DMS string and hemisphere ref for a latitude. */
 export type DmsLat = { dms: string; ref: 'N' | 'S' };
+/** The exiftool DMS string and hemisphere ref for a longitude. */
 export type DmsLng = { dms: string; ref: 'E' | 'W' };
+/** Union of the latitude and longitude DMS records. */
 export type Dms = DmsLat | DmsLng;
 
 const DMS_RE =
@@ -36,6 +46,20 @@ function normalizeRef(ref: string | undefined): string | undefined {
   return ref.trim().toUpperCase().match(REF_RE)?.[1];
 }
 
+/**
+ * Parse a GPS coordinate value into signed decimal degrees.
+ *
+ * Accepts a number, a numeric string (e.g. `"-33.8688"`), or an exiftool DMS
+ * string (e.g. `"51 deg 30' 26.00\" N"`). The hemisphere is taken from the
+ * `ref` argument (or embedded direction) and applied as the sign: `S`/`W`
+ * yield negative values.
+ *
+ * @param raw The coordinate value from exiftool (`GPSLatitude`, etc.).
+ * @param ref The hemisphere reference (`GPSLatitudeRef`, etc.); `N`/`S`/`E`/`W`
+ *   or a spelled-out variant such as `"South"`.
+ * @returns Signed decimal degrees, or `undefined` when the value is missing or
+ *   unparseable.
+ */
 export function parse(raw: string | number | undefined, ref: string | undefined): number | undefined {
   if (raw === undefined || raw === null) return undefined;
   if (typeof raw === 'number' && isNaN(raw)) return undefined;
@@ -77,7 +101,18 @@ export function parse(raw: string | number | undefined, ref: string | undefined)
   return dec;
 }
 
-/** Helper to format DMS strings for ExifTool writing */
+/**
+ * Convert a signed decimal coordinate into the DMS record exiftool expects.
+ *
+ * The hemisphere ref (`N`/`S` for latitude, `E`/`W` for longitude) is derived
+ * from the sign of the input. Seconds are rounded to the given precision with
+ * roll-over handling (e.g. `59.999"` → `60"` → `0"`, minutes incremented).
+ *
+ * @param decimal Signed decimal degrees.
+ * @param type Whether the coordinate is a latitude or longitude.
+ * @param precision Decimal places for the seconds field.
+ * @returns The `{ dms, ref }` record to write to `GPS*`/`GPS*Ref`.
+ */
 export function toDms(
   decimal: number,
   type: 'lat' | 'lng',

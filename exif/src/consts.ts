@@ -1,5 +1,11 @@
 import type { Metadata } from './meta-types.ts';
 
+/**
+ * Rules for normalizing the `Software`/`CreatorTool` tag into a display label.
+ *
+ * Each rule matches the start of the raw value; a `label` of `undefined`
+ * keeps the raw value (the pattern is still a match, but produces no label).
+ */
 export const APP_NORMALIZE_RULES: { pattern: RegExp; label: string | undefined }[] = [
   { pattern: /^Adobe Photoshop Camera Raw /i, label: 'Adobe Camera Raw' },
   { pattern: /^Adobe Lightroom /i, label: 'Adobe Lightroom' },
@@ -24,6 +30,13 @@ export interface MakeConfig {
   model?: ModelFn;
 }
 
+/**
+ * Make → display-name overrides used by {@link Normalize.cameraName}.
+ *
+ * Keyed by lower-cased make; each entry supplies a clean display name, a
+ * regex test on the raw make, optional exact model renames, and/or a custom
+ * model formatter.
+ */
 export const CAMERA_MAP: Record<string, MakeConfig> = {
   samsung: {
     test: /^samsung/i,
@@ -73,9 +86,14 @@ export const CAMERA_MAP: Record<string, MakeConfig> = {
   },
 };
 
+/** Image `EncodingProcess` → normalized codec label. */
 export const CODEC_MAP: Record<string, string> = {
   'Progressive DCT, Huffman coding': 'pJPEG',
   'Baseline DCT, Huffman coding': 'JPEG',
 };
 
+/**
+ * Producers whose downloads strip embedded dates and can be repaired by
+ * {@link File.repair}: `"WhatsApp"` and `"TikTok"`.
+ */
 export const REPAIRABLE: string[] = ['WhatsApp', 'TikTok'];

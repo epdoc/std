@@ -1,3 +1,4 @@
+/** The raw Nominatim `/reverse` JSON response shape. */
 export type NominatimResponse = {
   display_name?: string;
   lat?: string;
@@ -38,8 +39,9 @@ interface NominatimAddress {
   [key: string]: string | undefined;
 }
 
-/** Normalized address extracted from reverse-geocoding (e.g., Nominatim/OSM) */
-
+/**
+ * Normalized address extracted from reverse-geocoding (e.g., Nominatim/OSM).
+ */
 export type AddressDef = {
   displayName?: string;
   country?: string;
@@ -52,14 +54,8 @@ export type AddressDef = {
   streetAddress?: string;
 };
 
+/** An {@link AddressDef} that is guaranteed to carry a `displayName`. */
 export type AddressDisplayDef = { displayName: string } & AddressDef;
-
-// export type GeocodeResult = {
-//   displayName: string;
-//   lat: string;
-//   lon: string;
-//   address: AddressComponents;
-// };
 
 /**
  * Combined map of ExifTool-compatible location tags covering EXIF, IPTC IIM, and XMP.

@@ -4,14 +4,21 @@ import type * as Gps from './gps.ts';
 import type { Metadata } from './meta-types.ts';
 
 /**
- * Options shared by the {@link Reader} and {@link File} classes.
+ * Options shared by {@link File} and {@link readFiles}.
  */
 export interface IDryRun {
+  /** When true, exiftool write operations ({@link File.write}, {@link File.repair})
+   *  compute their changesets without invoking the binary. */
   dryRun?: boolean;
 }
 
 export interface IDigest {
-  /** Compute and include a digest in the top-level file object. */
+  /**
+   * Compute and include a digest of the file content. A string names the
+   * digest algorithm (see {@link @epdoc/fs!FS.DigestAlgorithm}); `true` uses
+   * the default (`sha1`). The digest appears as `file.digest` in the info
+   * output.
+   */
   digest?: string | boolean;
 }
 
@@ -19,10 +26,10 @@ export type Seconds = number;
 export type Digest = string;
 
 /**
- * Options when retrieving metadata from exiftools
+ * Options when retrieving metadata from exiftool.
  */
 export type FileGetMetadataOptions = IDigest & {
-  /** On subsequent calls will use a cache version, unless set to true. */
+  /** When true, re-read metadata with a new exiftool call instead of using the cache. */
   force?: boolean;
 };
 
@@ -39,19 +46,35 @@ export type FileInfoOptions = {
 };
 
 /**
- * Represents one key/value change to the Metadata
+ * A single tag/value pair queued for writing.
+ *
+ * Used as the element type of the {@link File.pending} map and the
+ * {@link MetaTagDict} changesets produced by the write-prepare methods.
+ */
+export type MetaMod = {
+  /** The EXIF tag name to write (either a plain read tag or a group-prefixed spec). */
+  tag: WriteTag;
+  /** The new value. `''` or `undefined` deletes the tag. */
+  value: MetadataValue;
+};
+
+/**
+ * A queued tag write plus the value previously read from the file.
+ *
+ * Returned by {@link File.write} and {@link File.repair} to report what was
+ * queued. `previousValue` is best-effort: it is read from the cached metadata
+ * before the write, and for group-prefixed write tags it maps to the
+ * priority-winning flat tag in the read model, which may not be the exact
+ * group being written.
+ *
+ * This type is a *reporting* record, not a change-detection mechanism. Because
+ * {@link File} skips queuing a tag whose value already matches the read model,
+ * every returned entry represents a genuine pending change; callers should use
+ * the `dirty` flag or the returned length to decide whether a write is needed.
  */
 export type MetaModHistory = MetaMod & {
-  /** The previous value of the field */
+  /** The value of the field as read from the file, `undefined` when absent. */
   previousValue: MetadataValue;
-  /** Did we make the change to the metadata? */
-  // modified: boolean;
-};
-export type MetaMod = {
-  /** The EXIF field name */
-  tag: WriteTag;
-  /** The new value of the field */
-  value: MetadataValue;
 };
 export type MetaTagDict = Partial<Record<WriteTag, MetadataValue>>;
 export type MetadataKey = keyof Metadata;

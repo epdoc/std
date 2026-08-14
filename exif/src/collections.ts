@@ -249,7 +249,6 @@ export const audioDef: AudioDef = {
 };
 
 const asInt = (val: unknown): Integer | undefined => _.isDefined(val) ? _.asInt(val) : undefined;
-const _asFloat = (val: unknown): Integer | undefined => _.isDefined(val) ? _.asFloat(val) : undefined;
 
 export type Audio = InfoResult<typeof audioDef>;
 

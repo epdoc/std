@@ -72,6 +72,7 @@ export class Resolver {
     this.#buildNormalizedMetaMap();
   }
 
+  /** Create a Resolver over the given metadata. @see {@link constructor}. */
   static from(meta: Metadata): Resolver {
     return new Resolver(meta);
   }
@@ -129,7 +130,11 @@ export class Resolver {
   }
 
   /**
-   * Parses raw ExifTool output and reconstructs an AddressComponents object.
+   * Reconstruct a display address from the file's location tags.
+   *
+   * Parses country, country code, state, city, sub-location (road/neighbourhood)
+   * and postal code from the raw ExifTool output, falling back across the
+   * EXIF/IPTC/XMP tag families. Returns `undefined` when no country is present.
    */
   getAddressDef(): AddressDisplayDef | undefined {
     // 1. Country & Country Code

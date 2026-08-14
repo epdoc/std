@@ -1,122 +1,99 @@
 {
   "identity": {
     "name": "@epdoc/exif",
-    "purpose": "Read/write EXIF metadata via the exiftool binary with GPS parsing, date resolution, and reverse geocoding",
+    "purpose": "Read/write EXIF metadata via the exiftool binary with GPS parsing, date resolution, reverse geocoding, and stripped-date repair",
     "type": "utility",
     "complexity": "moderate"
   },
   "quickStart": {
-    "pattern": "new Reader() → read(paths) → File.resolver for dates → File.applyTags() + write() for updates",
-    "code": "import * as Exif from '@epdoc/exif';\nconst reader = new Exif.Reader();\nconst files = await reader.read(['v.mp4']);\nconst file = files[0];\nconsole.log(file.resolver.originatedAt());\nconsole.log(file.resolver.width(), file.resolver.height());"
+    "pattern": "readFiles(paths) → File.resolver for dates → File.applyTags() + write() for updates",
+    "code": "import * as Exif from '@epdoc/exif';\nconst files = await Exif.readFiles(['v.mp4']);\nconst file = files[0];\nconsole.log(file.resolver.originatedAt);\nconsole.log(file.resolver.width, file.resolver.height);"
   },
   "exports": [
     {
-      "name": "Reader",
-      "role": "main_entry",
-      "description": "Factory for bulk EXIF reads in one exiftool invocation; returns File instances",
-      "whenToUse": "Reading metadata for one or more files efficiently"
-    },
-    {
       "name": "File",
       "role": "main_entry",
-      "description": "Wraps a single file's EXIF metadata; provides typed getters, GPS access, and a write queue",
+      "description": "Wraps a single file's EXIF metadata; typed getters, GPS, and an idempotent write queue (skips unchanged tags)",
       "whenToUse": "Reading or writing tags on a specific file"
+    },
+    {
+      "name": "readFiles",
+      "role": "main_entry",
+      "description": "Bulk EXIF read in one exiftool invocation; returns one File per input path",
+      "whenToUse": "Reading metadata for one or more files efficiently"
     },
     {
       "name": "Meta.Resolver",
       "role": "core",
-      "description": "Media-agnostic date resolution and write-prepare methods; has fallback chains across EXIF/QuickTime/XMP/IPTC/GPS tags",
-      "whenToUse": "Getting standardised dates/dimensions/duration/codec regardless of file type"
+      "description": "Media-agnostic date resolution and write-prepare methods with fallback chains across EXIF/QuickTime/XMP/IPTC/GPS tags",
+      "whenToUse": "Getting standardized dates/dimensions/duration/codec/producer regardless of file type"
     },
     {
-      "name": "Meta.Resolver.buildDateTime",
+      "name": "Meta.Parse",
       "role": "helper",
-      "description": "Build a DateTime from EXIF date tag values (base + subSec + offset)",
-      "whenToUse": "Parsing exiftool date tags into a DateTime"
+      "description": "Parsers for exiftool values: dateString, duration, focalLength, fNumber, exposureTime, fileSize, bitrate, milliseconds, json",
+      "whenToUse": "Reading raw exiftool value strings"
     },
     {
-      "name": "Meta.Resolver.toExifDateTimeString",
+      "name": "Geo.AddressLookup",
       "role": "helper",
-      "description": "Format a DateTime as exiftool's 'YYYY:MM:DD HH:MM:SS'",
-      "whenToUse": "Preparing DateTime values for exiftool write operations"
+      "description": "Nominatim reverse-geocode client; converts GPS coordinates to structured addresses and EXIF location tag dicts",
+      "whenToUse": "Looking up locations and writing location tags (via File.setAddressFromLookup)"
     },
     {
-      "name": "Meta.Parse.dateString",
-      "role": "helper",
-      "description": "Parse an exiftool date string into its components (year, month, day, hour, minute, second, millisecond, tzOffset)",
-      "whenToUse": "Reading raw date field values from exiftool output"
-    },
-    {
-      "name": "Meta.Parse.duration",
-      "role": "helper",
-      "description": "Normalize an exiftool Duration value to seconds",
-      "whenToUse": "Reading video/media duration values"
-    },
-    {
-      "name": "Meta.Parse.json",
-      "role": "helper",
-      "description": "Normalize exiftool -j stdout (object or array) to an array of Metadata objects",
-      "whenToUse": "Parsing raw exiftool JSON output"
-    },
-    {
-      "name": "Gps.parse",
-      "role": "helper",
-      "description": "Convert a DMS or numeric GPS coordinate to decimal degrees",
-      "whenToUse": "Reading GPS values from EXIF"
-    },
-    {
-      "name": "Gps.toDms",
-      "role": "helper",
-      "description": "Convert decimal degrees to an exiftool DMS string + hemisphere ref",
-      "whenToUse": "Writing GPS values to EXIF"
-    },
-    {
-      "name": "Geo.NominatimApi",
-      "role": "helper",
-      "description": "Client for OpenStreetMap's Nominatim reverse-geocode API; converts GPS coordinates to structured addresses",
-      "whenToUse": "Looking up human-readable locations from GPS coordinates"
-    },
-    {
-      "name": "Geo.buildLocationTags",
-      "role": "helper",
-      "description": "Convert address components into EXIF-compatible location tags at a given granularity",
-      "whenToUse": "Writing location metadata (country, state, city, sublocation) to EXIF"
-    },
-    {
-      "name": "Geo.LocationGranularity",
+      "name": "Geo.Level",
       "role": "type",
-      "description": "Enum controlling how much location detail to write: country | state | city | sublocation | exact"
+      "description": "Location detail levels controlling which tags are written: country | state | county | city | location | exact"
+    },
+    {
+      "name": "Gps.parse / Gps.toDms",
+      "role": "helper",
+      "description": "Convert DMS/numeric GPS values to decimal degrees and back to exiftool DMS strings",
+      "whenToUse": "Reading or writing GPS coordinates"
+    },
+    {
+      "name": "File.repair",
+      "role": "helper",
+      "description": "Restore dates stripped by WhatsApp/TikTok from filesystem/filename timestamps; writes a Software producer tag",
+      "whenToUse": "Batch-fixing downloaded media with missing embedded dates"
     },
     {
       "name": "dateFromFilename",
       "role": "helper",
-      "description": "Extract a datetime from a media filename produced by common software (WhatsApp mobile/macOS, Signal, epoch-ms, generic YYYYMMDD-HHMMSS patterns). Returns a wall-clock DateTime; the caller interprets it in a chosen timezone",
-      "whenToUse": "Deriving a capture/creation date from a filename, e.g. WhatsApp repair fallback or filesystem date strategies"
+      "description": "Extract a wall-clock DateTime from media filenames (WhatsApp mobile/macOS, Signal, epoch-ms, generic YYYYMMDD-HHMMSS)",
+      "whenToUse": "Deriving a capture date from a filename, e.g. WhatsApp repair fallback"
+    },
+    {
+      "name": "MetaModHistory",
+      "role": "type",
+      "description": "Report of a queued write: { tag, value, previousValue }; returned by File.write/repair for dry-run reporting",
+      "whenToUse": "Reporting what a write or repair would change"
     },
     {
       "name": "Metadata",
       "role": "type",
       "description": "Typed JSON exiftool emits for one file; union of EXIF, IPTC, XMP, video, and document tag families"
-    },
-    {
-      "name": "Gps.Location",
-      "role": "type",
-      "description": "Decimal latitude, longitude, and optional altitude"
-    },
-    {
-      "name": "Geo.AddressComponents",
-      "role": "type",
-      "description": "Structured breakdown of a physical address from reverse geocoding"
-    },
-    {
-      "name": "Geo.GeocodeResult",
-      "role": "type",
-      "description": "Result from a reverse geocode lookup: displayName, lat, lon, and parsed address"
     }
   ],
-  "patterns": [],
+  "patterns": [
+    {
+      "name": "Read-only inspection",
+      "when": "Getting standardized dates/dimensions/duration from any media type",
+      "code": "const file = new Exif.File(path);\nawait file.getMetadata();\nfile.resolver.createdAt; file.image; file.info();"
+    },
+    {
+      "name": "Idempotent write",
+      "when": "Setting dates/tags that may already match the file",
+      "code": "file.applyTags(file.resolver.setAllDates(dt));\nif (file.dirty) await file.write();"
+    },
+    {
+      "name": "Dry-run reporting",
+      "when": "Previewing changes without invoking exiftool",
+      "code": "const file = new Exif.File(path, { dryRun: true });\nconst mods = await file.repair(); // report mod.tag: previousValue -> value"
+    }
+  ],
   "relationships": {
     "dependsOn": ["@epdoc/cmd", "@epdoc/datetime", "@epdoc/fs", "@epdoc/type"],
-    "usedBy": ["@fstools/exif", "@turl/turl"]
+    "usedBy": ["@fstools/exif", "@fstools/repair", "@turl/turl"]
   }
 }

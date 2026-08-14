@@ -9,6 +9,16 @@ export const CODEC_AUDIO_UNKNOWN = '--';
 // Normalization helpers (moved from file.ts so defs can use them)
 // ============================================================================
 
+/**
+ * Build a clean, human-readable camera name from the raw Make/Model tags.
+ *
+ * Applies the {@link CAMERA_MAP} overrides (e.g. Samsung `SM-J737T1` →
+ * "Galaxy J7 Star", DJI model IDs → product names, Google `PIXEL 7` → "Pixel 7")
+ * and merges make + model. When the model already begins with the make, only
+ * the model is returned.
+ *
+ * @returns The display name, or `undefined` when neither make nor model is set.
+ */
 export function cameraName(meta: Metadata): string | undefined {
   const rawMake = (meta.Make ?? meta.ComAndroidManufacturer)?.trim();
   const rawModel = (meta.Model ?? meta.ComAndroidModel)?.trim();
@@ -42,6 +52,14 @@ export function cameraName(meta: Metadata): string | undefined {
   return makeName ?? modelName;
 }
 
+/**
+ * Normalize the software that last processed the file into a display label.
+ *
+ * Matches known patterns from {@link APP_NORMALIZE_RULES} (e.g.
+ * `"Adobe Lightroom 7.0"` → "Adobe Lightroom", `"Lavf58..."` → "FFmpeg") and
+ * returns the raw string when no rule matches. Samsung noise-strings are
+ * dropped.
+ */
 export function editor(m: Metadata): string | undefined {
   const s = m.Software ?? m.CreatorTool ?? m.Encoder ?? undefined;
   if (!s) return undefined;
@@ -115,6 +133,13 @@ export function isAppleIphone(meta: Metadata): boolean {
   return (w === 4032 && h === 3024) || (w === 3024 && h === 4032);
 }
 
+/**
+ * Map raw video codec identifiers to a normalized display label.
+ *
+ * Recognizes Matroska/ISO identifiers and common strings (HEVC, AVC, VP9,
+ * AV1, ProRes, DNxHD, ...) and falls back to the raw value when nothing
+ * matches, or "Unknown Video Codec" when no codec tag is present.
+ */
 export function videoCodec(meta: Metadata): string | undefined {
   const raw = meta.VideoCodecID ??
     meta.CompressorName ??
@@ -139,6 +164,13 @@ export function videoCodec(meta: Metadata): string | undefined {
   // Return original trimmed string if no standard regex pattern matched
   return raw;
 }
+/**
+ * Map raw audio codec identifiers to a normalized display label.
+ *
+ * Recognizes Matroska/ISO identifiers and common strings (Opus, AAC, FLAC,
+ * DTS, Dolby variants, ...) and falls back to the raw value, or
+ * {@link CODEC_AUDIO_UNKNOWN} (`"--"`) when no codec tag is present.
+ */
 export function audioCodec(meta: Metadata): string | undefined {
   const raw = meta.AudioCodecID ??
     meta.AudioFormat ??
@@ -170,6 +202,13 @@ export interface VideoRes {
   isCropped?: boolean;
 }
 
+/**
+ * Classify a video's resolution into a consumer-grade label.
+ *
+ * Returns the dimensions plus a tag (`"4K"`, `"1440p"`, `"1080p"`, `"720p"`,
+ * `"576p"`, `"480p"`, `"SD"`) and an `isCropped` flag for letterboxed
+ * captures whose stored height is below the class's standard height.
+ */
 export function videoResolution(meta: Metadata): VideoRes | undefined {
   const w = _.isDefined(meta.ImageWidth) ? meta.ImageWidth : meta.SourceImageWidth;
   const h = _.isDefined(meta.ImageHeight) ? meta.ImageHeight : meta.SourceImageHeight;

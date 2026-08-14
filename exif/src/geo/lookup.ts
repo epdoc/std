@@ -39,9 +39,9 @@ export class AddressLookup {
   }
 
   /**
-   * Parses the raw API response, creating address and tags properties. This is automatically called
-   * by the lookup method, but is separated out for unit testing purpsoes.
-   * @param data
+   * Parses the raw API response, creating the {@link address} and {@link tags}
+   * properties. This is automatically called by {@link lookup}, but is
+   * separated out for unit testing purposes.
    */
   parseNominatimResponse(data: NominatimResponse) {
     if (!data || data.error) {

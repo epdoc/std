@@ -1,7 +1,7 @@
 import { DateTime } from '@epdoc/datetime';
 import type * as FS from '@epdoc/fs/fs';
 import { assertEquals } from '@std/assert';
-import { File, Meta } from '../src/mod.ts';
+import { File, Geo, Meta } from '../src/mod.ts';
 
 function sourceFile(path: string): FS.FilePath {
   return path as FS.FilePath;
@@ -130,10 +130,93 @@ Deno.test('File setters and dirty flag', async (t) => {
     assertEquals(file.dirty, true);
   });
 
-  await t.step('setTag with undefined deletes a tag', () => {
-    const file = File.fromMetadata(meta({}));
+  await t.step('setTag with undefined deletes an existing tag', () => {
+    const file = File.fromMetadata(meta({ Artist: 'Someone' }));
     file.setTag('Artist', undefined);
     assertEquals(file.dirty, true);
+    assertEquals(file.pending.get('Artist'), '');
+  });
+
+  await t.step('setting a tag to its current value is a no-op', () => {
+    const file = File.fromMetadata(meta({ City: 'New York' }));
+    file.setTag('City', 'New York');
+    assertEquals(file.dirty, false);
+    assertEquals(file.pending.size, 0);
+  });
+
+  await t.step('setting a tag to a different value marks the file dirty', () => {
+    const file = File.fromMetadata(meta({ City: 'New York' }));
+    file.setTag('City', 'Los Angeles');
+    assertEquals(file.dirty, true);
+    assertEquals(file.pending.get('City'), 'Los Angeles');
+  });
+
+  await t.step('deleting an absent tag is a no-op', () => {
+    const file = File.fromMetadata(meta({}));
+    file.setTag('Artist', undefined);
+    assertEquals(file.dirty, false);
+  });
+
+  await t.step('re-setting an existing date does not mark the file dirty', () => {
+    const file = File.fromMetadata(meta({ DateTimeOriginal: '2026:07:31 18:00:00' }));
+    file.applyTags(
+      file.resolver.setOriginatedAt(DateTime.fromComponents(2026, 7, 31, 18, 0, 0)),
+    );
+    assertEquals(file.dirty, false);
+    assertEquals(file.pending.size, 0);
+  });
+
+  await t.step('a queued value is compared against pending, not the read model', () => {
+    const file = File.fromMetadata(meta({ City: 'New York' }));
+    file.setTag('City', 'Los Angeles');
+    file.setTag('City', 'Los Angeles');
+    assertEquals(file.dirty, true);
+    assertEquals(file.pending.size, 1);
+  });
+
+  await t.step('group-prefixed tags compare against the flat read-model key', () => {
+    const file = File.fromMetadata(meta({ City: 'New York' }));
+    file.setTag('MWG:City', 'New York');
+    assertEquals(file.dirty, false);
+    file.setTag('MWG:City', 'Los Angeles');
+    assertEquals(file.dirty, true);
+  });
+
+  await t.step('setTag with force queues a value that matches the read model', () => {
+    const file = File.fromMetadata(meta({ City: 'New York' }));
+    file.setTag('MWG:City', 'New York', true);
+    assertEquals(file.dirty, true);
+    assertEquals(file.pending.get('MWG:City'), 'New York');
+  });
+
+  await t.step('applyTags with force queues already-matching values', () => {
+    const file = File.fromMetadata(meta({ City: 'New York', State: 'NY' }));
+    file.applyTags({ 'MWG:City': 'New York', 'MWG:State': 'NY' }, true);
+    assertEquals(file.dirty, true);
+    assertEquals(file.pending.size, 2);
+    assertEquals(file.pending.get('MWG:City'), 'New York');
+    assertEquals(file.pending.get('MWG:State'), 'NY');
+  });
+
+  await t.step('force overwrites an already-queued value', () => {
+    const file = File.fromMetadata(meta({ City: 'New York' }));
+    file.setTag('MWG:City', 'Los Angeles');
+    file.setTag('MWG:City', 'New York', true);
+    assertEquals(file.dirty, true);
+    assertEquals(file.pending.size, 1);
+    assertEquals(file.pending.get('MWG:City'), 'New York');
+  });
+
+  await t.step('setAddressFromLookup with force queues matching location tags', () => {
+    const file = File.fromMetadata(meta({ City: 'New York' }));
+    file.api.parseNominatimResponse({
+      display_name: 'New York',
+      address: { city: 'New York', state: 'New York', country: 'United States', country_code: 'us' },
+    });
+    file.setAddressFromLookup(Geo.Level.city, true);
+    assertEquals(file.dirty, true);
+    assertEquals(file.pending.get('MWG:City'), 'New York');
+    assertEquals(file.pending.get('MWG:State'), 'New York');
   });
 });
 

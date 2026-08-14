@@ -262,27 +262,6 @@ export function dateString(value: string | undefined): Parts | undefined {
 }
 
 /**
- * Convert a timezone offset string (e.g. `"-06:00"`, `"+01:00"`) to signed
- * minutes using the intuitive ISO 8601 convention: positive values are ahead
- * of UTC and negative values are behind UTC.
- *
- * To convert the result into a {@link @epdoc/datetime!DateTime} timezone
- * value, pass the original offset string directly to
- * {@link @epdoc/datetime!DateTime.setTz} as an `ISOTZ`.
- *
- * @throws Error if the offset cannot be parsed.
- */
-/*
-export function tzOffset(tz: string): number {
-  const normalized = Normalize.tzOffset(tz);
-  const sign = normalized.startsWith('-') ? -1 : 1;
-  const rest = normalized.startsWith('-') || normalized.startsWith('+') ? normalized.slice(1) : normalized;
-  const parts = rest.split(':');
-  return sign * (parseInt(parts[0], 10) * 60 + parseInt(parts[1] ?? '0', 10));
-}
-*/
-
-/**
  * Normalize an exiftool video `Duration` value to a number of seconds.
  * Accepts `"2.00 s"`, `"MM:SS"`, `"H:MM:SS"`, a bare number, or a plain
  * numeric string. Returns `undefined` for missing/unparseable input.
