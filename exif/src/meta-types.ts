@@ -224,6 +224,7 @@ export interface IptcMetadata {
   'Country-PrimaryLocationName'?: string;
   /** ISO 3166-1 country code (IPTC Country-PrimaryLocationCode). */
   'Country-PrimaryLocationCode'?: string;
+  'PostalCode'?: string | number;
 
   DisplayedUnitsX?: string; // Displayed horizontal unit, e.g. "inches"
   DisplayedUnitsY?: string; // Displayed vertical unit, e.g. "inches"

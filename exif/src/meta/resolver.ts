@@ -2,7 +2,7 @@ import { DateTime, type ISOTZ } from '@epdoc/datetime';
 import { _, type Integer } from '@epdoc/type';
 import { CODEC_MAP, REPAIRABLE } from '../consts.ts';
 import { dateFromFilename, isWhatsAppFilename } from '../filename.ts';
-import type { AddressDef } from '../geo/types.ts';
+import type { AddressDisplayDef } from '../geo/types.ts';
 import type { Metadata } from '../meta-types.ts';
 import * as Normalize from '../normalize.ts';
 import type { MetadataKey, MetadataValue, MetaTagDict, Seconds } from '../types.ts';
@@ -69,7 +69,7 @@ export class Resolver {
 
   constructor(meta: Metadata) {
     this.meta = meta;
-    this.#buildLookupMap();
+    this.#buildNormalizedMetaMap();
   }
 
   static from(meta: Metadata): Resolver {
@@ -80,7 +80,7 @@ export class Resolver {
    * Pre-indexes metadata into a normalized Map once.
    * Strips group prefixes (e.g., 'XMP-photoshop:City' -> 'city') so lookups are O(1).
    */
-  #buildLookupMap(): void {
+  #buildNormalizedMetaMap(): void {
     this.#normalizedMetaMap.clear();
 
     for (const [dataKey, val] of Object.entries(this.meta)) {
@@ -131,7 +131,7 @@ export class Resolver {
   /**
    * Parses raw ExifTool output and reconstructs an AddressComponents object.
    */
-  getAddressDef(): AddressDef | undefined {
+  getAddressDef(): AddressDisplayDef | undefined {
     // 1. Country & Country Code
     const country = this.getTagValue(
       'Country',
@@ -159,49 +159,47 @@ export class Resolver {
       'LocationCreatedProvinceState',
       'XMP-photoshop:State',
       'IPTC:Province-State',
-    );
+    ) as string;
 
     // 3. City
-    const city = this.getTagValue('City', 'LocationCreatedCity', 'XMP-photoshop:City', 'IPTC:City');
+    const city = this.getTagValue('City', 'LocationCreatedCity', 'XMP-photoshop:City', 'IPTC:City') as string;
 
     // 4. Detailed IPTC Extension fields (if present in granular XMP-iptcExt metadata)
-    const streetAddress = this.getTagValue('LocationCreatedStreetAddress');
-    const sublocation = this.getTagValue(
-      'Sub-location',
+    const streetAddress = this.getTagValue('LocationCreatedStreetAddress') as string;
+    const location = this.getTagValue(
       'Location',
+      'Sub-location',
       'LocationCreatedSublocation',
       'XMP-iptcCore:Location',
       'IPTC:Sub-location',
-    );
+    ) as string;
+    const postalCode = this.getTagValue('XMP-iptcCore:PostalCode') as string;
 
     // 5. Parse Sub-location string into street / neighborhood if granular fields are missing
     let road = _.isString(streetAddress) ? streetAddress : undefined;
     let neighbourhood: string | undefined;
 
-    if (!road && _.isString(sublocation)) {
+    if (!road && _.isString(location)) {
       // If Sub-location was constructed as "houseNumber road, neighbourhood", parse comma parts
-      const parts = sublocation.split(',').map((p) => p.trim());
+      const parts = location.split(',').map((p) => p.trim());
       if (parts.length > 1) {
         road = parts[0];
         neighbourhood = parts.slice(1).join(', ');
       } else {
-        road = sublocation;
+        road = location;
       }
     }
 
     const displayName = [road, neighbourhood, city, state, country, countryCode].join(', ');
 
     return {
-      houseNumber: undefined, // Standard legacy IPTC/XMP tags typically bundle house number into road/sublocation
-      road,
-      neighbourhood,
-      suburb: undefined,
-      city: _.isString(city) ? city : undefined,
-      town: undefined,
-      village: undefined,
-      state: _.isString(state) ? state : undefined,
       country,
       countryCode,
+      state,
+      city,
+      location,
+      postalCode,
+      streetAddress,
       displayName,
     };
   }

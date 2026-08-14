@@ -6,6 +6,35 @@ export type NominatimResponse = {
   error?: string;
 };
 
+interface NominatimAddress {
+  country?: string;
+  country_code?: string;
+  state?: string;
+  state_district?: string;
+  province?: string;
+  region?: string;
+  county?: string;
+  city?: string;
+  town?: string;
+  municipality?: string;
+  village?: string;
+  hamlet?: string;
+  suburb?: string;
+  neighbourhood?: string;
+  quarter?: string;
+  city_district?: string;
+  road?: string;
+  house_number?: string;
+  house_name?: string;
+  pedestrian?: string;
+  footway?: string;
+  cycleway?: string;
+  path?: string;
+  square?: string;
+  highway?: string;
+  [key: string]: string | undefined;
+}
+
 /** Normalized address extracted from reverse-geocoding (e.g., Nominatim/OSM) */
 export type AddressDef = {
   displayName?: string;
@@ -23,6 +52,20 @@ export type AddressDef = {
   country: string;
   countryCode: string;
 };
+
+export type AddressHuman = {
+  displayName?: string;
+  country?: string;
+  countryCode?: string;
+  state?: string;
+  county?: string;
+  city?: string;
+  location?: string;
+  postalCode?: string;
+  streetAddress?: string;
+};
+
+export type AddressDisplayDef = { displayName: string } & AddressHuman;
 
 // export type GeocodeResult = {
 //   displayName: string;

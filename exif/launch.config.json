@@ -36,7 +36,8 @@
         ],
         "scripts": [
           "",
-          "--help"
+          "--help",
+          "-l /Users/jpravetz/Pictures/2020s/2026/20260000_Electrical/20260317_Leviton_Switches.jpg"
         ]
       }
     }

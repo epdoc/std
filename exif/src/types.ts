@@ -64,7 +64,7 @@ export type MetadataValue = string | number | undefined;
  * Group-prefixed specs never appear in `-j` read output, so they are kept
  * out of the `Metadata` read model.
  */
-export type WriteTag = MetadataKey | `XMP-${string}:${string}`;
+export type WriteTag = MetadataKey | `XMP-${string}:${string}` | `MWG:${string}`;
 
 /**
  * JSON representation of a File's extracted metadata, nested by section.
@@ -100,7 +100,8 @@ export type FileInfo = {
   camera?: Schema.Camera;
   app?: Schema.App;
   gps?: Gps.Location;
-  address?: Geo.AddressDef;
+  address?: Geo.AddressHuman;
+  lookup?: Geo.AddressHuman;
   image?: Schema.Image;
   video?: Schema.Video;
   audio?: Schema.Audio;

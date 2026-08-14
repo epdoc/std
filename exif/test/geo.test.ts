@@ -1,223 +1,245 @@
-import { assertEquals } from '@std/assert';
-import type { AddressDef } from '../src/geo/types.ts';
-import { apiResponse2addressDef } from '../src/geo/utils.ts';
+import { assertEquals, assertThrows } from '@std/assert';
+import type { NominatimResponse } from '../src/geo/types.ts';
 import { Geo } from '../src/mod.ts';
 
-// --- buildLocationTags ---
+function lookupFrom(
+  address: Record<string, string | undefined>,
+  displayName?: string,
+): Geo.AddressLookup {
+  const api = new Geo.AddressLookup();
+  api.parseNominatimResponse({ display_name: displayName, address });
+  return api;
+}
 
-Deno.test('Geo.buildLocationTags', async (t) => {
-  const addr: AddressDef = {
-    houseNumber: '10',
-    road: 'Downing Street',
-    neighbourhood: 'Westminster',
-    suburb: undefined,
-    city: 'London',
-    town: undefined,
-    village: undefined,
-    state: 'England',
-    country: 'United Kingdom',
-    countryCode: 'GB',
-  };
+const FULL_ADDRESS: Record<string, string | undefined> = {
+  house_number: '10',
+  road: 'Downing Street',
+  neighbourhood: 'Westminster',
+  suburb: 'City of Westminster',
+  city: 'London',
+  county: 'Greater London',
+  state: 'England',
+  postcode: 'SW1A 2AA',
+  country: 'United Kingdom',
+  country_code: 'gb',
+};
+
+// --- parseNominatimResponse ---
+
+Deno.test('Geo.AddressLookup.parseNominatimResponse', async (t) => {
+  await t.step('parses all fields into the address getter', () => {
+    const api = lookupFrom(
+      FULL_ADDRESS,
+      '10 Downing Street, Westminster, London, England, United Kingdom',
+    );
+    assertEquals(api.address, {
+      country: 'United Kingdom',
+      countryCode: 'GB',
+      state: 'England',
+      county: 'Greater London',
+      city: 'London',
+      location: 'City of Westminster',
+      postalCode: 'SW1A 2AA',
+      streetAddress: '10 Downing Street',
+    });
+  });
+
+  await t.step('exposes the display name', () => {
+    const api = lookupFrom(FULL_ADDRESS, '10 Downing Street, Westminster');
+    assertEquals(api.displayName, '10 Downing Street, Westminster');
+  });
+
+  await t.step('exposes the raw response', () => {
+    const api = lookupFrom(FULL_ADDRESS, '10 Downing Street, Westminster');
+    assertEquals(api.response.address, FULL_ADDRESS);
+    assertEquals(api.response.display_name, '10 Downing Street, Westminster');
+  });
+
+  await t.step('builds the full tag set from the raw address', () => {
+    const api = lookupFrom(FULL_ADDRESS);
+    assertEquals(api.tags, {
+      'MWG:Country': 'United Kingdom',
+      'MWG:CountryCode': 'GB',
+      'MWG:State': 'England',
+      'MWG:County': 'Greater London',
+      'MWG:City': 'London',
+      'MWG:Location': 'City of Westminster',
+      'XMP-iptcCore:PostalCode': 'SW1A 2AA',
+      'XMP-iptcCore:StreetAddress': '10 Downing Street',
+    });
+  });
+
+  await t.step('throws when response data is requested before parsing', () => {
+    const api = new Geo.AddressLookup();
+    assertThrows(() => api.response);
+  });
+
+  await t.step('throws when address data is requested before parsing', () => {
+    const api = new Geo.AddressLookup();
+    assertThrows(() => api.address);
+  });
+
+  await t.step('throws when tags are requested before parsing', () => {
+    const api = new Geo.AddressLookup();
+    assertThrows(() => api.tags);
+  });
+
+  await t.step('throws when displayName is requested before parsing', () => {
+    const api = new Geo.AddressLookup();
+    assertThrows(() => api.displayName);
+  });
+});
+
+// --- getTags granularity ---
+
+Deno.test('Geo.AddressLookup.getTags granularity', async (t) => {
+  const api = lookupFrom(FULL_ADDRESS);
 
   await t.step('country granularity returns only country tags', () => {
-    const tags = Geo.addressDef2exifTags(addr, Geo.LocationGranularity.country);
+    const tags = api.getTags(Geo.LocationGranularity.country);
     assertEquals(
       Object.keys(tags).sort(),
-      ['Country', 'CountryCode', 'Country-PrimaryLocationCode', 'Country-PrimaryLocationName'].sort(),
+      ['MWG:Country', 'MWG:CountryCode'].sort(),
     );
-    assertEquals(tags['Country'], 'United Kingdom');
-    assertEquals(tags['CountryCode'], 'GB');
+    assertEquals(tags['MWG:Country'], 'United Kingdom');
+    assertEquals(tags['MWG:CountryCode'], 'GB');
   });
 
   await t.step('state granularity adds State', () => {
-    const tags = Geo.addressDef2exifTags(addr, Geo.LocationGranularity.state);
-    assertEquals(tags['State'], 'England');
-    assertEquals(tags['Country'], 'United Kingdom');
+    const tags = api.getTags(Geo.LocationGranularity.state);
+    assertEquals(tags['MWG:State'], 'England');
+    assertEquals(tags['MWG:Country'], 'United Kingdom');
+    assertEquals('MWG:County' in tags, false);
+  });
+
+  await t.step('county granularity adds County', () => {
+    const tags = api.getTags(Geo.LocationGranularity.county);
+    assertEquals(tags['MWG:County'], 'Greater London');
+    assertEquals(tags['MWG:State'], 'England');
+    assertEquals('MWG:City' in tags, false);
   });
 
   await t.step('city granularity adds City', () => {
-    const tags = Geo.addressDef2exifTags(addr, Geo.LocationGranularity.city);
-    assertEquals(tags['City'], 'London');
-    assertEquals(tags['State'], 'England');
+    const tags = api.getTags(Geo.LocationGranularity.city);
+    assertEquals(tags['MWG:City'], 'London');
+    assertEquals(tags['MWG:County'], 'Greater London');
+    assertEquals('MWG:Location' in tags, false);
   });
 
-  await t.step('city granularity uses town if city is missing', () => {
-    const townAddr: AddressDef = {
-      ...addr,
-      city: undefined,
-      town: 'Brighton',
-    };
-    const tags = Geo.addressDef2exifTags(townAddr, Geo.LocationGranularity.city);
-    assertEquals(tags['City'], 'Brighton');
+  await t.step('location granularity adds Location and PostalCode', () => {
+    const tags = api.getTags(Geo.LocationGranularity.location);
+    assertEquals(tags['MWG:Location'], 'City of Westminster');
+    assertEquals(tags['XMP-iptcCore:PostalCode'], 'SW1A 2AA');
+    assertEquals('XMP-iptcCore:StreetAddress' in tags, false);
   });
 
-  await t.step('city granularity uses village if city and town are missing', () => {
-    const villageAddr: AddressDef = {
-      ...addr,
-      city: undefined,
-      town: undefined,
-      village: 'Cotswolds',
-    };
-    const tags = Geo.addressDef2exifTags(villageAddr, Geo.LocationGranularity.city);
-    assertEquals(tags['City'], 'Cotswolds');
-  });
-
-  await t.step('sublocation granularity adds Sub-location with road and neighbourhood', () => {
-    const tags = Geo.addressDef2exifTags(addr, Geo.LocationGranularity.sublocation);
-    assertEquals(tags['Sub-location'], 'Downing Street, Westminster');
-    assertEquals(tags['City'], 'London');
-  });
-
-  await t.step('sublocation granularity uses suburb if neighbourhood is missing', () => {
-    const suburbAddr: AddressDef = {
-      ...addr,
-      neighbourhood: undefined,
-      suburb: 'Mayfair',
-    };
-    const tags = Geo.addressDef2exifTags(suburbAddr, Geo.LocationGranularity.sublocation);
-    assertEquals(tags['Sub-location'], 'Downing Street, Mayfair');
-  });
-
-  await t.step('exact granularity includes house number', () => {
-    const tags = Geo.addressDef2exifTags(addr, Geo.LocationGranularity.exact);
-    assertEquals(tags['Sub-location'], '10, Downing Street, Westminster');
-  });
-
-  await t.step('exact granularity without house number falls back to sublocation behaviour', () => {
-    const noHouse: AddressDef = { ...addr, houseNumber: undefined };
-    const tags = Geo.addressDef2exifTags(noHouse, Geo.LocationGranularity.exact);
-    assertEquals(tags['Sub-location'], 'Downing Street, Westminster');
-  });
-
-  await t.step('omits State when state is undefined', () => {
-    const noState: AddressDef = { ...addr, state: undefined };
-    const tags = Geo.addressDef2exifTags(noState, Geo.LocationGranularity.state);
-    assertEquals('State' in tags, false);
-    assertEquals(tags['Country'], 'United Kingdom');
-  });
-
-  await t.step('omits Sub-location when no road or area is available', () => {
-    const bare: AddressDef = {
-      houseNumber: undefined,
-      road: undefined,
-      neighbourhood: undefined,
-      suburb: undefined,
-      city: 'Tokyo',
-      town: undefined,
-      village: undefined,
-      state: undefined,
-      country: 'Japan',
-      countryCode: 'JP',
-    };
-    const tags = Geo.addressDef2exifTags(bare, Geo.LocationGranularity.exact);
-    assertEquals(tags['City'], 'Tokyo');
-    assertEquals('Sub-location' in tags, false);
+  await t.step('exact granularity adds StreetAddress', () => {
+    const tags = api.getTags(Geo.LocationGranularity.exact);
+    assertEquals(tags['XMP-iptcCore:StreetAddress'], '10 Downing Street');
+    assertEquals(tags['MWG:City'], 'London');
   });
 });
 
-// --- extractAddress ---
+// --- field priority ---
 
-Deno.test('extractAddress', async (t) => {
-  await t.step('extracts all fields from a full Nominatim address', () => {
-    const result = apiResponse2addressDef({
-      house_number: '10',
-      road: 'Downing Street',
-      neighbourhood: 'Westminster',
-      suburb: 'City of Westminster',
-      city: 'London',
-      state: 'England',
-      country: 'United Kingdom',
-      country_code: 'gb',
-    });
-    assertEquals(result.houseNumber, '10');
-    assertEquals(result.road, 'Downing Street');
-    assertEquals(result.neighbourhood, 'Westminster');
-    assertEquals(result.suburb, 'City of Westminster');
-    assertEquals(result.city, 'London');
-    assertEquals(result.state, 'England');
-    assertEquals(result.country, 'United Kingdom');
-    assertEquals(result.countryCode, 'GB');
+Deno.test('Geo.AddressLookup field priority', async (t) => {
+  await t.step('road falls back to pedestrian, footway, and street', () => {
+    const pedestrian = lookupFrom({ pedestrian: 'Oxford Street', country: 'UK', country_code: 'gb' });
+    assertEquals(pedestrian.address.streetAddress, 'Oxford Street');
+
+    const footway = lookupFrom({ footway: 'Baker Street', country: 'UK', country_code: 'gb' });
+    assertEquals(footway.address.streetAddress, 'Baker Street');
+
+    const street = lookupFrom({ street: 'Regent Street', country: 'UK', country_code: 'gb' });
+    assertEquals(street.address.streetAddress, 'Regent Street');
   });
 
-  await t.step('uses pedestrian tag as road fallback', () => {
-    const result = apiResponse2addressDef({
-      pedestrian: 'Oxford Street',
-      country: 'UK',
-      country_code: 'gb',
-    });
-    assertEquals(result.road, 'Oxford Street');
+  await t.step('road takes priority over pedestrian', () => {
+    const api = lookupFrom({ road: 'Downing Street', pedestrian: 'Oxford Street' });
+    assertEquals(api.address.streetAddress, 'Downing Street');
   });
 
-  await t.step('uses street tag as road fallback', () => {
-    const result = apiResponse2addressDef({
-      street: 'Baker Street',
-      country: 'UK',
-      country_code: 'gb',
-    });
-    assertEquals(result.road, 'Baker Street');
+  await t.step('city falls back to town, village, and municipality', () => {
+    const town = lookupFrom({ town: 'Brighton', country: 'UK', country_code: 'gb' });
+    assertEquals(town.address.city, 'Brighton');
+
+    const village = lookupFrom({ village: 'Cotswolds', country: 'UK', country_code: 'gb' });
+    assertEquals(village.address.city, 'Cotswolds');
+
+    const municipality = lookupFrom({ municipality: 'Borough', country: 'UK', country_code: 'gb' });
+    assertEquals(municipality.address.city, 'Borough');
   });
 
-  await t.step('picks town as city fallback', () => {
-    const result = apiResponse2addressDef({
-      town: 'Brighton',
-      country: 'UK',
-      country_code: 'gb',
-    });
-    assertEquals(result.city, 'Brighton');
+  await t.step('hamlet and town take priority over city', () => {
+    const hamlet = lookupFrom({ hamlet: 'Dartmoor', town: 'Brighton', city: 'London' });
+    assertEquals(hamlet.address.city, 'Dartmoor');
+
+    const town = lookupFrom({ city: 'London', town: 'Brighton' });
+    assertEquals(town.address.city, 'Brighton');
   });
 
-  await t.step('picks village as city fallback', () => {
-    const result = apiResponse2addressDef({
-      village: 'Cotswolds',
-      country: 'UK',
-      country_code: 'gb',
-    });
-    assertEquals(result.city, 'Cotswolds');
+  await t.step('state falls back to province and region', () => {
+    const province = lookupFrom({ province: 'Ontario', country: 'Canada', country_code: 'ca' });
+    assertEquals(province.address.state, 'Ontario');
+
+    const region = lookupFrom({ region: 'Normandy', country: 'France', country_code: 'fr' });
+    assertEquals(region.address.state, 'Normandy');
   });
 
-  await t.step('picks municipality as city fallback', () => {
-    const result = apiResponse2addressDef({
-      municipality: 'Borough',
-      country: 'UK',
-      country_code: 'gb',
-    });
-    assertEquals(result.city, 'Borough');
+  await t.step('location picks suburb over neighbourhood', () => {
+    const both = lookupFrom({ suburb: 'City of Westminster', neighbourhood: 'Westminster' });
+    assertEquals(both.address.location, 'City of Westminster');
+
+    const onlyNeighbourhood = lookupFrom({ neighbourhood: 'Westminster' });
+    assertEquals(onlyNeighbourhood.address.location, 'Westminster');
   });
 
-  await t.step('city takes priority over town/village/municipality', () => {
-    const result = apiResponse2addressDef({
-      city: 'London',
-      town: 'Brighton',
-      village: 'Cotswolds',
-      municipality: 'Borough',
-      country: 'UK',
-      country_code: 'gb',
-    });
-    assertEquals(result.city, 'London');
+  await t.step('combines house number and road into the street address', () => {
+    const api = lookupFrom({ house_number: '10', road: 'Downing Street' });
+    assertEquals(api.address.streetAddress, '10 Downing Street');
   });
 
-  await t.step('handles missing country and country code', () => {
-    const result = apiResponse2addressDef({});
-    assertEquals(result.country, '');
-    assertEquals(result.countryCode, '');
+  await t.step('street address is just the road when house number is missing', () => {
+    const api = lookupFrom({ road: 'Downing Street' });
+    assertEquals(api.address.streetAddress, 'Downing Street');
   });
 
-  await t.step('uppercases country code', () => {
-    const result = apiResponse2addressDef({
-      country_code: 'de',
-      country: 'Germany',
-    });
-    assertEquals(result.countryCode, 'DE');
+  await t.step('omits street address when there is no road', () => {
+    const api = lookupFrom({ house_number: '10' });
+    assertEquals('XMP-iptcCore:StreetAddress' in api.tags, false);
+    assertEquals(api.address.streetAddress, undefined);
+  });
+
+  await t.step('uppercases the country code', () => {
+    const api = lookupFrom({ country: 'Germany', country_code: 'de' });
+    assertEquals(api.address.countryCode, 'DE');
+    assertEquals(api.tags['MWG:CountryCode'], 'DE');
   });
 });
 
-// --- NominatimApi dry-run ---
+// --- error handling ---
 
-Deno.test('Geo.NominatimApi.reverse dry-run', async (t) => {
-  await t.step('returns a synthetic result without making a network call', async () => {
-    const api = new Geo.NominatimApi({ dryRun: true });
-    const result = await api.reverse(51.5074, -0.1278);
-    assertEquals(result.country, '[DRYRUN]');
-    assertEquals(result.countryCode, 'XX');
+Deno.test('Geo.AddressLookup error handling', async (t) => {
+  await t.step('throws with the API error message', () => {
+    const api = new Geo.AddressLookup();
+    assertThrows(
+      () => api.parseNominatimResponse({ error: 'Unable to geocode' }),
+      Error,
+      'Unable to geocode',
+    );
+  });
+
+  await t.step('throws when the response is empty', () => {
+    const api = new Geo.AddressLookup();
+    assertThrows(
+      () => api.parseNominatimResponse(undefined as unknown as NominatimResponse),
+      Error,
+      'Nominatim returned no data',
+    );
+  });
+
+  await t.step('throws when getTags is called before parsing', () => {
+    const api = new Geo.AddressLookup();
+    assertThrows(() => api.getTags());
   });
 });

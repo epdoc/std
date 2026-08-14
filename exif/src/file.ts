@@ -25,6 +25,7 @@ import type {
 
 /** Flags passed to exiftool for JSON reading with QuickTime UTC normalization. */
 export const EXIFTOOL_READ_FLAGS = ['-j', '-struct', '-api', 'QuickTimeUTC=1'];
+export const EXIFTOOL_WRITE_FLAGS = ['-overwrite_original', '-P', '-m', '-charset', 'utf8', '-use', 'MWG'];
 
 type MetaCache = {
   file?: Schema.File;
@@ -36,7 +37,8 @@ type MetaCache = {
   pdf?: Schema.Pdf;
   doc?: Schema.Doc;
   gps?: Gps.Location;
-  address?: Geo.AddressDef;
+  address?: Geo.AddressHuman;
+  lookup?: Geo.AddressHuman;
   app?: Schema.App;
 };
 
@@ -58,6 +60,7 @@ export class File {
   #dirty = false;
   #pending = new Map<WriteTag, MetadataValue>();
   #same = new Map<WriteTag, MetadataValue>();
+  #api = new Geo.AddressLookup();
 
   constructor(file: FS.FilePath | FS.File, opts?: IDryRun) {
     this.#fsFile = _.isString(file) ? new FS.File(file) : file;
@@ -94,6 +97,10 @@ export class File {
 
   get dirty(): boolean {
     return this.#dirty;
+  }
+
+  get api(): Geo.AddressLookup {
+    return this.#api;
   }
 
   async getDigest(
@@ -215,6 +222,7 @@ export class File {
     }
     if (this.gps && Object.keys(this.gps)) result.gps = this.gps;
     if (this.#cache.address) result.address = this.#cache.address;
+    if (this.#cache.lookup) result.lookup = this.#cache.lookup;
 
     if (opts.metadata) result.metadata = this.metadata;
 
@@ -382,7 +390,7 @@ export class File {
     }
   }
 
-  getAddress(): Geo.AddressDef | undefined {
+  getAddress(): Geo.AddressHuman | undefined {
     if (this.#cache.address) return this.#cache.address;
     const gps = this.#cache.gps;
     if (!gps) return;
@@ -391,18 +399,16 @@ export class File {
     return this.#cache.address;
   }
 
-  async lookupAddress(): Promise<Geo.AddressDef | undefined> {
-    const gps = this.#cache.gps;
-    if (!gps) return;
-    const api: Geo.NominatimApi = new Geo.NominatimApi();
-    return await api.reverse(gps.lat, gps.lng);
+  async lookupAddress(userAgent: string): Promise<Geo.AddressHuman | undefined> {
+    if (this.#cache.lookup) return this.#cache.lookup;
+    if (!this.gps) return;
+    await this.#api.lookup(userAgent, this.gps.lat, this.gps.lng);
+    this.#cache.lookup = this.#api.address;
+    return this.#cache.lookup;
   }
 
-  setAddress(
-    addr: Geo.AddressDef,
-    granularity: Geo.LocationGranularityType = Geo.LocationGranularity.sublocation,
-  ): void {
-    const tags: MetaTagDict = Geo.addressDef2exifTags(addr, granularity);
+  setAddressFromLookup(granularity: Geo.LocationGranularityType = Geo.LocationGranularity.location): void {
+    const tags: MetaTagDict = this.#api.getTags(granularity);
     this.applyTags(tags);
   }
 
@@ -477,12 +483,18 @@ export class File {
 
     const prev = this.#metadata;
     const diffs: MetaModHistory[] = [];
-    const args = ['-overwrite_original', '-P', '-m'];
+    const args = EXIFTOOL_WRITE_FLAGS;
     for (const [tag, value] of this.#pending) {
-      const previousValue = prev ? prev[metadataKeyOf(tag)] as MetadataValue : undefined;
+      const previousValue = prev ? (prev[metadataKeyOf(tag)] as MetadataValue) : undefined;
       const diff: MetaModHistory = { tag, value, previousValue };
       diffs.push(diff);
-      args.push(`-${tag}=${value}`);
+
+      // 2. Safely handle null/undefined so ExifTool clears the tag instead of writing "undefined"
+      if (value === undefined || value === null) {
+        args.push(`-${tag}=`);
+      } else {
+        args.push(`-${tag}=${value}`);
+      }
     }
     args.push(this.#fsFile.path);
 
