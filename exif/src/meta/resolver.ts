@@ -146,7 +146,7 @@ export class Resolver {
       'IPTC:Country-PrimaryLocationName',
     ) ?? '';
     // Country is a required field, I have decreed
-    if (!_.isString(country)) return undefined;
+    if (!_.isNonEmptyString(country)) return undefined;
 
     const cc = this.getTagValue(
       'CountryCode',
@@ -154,8 +154,8 @@ export class Resolver {
       'LocationCreatedCountryCode',
       'XMP-iptcCore:CountryCode',
       'IPTC:Country-PrimaryLocationCode',
-    ) ?? '';
-    const countryCode = String(cc).toUpperCase();
+    ) as string;
+    const countryCode = _.isNonEmptyString(cc) ? cc.toUpperCase() : undefined;
 
     // 2. State / Region
     const state = this.getTagValue(
@@ -195,7 +195,9 @@ export class Resolver {
       }
     }
 
-    const displayName = [road, neighbourhood, city, state, country, countryCode].join(', ');
+    const displayName = [road, neighbourhood, city, state, country, countryCode]
+      .filter((i) => i && _.isNonEmptyString(i))
+      .join(', ');
 
     return {
       country,
