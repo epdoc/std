@@ -1,12 +1,15 @@
 import { assertEquals, assertThrows } from '@std/assert';
+import pkg from '../deno.json' with { type: 'json' };
 import type { NominatimResponse } from '../src/geo/types.ts';
 import { Geo } from '../src/mod.ts';
+
+const userAgent = `${pkg.name}@${pkg.version}`;
 
 function lookupFrom(
   address: Record<string, string | undefined>,
   displayName?: string,
 ): Geo.AddressLookup {
-  const api = new Geo.AddressLookup();
+  const api = new Geo.AddressLookup(userAgent);
   api.parseNominatimResponse({ display_name: displayName, address });
   return api;
 }
@@ -70,22 +73,22 @@ Deno.test('Geo.AddressLookup.parseNominatimResponse', async (t) => {
   });
 
   await t.step('throws when response data is requested before parsing', () => {
-    const api = new Geo.AddressLookup();
+    const api = new Geo.AddressLookup(userAgent);
     assertThrows(() => api.response);
   });
 
   await t.step('throws when address data is requested before parsing', () => {
-    const api = new Geo.AddressLookup();
+    const api = new Geo.AddressLookup(userAgent);
     assertThrows(() => api.address);
   });
 
   await t.step('throws when tags are requested before parsing', () => {
-    const api = new Geo.AddressLookup();
+    const api = new Geo.AddressLookup(userAgent);
     assertThrows(() => api.tags);
   });
 
   await t.step('throws when displayName is requested before parsing', () => {
-    const api = new Geo.AddressLookup();
+    const api = new Geo.AddressLookup(userAgent);
     assertThrows(() => api.displayName);
   });
 });
@@ -221,7 +224,7 @@ Deno.test('Geo.AddressLookup field priority', async (t) => {
 
 Deno.test('Geo.AddressLookup error handling', async (t) => {
   await t.step('throws with the API error message', () => {
-    const api = new Geo.AddressLookup();
+    const api = new Geo.AddressLookup(userAgent);
     assertThrows(
       () => api.parseNominatimResponse({ error: 'Unable to geocode' }),
       Error,
@@ -230,7 +233,7 @@ Deno.test('Geo.AddressLookup error handling', async (t) => {
   });
 
   await t.step('throws when the response is empty', () => {
-    const api = new Geo.AddressLookup();
+    const api = new Geo.AddressLookup(userAgent);
     assertThrows(
       () => api.parseNominatimResponse(undefined as unknown as NominatimResponse),
       Error,
@@ -239,7 +242,7 @@ Deno.test('Geo.AddressLookup error handling', async (t) => {
   });
 
   await t.step('throws when getTags is called before parsing', () => {
-    const api = new Geo.AddressLookup();
+    const api = new Geo.AddressLookup(userAgent);
     assertThrows(() => api.getTags());
   });
 });

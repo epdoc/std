@@ -15,7 +15,7 @@ import type {
   FileGetMetadataOptions,
   FileInfo,
   FileInfoOptions,
-  IDryRun,
+  FileOptions,
   MetadataKey,
   MetadataValue,
   MetaModHistory,
@@ -77,7 +77,7 @@ export class File {
   #dryRun: boolean;
   #dirty = false;
   #pending = new Map<WriteTag, MetadataValue>();
-  #api = new Geo.AddressLookup();
+  #api?: Geo.AddressLookup;
 
   /**
    * Create a File for the given media file.
@@ -87,15 +87,21 @@ export class File {
    * @param file An absolute/relative path or an existing {@link FS.File}.
    * @param [opts.dryRun=false] When true, {@link write} and {@link repair}
    *   compute and report their changesets without invoking the exiftool binary.
+   * @param opts.userAgent Required if using a location service. In the form '@scope/pkg@version'
    */
-  constructor(file: FS.FilePath | FS.File, opts?: IDryRun) {
+  constructor(file: FS.FilePath | FS.File, opts?: FileOptions) {
     this.#fsFile = _.isString(file) ? new FS.File(file) : file;
     this.#dryRun = opts?.dryRun ?? false;
+    if (opts && opts.userAgent) this.#api = new Geo.AddressLookup(opts.userAgent);
   }
 
   /** Create a File for the given media file. @see {@link constructor}. */
-  static from(file: FS.FilePath | FS.File, opts?: IDryRun): File {
+  static from(file: FS.FilePath | FS.File, opts?: FileOptions): File {
     return new File(file, opts);
+  }
+
+  initLookup(userAgent: string): void {
+    this.#api = new Geo.AddressLookup(userAgent);
   }
 
   /** The underlying {@link FS.File} this wrapper reads/writes. */
@@ -146,6 +152,7 @@ export class File {
 
   /** The reverse-geocoding lookup used by {@link lookupAddress}. */
   get api(): Geo.AddressLookup {
+    assert(this.#api, 'Address lookup is not enabled because userAgent was not provided when creating this interface');
     return this.#api;
   }
 
@@ -222,7 +229,7 @@ export class File {
    * @param [opts.dryRun=false] When true, {@link write} and {@link repair}
    *   are no-ops on the binary.
    */
-  static fromMetadata(metadata: Metadata, opts?: IDryRun): File {
+  static fromMetadata(metadata: Metadata, opts?: FileOptions): File {
     const file = new File(metadata.SourceFile, opts);
     file.#metadata = metadata;
     file.#resolver = new Meta.Resolver(metadata);
@@ -531,11 +538,11 @@ export class File {
    *   Nominatim requires an identifying user agent.
    * @returns The structured address, or `undefined` when the file has no GPS.
    */
-  async lookupAddress(userAgent: string): Promise<Geo.AddressDef | undefined> {
+  async lookupAddress(): Promise<Geo.AddressDef | undefined> {
     if (this.#cache.lookup) return this.#cache.lookup;
     if (!this.gps) return;
-    await this.#api.lookup(userAgent, this.gps.lat, this.gps.lng);
-    this.#cache.lookup = this.#api.address;
+    await this.api.lookup(this.gps.lat, this.gps.lng);
+    this.#cache.lookup = this.api.address;
     return this.#cache.lookup;
   }
 
@@ -557,7 +564,7 @@ export class File {
     granularity: Geo.LevelType = Geo.Level.location,
     force = false,
   ): void {
-    const tags: MetaTagDict = this.#api.getTags(granularity);
+    const tags: MetaTagDict = this.api.getTags(granularity);
     this.applyTags(tags, force);
   }
 

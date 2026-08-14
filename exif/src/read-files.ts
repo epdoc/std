@@ -4,7 +4,7 @@ import type { Dict } from '@epdoc/type';
 import { _ } from '@epdoc/type';
 import { EXIFTOOL_READ_FLAGS, File } from './file.ts';
 import { json as parseJson } from './meta/parse.ts';
-import type { IDigest, IDryRun } from './types.ts';
+import type { ReadFilesOptions } from './types.ts';
 
 /**
  * Read JSON metadata for one or more files in a single exiftool invocation.
@@ -22,7 +22,7 @@ import type { IDigest, IDryRun } from './types.ts';
  * @returns An array of {@link File} instances, one per input file (in input
  *   order). Files whose metadata could not be read still appear in the result.
  */
-export async function readFiles(files: (FS.FilePath | FS.File)[], opts: IDigest & IDryRun = {}): Promise<File[]> {
+export async function readFiles(files: (FS.FilePath | FS.File)[], opts: ReadFilesOptions = {}): Promise<File[]> {
   const paths = files.map((f) => (_.isString(f) ? f : f.path));
   const args = [...EXIFTOOL_READ_FLAGS, ...paths];
   const exiftoolPromise = await Cmd.runner<Dict>('exiftool', args).cwd(FS.cwd()).run();
@@ -43,6 +43,11 @@ export async function readFiles(files: (FS.FilePath | FS.File)[], opts: IDigest 
     promises.push(...results.map((f) => f.getDigest(alg)));
   }
   await Promise.all(promises);
+  if (opts.userAgent) {
+    for (const exifFile of results) {
+      exifFile.initLookup(opts.userAgent);
+    }
+  }
 
   return results;
 }

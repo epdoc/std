@@ -1,7 +1,10 @@
 import { DateTime } from '@epdoc/datetime';
 import type * as FS from '@epdoc/fs/fs';
 import { assertEquals } from '@std/assert';
+import pkg from '../deno.json' with { type: 'json' };
 import { File, Geo, Meta } from '../src/mod.ts';
+
+const userAgent = `${pkg.name}@${pkg.version}`;
 
 function sourceFile(path: string): FS.FilePath {
   return path as FS.FilePath;
@@ -190,7 +193,7 @@ Deno.test('File setters and dirty flag', async (t) => {
   });
 
   await t.step('applyTags with force queues already-matching values', () => {
-    const file = File.fromMetadata(meta({ City: 'New York', State: 'NY' }));
+    const file = File.fromMetadata(meta({ City: 'New York', State: 'NY' }), { userAgent: userAgent });
     file.applyTags({ 'MWG:City': 'New York', 'MWG:State': 'NY' }, true);
     assertEquals(file.dirty, true);
     assertEquals(file.pending.size, 2);
@@ -199,7 +202,7 @@ Deno.test('File setters and dirty flag', async (t) => {
   });
 
   await t.step('force overwrites an already-queued value', () => {
-    const file = File.fromMetadata(meta({ City: 'New York' }));
+    const file = File.fromMetadata(meta({ City: 'New York' }), { userAgent: userAgent });
     file.setTag('MWG:City', 'Los Angeles');
     file.setTag('MWG:City', 'New York', true);
     assertEquals(file.dirty, true);
@@ -208,7 +211,7 @@ Deno.test('File setters and dirty flag', async (t) => {
   });
 
   await t.step('setAddressFromLookup with force queues matching location tags', () => {
-    const file = File.fromMetadata(meta({ City: 'New York' }));
+    const file = File.fromMetadata(meta({ City: 'New York' }), { userAgent: userAgent });
     file.api.parseNominatimResponse({
       display_name: 'New York',
       address: { city: 'New York', state: 'New York', country: 'United States', country_code: 'us' },

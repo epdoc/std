@@ -57,7 +57,10 @@ try {
   const results = await readFiles(files, { digest: digest ? 'sha1' : false });
 
   for (const file of results) {
-    if (lookup) await file.lookupAddress(userAgent);
+    if (lookup) {
+      file.initLookup(userAgent);
+      await file.lookupAddress();
+    }
     const response = file.api.response;
     console.log('API Response', JSON.stringify(response, null, 2));
   }

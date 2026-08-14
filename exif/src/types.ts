@@ -33,6 +33,14 @@ export type FileGetMetadataOptions = IDigest & {
   force?: boolean;
 };
 
+export interface IUserAgent {
+  userAgent?: string;
+}
+
+export interface FileOptions extends IDryRun, IUserAgent {}
+
+export interface ReadFilesOptions extends IDigest, IDryRun, IUserAgent {}
+
 /**
  * Options to File.info() method.
  */

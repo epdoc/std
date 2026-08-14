@@ -11,22 +11,28 @@ export class AddressLookup {
   #address?: AddressDef;
   #tags?: MetaTagDict;
   #displayName?: string;
+  #userAgent: string;
 
-  constructor(opts?: { baseUrl?: string; userAgent?: string }) {
+  /**
+   * Create an object with which to do address lookups using gps coordinates.
+   *
+   * @param userAgent Required (eg. 'fstool/v1.3.3')
+   * @param opts.baseUrl The URL of the service. Defaults to https://nominatim.openstreetmap.org.
+   */
+  constructor(userAgent: string, opts?: { baseUrl?: string }) {
+    this.#userAgent = userAgent;
     this.#baseUrl = opts?.baseUrl ?? 'https://nominatim.openstreetmap.org';
-    // this.#userAgent = opts?.userAgent ?? 'fstools/0.1.0';
   }
 
   /**
    * Lookup address information, given latitude and longitude.
    *
-   * @param userAgent Required (eg. 'fstool/v1.3.3')
    * @param lat The latitude as a number
    * @param lng The longitude as a number
    */
-  async lookup(userAgent: string, lat: number, lng: number): Promise<void> {
+  async lookup(lat: number, lng: number): Promise<void> {
     const url = `${this.#baseUrl}/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`;
-    const headers = new Headers({ 'User-Agent': userAgent });
+    const headers = new Headers({ 'User-Agent': this.#userAgent });
     const response = await fetch(url, { headers });
 
     if (!response.ok) {
