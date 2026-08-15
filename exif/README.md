@@ -307,44 +307,51 @@ choosing (`.withTz('local')`, `.withTz('utc')`, etc.).
 
 The `Geo` namespace provides reverse geocoding via OpenStreetMap's Nominatim API, converting GPS coordinates into EXIF
 location tags. `File.lookupAddress()` performs the lookup and `File.setAddressFromLookup()` queues the resulting tags.
+The written tags map to the location fields Adobe Bridge displays: `MWG:Country`, `MWG:CountryCode`, `MWG:State`,
+`MWG:City` (settlement + county), and the sublocation — written to both `MWG:Location` (XMP) and `IPTC:Sub-location`
+(legacy IPTC IIM), which is what Adobe Bridge reads for its "Sublocation" field — with the street address added at
+`exact` granularity.
 
 ```ts
 import * as Exif from '@epdoc/exif';
 
-const file = new Exif.File('/path/to/photo.jpg');
+// Nominatim requires an identifying User-Agent; pass it at construction
+const file = new Exif.File('/path/to/photo.jpg', { userAgent: 'myapp/1.2.3' });
 await file.getMetadata();
 
 const gps = file.gps;
 if (gps) {
-  await file.lookupAddress('myapp/1.2.3'); // Nominatim requires an identifying User-Agent
+  await file.lookupAddress();
 
-  // Queue location tags at the desired detail level (default: location)
-  file.setAddressFromLookup(Exif.Geo.Level.city); // country | state | county | city | location | exact
+  // Queue location tags at the desired detail level (default: sublocation)
+  file.setAddressFromLookup(Exif.Geo.Level.city); // country | state | county | city | sublocation | exact
 
   await file.write();
 }
 ```
 
+If the `File` was created without a `userAgent`, enable lookups later with `file.initLookup(userAgent)`.
+
 The `Geo.Level` enum controls how much location detail is written:
 
-| Level      | Tags written                          |
-| ---------- | ------------------------------------- |
-| `country`  | Country, CountryCode                  |
-| `state`    | + State                               |
-| `county`   | + County                              |
-| `city`     | + City                                |
-| `location` | + Location/Sub-location, PostalCode   |
-| `exact`    | + StreetAddress (house number + road) |
+| Level         | Tags written                                                               |
+| ------------- | -------------------------------------------------------------------------- |
+| `country`     | Country, CountryCode                                                       |
+| `state`       | + State                                                                    |
+| `county`      | + City (county alone, e.g. `"Osa"`)                                        |
+| `city`        | + City full: settlement + county, e.g. `"Ojochal, Puerto Cortes, Osa"`     |
+| `sublocation` | + Location/Sub-location (neighbourhood), e.g. `"Barrio Lajas"`             |
+| `exact`       | + street prepended to Location, e.g. `"57 Calle del Jaguar, Barrio Lajas"` |
 
 `Geo.AddressLookup` can also be used standalone:
 
 ```ts
 import * as Exif from '@epdoc/exif';
 
-const lookup = new Exif.Geo.AddressLookup();
-await lookup.lookup('myapp/1.2.3', 51.5074, -0.1278);
-console.log(lookup.address); // { country, state, city, ... }
-console.log(lookup.tags); // full MetaTagDict of MWG/XMP location tags
+const lookup = new Exif.Geo.AddressLookup('myapp/1.2.3');
+await lookup.lookup(51.5074, -0.1278);
+console.log(lookup.address); // { country, state, city, sublocation, displayName, ... }
+console.log(lookup.tags); // full MetaTagDict of MWG location tags
 ```
 
 ### MakerNotes

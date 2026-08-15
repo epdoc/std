@@ -99,8 +99,16 @@ export class AddressLookup {
    * When level is not defined, parses all fields of the raw API response and sets both the address
    * and tags properties of this class instance.
    *
-   * @param level
-   * @returns
+   * The tags map to the location fields Adobe Bridge displays:
+   * - `MWG:Country` / `MWG:CountryCode` / `MWG:State` map to Country / Country Code / State.
+   * - `MWG:City` combines the settlement (village/town/hamlet + city/municipality) with the county,
+   *   e.g. `"Ojochal, Puerto Cortes, Osa"`.
+   * - `MWG:Location` + `IPTC:Sub-location` hold the sublocation (the XMP and legacy IPTC IIM
+   *   records Adobe Bridge reads for its "Sublocation" field). At {@link Level.exact} granularity
+   *   the street address is prepended, e.g. `"57 Calle del Jaguar, Barrio Lajas"`.
+   *
+   * @param level The {@link LevelType} granularity to write, or `undefined` to write everything.
+   * @returns The EXIF tag map to write.
    */
   getTags(level?: LevelType): MetaTagDict {
     const filter = level ? LevelOrder[level] : 0;
@@ -140,26 +148,30 @@ export class AddressLookup {
 
     if (filter > LevelOrder.county) return tags;
 
-    // 2. County
+    // 3. County — fills the City tag at county granularity (no separate tag).
     const county = getFirstMatch(['county', 'region']);
     if (county) {
-      tags['MWG:County'] = county;
-      address.county = county;
+      tags['MWG:City'] = county;
+      address.city = county;
     }
 
     if (filter > LevelOrder.city) return tags;
 
-    // 3. City / Town / Village
-    const city = getFirstMatch(['hamlet', 'village', 'town', 'city', 'municipality']);
-    if (city) {
+    // 4. City — settlement (village/town/hamlet + city/municipality) + county.
+    const hamletVillage = getFirstMatch(['hamlet', 'village']);
+    const settlement = getFirstMatch(['town', 'city', 'municipality']);
+    const cityParts = [hamletVillage, settlement, county].filter((v, i, arr) => v && arr.indexOf(v) === i);
+    if (cityParts.length) {
+      const city = cityParts.join(', ');
       tags['MWG:City'] = city;
       address.city = city;
     }
 
-    if (filter > LevelOrder.location) return tags;
+    if (filter > LevelOrder.sublocation) return tags;
 
-    // 4. Location / Sublocation / District
-    const location = getFirstMatch([
+    // 5. Sublocation — neighbourhood/suburb/district. Written to both the XMP
+    //    location tags (via MWG) and the legacy IPTC IIM Sub-location record.
+    const sublocation = getFirstMatch([
       'suburb',
       'neighbourhood',
       'quarter',
@@ -169,20 +181,15 @@ export class AddressLookup {
       'historic',
       'amenity',
     ]);
-    if (location) {
-      tags['MWG:Location'] = location;
-      address.location = location;
-    }
-
-    // 5. Postal Code
-    if (addr.postcode && addr.postcode.trim().length > 0) {
-      tags['XMP-iptcCore:PostalCode'] = addr.postcode.trim();
-      address.postalCode = addr.postcode.trim();
+    if (sublocation) {
+      tags['MWG:Location'] = sublocation;
+      tags['IPTC:Sub-location'] = sublocation;
+      address.sublocation = sublocation;
     }
 
     if (filter > LevelOrder.exact) return tags;
 
-    // 6. Street Address
+    // 6. Street address — prepended to the sublocation at exact granularity.
     const houseNumber = getFirstMatch(['house_number', 'house_name', 'building']);
     const road = getFirstMatch([
       'road',
@@ -196,11 +203,13 @@ export class AddressLookup {
     ]);
 
     if (road) {
-      const streetAddress = houseNumber ? `${houseNumber} ${road}` : road;
-      tags['XMP-iptcCore:StreetAddress'] = streetAddress;
-      address.streetAddress = streetAddress;
+      const street = houseNumber ? `${houseNumber} ${road}` : road;
+      const merged = [street, sublocation].filter(Boolean).join(', ');
+      tags['MWG:Location'] = merged;
+      tags['IPTC:Sub-location'] = merged;
+      address.sublocation = merged;
     }
-    if (addr.displayName) address.displayName = addr.displayName;
+    if (this.#displayName) address.displayName = this.#displayName;
 
     if (!level) {
       this.#tags = tags;

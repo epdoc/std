@@ -41,17 +41,24 @@ interface NominatimAddress {
 
 /**
  * Normalized address extracted from reverse-geocoding (e.g., Nominatim/OSM).
+ *
+ * The fields mirror the location fields Adobe Bridge displays: city, state,
+ * country, country code, and sublocation. Richer Nominatim data is folded in:
+ * - `city` combines the settlement (village/town/hamlet + city/municipality)
+ *   with the county, e.g. `"Ojochal, Puerto Cortes, Osa"`.
+ * - `sublocation` combines the neighbourhood/suburb with the street address
+ *   (at exact granularity), e.g. `"57 Calle del Jaguar, Barrio Lajas"`.
  */
 export type AddressDef = {
+  /** The raw Nominatim `display_name`; display only, never written to EXIF. */
   displayName?: string;
   country?: string;
   countryCode?: string;
   state?: string;
-  county?: string;
+  /** Settlement (village/town/city) and county, comma-joined. */
   city?: string;
-  location?: string;
-  postalCode?: string;
-  streetAddress?: string;
+  /** Neighbourhood/suburb, plus street address at exact granularity. */
+  sublocation?: string;
 };
 
 /** An {@link AddressDef} that is guaranteed to carry a `displayName`. */

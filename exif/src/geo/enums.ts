@@ -2,14 +2,18 @@
  * Location detail levels for {@link Geo.AddressLookup.getTags}.
  *
  * Each level includes the tags of every coarser level:
- * `country` → `state` → `county` → `city` → `location` → `exact`.
+ * `country` → `state` → `county` → `city` → `sublocation` → `exact`.
+ *
+ * The `county` level fills the City tag with the county alone; the `city`
+ * level writes the full settlement + county. The `sublocation` level writes
+ * the neighbourhood/suburb; `exact` prepends the street address.
  */
 export const Level = {
   country: 'country',
   state: 'state',
   county: 'county',
   city: 'city',
-  location: 'location',
+  sublocation: 'sublocation',
   exact: 'exact',
 } as const;
 
@@ -33,9 +37,8 @@ export function isLevel(value: unknown): value is LevelType {
 export const LevelOrder = {
   country: 9,
   state: 8,
-  municipality: 6,
   county: 5,
   city: 2,
-  location: 1,
+  sublocation: 1,
   exact: 0,
 };

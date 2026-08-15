@@ -569,18 +569,22 @@ export class File {
    * Queue EXIF location tag writes from the last address lookup.
    *
    * The detail level controls which tags are written (country → state →
-   * county → city → location → exact street). No-op when no lookup has been
+   * county → city → sublocation → exact). No-op when no lookup has been
    * performed. Each write is skipped when the file already carries that value,
    * unless `force` is set.
    *
-   * @param [granularity=Geo.Level.location] How much location detail to write.
+   * The `MWG:City` tag combines settlement (village/town/city) with county;
+   * the `MWG:Location` tag holds the sublocation (neighbourhood/suburb), with
+   * the street address prepended at {@link Geo.Level.exact}.
+   *
+   * @param [granularity=Geo.Level.sublocation] How much location detail to write.
    * @param [force=false] When true, queue every location tag even if it
-   *   matches the read model. Use this to guarantee the MWG/XMP location tags
-   *   are written to all target groups (e.g. normalizing a file whose groups
-   *   hold inconsistent values).
+   *   matches the read model. Use this to guarantee the MWG location tags are
+   *   written to all target groups (e.g. normalizing a file whose groups hold
+   *   inconsistent values).
    */
   setAddressFromLookup(
-    granularity: Geo.LevelType = Geo.Level.location,
+    granularity: Geo.LevelType = Geo.Level.sublocation,
     force = false,
   ): void {
     const tags: MetaTagDict = this.api.getTags(granularity);

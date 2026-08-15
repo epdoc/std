@@ -132,12 +132,13 @@ export class Resolver {
   /**
    * Reconstruct a display address from the file's location tags.
    *
-   * Parses country, country code, state, city, sub-location (road/neighbourhood)
-   * and postal code from the raw ExifTool output, falling back across the
-   * EXIF/IPTC/XMP tag families. Returns `undefined` when no country is present.
+   * Returns the reduced {@link Geo.AddressDef} shape matching Adobe Bridge's
+   * location fields: country, country code, state, city, and sublocation.
+   * For files written by older versions that stored the street in
+   * `LocationCreatedStreetAddress`, that value is prepended to the sublocation.
+   * Returns `undefined` when no country is present.
    */
   getAddressDef(): Geo.AddressDef | undefined {
-    // 1. Country & Country Code
     const country = this.getTagValue(
       'Country',
       'Country-PrimaryLocationName',
@@ -157,7 +158,6 @@ export class Resolver {
     ) as string;
     const countryCode = _.isNonEmptyString(cc) ? cc.toUpperCase() : undefined;
 
-    // 2. State / Region
     const state = this.getTagValue(
       'State',
       'Province-State',
@@ -166,36 +166,24 @@ export class Resolver {
       'IPTC:Province-State',
     ) as string;
 
-    // 3. City
     const city = this.getTagValue('City', 'LocationCreatedCity', 'XMP-photoshop:City', 'IPTC:City') as string;
 
-    // 4. Detailed IPTC Extension fields (if present in granular XMP-iptcExt metadata)
-    const streetAddress = this.getTagValue('LocationCreatedStreetAddress') as string;
-    const location = this.getTagValue(
+    const sublocation = this.getTagValue(
       'Location',
       'Sub-location',
       'LocationCreatedSublocation',
       'XMP-iptcCore:Location',
       'IPTC:Sub-location',
     ) as string;
-    const postalCode = this.getTagValue('XMP-iptcCore:PostalCode') as string;
 
-    // 5. Parse Sub-location string into street / neighborhood if granular fields are missing
-    let road = _.isString(streetAddress) ? streetAddress : undefined;
-    let neighbourhood: string | undefined;
-
-    if (!road && _.isString(location)) {
-      // If Sub-location was constructed as "houseNumber road, neighbourhood", parse comma parts
-      const parts = location.split(',').map((p) => p.trim());
-      if (parts.length > 1) {
-        road = parts[0];
-        neighbourhood = parts.slice(1).join(', ');
-      } else {
-        road = location;
-      }
+    // Backward compat: older versions stored the street in a separate tag.
+    let resolvedSublocation = sublocation;
+    const streetAddress = this.getTagValue('LocationCreatedStreetAddress') as string;
+    if (_.isNonEmptyString(streetAddress)) {
+      resolvedSublocation = [streetAddress, sublocation].filter((i) => _.isNonEmptyString(i)).join(', ');
     }
 
-    const displayName = [road, neighbourhood, city, state, country, countryCode]
+    const displayName = [resolvedSublocation, city, state, country, countryCode]
       .filter((i) => i && _.isNonEmptyString(i))
       .join(', ');
 
@@ -204,9 +192,7 @@ export class Resolver {
       countryCode,
       state,
       city,
-      location,
-      postalCode,
-      streetAddress,
+      sublocation: resolvedSublocation,
       displayName,
     };
   }

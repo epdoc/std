@@ -39,11 +39,9 @@ Deno.test('Geo.AddressLookup.parseNominatimResponse', async (t) => {
       country: 'United Kingdom',
       countryCode: 'GB',
       state: 'England',
-      county: 'Greater London',
-      city: 'London',
-      location: 'City of Westminster',
-      postalCode: 'SW1A 2AA',
-      streetAddress: '10 Downing Street',
+      city: 'London, Greater London',
+      sublocation: '10 Downing Street, City of Westminster',
+      displayName: '10 Downing Street, Westminster, London, England, United Kingdom',
     });
   });
 
@@ -64,11 +62,9 @@ Deno.test('Geo.AddressLookup.parseNominatimResponse', async (t) => {
       'MWG:Country': 'United Kingdom',
       'MWG:CountryCode': 'GB',
       'MWG:State': 'England',
-      'MWG:County': 'Greater London',
-      'MWG:City': 'London',
-      'MWG:Location': 'City of Westminster',
-      'XMP-iptcCore:PostalCode': 'SW1A 2AA',
-      'XMP-iptcCore:StreetAddress': '10 Downing Street',
+      'MWG:City': 'London, Greater London',
+      'MWG:Location': '10 Downing Street, City of Westminster',
+      'IPTC:Sub-location': '10 Downing Street, City of Westminster',
     });
   });
 
@@ -112,34 +108,34 @@ Deno.test('Geo.AddressLookup.getTags granularity', async (t) => {
     const tags = api.getTags(Geo.Level.state);
     assertEquals(tags['MWG:State'], 'England');
     assertEquals(tags['MWG:Country'], 'United Kingdom');
-    assertEquals('MWG:County' in tags, false);
-  });
-
-  await t.step('county granularity adds County', () => {
-    const tags = api.getTags(Geo.Level.county);
-    assertEquals(tags['MWG:County'], 'Greater London');
-    assertEquals(tags['MWG:State'], 'England');
     assertEquals('MWG:City' in tags, false);
   });
 
-  await t.step('city granularity adds City', () => {
-    const tags = api.getTags(Geo.Level.city);
-    assertEquals(tags['MWG:City'], 'London');
-    assertEquals(tags['MWG:County'], 'Greater London');
+  await t.step('county granularity fills City with the county', () => {
+    const tags = api.getTags(Geo.Level.county);
+    assertEquals(tags['MWG:City'], 'Greater London');
+    assertEquals(tags['MWG:State'], 'England');
     assertEquals('MWG:Location' in tags, false);
   });
 
-  await t.step('location granularity adds Location and PostalCode', () => {
-    const tags = api.getTags(Geo.Level.location);
+  await t.step('city granularity combines settlement and county in City', () => {
+    const tags = api.getTags(Geo.Level.city);
+    assertEquals(tags['MWG:City'], 'London, Greater London');
+    assertEquals('MWG:Location' in tags, false);
+  });
+
+  await t.step('sublocation granularity writes the neighbourhood', () => {
+    const tags = api.getTags(Geo.Level.sublocation);
     assertEquals(tags['MWG:Location'], 'City of Westminster');
-    assertEquals(tags['XMP-iptcCore:PostalCode'], 'SW1A 2AA');
+    assertEquals(tags['IPTC:Sub-location'], 'City of Westminster');
     assertEquals('XMP-iptcCore:StreetAddress' in tags, false);
   });
 
-  await t.step('exact granularity adds StreetAddress', () => {
+  await t.step('exact granularity prepends the street address to the sublocation', () => {
     const tags = api.getTags(Geo.Level.exact);
-    assertEquals(tags['XMP-iptcCore:StreetAddress'], '10 Downing Street');
-    assertEquals(tags['MWG:City'], 'London');
+    assertEquals(tags['MWG:Location'], '10 Downing Street, City of Westminster');
+    assertEquals(tags['IPTC:Sub-location'], '10 Downing Street, City of Westminster');
+    assertEquals(tags['MWG:City'], 'London, Greater London');
   });
 });
 
@@ -148,18 +144,18 @@ Deno.test('Geo.AddressLookup.getTags granularity', async (t) => {
 Deno.test('Geo.AddressLookup field priority', async (t) => {
   await t.step('road falls back to pedestrian, footway, and street', () => {
     const pedestrian = lookupFrom({ pedestrian: 'Oxford Street', country: 'UK', country_code: 'gb' });
-    assertEquals(pedestrian.address.streetAddress, 'Oxford Street');
+    assertEquals(pedestrian.address.sublocation, 'Oxford Street');
 
     const footway = lookupFrom({ footway: 'Baker Street', country: 'UK', country_code: 'gb' });
-    assertEquals(footway.address.streetAddress, 'Baker Street');
+    assertEquals(footway.address.sublocation, 'Baker Street');
 
     const street = lookupFrom({ street: 'Regent Street', country: 'UK', country_code: 'gb' });
-    assertEquals(street.address.streetAddress, 'Regent Street');
+    assertEquals(street.address.sublocation, 'Regent Street');
   });
 
   await t.step('road takes priority over pedestrian', () => {
     const api = lookupFrom({ road: 'Downing Street', pedestrian: 'Oxford Street' });
-    assertEquals(api.address.streetAddress, 'Downing Street');
+    assertEquals(api.address.sublocation, 'Downing Street');
   });
 
   await t.step('city falls back to town, village, and municipality', () => {
@@ -173,9 +169,9 @@ Deno.test('Geo.AddressLookup field priority', async (t) => {
     assertEquals(municipality.address.city, 'Borough');
   });
 
-  await t.step('hamlet and town take priority over city', () => {
+  await t.step('hamlet and town take priority in the city composition', () => {
     const hamlet = lookupFrom({ hamlet: 'Dartmoor', town: 'Brighton', city: 'London' });
-    assertEquals(hamlet.address.city, 'Dartmoor');
+    assertEquals(hamlet.address.city, 'Dartmoor, Brighton');
 
     const town = lookupFrom({ city: 'London', town: 'Brighton' });
     assertEquals(town.address.city, 'Brighton');
@@ -189,28 +185,29 @@ Deno.test('Geo.AddressLookup field priority', async (t) => {
     assertEquals(region.address.state, 'Normandy');
   });
 
-  await t.step('location picks suburb over neighbourhood', () => {
+  await t.step('sublocation picks suburb over neighbourhood', () => {
     const both = lookupFrom({ suburb: 'City of Westminster', neighbourhood: 'Westminster' });
-    assertEquals(both.address.location, 'City of Westminster');
+    assertEquals(both.address.sublocation, 'City of Westminster');
 
     const onlyNeighbourhood = lookupFrom({ neighbourhood: 'Westminster' });
-    assertEquals(onlyNeighbourhood.address.location, 'Westminster');
+    assertEquals(onlyNeighbourhood.address.sublocation, 'Westminster');
   });
 
-  await t.step('combines house number and road into the street address', () => {
+  await t.step('combines house number and road into the sublocation', () => {
     const api = lookupFrom({ house_number: '10', road: 'Downing Street' });
-    assertEquals(api.address.streetAddress, '10 Downing Street');
+    assertEquals(api.address.sublocation, '10 Downing Street');
   });
 
-  await t.step('street address is just the road when house number is missing', () => {
+  await t.step('sublocation is just the road when house number is missing', () => {
     const api = lookupFrom({ road: 'Downing Street' });
-    assertEquals(api.address.streetAddress, 'Downing Street');
+    assertEquals(api.address.sublocation, 'Downing Street');
   });
 
-  await t.step('omits street address when there is no road', () => {
+  await t.step('omits the sublocation tag when there is no road or neighbourhood', () => {
     const api = lookupFrom({ house_number: '10' });
-    assertEquals('XMP-iptcCore:StreetAddress' in api.tags, false);
-    assertEquals(api.address.streetAddress, undefined);
+    assertEquals('MWG:Location' in api.tags, false);
+    assertEquals('IPTC:Sub-location' in api.tags, false);
+    assertEquals(api.address.sublocation, undefined);
   });
 
   await t.step('uppercases the country code', () => {

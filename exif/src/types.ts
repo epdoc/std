@@ -95,7 +95,7 @@ export type MetadataValue = string | number | undefined;
  * Group-prefixed specs never appear in `-j` read output, so they are kept
  * out of the `Metadata` read model.
  */
-export type WriteTag = MetadataKey | `XMP-${string}:${string}` | `MWG:${string}`;
+export type WriteTag = MetadataKey | `XMP-${string}:${string}` | `MWG:${string}` | `IPTC:${string}`;
 
 /**
  * JSON representation of a File's extracted metadata, nested by section.

@@ -37,13 +37,13 @@
     {
       "name": "Geo.AddressLookup",
       "role": "helper",
-      "description": "Nominatim reverse-geocode client; converts GPS coordinates to structured addresses and EXIF location tag dicts",
+      "description": "Nominatim reverse-geocode client; converts GPS coordinates to Adobe-Bridge-compatible EXIF location tags (Country/CountryCode/State/City/Sublocation)",
       "whenToUse": "Looking up locations and writing location tags (via File.setAddressFromLookup)"
     },
     {
       "name": "Geo.Level",
       "role": "type",
-      "description": "Location detail levels controlling which tags are written: country | state | county | city | location | exact"
+      "description": "Location detail levels controlling which tags are written: country | state | county | city | sublocation | exact"
     },
     {
       "name": "Gps.parse / Gps.toDms",
