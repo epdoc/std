@@ -39,7 +39,15 @@ export const EXIFTOOL_READ_FLAGS = ['-j', '-struct', '-api', 'QuickTimeUTC=1'];
  * enables the Metadata Working Group group (so MWG:City etc. sync EXIF, IPTC
  * and XMP).
  */
-export const EXIFTOOL_WRITE_FLAGS = ['-overwrite_original', '-P', '-m', '-charset', 'utf8', '-use', 'MWG'];
+export const EXIFTOOL_WRITE_FLAGS = [
+  '-overwrite_original',
+  '-P',
+  '-m',
+  '-charset',
+  'utf8',
+  '-use',
+  'MWG',
+];
 
 type MetaCache = {
   file?: Schema.File;
@@ -93,7 +101,9 @@ export class File {
   constructor(file: FS.FilePath | FS.File, opts?: FileOptions) {
     this.#fsFile = _.isString(file) ? new FS.File(file) : file;
     this.#dryRun = opts?.dryRun ?? false;
-    if (opts && opts.userAgent) this.#api = new Geo.AddressLookup(opts.userAgent);
+    if (opts && opts.userAgent) {
+      this.#api = new Geo.AddressLookup(opts.userAgent);
+    }
   }
 
   /** Create a File for the given media file. @see {@link constructor}. */
@@ -153,7 +163,10 @@ export class File {
 
   /** The reverse-geocoding lookup used by {@link lookupAddress}. */
   get api(): Geo.AddressLookup {
-    assert(this.#api, 'Address lookup is not enabled because userAgent was not provided when creating this interface');
+    assert(
+      this.#api,
+      'Address lookup is not enabled because userAgent was not provided when creating this interface',
+    );
     return this.#api;
   }
 

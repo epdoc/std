@@ -62,7 +62,9 @@ try {
       await file.lookupAddress();
     }
     const response = file.api.response;
-    console.log('API Response', JSON.stringify(response, null, 2));
+    if (showMeta) {
+      console.log('API Response', JSON.stringify(response, null, 2));
+    }
   }
 
   const output = results.map((file) => file.info({ metadata: showMeta }));

@@ -1,8 +1,8 @@
 {
   "build": {
-    "number": 28,
-    "builtAt": "2026-08-14T17:36:01-06:00",
-    "version": "0.1.59",
+    "number": 29,
+    "builtAt": "2026-08-14T18:06:43-06:00",
+    "version": "0.1.60",
     "dependencies": {}
   }
 }

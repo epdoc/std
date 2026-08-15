@@ -2,7 +2,7 @@ import { DateTime, type ISOTZ } from '@epdoc/datetime';
 import { _, type Integer } from '@epdoc/type';
 import { CODEC_MAP, REPAIRABLE } from '../consts.ts';
 import { dateFromFilename, isWhatsAppFilename } from '../filename.ts';
-import type { AddressDisplayDef } from '../geo/types.ts';
+import type * as Geo from '../geo/mod.ts';
 import type { Metadata } from '../meta-types.ts';
 import * as Normalize from '../normalize.ts';
 import type { MetadataKey, MetadataValue, MetaTagDict, Seconds } from '../types.ts';
@@ -136,7 +136,7 @@ export class Resolver {
    * and postal code from the raw ExifTool output, falling back across the
    * EXIF/IPTC/XMP tag families. Returns `undefined` when no country is present.
    */
-  getAddressDef(): AddressDisplayDef | undefined {
+  getAddressDef(): Geo.AddressDef | undefined {
     // 1. Country & Country Code
     const country = this.getTagValue(
       'Country',

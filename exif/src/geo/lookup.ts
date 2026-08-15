@@ -200,6 +200,7 @@ export class AddressLookup {
       tags['XMP-iptcCore:StreetAddress'] = streetAddress;
       address.streetAddress = streetAddress;
     }
+    if (addr.displayName) address.displayName = addr.displayName;
 
     if (!level) {
       this.#tags = tags;
