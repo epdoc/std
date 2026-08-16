@@ -586,9 +586,10 @@ export class File {
   setAddressFromLookup(
     granularity: Geo.LevelType = Geo.Level.sublocation,
     force = false,
-  ): void {
+  ): MetaTagDict {
     const tags: MetaTagDict = this.api.getTags(granularity);
     this.applyTags(tags, force);
+    return tags;
   }
 
   // ============================================================================

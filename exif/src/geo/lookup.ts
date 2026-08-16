@@ -36,7 +36,9 @@ export class AddressLookup {
     const response = await fetch(url, { headers });
 
     if (!response.ok) {
-      throw new Error(`Nominatim request failed: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Nominatim request failed: ${response.status} ${response.statusText}`,
+      );
     }
 
     const data = (await response.json()) as NominatimResponse;
@@ -133,14 +135,19 @@ export class AddressLookup {
       address.country = addr.country.trim();
     }
     if (addr.country_code && addr.country_code.trim().length > 0) {
-      tags['MWG:CountryCode'] = addr.country_code.trim().toUpperCase();
+      tags['XMP-iptcCore:CountryCode'] = addr.country_code.trim().toUpperCase();
       address.countryCode = addr.country_code.trim().toUpperCase();
     }
 
     if (filter > LevelOrder.state) return tags;
 
     // 2. State / Region / Province
-    const state = getFirstMatch(['state', 'province', 'state_district', 'region']);
+    const state = getFirstMatch([
+      'state',
+      'province',
+      'state_district',
+      'region',
+    ]);
     if (state) {
       tags['MWG:State'] = state;
       address.state = state;
@@ -174,6 +181,7 @@ export class AddressLookup {
     const sublocation = getFirstMatch([
       'suburb',
       'neighbourhood',
+      'neighborhood',
       'quarter',
       'city_district',
       'district',
@@ -190,7 +198,11 @@ export class AddressLookup {
     if (filter > LevelOrder.exact) return tags;
 
     // 6. Street address — prepended to the sublocation at exact granularity.
-    const houseNumber = getFirstMatch(['house_number', 'house_name', 'building']);
+    const houseNumber = getFirstMatch([
+      'house_number',
+      'house_name',
+      'building',
+    ]);
     const road = getFirstMatch([
       'road',
       'street',

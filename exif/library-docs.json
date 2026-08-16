@@ -1438,9 +1438,16 @@
                         }
                       ],
                       "returnType": {
-                        "repr": "void",
-                        "kind": "keyword",
-                        "value": "void"
+                        "repr": "MetaTagDict",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "MetaTagDict",
+                          "resolution": {
+                            "kind": "import",
+                            "specifier": "./types.ts",
+                            "name": "MetaTagDict"
+                          }
+                        }
                       },
                       "hasBody": true
                     },
@@ -1484,9 +1491,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 598,
+                      "line": 599,
                       "col": 2,
-                      "byteIndex": 20156
+                      "byteIndex": 20180
                     }
                   },
                   {
@@ -1516,9 +1523,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 616,
+                      "line": 617,
                       "col": 2,
-                      "byteIndex": 20724
+                      "byteIndex": 20748
                     }
                   },
                   {
@@ -1566,9 +1573,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 631,
+                      "line": 632,
                       "col": 2,
-                      "byteIndex": 21284
+                      "byteIndex": 21308
                     }
                   },
                   {
@@ -1665,9 +1672,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 654,
+                      "line": 655,
                       "col": 2,
-                      "byteIndex": 22315
+                      "byteIndex": 22339
                     }
                   },
                   {
@@ -1732,9 +1739,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 674,
+                      "line": 675,
                       "col": 2,
-                      "byteIndex": 23038
+                      "byteIndex": 23062
                     }
                   },
                   {
@@ -1780,9 +1787,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 692,
+                      "line": 693,
                       "col": 2,
-                      "byteIndex": 23772
+                      "byteIndex": 23796
                     }
                   },
                   {
@@ -1828,9 +1835,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/file.ts",
-                      "line": 744,
+                      "line": 745,
                       "col": 2,
-                      "byteIndex": 25602
+                      "byteIndex": 25626
                     }
                   }
                 ]
@@ -2095,6 +2102,107 @@
                 },
                 "hasBody": true,
                 "isAsync": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "titleCase",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/utils.ts",
+                "line": 31,
+                "col": 0,
+                "byteIndex": 873
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Display label for a key. Defaults to a title-cased version of the camelCase\nkey (e.g. `createdAt` → `Created At`). Override via the `title` field on\nthe InfoDef."
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "key",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "truncateLongStrings",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/utils.ts",
+                "line": 2,
+                "col": 0,
+                "byteIndex": 34
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "data",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "unknown",
+                      "kind": "keyword",
+                      "value": "unknown"
+                    }
+                  },
+                  {
+                    "kind": "assign",
+                    "left": {
+                      "kind": "identifier",
+                      "name": "maxLength",
+                      "optional": false,
+                      "tsType": {
+                        "repr": "number",
+                        "kind": "keyword",
+                        "value": "number"
+                      }
+                    },
+                    "right": "256"
+                  },
+                  {
+                    "kind": "assign",
+                    "left": {
+                      "kind": "identifier",
+                      "name": "previewLength",
+                      "optional": false,
+                      "tsType": {
+                        "repr": "number",
+                        "kind": "keyword",
+                        "value": "number"
+                      }
+                    },
+                    "right": "64"
+                  }
+                ],
+                "returnType": {
+                  "repr": "unknown",
+                  "kind": "keyword",
+                  "value": "unknown"
+                },
+                "hasBody": true
               }
             }
           ]
@@ -11868,52 +11976,14 @@
                     ]
                   },
                   {
-                    "name": "titleCase",
-                    "declarations": [
-                      {
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 73,
-                          "col": 0,
-                          "byteIndex": 2987
-                        },
-                        "declarationKind": "export",
-                        "jsDoc": {
-                          "doc": "Display label for a key. Defaults to a title-cased version of the camelCase\nkey (e.g. `createdAt` → `Created At`). Override via the `title` field on\nthe InfoDef."
-                        },
-                        "kind": "function",
-                        "def": {
-                          "params": [
-                            {
-                              "kind": "identifier",
-                              "name": "key",
-                              "optional": false,
-                              "tsType": {
-                                "repr": "string",
-                                "kind": "keyword",
-                                "value": "string"
-                              }
-                            }
-                          ],
-                          "returnType": {
-                            "repr": "string",
-                            "kind": "keyword",
-                            "value": "string"
-                          },
-                          "hasBody": true
-                        }
-                      }
-                    ]
-                  },
-                  {
                     "name": "FileDef",
                     "declarations": [
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 96,
+                          "line": 84,
                           "col": 0,
-                          "byteIndex": 4132
+                          "byteIndex": 3798
                         },
                         "declarationKind": "export",
                         "kind": "interface",
@@ -11935,9 +12005,9 @@
                               "name": "path",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 97,
+                                "line": 85,
                                 "col": 2,
-                                "byteIndex": 4181
+                                "byteIndex": 3847
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -11967,9 +12037,9 @@
                               "name": "filename",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 98,
+                                "line": 86,
                                 "col": 2,
-                                "byteIndex": 4211
+                                "byteIndex": 3877
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -11993,9 +12063,9 @@
                               "name": "ext",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 99,
+                                "line": 87,
                                 "col": 2,
-                                "byteIndex": 4240
+                                "byteIndex": 3906
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -12019,9 +12089,9 @@
                               "name": "createdAt",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 100,
+                                "line": 88,
                                 "col": 2,
-                                "byteIndex": 4264
+                                "byteIndex": 3930
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -12064,9 +12134,9 @@
                               "name": "modifiedAt",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 101,
+                                "line": 89,
                                 "col": 2,
-                                "byteIndex": 4311
+                                "byteIndex": 3977
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -12109,9 +12179,9 @@
                               "name": "size",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 102,
+                                "line": 90,
                                 "col": 2,
-                                "byteIndex": 4359
+                                "byteIndex": 4025
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -12142,9 +12212,9 @@
                               "name": "type",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 103,
+                                "line": 91,
                                 "col": 2,
-                                "byteIndex": 4385
+                                "byteIndex": 4051
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -12168,9 +12238,9 @@
                               "name": "mimeType",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 104,
+                                "line": 92,
                                 "col": 2,
-                                "byteIndex": 4410
+                                "byteIndex": 4076
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -12201,9 +12271,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 111,
+                          "line": 99,
                           "col": 13,
-                          "byteIndex": 4611
+                          "byteIndex": 4277
                         },
                         "declarationKind": "export",
                         "jsDoc": {
@@ -12232,9 +12302,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 129,
+                          "line": 117,
                           "col": 0,
-                          "byteIndex": 5556
+                          "byteIndex": 5222
                         },
                         "declarationKind": "export",
                         "jsDoc": {
@@ -12274,9 +12344,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 131,
+                          "line": 119,
                           "col": 0,
-                          "byteIndex": 5604
+                          "byteIndex": 5270
                         },
                         "declarationKind": "export",
                         "kind": "interface",
@@ -12298,9 +12368,9 @@
                               "name": "width",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 132,
+                                "line": 120,
                                 "col": 2,
-                                "byteIndex": 5654
+                                "byteIndex": 5320
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -12324,9 +12394,9 @@
                               "name": "height",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 133,
+                                "line": 121,
                                 "col": 2,
-                                "byteIndex": 5680
+                                "byteIndex": 5346
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -12350,9 +12420,9 @@
                               "name": "originatedAt",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 134,
+                                "line": 122,
                                 "col": 2,
-                                "byteIndex": 5707
+                                "byteIndex": 5373
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -12383,9 +12453,9 @@
                               "name": "digitizedAt",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 135,
+                                "line": 123,
                                 "col": 2,
-                                "byteIndex": 5742
+                                "byteIndex": 5408
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -12416,9 +12486,9 @@
                               "name": "modifiedAt",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 136,
+                                "line": 124,
                                 "col": 2,
-                                "byteIndex": 5776
+                                "byteIndex": 5442
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -12449,9 +12519,9 @@
                               "name": "fileSize",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 137,
+                                "line": 125,
                                 "col": 2,
-                                "byteIndex": 5809
+                                "byteIndex": 5475
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -12485,9 +12555,9 @@
                               "name": "encoding",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 138,
+                                "line": 126,
                                 "col": 2,
-                                "byteIndex": 5847
+                                "byteIndex": 5513
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -12511,9 +12581,9 @@
                               "name": "colorSpace",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 140,
+                                "line": 128,
                                 "col": 2,
-                                "byteIndex": 5908
+                                "byteIndex": 5574
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -12537,9 +12607,9 @@
                               "name": "fNumber",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 141,
+                                "line": 129,
                                 "col": 2,
-                                "byteIndex": 5939
+                                "byteIndex": 5605
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -12563,9 +12633,9 @@
                               "name": "exposureTime",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 142,
+                                "line": 130,
                                 "col": 2,
-                                "byteIndex": 5967
+                                "byteIndex": 5633
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -12589,9 +12659,9 @@
                               "name": "iso",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 143,
+                                "line": 131,
                                 "col": 2,
-                                "byteIndex": 6000
+                                "byteIndex": 5666
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -12615,9 +12685,9 @@
                               "name": "focalLength",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 144,
+                                "line": 132,
                                 "col": 2,
-                                "byteIndex": 6024
+                                "byteIndex": 5690
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -12641,9 +12711,9 @@
                               "name": "focalLength35mm",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 145,
+                                "line": 133,
                                 "col": 2,
-                                "byteIndex": 6056
+                                "byteIndex": 5722
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -12667,9 +12737,9 @@
                               "name": "subjectDistance",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 146,
+                                "line": 134,
                                 "col": 2,
-                                "byteIndex": 6092
+                                "byteIndex": 5758
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -12693,9 +12763,9 @@
                               "name": "megapixels",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 147,
+                                "line": 135,
                                 "col": 2,
-                                "byteIndex": 6128
+                                "byteIndex": 5794
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -12736,9 +12806,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 150,
+                          "line": 138,
                           "col": 13,
-                          "byteIndex": 6182
+                          "byteIndex": 5848
                         },
                         "declarationKind": "export",
                         "kind": "variable",
@@ -12764,9 +12834,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 178,
+                          "line": 166,
                           "col": 0,
-                          "byteIndex": 7524
+                          "byteIndex": 7190
                         },
                         "declarationKind": "export",
                         "kind": "typeAlias",
@@ -12798,9 +12868,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 180,
+                          "line": 168,
                           "col": 0,
-                          "byteIndex": 7574
+                          "byteIndex": 7240
                         },
                         "declarationKind": "export",
                         "kind": "interface",
@@ -12822,9 +12892,9 @@
                               "name": "originatedAt",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 181,
+                                "line": 169,
                                 "col": 2,
-                                "byteIndex": 7629
+                                "byteIndex": 7295
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -12855,9 +12925,9 @@
                               "name": "digitizedAt",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 182,
+                                "line": 170,
                                 "col": 2,
-                                "byteIndex": 7664
+                                "byteIndex": 7330
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -12888,9 +12958,9 @@
                               "name": "modifiedAt",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 183,
+                                "line": 171,
                                 "col": 2,
-                                "byteIndex": 7698
+                                "byteIndex": 7364
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -12921,9 +12991,9 @@
                               "name": "duration",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 184,
+                                "line": 172,
                                 "col": 2,
-                                "byteIndex": 7731
+                                "byteIndex": 7397
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -12947,9 +13017,9 @@
                               "name": "fileSize",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 185,
+                                "line": 173,
                                 "col": 2,
-                                "byteIndex": 7760
+                                "byteIndex": 7426
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -12983,9 +13053,9 @@
                               "name": "codec",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 186,
+                                "line": 174,
                                 "col": 2,
-                                "byteIndex": 7798
+                                "byteIndex": 7464
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13009,9 +13079,9 @@
                               "name": "framerate",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 187,
+                                "line": 175,
                                 "col": 2,
-                                "byteIndex": 7824
+                                "byteIndex": 7490
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13035,9 +13105,9 @@
                               "name": "bitDepth",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 188,
+                                "line": 176,
                                 "col": 2,
-                                "byteIndex": 7854
+                                "byteIndex": 7520
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13061,9 +13131,9 @@
                               "name": "colorRepresentation",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 189,
+                                "line": 177,
                                 "col": 2,
-                                "byteIndex": 7883
+                                "byteIndex": 7549
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13087,9 +13157,9 @@
                               "name": "pixelAspectRatio",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 190,
+                                "line": 178,
                                 "col": 2,
-                                "byteIndex": 7923
+                                "byteIndex": 7589
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13113,9 +13183,9 @@
                               "name": "rotation",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 191,
+                                "line": 179,
                                 "col": 2,
-                                "byteIndex": 7960
+                                "byteIndex": 7626
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13139,9 +13209,9 @@
                               "name": "avgBitrate",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 192,
+                                "line": 180,
                                 "col": 2,
-                                "byteIndex": 7989
+                                "byteIndex": 7655
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13165,9 +13235,9 @@
                               "name": "maxBitrate",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 193,
+                                "line": 181,
                                 "col": 2,
-                                "byteIndex": 8020
+                                "byteIndex": 7686
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13191,9 +13261,9 @@
                               "name": "megapixels",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 194,
+                                "line": 182,
                                 "col": 2,
-                                "byteIndex": 8051
+                                "byteIndex": 7717
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13234,9 +13304,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 197,
+                          "line": 185,
                           "col": 0,
-                          "byteIndex": 8092
+                          "byteIndex": 7758
                         },
                         "declarationKind": "export",
                         "kind": "typeAlias",
@@ -13268,9 +13338,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 198,
+                          "line": 186,
                           "col": 0,
-                          "byteIndex": 8151
+                          "byteIndex": 7817
                         },
                         "declarationKind": "export",
                         "kind": "typeAlias",
@@ -13311,9 +13381,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 200,
+                          "line": 188,
                           "col": 13,
-                          "byteIndex": 8218
+                          "byteIndex": 7884
                         },
                         "declarationKind": "export",
                         "kind": "variable",
@@ -13339,9 +13409,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 217,
+                          "line": 205,
                           "col": 0,
-                          "byteIndex": 9206
+                          "byteIndex": 8872
                         },
                         "declarationKind": "export",
                         "kind": "interface",
@@ -13363,9 +13433,9 @@
                               "name": "originatedAt",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 218,
+                                "line": 206,
                                 "col": 2,
-                                "byteIndex": 9256
+                                "byteIndex": 8922
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13396,9 +13466,9 @@
                               "name": "digitizedAt",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 219,
+                                "line": 207,
                                 "col": 2,
-                                "byteIndex": 9291
+                                "byteIndex": 8957
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13429,9 +13499,9 @@
                               "name": "modifiedAt",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 220,
+                                "line": 208,
                                 "col": 2,
-                                "byteIndex": 9325
+                                "byteIndex": 8991
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13462,9 +13532,9 @@
                               "name": "format",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 221,
+                                "line": 209,
                                 "col": 2,
-                                "byteIndex": 9358
+                                "byteIndex": 9024
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13488,9 +13558,9 @@
                               "name": "channels",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 222,
+                                "line": 210,
                                 "col": 2,
-                                "byteIndex": 9385
+                                "byteIndex": 9051
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13514,9 +13584,9 @@
                               "name": "sampleRate",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 223,
+                                "line": 211,
                                 "col": 2,
-                                "byteIndex": 9414
+                                "byteIndex": 9080
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13540,9 +13610,9 @@
                               "name": "bitsPerSample",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 224,
+                                "line": 212,
                                 "col": 2,
-                                "byteIndex": 9445
+                                "byteIndex": 9111
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13566,9 +13636,9 @@
                               "name": "codec",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 225,
+                                "line": 213,
                                 "col": 2,
-                                "byteIndex": 9479
+                                "byteIndex": 9145
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13592,9 +13662,9 @@
                               "name": "language",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 226,
+                                "line": 214,
                                 "col": 2,
-                                "byteIndex": 9505
+                                "byteIndex": 9171
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13618,9 +13688,9 @@
                               "name": "duration",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 227,
+                                "line": 215,
                                 "col": 2,
-                                "byteIndex": 9534
+                                "byteIndex": 9200
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13651,9 +13721,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 230,
+                          "line": 218,
                           "col": 13,
-                          "byteIndex": 9577
+                          "byteIndex": 9243
                         },
                         "declarationKind": "export",
                         "kind": "variable",
@@ -13679,9 +13749,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 252,
+                          "line": 240,
                           "col": 0,
-                          "byteIndex": 10571
+                          "byteIndex": 10237
                         },
                         "declarationKind": "export",
                         "kind": "typeAlias",
@@ -13713,9 +13783,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 254,
+                          "line": 242,
                           "col": 0,
-                          "byteIndex": 10621
+                          "byteIndex": 10287
                         },
                         "declarationKind": "export",
                         "kind": "interface",
@@ -13737,9 +13807,9 @@
                               "name": "name",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 255,
+                                "line": 243,
                                 "col": 2,
-                                "byteIndex": 10672
+                                "byteIndex": 10338
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13763,9 +13833,9 @@
                               "name": "make",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 256,
+                                "line": 244,
                                 "col": 2,
-                                "byteIndex": 10697
+                                "byteIndex": 10363
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13789,9 +13859,9 @@
                               "name": "model",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 257,
+                                "line": 245,
                                 "col": 2,
-                                "byteIndex": 10722
+                                "byteIndex": 10388
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13815,9 +13885,9 @@
                               "name": "lensMake",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 258,
+                                "line": 246,
                                 "col": 2,
-                                "byteIndex": 10748
+                                "byteIndex": 10414
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13841,9 +13911,9 @@
                               "name": "lensModel",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 259,
+                                "line": 247,
                                 "col": 2,
-                                "byteIndex": 10777
+                                "byteIndex": 10443
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13867,9 +13937,9 @@
                               "name": "serialNumber",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 260,
+                                "line": 248,
                                 "col": 2,
-                                "byteIndex": 10807
+                                "byteIndex": 10473
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13893,9 +13963,9 @@
                               "name": "makerNotes",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 261,
+                                "line": 249,
                                 "col": 2,
-                                "byteIndex": 10840
+                                "byteIndex": 10506
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13919,9 +13989,9 @@
                               "name": "focalLength35mm",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 262,
+                                "line": 250,
                                 "col": 2,
-                                "byteIndex": 10871
+                                "byteIndex": 10537
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -13952,9 +14022,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 265,
+                          "line": 253,
                           "col": 13,
-                          "byteIndex": 10921
+                          "byteIndex": 10587
                         },
                         "declarationKind": "export",
                         "kind": "variable",
@@ -13980,9 +14050,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 278,
+                          "line": 266,
                           "col": 0,
-                          "byteIndex": 11597
+                          "byteIndex": 11263
                         },
                         "declarationKind": "export",
                         "kind": "typeAlias",
@@ -14014,9 +14084,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 280,
+                          "line": 268,
                           "col": 0,
-                          "byteIndex": 11649
+                          "byteIndex": 11315
                         },
                         "declarationKind": "export",
                         "kind": "interface",
@@ -14041,9 +14111,9 @@
                               },
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 282,
+                                "line": 270,
                                 "col": 2,
-                                "byteIndex": 11822
+                                "byteIndex": 11488
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -14070,9 +14140,9 @@
                               },
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 284,
+                                "line": 272,
                                 "col": 2,
-                                "byteIndex": 11952
+                                "byteIndex": 11618
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -14103,9 +14173,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 287,
+                          "line": 275,
                           "col": 13,
-                          "byteIndex": 11995
+                          "byteIndex": 11661
                         },
                         "declarationKind": "export",
                         "kind": "variable",
@@ -14131,9 +14201,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 298,
+                          "line": 286,
                           "col": 0,
-                          "byteIndex": 12275
+                          "byteIndex": 11941
                         },
                         "declarationKind": "export",
                         "kind": "typeAlias",
@@ -14165,9 +14235,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 307,
+                          "line": 295,
                           "col": 0,
-                          "byteIndex": 12639
+                          "byteIndex": 12305
                         },
                         "declarationKind": "export",
                         "jsDoc": {
@@ -14192,9 +14262,9 @@
                               "name": "title",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 308,
+                                "line": 296,
                                 "col": 2,
-                                "byteIndex": 12687
+                                "byteIndex": 12353
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -14218,9 +14288,9 @@
                               "name": "author",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 309,
+                                "line": 297,
                                 "col": 2,
-                                "byteIndex": 12713
+                                "byteIndex": 12379
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -14244,9 +14314,9 @@
                               "name": "subject",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 310,
+                                "line": 298,
                                 "col": 2,
-                                "byteIndex": 12740
+                                "byteIndex": 12406
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -14270,9 +14340,9 @@
                               "name": "keywords",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 311,
+                                "line": 299,
                                 "col": 2,
-                                "byteIndex": 12768
+                                "byteIndex": 12434
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -14309,9 +14379,9 @@
                               "name": "createdAt",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 312,
+                                "line": 300,
                                 "col": 2,
-                                "byteIndex": 12808
+                                "byteIndex": 12474
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -14342,9 +14412,9 @@
                               "name": "modifiedAt",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 313,
+                                "line": 301,
                                 "col": 2,
-                                "byteIndex": 12840
+                                "byteIndex": 12506
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -14375,9 +14445,9 @@
                               "name": "pageCount",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 314,
+                                "line": 302,
                                 "col": 2,
-                                "byteIndex": 12873
+                                "byteIndex": 12539
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -14401,9 +14471,9 @@
                               "name": "producer",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 315,
+                                "line": 303,
                                 "col": 2,
-                                "byteIndex": 12903
+                                "byteIndex": 12569
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -14427,9 +14497,9 @@
                               "name": "description",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 316,
+                                "line": 304,
                                 "col": 2,
-                                "byteIndex": 12932
+                                "byteIndex": 12598
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -14453,9 +14523,9 @@
                               "name": "creator",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 317,
+                                "line": 305,
                                 "col": 2,
-                                "byteIndex": 12964
+                                "byteIndex": 12630
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -14479,9 +14549,9 @@
                               "name": "documentId",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 318,
+                                "line": 306,
                                 "col": 2,
-                                "byteIndex": 12992
+                                "byteIndex": 12658
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -14505,9 +14575,9 @@
                               "name": "instanceId",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 319,
+                                "line": 307,
                                 "col": 2,
-                                "byteIndex": 13023
+                                "byteIndex": 12689
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -14538,9 +14608,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 322,
+                          "line": 310,
                           "col": 13,
-                          "byteIndex": 13068
+                          "byteIndex": 12734
                         },
                         "declarationKind": "export",
                         "kind": "variable",
@@ -14566,9 +14636,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 337,
+                          "line": 325,
                           "col": 0,
-                          "byteIndex": 13676
+                          "byteIndex": 13342
                         },
                         "declarationKind": "export",
                         "kind": "typeAlias",
@@ -14600,9 +14670,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 346,
+                          "line": 334,
                           "col": 0,
-                          "byteIndex": 14040
+                          "byteIndex": 13706
                         },
                         "declarationKind": "export",
                         "jsDoc": {
@@ -14627,9 +14697,9 @@
                               "name": "title",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 347,
+                                "line": 335,
                                 "col": 2,
-                                "byteIndex": 14088
+                                "byteIndex": 13754
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -14653,9 +14723,9 @@
                               "name": "author",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 348,
+                                "line": 336,
                                 "col": 2,
-                                "byteIndex": 14114
+                                "byteIndex": 13780
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -14679,9 +14749,9 @@
                               "name": "subject",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 349,
+                                "line": 337,
                                 "col": 2,
-                                "byteIndex": 14141
+                                "byteIndex": 13807
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -14705,9 +14775,9 @@
                               "name": "keywords",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 350,
+                                "line": 338,
                                 "col": 2,
-                                "byteIndex": 14169
+                                "byteIndex": 13835
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -14744,9 +14814,9 @@
                               "name": "originatedAt",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 351,
+                                "line": 339,
                                 "col": 2,
-                                "byteIndex": 14209
+                                "byteIndex": 13875
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -14777,9 +14847,9 @@
                               "name": "digitizedAt",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 352,
+                                "line": 340,
                                 "col": 2,
-                                "byteIndex": 14244
+                                "byteIndex": 13910
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -14810,9 +14880,9 @@
                               "name": "modifiedAt",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 353,
+                                "line": 341,
                                 "col": 2,
-                                "byteIndex": 14278
+                                "byteIndex": 13944
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -14843,9 +14913,9 @@
                               "name": "pageCount",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 354,
+                                "line": 342,
                                 "col": 2,
-                                "byteIndex": 14311
+                                "byteIndex": 13977
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -14869,9 +14939,9 @@
                               "name": "producer",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                "line": 355,
+                                "line": 343,
                                 "col": 2,
-                                "byteIndex": 14341
+                                "byteIndex": 14007
                               },
                               "tsType": {
                                 "repr": "InfoDef",
@@ -14902,9 +14972,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 358,
+                          "line": 346,
                           "col": 13,
-                          "byteIndex": 14384
+                          "byteIndex": 14050
                         },
                         "declarationKind": "export",
                         "kind": "variable",
@@ -14930,9 +15000,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 370,
+                          "line": 358,
                           "col": 0,
-                          "byteIndex": 14849
+                          "byteIndex": 14515
                         },
                         "declarationKind": "export",
                         "kind": "typeAlias",
@@ -14964,9 +15034,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                          "line": 372,
+                          "line": 360,
                           "col": 0,
-                          "byteIndex": 14895
+                          "byteIndex": 14561
                         },
                         "declarationKind": "export",
                         "kind": "typeAlias",
@@ -14979,9 +15049,9 @@
                                   "name": "documentId",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                    "line": 373,
+                                    "line": 361,
                                     "col": 2,
-                                    "byteIndex": 14920
+                                    "byteIndex": 14586
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -14994,9 +15064,9 @@
                                   "name": "instanceId",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/exif/src/collections.ts",
-                                    "line": 374,
+                                    "line": 362,
                                     "col": 2,
-                                    "byteIndex": 14943
+                                    "byteIndex": 14609
                                   },
                                   "optional": true,
                                   "tsType": {

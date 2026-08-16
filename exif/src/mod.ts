@@ -8,3 +8,4 @@ export type * from './meta-types.ts';
 export * as Meta from './meta/mod.ts';
 export { readFiles } from './read-files.ts';
 export type * from './types.ts';
+export { titleCase, truncateLongStrings } from './utils.ts';

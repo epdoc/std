@@ -67,18 +67,6 @@ export function collect<S extends InfoSection>(
 }
 
 /**
- * Display label for a key. Defaults to a title-cased version of the camelCase
- * key (e.g. `createdAt` → `Created At`). Override via the `title` field on
- * the InfoDef.
- */
-export function titleCase(key: string): string {
-  return key
-    .replace(/([A-Z])/g, ' $1')
-    .replace(/^./, (s) => s.toUpperCase())
-    .trim();
-}
-
-/**
  * EXIF-derived content dates. Unlike the filesystem-level `fileDef` dates,
  * these reflect when the content was captured/digitized/modified per the
  * embedded metadata (e.g. a photo taken in 1925 and scanned in 2024).

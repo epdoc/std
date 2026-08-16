@@ -2,6 +2,7 @@ import type { FilePath } from '@epdoc/fs/fs';
 import build from './build/build-info.json' with { type: 'json' };
 import pkg from './deno.json' with { type: 'json' };
 import { readFiles } from './src/mod.ts';
+import { truncateLongStrings } from './src/utils.ts';
 
 const version = pkg.version;
 const buildNumber = build.build.number;
@@ -14,6 +15,7 @@ const files: FilePath[] = [];
 let showMeta = false;
 let digest = false;
 let lookup = false;
+let full = false;
 
 for (const arg of rawArgs) {
   if (arg === '-v' || arg === '--version') {
@@ -26,6 +28,8 @@ for (const arg of rawArgs) {
     digest = true;
   } else if (arg === '-l' || arg === '--lookup') {
     lookup = true;
+  } else if (arg === '-f' || arg === '--full') {
+    full = true;
   } else {
     files.push(arg as FilePath);
   }
@@ -45,6 +49,7 @@ if (flags.includes('-h') || flags.includes('--help')) {
   console.log('  -m, --meta     Include raw exiftool metadata in output');
   console.log('  -d, --digest   Compute file digest');
   console.log('  -l, --lookup   Lookup actual address');
+  console.log('  -f, --full     Do not truncate really long string');
   Deno.exit(0);
 }
 
@@ -54,21 +59,22 @@ if (files.length === 0) {
 }
 
 try {
-  const results = await readFiles(files, { digest: digest ? 'sha1' : false });
+  const results = await readFiles(files, { digest: digest ? 'sha1' : false, userAgent: userAgent });
 
   for (const file of results) {
     if (lookup) {
       file.initLookup(userAgent);
       await file.lookupAddress();
-    }
-    const response = file.api.response;
-    if (showMeta) {
-      console.log('API Response', JSON.stringify(response, null, 2));
+      const response = file.api.response;
+      if (showMeta) {
+        console.log('API Response', JSON.stringify(response, null, 2));
+      }
     }
   }
 
   const output = results.map((file) => file.info({ metadata: showMeta }));
-  console.log(JSON.stringify(output, null, 2));
+  const truncated = full ? output : truncateLongStrings(output);
+  console.log(JSON.stringify(truncated, null, 2));
 } catch (err) {
   console.error(err instanceof Error ? err.message : String(err));
   Deno.exit(1);

@@ -60,7 +60,7 @@ Deno.test('Geo.AddressLookup.parseNominatimResponse', async (t) => {
     const api = lookupFrom(FULL_ADDRESS);
     assertEquals(api.tags, {
       'MWG:Country': 'United Kingdom',
-      'MWG:CountryCode': 'GB',
+      'XMP-iptcCore:CountryCode': 'GB',
       'MWG:State': 'England',
       'MWG:City': 'London, Greater London',
       'MWG:Location': '10 Downing Street, City of Westminster',
@@ -98,10 +98,10 @@ Deno.test('Geo.AddressLookup.getTags granularity', async (t) => {
     const tags = api.getTags(Geo.Level.country);
     assertEquals(
       Object.keys(tags).sort(),
-      ['MWG:Country', 'MWG:CountryCode'].sort(),
+      ['MWG:Country', 'XMP-iptcCore:CountryCode'].sort(),
     );
     assertEquals(tags['MWG:Country'], 'United Kingdom');
-    assertEquals(tags['MWG:CountryCode'], 'GB');
+    assertEquals(tags['XMP-iptcCore:CountryCode'], 'GB');
   });
 
   await t.step('state granularity adds State', () => {
@@ -213,7 +213,7 @@ Deno.test('Geo.AddressLookup field priority', async (t) => {
   await t.step('uppercases the country code', () => {
     const api = lookupFrom({ country: 'Germany', country_code: 'de' });
     assertEquals(api.address.countryCode, 'DE');
-    assertEquals(api.tags['MWG:CountryCode'], 'DE');
+    assertEquals(api.tags['XMP-iptcCore:CountryCode'], 'DE');
   });
 });
 
