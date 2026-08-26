@@ -2401,11 +2401,14 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                "line": 11,
+                "line": 12,
                 "col": 0,
-                "byteIndex": 287
+                "byteIndex": 353
               },
               "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Union of the direction names defined in {@link Direction}."
+              },
               "kind": "typeAlias",
               "def": {
                 "tsType": {
@@ -2439,11 +2442,14 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                "line": 12,
+                "line": 14,
                 "col": 13,
-                "byteIndex": 370
+                "byteIndex": 480
               },
               "declarationKind": "export",
+              "jsDoc": {
+                "doc": "All direction names as a flat array."
+              },
               "kind": "variable",
               "def": {
                 "tsType": {
@@ -2470,11 +2476,14 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                "line": 13,
+                "line": 18,
                 "col": 0,
-                "byteIndex": 431
+                "byteIndex": 630
               },
               "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Type guard that checks whether a value is one of the {@link Direction} names."
+              },
               "kind": "function",
               "def": {
                 "params": [
@@ -2520,9 +2529,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                "line": 26,
+                "line": 31,
                 "col": 13,
-                "byteIndex": 903
+                "byteIndex": 1102
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -2538,9 +2547,9 @@
                         "name": "Circle",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                          "line": 27,
+                          "line": 32,
                           "col": 2,
-                          "byteIndex": 914
+                          "byteIndex": 1113
                         },
                         "tsType": {
                           "kind": "typeLiteral",
@@ -2550,9 +2559,9 @@
                                 "name": "open",
                                 "location": {
                                   "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                  "line": 28,
+                                  "line": 33,
                                   "col": 4,
-                                  "byteIndex": 928
+                                  "byteIndex": 1127
                                 },
                                 "tsType": {
                                   "repr": "string",
@@ -2564,9 +2573,9 @@
                                 "name": "filled",
                                 "location": {
                                   "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                  "line": 29,
+                                  "line": 34,
                                   "col": 4,
-                                  "byteIndex": 945
+                                  "byteIndex": 1144
                                 },
                                 "tsType": {
                                   "repr": "string",
@@ -2578,9 +2587,9 @@
                                 "name": "dot",
                                 "location": {
                                   "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                  "line": 30,
+                                  "line": 35,
                                   "col": 4,
-                                  "byteIndex": 964
+                                  "byteIndex": 1163
                                 },
                                 "tsType": {
                                   "repr": "string",
@@ -2592,9 +2601,9 @@
                                 "name": "bullet",
                                 "location": {
                                   "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                  "line": 31,
+                                  "line": 36,
                                   "col": 4,
-                                  "byteIndex": 980
+                                  "byteIndex": 1179
                                 },
                                 "tsType": {
                                   "repr": "string",
@@ -2606,9 +2615,9 @@
                                 "name": "fisheye",
                                 "location": {
                                   "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                  "line": 32,
+                                  "line": 37,
                                   "col": 4,
-                                  "byteIndex": 999
+                                  "byteIndex": 1198
                                 },
                                 "tsType": {
                                   "repr": "string",
@@ -2620,9 +2629,9 @@
                                 "name": "bullseye",
                                 "location": {
                                   "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                  "line": 33,
+                                  "line": 38,
                                   "col": 4,
-                                  "byteIndex": 1019
+                                  "byteIndex": 1218
                                 },
                                 "tsType": {
                                   "repr": "string",
@@ -2638,9 +2647,9 @@
                         "name": "Check",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                          "line": 35,
+                          "line": 40,
                           "col": 2,
-                          "byteIndex": 1043
+                          "byteIndex": 1242
                         },
                         "tsType": {
                           "kind": "typeLiteral",
@@ -2650,9 +2659,9 @@
                                 "name": "standard",
                                 "location": {
                                   "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                  "line": 36,
+                                  "line": 41,
                                   "col": 4,
-                                  "byteIndex": 1056
+                                  "byteIndex": 1255
                                 },
                                 "tsType": {
                                   "repr": "string",
@@ -2664,9 +2673,9 @@
                                 "name": "heavy",
                                 "location": {
                                   "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                  "line": 37,
+                                  "line": 42,
                                   "col": 4,
-                                  "byteIndex": 1077
+                                  "byteIndex": 1276
                                 },
                                 "tsType": {
                                   "repr": "string",
@@ -2678,9 +2687,9 @@
                                 "name": "boxOpen",
                                 "location": {
                                   "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                  "line": 38,
+                                  "line": 43,
                                   "col": 4,
-                                  "byteIndex": 1095
+                                  "byteIndex": 1294
                                 },
                                 "tsType": {
                                   "repr": "string",
@@ -2696,9 +2705,9 @@
                         "name": "Cross",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                          "line": 40,
+                          "line": 45,
                           "col": 2,
-                          "byteIndex": 1118
+                          "byteIndex": 1317
                         },
                         "tsType": {
                           "kind": "typeLiteral",
@@ -2708,9 +2717,9 @@
                                 "name": "standard",
                                 "location": {
                                   "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                  "line": 41,
+                                  "line": 46,
                                   "col": 4,
-                                  "byteIndex": 1131
+                                  "byteIndex": 1330
                                 },
                                 "tsType": {
                                   "repr": "string",
@@ -2722,9 +2731,9 @@
                                 "name": "heavy",
                                 "location": {
                                   "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                  "line": 42,
+                                  "line": 47,
                                   "col": 4,
-                                  "byteIndex": 1194
+                                  "byteIndex": 1393
                                 },
                                 "tsType": {
                                   "repr": "string",
@@ -2736,9 +2745,9 @@
                                 "name": "ballot",
                                 "location": {
                                   "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                  "line": 43,
+                                  "line": 48,
                                   "col": 4,
-                                  "byteIndex": 1250
+                                  "byteIndex": 1449
                                 },
                                 "tsType": {
                                   "repr": "string",
@@ -2754,9 +2763,9 @@
                         "name": "Arrow",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                          "line": 45,
+                          "line": 50,
                           "col": 2,
-                          "byteIndex": 1303
+                          "byteIndex": 1502
                         },
                         "tsType": {
                           "kind": "typeLiteral",
@@ -2766,9 +2775,9 @@
                                 "name": "Line",
                                 "location": {
                                   "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                  "line": 46,
+                                  "line": 51,
                                   "col": 4,
-                                  "byteIndex": 1316
+                                  "byteIndex": 1515
                                 },
                                 "tsType": {
                                   "kind": "typeLiteral",
@@ -2778,9 +2787,9 @@
                                         "name": "right",
                                         "location": {
                                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                          "line": 47,
+                                          "line": 52,
                                           "col": 6,
-                                          "byteIndex": 1330
+                                          "byteIndex": 1529
                                         },
                                         "tsType": {
                                           "repr": "string",
@@ -2792,9 +2801,9 @@
                                         "name": "left",
                                         "location": {
                                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                          "line": 48,
+                                          "line": 53,
                                           "col": 6,
-                                          "byteIndex": 1350
+                                          "byteIndex": 1549
                                         },
                                         "tsType": {
                                           "repr": "string",
@@ -2806,9 +2815,9 @@
                                         "name": "up",
                                         "location": {
                                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                          "line": 49,
+                                          "line": 54,
                                           "col": 6,
-                                          "byteIndex": 1369
+                                          "byteIndex": 1568
                                         },
                                         "tsType": {
                                           "repr": "string",
@@ -2820,9 +2829,9 @@
                                         "name": "down",
                                         "location": {
                                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                          "line": 50,
+                                          "line": 55,
                                           "col": 6,
-                                          "byteIndex": 1386
+                                          "byteIndex": 1585
                                         },
                                         "tsType": {
                                           "repr": "string",
@@ -2838,9 +2847,9 @@
                                 "name": "Double",
                                 "location": {
                                   "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                  "line": 52,
+                                  "line": 57,
                                   "col": 4,
-                                  "byteIndex": 1410
+                                  "byteIndex": 1609
                                 },
                                 "tsType": {
                                   "kind": "typeLiteral",
@@ -2850,9 +2859,9 @@
                                         "name": "right",
                                         "location": {
                                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                          "line": 53,
+                                          "line": 58,
                                           "col": 6,
-                                          "byteIndex": 1426
+                                          "byteIndex": 1625
                                         },
                                         "tsType": {
                                           "repr": "string",
@@ -2864,9 +2873,9 @@
                                         "name": "left",
                                         "location": {
                                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                          "line": 54,
+                                          "line": 59,
                                           "col": 6,
-                                          "byteIndex": 1446
+                                          "byteIndex": 1645
                                         },
                                         "tsType": {
                                           "repr": "string",
@@ -2878,9 +2887,9 @@
                                         "name": "up",
                                         "location": {
                                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                          "line": 55,
+                                          "line": 60,
                                           "col": 6,
-                                          "byteIndex": 1465
+                                          "byteIndex": 1664
                                         },
                                         "tsType": {
                                           "repr": "string",
@@ -2892,9 +2901,9 @@
                                         "name": "down",
                                         "location": {
                                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                          "line": 56,
+                                          "line": 61,
                                           "col": 6,
-                                          "byteIndex": 1482
+                                          "byteIndex": 1681
                                         },
                                         "tsType": {
                                           "repr": "string",
@@ -2910,9 +2919,9 @@
                                 "name": "Ptr",
                                 "location": {
                                   "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                  "line": 58,
+                                  "line": 63,
                                   "col": 4,
-                                  "byteIndex": 1506
+                                  "byteIndex": 1705
                                 },
                                 "tsType": {
                                   "kind": "typeLiteral",
@@ -2922,9 +2931,9 @@
                                         "name": "right",
                                         "location": {
                                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                          "line": 59,
+                                          "line": 64,
                                           "col": 6,
-                                          "byteIndex": 1519
+                                          "byteIndex": 1718
                                         },
                                         "tsType": {
                                           "repr": "string",
@@ -2936,9 +2945,9 @@
                                         "name": "left",
                                         "location": {
                                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                          "line": 60,
+                                          "line": 65,
                                           "col": 6,
-                                          "byteIndex": 1539
+                                          "byteIndex": 1738
                                         },
                                         "tsType": {
                                           "repr": "string",
@@ -2950,9 +2959,9 @@
                                         "name": "up",
                                         "location": {
                                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                          "line": 61,
+                                          "line": 66,
                                           "col": 6,
-                                          "byteIndex": 1558
+                                          "byteIndex": 1757
                                         },
                                         "tsType": {
                                           "repr": "string",
@@ -2964,9 +2973,9 @@
                                         "name": "down",
                                         "location": {
                                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                          "line": 62,
+                                          "line": 67,
                                           "col": 6,
-                                          "byteIndex": 1575
+                                          "byteIndex": 1774
                                         },
                                         "tsType": {
                                           "repr": "string",
@@ -2986,9 +2995,9 @@
                         "name": "Square",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                          "line": 65,
+                          "line": 70,
                           "col": 2,
-                          "byteIndex": 1602
+                          "byteIndex": 1801
                         },
                         "tsType": {
                           "kind": "typeLiteral",
@@ -2998,9 +3007,9 @@
                                 "name": "open",
                                 "location": {
                                   "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                  "line": 66,
+                                  "line": 71,
                                   "col": 4,
-                                  "byteIndex": 1616
+                                  "byteIndex": 1815
                                 },
                                 "tsType": {
                                   "repr": "string",
@@ -3012,9 +3021,9 @@
                                 "name": "filled",
                                 "location": {
                                   "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                  "line": 67,
+                                  "line": 72,
                                   "col": 4,
-                                  "byteIndex": 1633
+                                  "byteIndex": 1832
                                 },
                                 "tsType": {
                                   "repr": "string",
@@ -3026,9 +3035,9 @@
                                 "name": "smallOpen",
                                 "location": {
                                   "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                  "line": 68,
+                                  "line": 73,
                                   "col": 4,
-                                  "byteIndex": 1652
+                                  "byteIndex": 1851
                                 },
                                 "tsType": {
                                   "repr": "string",
@@ -3040,9 +3049,9 @@
                                 "name": "smallFilled",
                                 "location": {
                                   "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                  "line": 69,
+                                  "line": 74,
                                   "col": 4,
-                                  "byteIndex": 1674
+                                  "byteIndex": 1873
                                 },
                                 "tsType": {
                                   "repr": "string",
@@ -3058,9 +3067,9 @@
                         "name": "Alert",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                          "line": 71,
+                          "line": 76,
                           "col": 2,
-                          "byteIndex": 1701
+                          "byteIndex": 1900
                         },
                         "tsType": {
                           "kind": "typeLiteral",
@@ -3070,9 +3079,9 @@
                                 "name": "warning",
                                 "location": {
                                   "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                  "line": 72,
+                                  "line": 77,
                                   "col": 4,
-                                  "byteIndex": 1714
+                                  "byteIndex": 1913
                                 },
                                 "tsType": {
                                   "repr": "string",
@@ -3084,9 +3093,9 @@
                                 "name": "info",
                                 "location": {
                                   "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                  "line": 73,
+                                  "line": 78,
                                   "col": 4,
-                                  "byteIndex": 1734
+                                  "byteIndex": 1933
                                 },
                                 "tsType": {
                                   "repr": "string",
@@ -3098,9 +3107,9 @@
                                 "name": "star",
                                 "location": {
                                   "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                  "line": 74,
+                                  "line": 79,
                                   "col": 4,
-                                  "byteIndex": 1751
+                                  "byteIndex": 1950
                                 },
                                 "tsType": {
                                   "repr": "string",
@@ -3112,9 +3121,9 @@
                                 "name": "starOpen",
                                 "location": {
                                   "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                                  "line": 75,
+                                  "line": 80,
                                   "col": 4,
-                                  "byteIndex": 1768
+                                  "byteIndex": 1967
                                 },
                                 "tsType": {
                                   "repr": "string",
@@ -3140,9 +3149,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                "line": 86,
+                "line": 91,
                 "col": 0,
-                "byteIndex": 2067
+                "byteIndex": 2266
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -3177,9 +3186,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                "line": 96,
+                "line": 101,
                 "col": 13,
-                "byteIndex": 2449
+                "byteIndex": 2648
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -3211,9 +3220,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/icons.ts",
-                "line": 104,
+                "line": 109,
                 "col": 0,
-                "byteIndex": 2680
+                "byteIndex": 2879
               },
               "declarationKind": "export",
               "jsDoc": {

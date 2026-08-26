@@ -9,8 +9,13 @@ export const Direction = {
   up: 'up',
   down: 'down',
 } as const;
+/** Union of the direction names defined in {@link Direction}. */
 export type DirectionType = typeof Direction[keyof typeof Direction];
+/** All direction names as a flat array. */
 export const DirectionValues: DirectionType[] = Object.values(Direction);
+/**
+ * Type guard that checks whether a value is one of the {@link Direction} names.
+ */
 export function isDirection(value: unknown): value is DirectionType {
   return DirectionValues.includes(value as DirectionType);
 }
