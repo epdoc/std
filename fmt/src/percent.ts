@@ -32,17 +32,19 @@ export function percent(options?: PercentOptions | Integer): (ratio: unknown) =>
     ? { decimals: options }
     : { decimals: 2, separator: ' ', ...options };
 
-  const decimals = opts.decimals ?? 2;
+  const decimals = Math.min(Math.max(opts.decimals ?? 2, 0), 100);
   const separator = opts.separator ?? ' ';
+  const minPct = Math.pow(10, -decimals);
 
   return (value: unknown): string => {
     const num = Number(value);
     if (isNaN(num)) return String(value ?? '');
 
-    const unit = opts.unitColor ? rgb24('%', opts.unitColor) : '%';
     const pct = num * 100;
-    if (pct < 0.01 && pct > 0) {
-      return `<0.01${separator}${unit}`;
+    const unit = opts.unitColor ? rgb24('%', opts.unitColor) : '%';
+    const absPct = Math.abs(pct);
+    if (absPct > 0 && absPct < minPct) {
+      return pct > 0 ? `<${minPct}${separator}${unit}` : `>-${minPct}${separator}${unit}`;
     }
 
     return `${pct.toFixed(decimals)}${separator}${unit}`;

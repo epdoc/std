@@ -13,14 +13,18 @@ export interface BoolFormatterOptions {
   trueColor?: number;
   /** Hex color for falsy values. Default: 0xef5867 (red) */
   falseColor?: number;
+  /** Apply bold intensity to the rendered character. Default: false */
   bold?: boolean;
+  /** Apply dim intensity to the rendered character. Default: false */
   dim?: boolean;
 }
 
 /**
  * Predefined boolean display styles for table columns.
  * Each preset specifies distinct characters for true/false values along with their colors.
- * All presets use different characters to ensure compatibility with no-color mode rendering.
+ * Most presets use different characters so they remain distinguishable in no-color mode;
+ * presets like `circleRed` rely on color alone and collapse to a single character when
+ * colors are stripped.
  */
 export const BOOL_PRESETS = {
   check: { trueChar: '✓', falseChar: '✗', trueColor: palette.green, falseColor: palette.red } as BoolFormatterOptions,
@@ -76,6 +80,11 @@ export const BOOL_PRESETS = {
  */
 export type BoolPreset = keyof typeof BOOL_PRESETS;
 
+/**
+ * Runtime mapping of every preset name to itself, useful for iterating over or
+ * dynamically looking up preset names. Prefer the {@link BoolPreset} type for
+ * static usage.
+ */
 export const BoolPreset: { [K in keyof typeof BOOL_PRESETS]: K } = Object.fromEntries(
   Object.keys(BOOL_PRESETS).map((k) => [k, k]),
 ) as { [K in keyof typeof BOOL_PRESETS]: K };
@@ -86,6 +95,7 @@ export const BoolPreset: { [K in keyof typeof BOOL_PRESETS]: K } = Object.fromEn
  *
  * @param options - Preset name from {@link BOOL_PRESETS} or custom configuration
  * @returns A formatter function compatible with Column.formatter
+ * @throws {TypeError} If a preset name that is not in {@link BOOL_PRESETS} is passed
  *
  * @example
  * ```ts
@@ -104,7 +114,12 @@ export function bool(options?: BoolPreset | BoolFormatterOptions): (value: unkno
   let config: BoolFormatterOptions;
 
   if (typeof options === 'string') {
-    config = BOOL_PRESETS[options] || BOOL_PRESETS.check;
+    if (!Object.hasOwn(BOOL_PRESETS, options)) {
+      throw new TypeError(
+        `Unknown bool preset: "${options}". Valid presets are: ${Object.keys(BOOL_PRESETS).join(', ')}`,
+      );
+    }
+    config = BOOL_PRESETS[options];
   } else if (options) {
     config = { ...BOOL_PRESETS.check, ...options };
   } else {
@@ -115,6 +130,8 @@ export function bool(options?: BoolPreset | BoolFormatterOptions): (value: unkno
   const trueChar = config.trueChar ?? '✓';
   const falseChar = config.falseChar ?? '✗';
   const { trueColor, falseColor } = config;
+  const bold = config.bold ?? false;
+  const dim = config.dim ?? false;
 
   // 3. The returned closure now has zero configuration overhead
   return (value: unknown): string => {
@@ -122,6 +139,9 @@ export function bool(options?: BoolPreset | BoolFormatterOptions): (value: unkno
     const char = isTrue ? trueChar : falseChar;
     const color = isTrue ? trueColor : falseColor;
 
-    return color !== undefined ? rgb24(char, color) : char;
+    let result = color !== undefined ? rgb24(char, color) : char;
+    if (bold) result = `\x1b[1m${result}\x1b[22m`;
+    if (dim) result = `\x1b[2m${result}\x1b[22m`;
+    return result;
   };
 }

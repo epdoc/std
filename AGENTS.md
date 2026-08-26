@@ -66,7 +66,7 @@ the workspace members. Each package is published to JSR under the `@epdoc` scope
 | `@epdoc/datetime`  | `src/mod.ts` | `./types`                                    |
 | `@epdoc/duration`  | `src/mod.ts` | —                                            |
 | `@epdoc/exif`      | `src/mod.ts` | —                                            |
-| `@epdoc/fmt`       | `src/mod.ts` | `./bool`, `./percent`, `./bytes`, `./uptime` |
+| `@epdoc/fmt`       | `src/mod.ts` | `./bool`, `./percent`, `./bytes`, `./uptime`, `./char`, `./icons` |
 | `@epdoc/fs`        | `src/mod.ts` | `./fs`                                       |
 | `@epdoc/progress`  | `src/mod.ts` | —                                            |
 | `@epdoc/response`  | `src/mod.ts` | —                                            |
@@ -148,7 +148,8 @@ Read and write EXIF metadata via the `exiftool` binary, with `@epdoc/datetime` i
 
 ### `@epdoc/fmt`
 
-Formatting functions for common data types (bool, bytes, percent, uptime).
+Formatting functions for common data types (bool, bytes, percent, uptime), plus a `char()` glyph lookup and icon
+tables (`Icon`, `Direction`, and guards).
 
 ### `@epdoc/fs`
 

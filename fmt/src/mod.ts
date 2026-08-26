@@ -14,6 +14,8 @@
  * bytes()(1048576);          // "1.0 MiB"
  * uptime()(3661);            // "1h01m01s"
  * bool()(true);              // "✓" (green)
+ * char()('check');           // "✓"
+ * char()('left');            // "←"
  *
  * // With sub-path imports
  * import { bool } from '@epdoc/fmt/bool';
@@ -21,8 +23,15 @@
  *
  * @module @epdoc/fmt
  */
-export { bool, BOOL_PRESETS, BoolPreset } from './bool.ts';
-export type { BoolFormatterOptions, BoolPreset as BoolPresetName } from './bool.ts';
+import { BoolPreset as BoolPresetValue } from './bool.ts';
+import type { BoolPreset as BoolPresetType } from './bool.ts';
+export { bool, BOOL_PRESETS } from './bool.ts';
+export type { BoolFormatterOptions } from './bool.ts';
+export type { BoolPreset as BoolPresetName } from './bool.ts';
+/** Runtime mapping of bool preset names to themselves. */
+export const BoolPreset = BoolPresetValue;
+/** Name of a predefined bool preset. */
+export type BoolPreset = BoolPresetType;
 export { bytes } from './bytes.ts';
 export type { BytesOptions } from './bytes.ts';
 export * from './char.ts';

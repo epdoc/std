@@ -35,10 +35,16 @@
       "whenToUse": "Display elapsed times (uptime, age) in compact narrow format"
     },
     {
-      "name": "BOOL_PRESETS",
+      "name": "char",
+      "role": "main_entry",
+      "description": "Semantic name to Unicode glyph lookup factory",
+      "whenToUse": "Resolve checkmarks, arrows, fractions, currency, or math symbols by name"
+    },
+    {
+      "name": "Icon",
       "role": "helper",
-      "description": "Predefined boolean display styles",
-      "whenToUse": "Access preset configurations for the bool formatter"
+      "description": "Curated Unicode glyph map plus IconValues/isIcon/Direction guards",
+      "whenToUse": "Access icon glyphs directly or guard values at runtime"
     }
   ],
   "patterns": [
@@ -51,6 +57,11 @@
       "name": "Custom colors",
       "when": "Matching unit colors to table theme",
       "code": "percent({ decimals: 2, unitColor: 0x888888 })"
+    },
+    {
+      "name": "Glyph lookup",
+      "when": "Rendering status glyphs by semantic name",
+      "code": "char()('check') // \"✓\""
     }
   ],
   "relationships": {

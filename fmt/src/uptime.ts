@@ -32,22 +32,23 @@ export function uptime(options?: UptimeOptions): (seconds: unknown) => string {
   const opts: UptimeOptions = { separator: '', units: 3, ...options };
   const separator = opts.separator ?? '';
   const units = opts.units ?? 3;
+  const formatter = new Duration.Formatter().narrow.adaptive(units);
 
   return (value: unknown): string => {
     const seconds = Number(value);
     if (isNaN(seconds)) return String(value ?? '');
 
-    const formatted = new Duration.Formatter().narrow.adaptive(units).format(seconds * 1000);
+    const formatted = formatter.format(seconds * 1000);
 
     if (separator === '' && !opts.unitColor) {
       return formatted;
     }
 
-    const parts = formatted.match(/(\d+)([a-z]+)/gi) || [];
+    const parts = formatted.match(/(\d+(?:\.\d+)?)([a-z]+)/gi) || [];
     if (parts.length === 0) return formatted;
 
     return parts.map((part) => {
-      const match = part.match(/^(\d+)([a-z]+)$/i);
+      const match = part.match(/^(\d+(?:\.\d+)?)([a-z]+)$/i);
       if (!match) return part;
 
       const [, value, unit] = match;

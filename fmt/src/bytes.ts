@@ -27,27 +27,36 @@ export interface BytesOptions {
  * bytes({ separator: '' })(500);  // "500B"
  * ```
  */
+const SIZES = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+
 export function bytes(options?: BytesOptions | Integer): (bytes: unknown) => string {
   const opts: BytesOptions = typeof options === 'number'
     ? { decimals: options }
     : { decimals: 1, separator: ' ', ...options };
 
-  const decimals = opts.decimals ?? 1;
+  const decimals = Math.min(Math.max(opts.decimals ?? 1, 0), 100);
   const separator = opts.separator ?? ' ';
 
   return (value: unknown): string => {
     const num = Number(value);
     if (isNaN(num)) return String(value ?? '');
-    if (num === 0) return '0 B';
 
-    const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB'];
+    const sign = num < 0 ? '-' : '';
+    const abs = Math.abs(num);
+    if (abs === 0) {
+      const unit = opts.unitColor ? rgb24(SIZES[0], opts.unitColor) : SIZES[0];
+      return `0${separator}${unit}`;
+    }
 
-    const i = Math.floor(Math.log(num) / Math.log(k));
-    const val = num / Math.pow(k, i);
+    let i = 0;
+    let scaled = abs;
+    while (scaled >= 1024 && i < SIZES.length - 1) {
+      scaled /= 1024;
+      i++;
+    }
+    const val = abs / Math.pow(1024, i);
 
-    const unit = opts.unitColor ? rgb24(sizes[i], opts.unitColor) : sizes[i];
-    return `${val.toFixed(dm)}${separator}${unit}`;
+    const unit = opts.unitColor ? rgb24(SIZES[i], opts.unitColor) : SIZES[i];
+    return `${sign}${val.toFixed(decimals)}${separator}${unit}`;
   };
 }

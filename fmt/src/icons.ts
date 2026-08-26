@@ -2,12 +2,28 @@
 // 1. Define the TypeScript Types
 // ==========================================
 
-export type IconType = typeof Icon;
+/** Direction names used for arrow and sort indicators. */
+export const Direction = {
+  right: 'right',
+  left: 'left',
+  up: 'up',
+  down: 'down',
+} as const;
+export type DirectionType = typeof Direction[keyof typeof Direction];
+export const DirectionValues: DirectionType[] = Object.values(Direction);
+export function isDirection(value: unknown): value is DirectionType {
+  return DirectionValues.includes(value as DirectionType);
+}
 
 // ==========================================
 // 2. Define the Complete Icon Implementation
 // ==========================================
 
+/**
+ * A curated set of Unicode glyphs for common UI states, grouped by category.
+ * The nesting is arbitrary; use {@link IconValues} or `char()` from
+ * `./char.ts` for flat lookups.
+ */
 export const Icon = {
   Circle: {
     open: '○',
@@ -60,3 +76,32 @@ export const Icon = {
     starOpen: '☆',
   },
 } as const;
+
+/**
+ * Recursively extracts every leaf value from a nested object, regardless of depth.
+ */
+type DeepValueOf<T> = T extends object ? { [K in keyof T]: DeepValueOf<T[K]> }[keyof T]
+  : T;
+
+/** Flat union of all icon glyphs ('○' | '●' | '‧' | ... | '☆'). */
+export type IconType = DeepValueOf<typeof Icon>;
+
+/** Recursively collects leaf strings into a flat runtime array. */
+function getLeafValues<T extends object>(obj: T): IconType[] {
+  return Object.values(obj).flatMap((val) =>
+    typeof val === 'object' && val !== null ? getLeafValues(val as object) : (val as IconType)
+  );
+}
+
+/** All icon glyphs as a flat array. */
+export const IconValues: IconType[] = getLeafValues(Icon);
+
+// O(1) Set lookup for the runtime type guard
+const ICON_SET: Set<unknown> = new Set(IconValues);
+
+/**
+ * Type guard that checks whether a value is one of the {@link Icon} glyphs.
+ */
+export function isIcon(value: unknown): value is IconType {
+  return ICON_SET.has(value);
+}

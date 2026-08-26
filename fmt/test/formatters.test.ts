@@ -1,5 +1,6 @@
-import { assertEquals } from '@std/assert';
+import { assertEquals, assertThrows } from '@std/assert';
 import { bool, BOOL_PRESETS, bytes, percent, uptime } from '../src/mod.ts';
+import type { BoolPresetName } from '../src/mod.ts';
 
 Deno.test('percent', async (t) => {
   await t.step('should format basic percentage with default 2 decimals and space separator', () => {
@@ -75,6 +76,29 @@ Deno.test('percent', async (t) => {
   await t.step('should handle non-numeric values', () => {
     const fmt = percent();
     assertEquals(fmt('not a number'), 'not a number');
+  });
+
+  await t.step('should clamp negative decimals to zero', () => {
+    const fmt = percent(-1);
+    assertEquals(fmt(0.5), '50 %');
+  });
+
+  await t.step('should scale the sub-threshold bound with decimals', () => {
+    const fmt = percent(3);
+    assertEquals(fmt(0.00005), '0.005 %');
+    assertEquals(fmt(0.000005), '<0.001 %');
+  });
+
+  await t.step('should handle tiny negative values symmetrically', () => {
+    const fmt = percent();
+    assertEquals(fmt(-0.00009), '>-0.01 %');
+    const fmt3 = percent(3);
+    assertEquals(fmt3(-0.000005), '>-0.001 %');
+  });
+
+  await t.step('should support unitColor', () => {
+    const fmt = percent({ unitColor: 0x888888 });
+    assertEquals(fmt(0.5), '50.00 \x1b[38;2;136;136;136m%\x1b[39m');
   });
 });
 
@@ -163,6 +187,30 @@ Deno.test('bytes', async (t) => {
     const fmt = bytes(-1);
     assertEquals(fmt(1536), '2 KiB');
   });
+
+  await t.step('should format exabytes (EiB) and beyond', () => {
+    const fmt = bytes();
+    assertEquals(fmt(2 ** 60), '1.0 EiB');
+    assertEquals(fmt(2 ** 80), '1.0 YiB');
+    assertEquals(fmt(2 ** 90), '1024.0 YiB');
+  });
+
+  await t.step('should handle negative byte values', () => {
+    const fmt = bytes();
+    assertEquals(fmt(-1024), '-1.0 KiB');
+    assertEquals(fmt(-1536), '-1.5 KiB');
+  });
+
+  await t.step('should apply separator and color to zero', () => {
+    assertEquals(bytes({ separator: '' })(0), '0B');
+    assertEquals(bytes({ separator: '_' })(0), '0_B');
+    assertEquals(bytes({ unitColor: 0x888888 })(0), '0 \x1b[38;2;136;136;136mB\x1b[39m');
+  });
+
+  await t.step('should support unitColor on non-zero values', () => {
+    const fmt = bytes({ unitColor: 0x888888 });
+    assertEquals(fmt(1536), '1.5 \x1b[38;2;136;136;136mKiB\x1b[39m');
+  });
 });
 
 Deno.test('uptime', async (t) => {
@@ -239,6 +287,20 @@ Deno.test('uptime', async (t) => {
   await t.step('should support combining separator and units', () => {
     const fmt = uptime({ separator: ' ', units: 2 });
     assertEquals(fmt(3661), '1 h 01 m');
+  });
+
+  await t.step('should preserve fractional seconds with a separator', () => {
+    const fmt = uptime({ separator: ' ' });
+    assertEquals(fmt(0), '0.000 s');
+    assertEquals(fmt(0.5), '0.500 s');
+  });
+
+  await t.step('should support unitColor on unit suffixes', () => {
+    const fmt = uptime({ unitColor: 0x888888 });
+    assertEquals(
+      fmt(90),
+      '1\x1b[38;2;136;136;136mm\x1b[39m30\x1b[38;2;136;136;136ms\x1b[39m',
+    );
   });
 });
 
@@ -328,5 +390,25 @@ Deno.test('bool', async (t) => {
     const fmt = bool({ ...BOOL_PRESETS.circleDot, trueChar: '\u2705' });
     assertEquals(fmt(true), '\x1b[38;2;81;214;124m\u2705\x1b[39m');
     assertEquals(fmt(false), '\x1b[38;2;100;116;139m\u2027\x1b[39m');
+  });
+
+  await t.step('should throw on an unknown preset name', () => {
+    assertThrows(() => bool('not-a-preset' as BoolPresetName), TypeError);
+    assertThrows(() => bool('toString' as BoolPresetName), TypeError);
+  });
+
+  await t.step('should support bold intensity', () => {
+    const fmt = bool({ trueChar: 'Y', falseChar: 'N', trueColor: undefined, falseColor: undefined, bold: true });
+    assertEquals(fmt(true), '\x1b[1mY\x1b[22m');
+  });
+
+  await t.step('should support dim intensity', () => {
+    const fmt = bool({ trueChar: 'Y', falseChar: 'N', trueColor: undefined, falseColor: undefined, dim: true });
+    assertEquals(fmt(false), '\x1b[2mN\x1b[22m');
+  });
+
+  await t.step('should combine bold with color', () => {
+    const fmt = bool({ trueChar: 'Y', falseChar: 'N', trueColor: 0x00ff00, falseColor: undefined, bold: true });
+    assertEquals(fmt(true), '\x1b[1m\x1b[38;2;0;255;0mY\x1b[39m\x1b[22m');
   });
 });
