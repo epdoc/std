@@ -401,3 +401,83 @@ Deno.test('cmd - Runner.onRun fires on real execution', async () => {
   assertEquals(recorded.length, 1);
   assert(recorded[0].success);
 });
+
+Deno.test('cmd - stream delivers stdout lines', async () => {
+  const lines: string[] = [];
+  const result = await Cmd.runner('deno', ['eval', 'console.log("a\\n\\nb")'])
+    .stream({ stdout: (line) => lines.push(line) })
+    .run();
+  assertEquals(result.success, true);
+  assertEquals(result.exitCode, 0);
+  assertEquals(lines, ['a', '', 'b']);
+});
+
+Deno.test('cmd - stream preserves raw line whitespace', async () => {
+  const lines: string[] = [];
+  await Cmd.runner('deno', ['eval', 'console.log("  spaced  ")'])
+    .stream({ stdout: (line) => lines.push(line) })
+    .run();
+  assertEquals(lines, ['  spaced  ']);
+});
+
+Deno.test('cmd - stream delivers stderr lines and reports exit code', async () => {
+  const errLines: string[] = [];
+  const result = await Cmd.runner('deno', ['eval', 'console.error("err1\\nerr2"); Deno.exit(3)'])
+    .stream({ stderr: (line) => errLines.push(line) })
+    .run();
+  assertEquals(result.success, false);
+  assertEquals(result.exitCode, 3);
+  assertEquals(errLines, ['err1', 'err2']);
+});
+
+Deno.test('cmd - stream drains an un-handled stream without deadlock', async () => {
+  const result = await Cmd.runner('deno', [
+    'eval',
+    'for (let i = 0; i < 20000; i++) console.log("x".repeat(80)); console.error("err"); Deno.exit(5)',
+  ])
+    .stream({ stderr: (line) => assertEquals(line, 'err') })
+    .run();
+  assertEquals(result.success, false);
+  assertEquals(result.exitCode, 5);
+});
+
+Deno.test('cmd - stream reassembles lines split across chunks', async () => {
+  const lines: string[] = [];
+  const result = await Cmd.runner('deno', [
+    'eval',
+    [
+      'const enc = new TextEncoder();',
+      'const w = Deno.stdout.writable.getWriter();',
+      'await w.write(enc.encode("he"));',
+      'await w.write(enc.encode("llo world\\nline"));',
+      'await w.write(enc.encode("2\\n"));',
+      'await w.close();',
+    ].join(' '),
+  ])
+    .stream({ stdout: (line) => lines.push(line) })
+    .run();
+  assertEquals(result.success, true);
+  assertEquals(lines, ['hello world', 'line2']);
+});
+
+Deno.test('cmd - stream mode with interactive throws', async () => {
+  await assertRejects(
+    () =>
+      Cmd.runner('echo', ['test'])
+        .interactive(true)
+        .stream({ stdout: () => {} })
+        .run(),
+    Cmd.Error,
+  );
+});
+
+Deno.test('cmd - stream mode with parser throws', async () => {
+  await assertRejects(
+    () =>
+      Cmd.runner('echo', ['test'])
+        .stream({ stdout: () => {} })
+        .outParser((result) => result.stdout.trim())
+        .run(),
+    Cmd.Error,
+  );
+});

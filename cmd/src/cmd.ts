@@ -3,7 +3,14 @@ import { getExitCodeDescription } from './codes.ts';
 import { CmdError } from './cmd-error.ts';
 import { CmdResult } from './cmd-result.ts';
 import { parseLines } from './parse.ts';
-import { type CmdOptions, type ICmdResult, type Milliseconds, Stream, type StreamTag } from './types.ts';
+import {
+  type CmdOptions,
+  type ICmdResult,
+  type Milliseconds,
+  Stream,
+  type StreamOptions,
+  type StreamTag,
+} from './types.ts';
 
 const encoder = new TextEncoder();
 
@@ -80,6 +87,11 @@ export class CmdRunner<T = void> {
 
   silent(value: boolean = true): this {
     this.#opts.silent = value;
+    return this;
+  }
+
+  stream(handlers: StreamOptions): this {
+    this.#opts.stream = { ...this.#opts.stream, ...handlers };
     return this;
   }
 
@@ -173,6 +185,8 @@ export class CmdRunner<T = void> {
 
     const cwd = this.#opts.cwd ?? Deno.cwd();
     const interactive = this.#opts.interactive ?? false;
+    const stream = this.#opts.stream;
+    const streaming = !!stream && (stream.stdout !== undefined || stream.stderr !== undefined);
 
     const denoOpts: Deno.CommandOptions = {
       args: this.#args,
@@ -210,7 +224,14 @@ export class CmdRunner<T = void> {
 
     let cmdResult: CmdResult<T>;
     try {
-      if (interactive) {
+      if (interactive && streaming) {
+        throw new CmdError(
+          'Cannot use interactive mode and stream mode together; stream mode captures piped output for line callbacks',
+          result,
+        );
+      } else if (streaming) {
+        cmdResult = await this.#runStreaming(result, denoOpts);
+      } else if (interactive) {
         cmdResult = await this.#runInteractive(result, denoOpts);
       } else {
         cmdResult = await this.#runCaptured(result, denoOpts);
@@ -293,6 +314,56 @@ export class CmdRunner<T = void> {
     }
   }
 
+  async #runStreaming(result: CmdResult<T>, denoOpts: Deno.CommandOptions): Promise<CmdResult<T>> {
+    if (this.#opts.outParser || this.#opts.errParser) {
+      throw new CmdError(
+        'Parsers cannot be used in stream mode; output is not captured',
+        result,
+      );
+    }
+    const stdin = this.#opts.stdin;
+    denoOpts.stdin = stdin !== undefined ? 'piped' : 'null';
+    const command = new Deno.Command(this.#cmd, {
+      ...denoOpts,
+      stdout: 'piped',
+      stderr: 'piped',
+    });
+    const child = command.spawn();
+
+    const sigintHandler = () => {
+      try {
+        child.kill('SIGINT');
+      } catch {
+        // Process may already be dead
+      }
+    };
+    Deno.addSignalListener('SIGINT', sigintHandler);
+
+    try {
+      const stdout = this.#opts.stream?.stdout;
+      const stderr = this.#opts.stream?.stderr;
+      const stdoutTask = stdout ? readLines(child.stdout, stdout) : drainStream(child.stdout);
+      const stderrTask = stderr ? readLines(child.stderr, stderr) : drainStream(child.stderr);
+
+      const writeStdin = async (): Promise<void> => {
+        if (stdin === undefined || !child.stdin) return;
+        const writer = child.stdin.getWriter();
+        try {
+          const data = typeof stdin === 'string' ? encoder.encode(stdin) : stdin;
+          await writer.write(data);
+        } finally {
+          await writer.close();
+        }
+      };
+
+      const { code } = await child.status;
+      await Promise.all([writeStdin(), stdoutTask, stderrTask]);
+      return result.setExitCode(code);
+    } finally {
+      Deno.removeSignalListener('SIGINT', sigintHandler);
+    }
+  }
+
   async #runCaptured(result: CmdResult<T>, denoOpts: Deno.CommandOptions): Promise<CmdResult<T>> {
     const stdin = this.#opts.stdin;
 
@@ -328,4 +399,56 @@ export class CmdRunner<T = void> {
 
 export function run<T>(command: string, args?: string | string[], opts?: CmdOptions<T>): CmdRunner<T> {
   return new CmdRunner<T>(command, args, opts);
+}
+
+/**
+ * Read a stream to EOF, discarding its contents. Used for the stream's un-handled
+ * side so a piped child never blocks on a full pipe buffer.
+ */
+async function drainStream(stream: ReadableStream<Uint8Array>): Promise<void> {
+  const reader = stream.getReader();
+  try {
+    for (;;) {
+      const { done } = await reader.read();
+      if (done) break;
+    }
+  } finally {
+    reader.releaseLock();
+  }
+}
+
+/**
+ * Read a stream line-by-line as data arrives, invoking onLine for each raw line.
+ * Lines are split on '\n' with a trailing '\r' removed; leading/trailing spaces
+ * and blank lines are preserved.
+ */
+async function readLines(stream: ReadableStream<Uint8Array>, onLine: (line: string) => void): Promise<void> {
+  const reader = stream.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      let idx: number;
+      while ((idx = buffer.indexOf('\n')) >= 0) {
+        let line = buffer.slice(0, idx);
+        buffer = buffer.slice(idx + 1);
+        if (line.endsWith('\r')) {
+          line = line.slice(0, -1);
+        }
+        onLine(line);
+      }
+    }
+    buffer += decoder.decode();
+    if (buffer) {
+      if (buffer.endsWith('\r')) {
+        buffer = buffer.slice(0, -1);
+      }
+      onLine(buffer);
+    }
+  } finally {
+    reader.releaseLock();
+  }
 }

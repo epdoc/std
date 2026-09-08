@@ -1,5 +1,17 @@
 export type Milliseconds = number;
 
+export type LineHandler = (line: string) => void;
+
+/**
+ * Per-line callbacks for live output streaming. When set, the command runs
+ * with piped stdout/stderr and each line is delivered as it arrives instead of
+ * being buffered until the process exits.
+ */
+export interface StreamOptions {
+  stdout?: LineHandler;
+  stderr?: LineHandler;
+}
+
 export interface CmdOptions<T = unknown> {
   cwd?: string;
   env?: Record<string, string>;
@@ -14,6 +26,7 @@ export interface CmdOptions<T = unknown> {
   silent?: boolean;
   outParser?: (result: ICmdResult) => T;
   errParser?: (result: ICmdResult) => Error;
+  stream?: StreamOptions;
 }
 
 export interface ICmdResult {

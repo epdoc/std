@@ -1471,9 +1471,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                "line": 9,
+                "line": 16,
                 "col": 0,
-                "byteIndex": 358
+                "byteIndex": 391
               },
               "declarationKind": "export",
               "kind": "class",
@@ -1550,9 +1550,9 @@
                     ],
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                      "line": 15,
+                      "line": 22,
                       "col": 2,
-                      "byteIndex": 566
+                      "byteIndex": 599
                     }
                   }
                 ],
@@ -1661,9 +1661,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                      "line": 21,
+                      "line": 28,
                       "col": 2,
-                      "byteIndex": 767
+                      "byteIndex": 800
                     }
                   },
                   {
@@ -1690,9 +1690,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                      "line": 25,
+                      "line": 32,
                       "col": 2,
-                      "byteIndex": 912
+                      "byteIndex": 945
                     }
                   },
                   {
@@ -1732,9 +1732,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                      "line": 30,
+                      "line": 37,
                       "col": 2,
-                      "byteIndex": 989
+                      "byteIndex": 1022
                     }
                   },
                   {
@@ -1775,9 +1775,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                      "line": 35,
+                      "line": 42,
                       "col": 2,
-                      "byteIndex": 1093
+                      "byteIndex": 1126
                     }
                   },
                   {
@@ -1804,9 +1804,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                      "line": 40,
+                      "line": 47,
                       "col": 2,
-                      "byteIndex": 1212
+                      "byteIndex": 1245
                     }
                   },
                   {
@@ -1833,9 +1833,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                      "line": 45,
+                      "line": 52,
                       "col": 2,
-                      "byteIndex": 1311
+                      "byteIndex": 1344
                     }
                   },
                   {
@@ -1869,9 +1869,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                      "line": 50,
+                      "line": 57,
                       "col": 2,
-                      "byteIndex": 1400
+                      "byteIndex": 1433
                     }
                   },
                   {
@@ -1910,9 +1910,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                      "line": 55,
+                      "line": 62,
                       "col": 2,
-                      "byteIndex": 1487
+                      "byteIndex": 1520
                     }
                   },
                   {
@@ -1943,9 +1943,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                      "line": 60,
+                      "line": 67,
                       "col": 2,
-                      "byteIndex": 1583
+                      "byteIndex": 1616
                     }
                   },
                   {
@@ -1974,9 +1974,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                      "line": 65,
+                      "line": 72,
                       "col": 2,
-                      "byteIndex": 1688
+                      "byteIndex": 1721
                     }
                   },
                   {
@@ -2003,9 +2003,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                      "line": 70,
+                      "line": 77,
                       "col": 2,
-                      "byteIndex": 1790
+                      "byteIndex": 1823
                     }
                   },
                   {
@@ -2032,9 +2032,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                      "line": 75,
+                      "line": 82,
                       "col": 2,
-                      "byteIndex": 1869
+                      "byteIndex": 1902
                     }
                   },
                   {
@@ -2065,9 +2065,45 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                      "line": 80,
+                      "line": 87,
                       "col": 2,
-                      "byteIndex": 1948
+                      "byteIndex": 1981
+                    }
+                  },
+                  {
+                    "name": "stream",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "handlers",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "StreamOptions",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "StreamOptions",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./types.ts",
+                                "name": "StreamOptions"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
+                      "line": 92,
+                      "col": 2,
+                      "byteIndex": 2074
                     }
                   },
                   {
@@ -2151,9 +2187,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                      "line": 85,
+                      "line": 97,
                       "col": 2,
-                      "byteIndex": 2041
+                      "byteIndex": 2201
                     }
                   },
                   {
@@ -2227,9 +2263,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                      "line": 90,
+                      "line": 102,
                       "col": 2,
-                      "byteIndex": 2227
+                      "byteIndex": 2387
                     }
                   },
                   {
@@ -2303,9 +2339,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                      "line": 95,
+                      "line": 107,
                       "col": 2,
-                      "byteIndex": 2351
+                      "byteIndex": 2511
                     }
                   },
                   {
@@ -2376,9 +2412,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                      "line": 107,
+                      "line": 119,
                       "col": 2,
-                      "byteIndex": 2790
+                      "byteIndex": 2950
                     }
                   },
                   {
@@ -2443,9 +2479,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                      "line": 119,
+                      "line": 131,
                       "col": 2,
-                      "byteIndex": 3211
+                      "byteIndex": 3371
                     }
                   },
                   {
@@ -2502,9 +2538,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                      "line": 124,
+                      "line": 136,
                       "col": 2,
-                      "byteIndex": 3471
+                      "byteIndex": 3631
                     }
                   },
                   {
@@ -2542,9 +2578,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                      "line": 129,
+                      "line": 141,
                       "col": 2,
-                      "byteIndex": 3578
+                      "byteIndex": 3738
                     }
                   },
                   {
@@ -2573,9 +2609,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                      "line": 134,
+                      "line": 146,
                       "col": 2,
-                      "byteIndex": 3722
+                      "byteIndex": 3882
                     }
                   },
                   {
@@ -2594,9 +2630,9 @@
                               "name": "command",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                                "line": 142,
+                                "line": 154,
                                 "col": 16,
-                                "byteIndex": 3968
+                                "byteIndex": 4128
                               },
                               "tsType": {
                                 "repr": "string",
@@ -2608,9 +2644,9 @@
                               "name": "args",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                                "line": 142,
+                                "line": 154,
                                 "col": 33,
-                                "byteIndex": 3985
+                                "byteIndex": 4145
                               },
                               "tsType": {
                                 "kind": "array",
@@ -2625,9 +2661,9 @@
                               "name": "opts",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                                "line": 142,
+                                "line": 154,
                                 "col": 49,
-                                "byteIndex": 4001
+                                "byteIndex": 4161
                               },
                               "tsType": {
                                 "repr": "CmdOptions",
@@ -2649,9 +2685,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                      "line": 142,
+                      "line": 154,
                       "col": 2,
-                      "byteIndex": 3954
+                      "byteIndex": 4114
                     }
                   },
                   {
@@ -2688,9 +2724,9 @@
                                           "name": "command",
                                           "location": {
                                             "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                                            "line": 152,
+                                            "line": 164,
                                             "col": 23,
-                                            "byteIndex": 4435
+                                            "byteIndex": 4595
                                           },
                                           "tsType": {
                                             "repr": "string",
@@ -2702,9 +2738,9 @@
                                           "name": "args",
                                           "location": {
                                             "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                                            "line": 152,
+                                            "line": 164,
                                             "col": 40,
-                                            "byteIndex": 4452
+                                            "byteIndex": 4612
                                           },
                                           "tsType": {
                                             "kind": "array",
@@ -2719,9 +2755,9 @@
                                           "name": "opts",
                                           "location": {
                                             "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                                            "line": 152,
+                                            "line": 164,
                                             "col": 56,
-                                            "byteIndex": 4468
+                                            "byteIndex": 4628
                                           },
                                           "tsType": {
                                             "repr": "CmdOptions",
@@ -2740,9 +2776,9 @@
                                           "name": "result",
                                           "location": {
                                             "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                                            "line": 152,
+                                            "line": 164,
                                             "col": 74,
-                                            "byteIndex": 4486
+                                            "byteIndex": 4646
                                           },
                                           "tsType": {
                                             "repr": "CmdResult",
@@ -2788,9 +2824,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                      "line": 152,
+                      "line": 164,
                       "col": 2,
-                      "byteIndex": 4414
+                      "byteIndex": 4574
                     }
                   },
                   {
@@ -2807,9 +2843,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                      "line": 157,
+                      "line": 169,
                       "col": 2,
-                      "byteIndex": 4573
+                      "byteIndex": 4733
                     }
                   },
                   {
@@ -2857,9 +2893,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                      "line": 161,
+                      "line": 173,
                       "col": 2,
-                      "byteIndex": 4650
+                      "byteIndex": 4810
                     }
                   },
                   {
@@ -2893,9 +2929,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                      "line": 238,
+                      "line": 259,
                       "col": 2,
-                      "byteIndex": 7179
+                      "byteIndex": 7789
                     }
                   }
                 ],
@@ -2919,9 +2955,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/cmd.ts",
-                "line": 328,
+                "line": 399,
                 "col": 0,
-                "byteIndex": 9798
+                "byteIndex": 12042
               },
               "declarationKind": "export",
               "kind": "function",
@@ -3070,9 +3106,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
-                "line": 31,
+                "line": 44,
                 "col": 0,
-                "byteIndex": 723
+                "byteIndex": 1091
               },
               "declarationKind": "export",
               "kind": "function",
@@ -3120,9 +3156,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
-                "line": 25,
+                "line": 38,
                 "col": 13,
-                "byteIndex": 538
+                "byteIndex": 906
               },
               "declarationKind": "export",
               "kind": "variable",
@@ -3135,9 +3171,9 @@
                         "name": "stdout",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
-                          "line": 26,
+                          "line": 39,
                           "col": 2,
-                          "byteIndex": 551
+                          "byteIndex": 919
                         },
                         "tsType": {
                           "repr": "string",
@@ -3149,9 +3185,9 @@
                         "name": "stderr",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
-                          "line": 27,
+                          "line": 40,
                           "col": 2,
-                          "byteIndex": 571
+                          "byteIndex": 939
                         },
                         "tsType": {
                           "repr": "string",
@@ -3173,9 +3209,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
-                "line": 2,
+                "line": 14,
                 "col": 0,
-                "byteIndex": 36
+                "byteIndex": 378
               },
               "declarationKind": "export",
               "kind": "interface",
@@ -3185,9 +3221,9 @@
                     "name": "cwd",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
-                      "line": 3,
+                      "line": 15,
                       "col": 2,
-                      "byteIndex": 81
+                      "byteIndex": 423
                     },
                     "optional": true,
                     "tsType": {
@@ -3200,9 +3236,9 @@
                     "name": "env",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
-                      "line": 4,
+                      "line": 16,
                       "col": 2,
-                      "byteIndex": 97
+                      "byteIndex": 439
                     },
                     "optional": true,
                     "tsType": {
@@ -3229,9 +3265,9 @@
                     "name": "clearEnv",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
-                      "line": 5,
+                      "line": 17,
                       "col": 2,
-                      "byteIndex": 129
+                      "byteIndex": 471
                     },
                     "optional": true,
                     "tsType": {
@@ -3244,9 +3280,9 @@
                     "name": "dryRun",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
-                      "line": 6,
+                      "line": 18,
                       "col": 2,
-                      "byteIndex": 151
+                      "byteIndex": 493
                     },
                     "optional": true,
                     "tsType": {
@@ -3259,9 +3295,9 @@
                     "name": "timeout",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
-                      "line": 7,
+                      "line": 19,
                       "col": 2,
-                      "byteIndex": 171
+                      "byteIndex": 513
                     },
                     "optional": true,
                     "tsType": {
@@ -3279,9 +3315,9 @@
                     "name": "stdin",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
-                      "line": 8,
+                      "line": 20,
                       "col": 2,
-                      "byteIndex": 197
+                      "byteIndex": 539
                     },
                     "optional": true,
                     "tsType": {
@@ -3306,9 +3342,9 @@
                     "name": "interactive",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
-                      "line": 9,
+                      "line": 21,
                       "col": 2,
-                      "byteIndex": 228
+                      "byteIndex": 570
                     },
                     "optional": true,
                     "tsType": {
@@ -3321,9 +3357,9 @@
                     "name": "signal",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
-                      "line": 10,
+                      "line": 22,
                       "col": 2,
-                      "byteIndex": 253
+                      "byteIndex": 595
                     },
                     "optional": true,
                     "tsType": {
@@ -3338,9 +3374,9 @@
                     "name": "uid",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
-                      "line": 11,
+                      "line": 23,
                       "col": 2,
-                      "byteIndex": 277
+                      "byteIndex": 619
                     },
                     "optional": true,
                     "tsType": {
@@ -3353,9 +3389,9 @@
                     "name": "gid",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
-                      "line": 12,
+                      "line": 24,
                       "col": 2,
-                      "byteIndex": 293
+                      "byteIndex": 635
                     },
                     "optional": true,
                     "tsType": {
@@ -3368,9 +3404,9 @@
                     "name": "silent",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
-                      "line": 13,
+                      "line": 25,
                       "col": 2,
-                      "byteIndex": 309
+                      "byteIndex": 651
                     },
                     "optional": true,
                     "tsType": {
@@ -3383,9 +3419,9 @@
                     "name": "outParser",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
-                      "line": 14,
+                      "line": 26,
                       "col": 2,
-                      "byteIndex": 329
+                      "byteIndex": 671
                     },
                     "optional": true,
                     "tsType": {
@@ -3428,9 +3464,9 @@
                     "name": "errParser",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
-                      "line": 15,
+                      "line": 27,
                       "col": 2,
-                      "byteIndex": 370
+                      "byteIndex": 712
                     },
                     "optional": true,
                     "tsType": {
@@ -3463,6 +3499,26 @@
                         ]
                       }
                     }
+                  },
+                  {
+                    "name": "stream",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                      "line": 28,
+                      "col": 2,
+                      "byteIndex": 757
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "StreamOptions",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "StreamOptions",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    }
                   }
                 ],
                 "typeParams": [
@@ -3485,9 +3541,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
-                "line": 18,
+                "line": 31,
                 "col": 0,
-                "byteIndex": 416
+                "byteIndex": 784
               },
               "declarationKind": "export",
               "kind": "interface",
@@ -3497,9 +3553,9 @@
                     "name": "stdout",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
-                      "line": 19,
+                      "line": 32,
                       "col": 2,
-                      "byteIndex": 448
+                      "byteIndex": 816
                     },
                     "tsType": {
                       "repr": "string",
@@ -3511,9 +3567,9 @@
                     "name": "stderr",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
-                      "line": 20,
+                      "line": 33,
                       "col": 2,
-                      "byteIndex": 466
+                      "byteIndex": 834
                     },
                     "tsType": {
                       "repr": "string",
@@ -3525,9 +3581,9 @@
                     "name": "command",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
-                      "line": 21,
+                      "line": 34,
                       "col": 2,
-                      "byteIndex": 484
+                      "byteIndex": 852
                     },
                     "tsType": {
                       "repr": "string",
@@ -3539,9 +3595,9 @@
                     "name": "exitCode",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
-                      "line": 22,
+                      "line": 35,
                       "col": 2,
-                      "byteIndex": 503
+                      "byteIndex": 871
                     },
                     "optional": true,
                     "tsType": {
@@ -3551,6 +3607,46 @@
                     }
                   }
                 ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "LineHandler",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                "line": 2,
+                "col": 0,
+                "byteIndex": 36
+              },
+              "declarationKind": "export",
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "fnOrConstructor",
+                  "value": {
+                    "constructor": false,
+                    "tsType": {
+                      "repr": "void",
+                      "kind": "keyword",
+                      "value": "void"
+                    },
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "line",
+                        "optional": false,
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      }
+                    ]
+                  }
+                }
               }
             }
           ]
@@ -3578,14 +3674,76 @@
           ]
         },
         {
+          "name": "StreamOptions",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                "line": 9,
+                "col": 0,
+                "byteIndex": 294
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Per-line callbacks for live output streaming. When set, the command runs\nwith piped stdout/stderr and each line is delivered as it arrives instead of\nbeing buffered until the process exits."
+              },
+              "kind": "interface",
+              "def": {
+                "properties": [
+                  {
+                    "name": "stdout",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                      "line": 10,
+                      "col": 2,
+                      "byteIndex": 329
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "LineHandler",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "LineHandler",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "name": "stderr",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
+                      "line": 11,
+                      "col": 2,
+                      "byteIndex": 353
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "LineHandler",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "LineHandler",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "StreamTag",
           "declarations": [
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/cmd/src/types.ts",
-                "line": 29,
+                "line": 42,
                 "col": 0,
-                "byteIndex": 601
+                "byteIndex": 969
               },
               "declarationKind": "export",
               "kind": "typeAlias",

@@ -1,7 +1,7 @@
 # @epdoc/cmd
 
 A fluent, typed wrapper around `Deno.Command` for running external processes. Supports captured output, interactive
-mode, stdin piping, timeouts, dry-run testing, and pluggable output/error parsers.
+mode, live line-by-line streaming, stdin piping, timeouts, dry-run testing, and pluggable output/error parsers.
 
 ## Installation
 
@@ -27,6 +27,35 @@ if (result.success) {
 ```typescript
 await runner('deno', ['publish']).interactive().run();
 ```
+
+### Live streaming (handle lines as they arrive)
+
+For long-running commands whose output should be consumed incrementally — build logs, progress reports, or `rsync`-style
+file listings — `.stream()` delivers each stdout/stderr line to a callback as it is produced, instead of buffering until
+the process exits. SIGINT is forwarded to the child (same as interactive mode), so Ctrl-C stops the process.
+
+```typescript
+const result = await runner('rsync', ['-av', '--dry-run', 'src/', 'dst/'])
+  .stream({
+    stdout: (line) => {
+      if (line.trim()) {
+        console.log(`  ${line}`);
+      }
+    },
+    stderr: (line) => console.error(`  ${line}`),
+  })
+  .run();
+
+console.log(result.success ? 'Done' : `Failed (exit ${result.exitCode})`);
+```
+
+Notes:
+
+- Lines are reassembled across chunk boundaries and delivered as they arrive. A trailing `\r` (CRLF output) is stripped;
+  blank lines and surrounding whitespace are preserved — trim/filter inside the callback as needed.
+- An un-handled stream is still consumed (drained), so a chatty child can never block on a full pipe buffer.
+- Output is not captured: `result.stdout`/`result.stderr` are empty and output parsers are not allowed. `.stream()` and
+  `.interactive()` are mutually exclusive.
 
 ### Throw on failure
 
@@ -203,6 +232,78 @@ import { Stream } from '@epdoc/cmd';
 .outAsLines(Stream.stderr)
 ```
 
+## Example recipes
+
+Copy-paste patterns for common situations.
+
+### Echo the exact command before running
+
+```typescript
+const cmd = runner('rsync', args).interactive(true);
+console.log(cmd.toString()); // "rsync -av --dry-run src/ dst/"
+await cmd.run();
+```
+
+### Fail fast with context
+
+```typescript
+const result = await runner('git', ['push']).silent().run();
+if (!result.success) {
+  console.error(`push failed (exit ${result.exitCode})`);
+  console.error(result.stderr);
+  Deno.exit(result.exitCode ?? 1);
+}
+```
+
+### Run and ignore output
+
+```typescript
+await runner('mkdir', ['-p', dir]).run();
+```
+
+### Check that a tool exists
+
+```typescript
+const result = await runner('which', ['rsync']).run();
+if (!result.success) {
+  throw new Error('rsync is required but was not found on PATH');
+}
+```
+
+### Capture JSON and branch on success
+
+```typescript
+const result = await runner('deno', ['info', '--json'])
+  .outParser((res) => (res.exitCode === 0 ? JSON.parse(res.stdout) : null))
+  .run();
+if (result.success && result.data) {
+  // result.data is the parsed module graph
+}
+```
+
+### Show a live progress feed
+
+```typescript
+const result = await runner('deno', ['task', 'build'])
+  .stream({
+    stdout: (line) => process.stdout.write(`${line}\n`),
+    stderr: (line) => process.stderr.write(`${line}\n`),
+  })
+  .run();
+```
+
+### Subclass a fixed command for reuse
+
+```typescript
+class Git extends Runner {
+  constructor(args: string[] = [], opts?: Options) {
+    super('git', args, opts);
+  }
+}
+
+const status = await new Git(['status', '--short']).outAsLines().orThrow();
+```
+
 ## API
 
 ### `runner<T, E>(command, args?, opts?)`
@@ -211,26 +312,27 @@ Returns a `CmdRunner<T, E>` builder instance. `T` is the type of `.data`, `E` is
 
 ### `CmdRunner<T, E>`
 
-| Method                  | Description                                                            |
-| ----------------------- | ---------------------------------------------------------------------- |
-| `.cwd(path)`            | Working directory                                                      |
-| `.env(vars)`            | Set environment variables                                              |
-| `.clearEnv()`           | Clear inherited env, use only `.env()` values                          |
-| `.dryRun(bool?)`        | Skip execution, return success                                         |
-| `.timeout(ms)`          | Kill process after ms                                                  |
-| `.stdin(data)`          | Write string or bytes to process stdin                                 |
-| `.interactive(bool?)`   | Inherit stdio (for interactive commands)                               |
-| `.signal(abort)`        | Attach AbortSignal                                                     |
-| `.uid(n)` / `.gid(n)`   | Unix user/group ID                                                     |
-| `.silent(bool?)`        | Set `error.silent = true` on failure (suppress stack trace)            |
-| `.outParser(fn)`        | Custom parser: `(result: ICmdResult) => T` — sets `result.data`        |
-| `.errParser(fn)`        | Custom error parser: `(result: ICmdResult) => E` — sets `result.error` |
-| `.outAsLines(stream?)`  | Pre-baked parser: split output into trimmed lines                      |
-| `.outAsString(stream?)` | Pre-baked parser: return trimmed string                                |
-| `.outJson(stream?)`     | Pre-baked parser: parse JSON                                           |
-| `.options(opts)`        | Merge multiple options at once                                         |
-| `.run()`                | Execute, return `CmdResult<T, E>` (never throws)                       |
-| `.orThrow()`            | Execute, return `T` on success, throw on failure                       |
+| Method                  | Description                                                                 |
+| ----------------------- | --------------------------------------------------------------------------- |
+| `.cwd(path)`            | Working directory                                                           |
+| `.env(vars)`            | Set environment variables                                                   |
+| `.clearEnv()`           | Clear inherited env, use only `.env()` values                               |
+| `.dryRun(bool?)`        | Skip execution, return success                                              |
+| `.timeout(ms)`          | Kill process after ms                                                       |
+| `.stdin(data)`          | Write string or bytes to process stdin                                      |
+| `.interactive(bool?)`   | Inherit stdio (for interactive commands)                                    |
+| `.stream(handlers)`     | Live line callbacks: `{ stdout?: (line) => void, stderr?: (line) => void }` |
+| `.signal(abort)`        | Attach AbortSignal                                                          |
+| `.uid(n)` / `.gid(n)`   | Unix user/group ID                                                          |
+| `.silent(bool?)`        | Set `error.silent = true` on failure (suppress stack trace)                 |
+| `.outParser(fn)`        | Custom parser: `(result: ICmdResult) => T` — sets `result.data`             |
+| `.errParser(fn)`        | Custom error parser: `(result: ICmdResult) => E` — sets `result.error`      |
+| `.outAsLines(stream?)`  | Pre-baked parser: split output into trimmed lines                           |
+| `.outAsString(stream?)` | Pre-baked parser: return trimmed string                                     |
+| `.outJson(stream?)`     | Pre-baked parser: parse JSON                                                |
+| `.options(opts)`        | Merge multiple options at once                                              |
+| `.run()`                | Execute, return `CmdResult<T, E>` (never throws)                            |
+| `.orThrow()`            | Execute, return `T` on success, throw on failure                            |
 
 ### `CmdResult<T, E>`
 
