@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/exif",
-  "version": "0.1.62",
+  "version": "0.1.63",
   "description": "Read and write EXIF metadata via the exiftool binary, with GPS parsing, date resolution, and reverse geocoding",
   "exports": {
     ".": "./src/mod.ts"
@@ -59,7 +59,7 @@
   },
   "license": "MIT",
   "imports": {
-    "@epdoc/cmd": "jsr:@epdoc/cmd@^0.3.3",
+    "@epdoc/cmd": "jsr:@epdoc/cmd@^0.3.4",
     "@epdoc/datetime": "jsr:@epdoc/datetime@^4.2.9",
     "@epdoc/fs": "jsr:@epdoc/fs@^1.6.10",
     "@epdoc/type": "jsr:@epdoc/type@^2.0.2",

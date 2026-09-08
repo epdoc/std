@@ -1,7 +1,7 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@epdoc/cmd@~0.3.3": "0.3.3",
+    "jsr:@epdoc/cmd@~0.3.4": "0.3.4",
     "jsr:@epdoc/colors@^1.1.4": "1.1.4",
     "jsr:@epdoc/datetime@^4.2.9": "4.2.9",
     "jsr:@epdoc/duration@~0.3.22": "0.3.22",
@@ -24,8 +24,8 @@
     "jsr:@std/yaml@^1.2.0": "1.2.0"
   },
   "jsr": {
-    "@epdoc/cmd@0.3.3": {
-      "integrity": "775198730e21ff73184e2d9ae0458930d3f417a52f26ee517700213aa575bb51"
+    "@epdoc/cmd@0.3.4": {
+      "integrity": "8c9a1253dd941b1fdf5ea515ed8d09dd51176a0287ab5d391448f500dfd37c6f"
     },
     "@epdoc/colors@1.1.4": {
       "integrity": "b217220778c0801cc881fd20fcd5e495cb9f9773fa217242c814cfc701608ccf",
@@ -168,7 +168,7 @@
       },
       "exif": {
         "dependencies": [
-          "jsr:@epdoc/cmd@~0.3.3",
+          "jsr:@epdoc/cmd@~0.3.4",
           "jsr:@epdoc/datetime@^4.2.9",
           "jsr:@epdoc/fs@^1.6.10",
           "jsr:@epdoc/type@^2.0.2",
