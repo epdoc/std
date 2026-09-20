@@ -1,5 +1,16 @@
 # Changelog for @epdoc/fs
 
+## [1.7.0] - 2026-09-20
+
+- `FileConflictStrategy`: `renameWithNumber`, `renameWithDatetime` and `renameWithEpochMs` accept an optional `folder`
+  (`FolderSpec`); backups are placed there instead of beside the original file.
+- Backups are now non-destructive: when a generated backup name already exists, a `<separator>NN` counter is appended
+  instead of overwriting the earlier copy.
+- `keep` rotation scans the strategy's `folder` when one is supplied.
+- `safeCopy` conflict handling delegates the rename strategies to `FileSpec.backup`, so `folder` and `keep` rotation
+  apply there too.
+- `findAvailableIndexFilename` now honours its `limit` and accepts a `folder`.
+
 ## [1.2.34] - 2026-04-02
 
 - Updated dependencies

@@ -181,6 +181,26 @@ Deno.test('Safe Copy Operations', async (t) => {
       }),
   );
 
+  await t.step(
+    'renameWithDatetime conflictStrategy honors folder',
+    () =>
+      withFiles(async ({ testDir, srcFile, destFile }) => {
+        await destFile.write('dest file');
+        const backupDir = new FolderSpec(testDir, 'conflict-backups');
+        await srcFile.safeCopy(destFile, {
+          conflictStrategy: {
+            type: util.fileConflictStrategyType.renameWithDatetime,
+            folder: backupDir,
+          },
+        });
+
+        assertEquals(await destFile.readAsString(), 'source file');
+        const backups = await backupDir.getFiles(/^file-\d+\.txt$/);
+        assertEquals(backups.length, 1);
+        assertEquals(await backups[0].readAsString(), 'dest file');
+      }),
+  );
+
   // FileSpec → FileSpec: new parent directories, move, and no-conflict copy
   await t.step(
     'copies to a destination that does not yet exist (creates parent dirs)',

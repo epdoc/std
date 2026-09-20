@@ -869,3 +869,76 @@ Deno.test('FileSpec Backup Rotation', async (t) => {
     await testDir.remove({ recursive: true });
   }
 });
+
+Deno.test('FileSpec Backup Folder', async (t) => {
+  const testDir = await FolderSpec.makeTemp({ prefix: 'backup_folder_test_' });
+  const backupDir = new FolderSpec(testDir, '.backup');
+
+  try {
+    await t.step('renameWithDatetime places backups in the folder', async () => {
+      const file = new FileSpec(testDir, 'data.txt');
+      await file.write('v1');
+      await file.backup({
+        type: 'renameWithDatetime',
+        format: 'yyyyMMdd_HHmmss',
+        separator: '_',
+        folder: backupDir,
+      });
+
+      assert(!await file.exists());
+      const backups = await backupDir.getFiles(/^data_\d{8}_\d{6}\.txt$/);
+      assertEquals(backups.length, 1);
+      assertEquals(await backups[0].readAsString(), 'v1');
+    });
+
+    await t.step('renameWithEpochMs places backups in the folder', async () => {
+      const file = new FileSpec(testDir, 'epoch.txt');
+      await file.write('v1');
+      await file.backup({ type: 'renameWithEpochMs', folder: backupDir });
+
+      const backups = await backupDir.getFiles(/^epoch-\d+\.txt$/);
+      assertEquals(backups.length, 1);
+      assertEquals(await backups[0].readAsString(), 'v1');
+    });
+
+    await t.step('renameWithNumber places backups in the folder', async () => {
+      const file = new FileSpec(testDir, 'num.txt');
+      await file.write('v1');
+      await file.backup({ type: 'renameWithNumber', folder: backupDir });
+
+      const backups = await backupDir.getFiles(/^num-01\.txt$/);
+      assertEquals(backups.length, 1);
+      assertEquals(await backups[0].readAsString(), 'v1');
+    });
+
+    await t.step('same-timestamp backups are not overwritten', async () => {
+      const file = new FileSpec(testDir, 'collide.txt');
+      await file.write('v1');
+      await file.backup({ type: 'renameWithDatetime', format: 'yyyyMMdd', folder: backupDir });
+      await file.write('v2');
+      await file.backup({ type: 'renameWithDatetime', format: 'yyyyMMdd', folder: backupDir });
+
+      const stamp = DateTime.now().format('yyyyMMdd');
+      const first = new FileSpec(backupDir, `collide-${stamp}.txt`);
+      const second = new FileSpec(backupDir, `collide-${stamp}-01.txt`);
+      assert(await first.exists());
+      assert(await second.exists());
+      assertEquals(await first.readAsString(), 'v1');
+      assertEquals(await second.readAsString(), 'v2');
+    });
+
+    await t.step('rotation scans the backup folder', async () => {
+      const file = new FileSpec(testDir, 'rot.txt');
+      const rotDir = new FolderSpec(testDir, 'rot-backups');
+      for (let i = 0; i < 3; i++) {
+        await file.write(`v${i}`);
+        await file.backup({ type: 'renameWithNumber', folder: rotDir, keep: { generations: 2 } });
+      }
+
+      const backups = await rotDir.getFiles(/^rot-\d+\.txt~$/);
+      assertEquals(backups.length, 2);
+    });
+  } finally {
+    await testDir.remove({ recursive: true });
+  }
+});

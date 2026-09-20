@@ -1256,29 +1256,30 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
    * @param [sep='-'] - The separator to use between the filename and the index.
    * @param [prefix=''] - A prefix to add before the index.
    * @param [suffix=''] - A suffix to add after the extension.
+   * @param folder - Folder to search in. Defaults to this file's folder.
    * @returns {Promise<FilePath | undefined>} A promise that resolves with an available file path, or undefined if not found.
    *
    * @category File Operations
    */
   async findAvailableIndexFilename(
-    _limit: Integer = 32,
+    limit: Integer = 32,
     sep: string = '-',
     prefix: string = '',
     suffix: string = '',
+    folder?: FolderSpec,
   ): Promise<FS.FilePath | undefined> {
-    let newFsDest: FileSpec | undefined;
+    const dir = folder?.path ?? this.dirname;
     let count = 0;
-    let looking = true;
-    while (looking) {
-      newFsDest = new FileSpec(
-        this.dirname,
+    while (count < limit) {
+      const newFsDest = new FileSpec(
+        dir,
         this.basename + sep + prefix + _.pad(++count, 2) + this.extname + suffix,
       );
-      looking = await newFsDest.exists();
+      if (!await newFsDest.exists()) {
+        return newFsDest.path;
+      }
     }
-    if (!looking && newFsDest instanceof FileSpec) {
-      return newFsDest.path;
-    }
+    return undefined;
   }
 
   // ============================================================================
@@ -1563,8 +1564,8 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
     keep: { ms?: Integer; generations?: Integer },
     strategy: Util.FileConflictStrategy,
   ): Promise<void> {
-    const parent = this.parentFolder();
-    const allFiles = await parent.getFiles();
+    const folder = ('folder' in strategy && strategy.folder) ? strategy.folder : this.parentFolder();
+    const allFiles = await folder.getFiles();
     const backupFiles: { file: FileSpec; time: number }[] = [];
 
     // Identify relevant backup files and determine their time
@@ -1614,7 +1615,9 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
 
     if (strategy.type === 'renameWithEpochMs') {
       const pattern = new RegExp(
-        `^${_.escapeRegExp(base)}${_.escapeRegExp(sep)}${_.escapeRegExp(prefix)}(\\d+)${_.escapeRegExp(ext)}~$`,
+        `^${_.escapeRegExp(base)}${_.escapeRegExp(sep)}${_.escapeRegExp(prefix)}(\\d+)(?:${_.escapeRegExp(sep)}\\d+)?${
+          _.escapeRegExp(ext)
+        }~$`,
       );
       const match = filename.match(pattern);
       if (match) {
@@ -1626,14 +1629,16 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
       );
       const match = filename.match(pattern);
       if (match) {
+        // Strip an optional `<sep>NN` collision suffix before parsing.
+        const ds = match[1].replace(new RegExp(`${_.escapeRegExp(sep)}\\d+$`), '');
         try {
-          // DateEx can parse many formats, but we'll try to use the provided format if possible
-          // For now, let's use DateEx to parse the string
-          const ds = match[1];
-          const dex = DateTime.fromString(ds);
-          time = dex.epochMilliseconds;
+          time = DateTime.fromString(ds).epochMilliseconds;
         } catch {
-          // Fallback to mtime
+          // Fall through to the file's modification time.
+        }
+        if (time === undefined) {
+          const stats = await file.stats();
+          time = stats?.modifiedAt?.epochMilliseconds;
         }
       }
     } else if (strategy.type === 'renameWithNumber') {
@@ -1655,31 +1660,29 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
       return asFilePath(this.path + '~'); // Changed to return string directly
     } else if (opts.type === Util.fileConflictStrategyType.renameWithNumber) {
       const limit = _.isInteger(opts.limit) ? opts.limit : 32;
-      const resp = await this.findAvailableIndexFilename(limit, opts.separator, opts.prefix, tilde);
+      const resp = await this.findAvailableIndexFilename(
+        limit,
+        opts.separator,
+        opts.prefix,
+        tilde,
+        opts.folder,
+      );
       if (!resp && opts.errorIfExists) {
         throw new Error.AlreadyExists('File exists', { code: 'EEXIST', path: this._f });
       }
       return resp;
     } else if (opts.type === Util.fileConflictStrategyType.renameWithDatetime) {
+      const folder = opts.folder ?? this.parentFolder();
       const sep = opts.separator || '-';
       const prefix = opts.prefix || '';
       const ds = DateTime.now().format(opts.format || 'yyyyMMddHHmmssSSS');
-      const newFsDest = new FileSpec(this.dirname, this.basename + sep + prefix + ds + this.extname + tilde);
-      const exists = await newFsDest.exists();
-      if (exists && opts.errorIfExists) {
-        throw new Error.AlreadyExists('File exists', { code: 'EEXIST', path: newFsDest.path });
-      }
-      return newFsDest.path;
+      return await this.#availableDatetimePath(folder, this.basename + sep + prefix + ds, sep, tilde);
     } else if (opts.type === Util.fileConflictStrategyType.renameWithEpochMs) {
+      const folder = opts.folder ?? this.parentFolder();
       const sep = opts.separator || '-';
       const prefix = opts.prefix || '';
       const ds = DateTime.now().epochMilliseconds.toString();
-      const newFsDest = new FileSpec(this.dirname, this.basename + sep + prefix + ds + this.extname + tilde);
-      const exists = await newFsDest.exists();
-      if (exists && opts.errorIfExists) {
-        throw new Error.AlreadyExists('File exists', { code: 'EEXIST', path: newFsDest.path });
-      }
-      return newFsDest.path;
+      return await this.#availableDatetimePath(folder, this.basename + sep + prefix + ds, sep, tilde);
     } else if (opts.type === 'overwrite') {
       return this.path; // Changed to return string directly
     } else {
@@ -1688,6 +1691,31 @@ export class FileSpec extends FSSpecBase implements IClonableSpec, IRootableSpec
       }
       return undefined;
     }
+  }
+
+  /**
+   * Builds a timestamped backup path in `folder`, appending a `<sep>NN` counter
+   * before the extension until an unused name is found. This keeps backups
+   * non-destructive when two are taken within the same timestamp resolution
+   * (or when a fixed `format` is used).
+   *
+   * @throws {Error.AlreadyExists} When every attempt within the bound is taken.
+   */
+  async #availableDatetimePath(
+    folder: FolderSpec,
+    base: string,
+    sep: string,
+    tilde: string,
+  ): Promise<FS.FilePath> {
+    const limit = 32;
+    for (let attempt = 0; attempt <= limit; attempt++) {
+      const counter = attempt === 0 ? '' : sep + _.pad(attempt, 2);
+      const candidate = new FileSpec(folder.path, `${base}${counter}${this.extname}${tilde}`);
+      if (!await candidate.exists()) {
+        return candidate.path;
+      }
+    }
+    throw new Error.AlreadyExists('File exists', { code: 'EEXIST', path: this._f });
   }
 
   async #equal(fs: FileSpec, opts: FS.EqualOptions = { checksum: true }): Promise<boolean> {

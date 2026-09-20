@@ -3,10 +3,9 @@ import * as Spec from '$spec'; // Import Spec
 import { FileSpec, FolderSpec, type FSSpec, SymlinkSpec } from '$spec'; // Import Spec
 import type { WalkOptions } from '$walk';
 import { walk } from '$walk'; // Import walk from $walk
-import { DateTime } from '@epdoc/datetime';
 import { _ } from '@epdoc/type';
 import path from 'node:path';
-import type { FilePath, Path } from '../types.ts';
+import type { Path } from '../types.ts';
 import { fileConflictStrategyType } from './consts.ts';
 import { resolveType } from './resolve-type.ts';
 import type * as util from './types.ts';
@@ -14,7 +13,7 @@ import type * as util from './types.ts';
 /**
  * Safely copies a source file or folder to a destination.
  * @param {BaseSpec} src - The source file or folder to copy.
- * @param {FilePath | BaseSpec} dest - The destination path.
+ * @param {Path | BaseSpec} dest - The destination path.
  * @param {Object} options - Options for the copy operation.
  * @returns {Promise<void>} - A promise that resolves when the copy is complete.
  */
@@ -70,7 +69,7 @@ export async function safeCopy(
 /**
  * Safely copies a file to a destination.
  * @param {BaseSpec} src - The source file to copy.
- * @param {FilePath | BaseSpec} dest - The destination path.
+ * @param {Path | BaseSpec} dest - The destination path.
  * @param {Object} options - Options for the copy operation.
  * @returns {Promise<void>} - A promise that resolves when the copy is complete.
  */
@@ -89,49 +88,16 @@ export async function safeCopyFile(
         if (conflictStrategy.errorIfExists) {
           throw new Err.AlreadyExists('File exists', { path: fsDest.path });
         }
-      } else if (conflictStrategy?.type === fileConflictStrategyType.renameWithTilde) {
-        await fsDest.moveTo(new FileSpec(fsDest.path + '~' as FilePath), { overwrite: true });
+      } else if (
+        conflictStrategy?.type === fileConflictStrategyType.renameWithTilde ||
+        conflictStrategy?.type === fileConflictStrategyType.renameWithNumber ||
+        conflictStrategy?.type === fileConflictStrategyType.renameWithDatetime ||
+        conflictStrategy?.type === fileConflictStrategyType.renameWithEpochMs
+      ) {
+        // Delegate all rename strategies (including the `folder` option and
+        // `keep` rotation) to FileSpec.backup so the naming rules live in one place.
+        await fsDest.backup(conflictStrategy);
         fsDest.clearInfo(); // Clear cached stats after move
-      } else if (conflictStrategy?.type === fileConflictStrategyType.renameWithNumber) {
-        const newPath = await fsDest.findAvailableIndexFilename(
-          conflictStrategy.limit,
-          conflictStrategy.separator,
-          conflictStrategy.prefix,
-        );
-        if (newPath) {
-          await fsDest.moveTo(new FileSpec(newPath), { overwrite: true });
-          fsDest.clearInfo(); // Clear cached stats after move
-        } else if (conflictStrategy.errorIfExists) {
-          throw new Err.AlreadyExists('File exists', { path: fsDest.path });
-        }
-      } else if (conflictStrategy?.type === fileConflictStrategyType.renameWithDatetime) {
-        const sep = conflictStrategy.separator || '-';
-        const prefix = conflictStrategy.prefix || '';
-        const ds = DateTime.now().format(conflictStrategy.format || 'yyyyMMddHHmmssSSS');
-        const newPath = new FileSpec(
-          fsDest.dirname,
-          fsDest.basename + sep + prefix + ds + fsDest.extname,
-        );
-        const exists = await newPath.exists();
-        if (exists && conflictStrategy.errorIfExists) {
-          throw new Err.AlreadyExists('File exists', { path: newPath.path });
-        }
-        await fsDest.moveTo(newPath, { overwrite: true });
-        fsDest.clearInfo();
-      } else if (conflictStrategy?.type === fileConflictStrategyType.renameWithEpochMs) {
-        const sep = conflictStrategy.separator || '-';
-        const prefix = conflictStrategy.prefix || '';
-        const ds = DateTime.now().epochMilliseconds.toString();
-        const newPath = new FileSpec(
-          fsDest.dirname,
-          fsDest.basename + sep + prefix + ds + fsDest.extname,
-        );
-        const exists = await newPath.exists();
-        if (exists && conflictStrategy.errorIfExists) {
-          throw new Err.AlreadyExists('File exists', { path: newPath.path });
-        }
-        await fsDest.moveTo(newPath, { overwrite: true });
-        fsDest.clearInfo();
       }
       // For 'overwrite' strategy, no action is needed here, proceed to copy
     } else {
@@ -165,7 +131,7 @@ export async function safeCopyFile(
 /**
  * Safely copies a folder to a destination.
  * @param {BaseSpec} src - The source folder to copy.
- * @param {FilePath | BaseSpec} dest - The destination path.
+ * @param {Path | BaseSpec} dest - The destination path.
  * @param {Object} options - Options for the copy operation.
  * @returns {Promise<void>} - A promise that resolves when the copy is complete.
  */

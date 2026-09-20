@@ -1,4 +1,5 @@
 import type { Integer } from '@epdoc/type';
+import type { FolderSpec } from '../spec/mod.ts';
 import type { fileConflictStrategyType } from './consts.ts';
 
 /**
@@ -33,11 +34,20 @@ import type { fileConflictStrategyType } from './consts.ts';
  * old backups after each write. Set `generations` to keep at most N copies and/or `ms` to remove
  * backups older than a given age. When both are supplied, a backup is only deleted if **both**
  * conditions are satisfied simultaneously.
+ *
+ * `renameWithNumber`, `renameWithDatetime` and `renameWithEpochMs` also accept a `folder`, which
+ * places backups in that folder (created if necessary) instead of beside the original file. When a
+ * generated backup name already exists it is not overwritten: a `<separator>NN` counter is appended
+ * instead, so backups are always non-destructive.
  */
 export type FileConflictStrategy =
   | { type: 'renameWithTilde'; errorIfExists?: boolean }
   | {
     type: 'renameWithNumber';
+    /** If specified then back files are put in this folder. Otherwise they are put in the same
+     * folder as the original file.
+     */
+    folder?: FolderSpec;
     /** Maximum indexed attempts before giving up. Defaults to `32`. */
     limit?: Integer;
     /** String inserted between the basename and the index. Defaults to `'-'`. */
@@ -49,6 +59,10 @@ export type FileConflictStrategy =
   }
   | {
     type: 'renameWithDatetime';
+    /** If specified then back files are put in this folder. Otherwise they are put in the same
+     * folder as the original file.
+     */
+    folder?: FolderSpec;
     /**
      * `DateTime.format()` pattern for the timestamp suffix. Defaults to `'yyyyMMddHHmmssSSS'`.
      * @remarks Age for `keep` is derived from the timestamp in the filename (local time).
@@ -64,6 +78,10 @@ export type FileConflictStrategy =
   }
   | {
     type: 'renameWithEpochMs';
+    /** If specified then back files are put in this folder. Otherwise they are put in the same
+     * folder as the original file.
+     */
+    folder?: FolderSpec;
     /**
      * @remarks Age for `keep` is derived from the epoch milliseconds embedded in the filename.
      * Recommended over `renameWithDatetime` when rotating across timezones.

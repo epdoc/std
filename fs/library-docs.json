@@ -2819,10 +2819,10 @@
                 ],
                 "implements": [
                   {
-                    "repr": "[FS.IPath]",
+                    "repr": "FS.IPath",
                     "kind": "typeRef",
                     "value": {
-                      "typeName": "[FS.IPath]",
+                      "typeName": "FS.IPath",
                       "resolution": {
                         "kind": "import",
                         "specifier": "../types.ts"
@@ -7342,6 +7342,11 @@
                           "doc": "A suffix to add after the extension."
                         },
                         {
+                          "kind": "param",
+                          "name": "folder",
+                          "doc": "Folder to search in. Defaults to this file's folder."
+                        },
+                        {
                           "kind": "return",
                           "tsType": {
                             "repr": "Promise<FilePath | undefined>",
@@ -7391,7 +7396,7 @@
                           "kind": "assign",
                           "left": {
                             "kind": "identifier",
-                            "name": "_limit",
+                            "name": "limit",
                             "optional": false,
                             "tsType": {
                               "repr": "Integer",
@@ -7449,6 +7454,23 @@
                             }
                           },
                           "right": ""
+                        },
+                        {
+                          "kind": "identifier",
+                          "name": "folder",
+                          "optional": true,
+                          "tsType": {
+                            "repr": "FolderSpec",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "FolderSpec",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./folderspec.ts",
+                                "name": "FolderSpec"
+                              }
+                            }
+                          }
                         }
                       ],
                       "returnType": {
@@ -7486,9 +7508,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/spec/filespec.ts",
-                      "line": 1262,
+                      "line": 1263,
                       "col": 2,
-                      "byteIndex": 47581
+                      "byteIndex": 47655
                     }
                   },
                   {
@@ -7613,9 +7635,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/spec/filespec.ts",
-                      "line": 1304,
+                      "line": 1305,
                       "col": 2,
-                      "byteIndex": 49049
+                      "byteIndex": 49101
                     }
                   },
                   {
@@ -7698,9 +7720,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/spec/filespec.ts",
-                      "line": 1342,
+                      "line": 1343,
                       "col": 2,
-                      "byteIndex": 50307
+                      "byteIndex": 50359
                     }
                   },
                   {
@@ -7762,9 +7784,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/spec/filespec.ts",
-                      "line": 1357,
+                      "line": 1358,
                       "col": 2,
-                      "byteIndex": 50748
+                      "byteIndex": 50800
                     }
                   },
                   {
@@ -7826,9 +7848,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/spec/filespec.ts",
-                      "line": 1372,
+                      "line": 1373,
                       "col": 2,
-                      "byteIndex": 51190
+                      "byteIndex": 51242
                     }
                   },
                   {
@@ -7884,9 +7906,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/spec/filespec.ts",
-                      "line": 1396,
+                      "line": 1397,
                       "col": 2,
-                      "byteIndex": 52026
+                      "byteIndex": 52078
                     }
                   },
                   {
@@ -7932,9 +7954,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/spec/filespec.ts",
-                      "line": 1418,
+                      "line": 1419,
                       "col": 2,
-                      "byteIndex": 52859
+                      "byteIndex": 52911
                     }
                   },
                   {
@@ -7981,9 +8003,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/spec/filespec.ts",
-                      "line": 1437,
+                      "line": 1438,
                       "col": 2,
-                      "byteIndex": 53526
+                      "byteIndex": 53578
                     }
                   },
                   {
@@ -8020,9 +8042,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/spec/filespec.ts",
-                      "line": 1459,
+                      "line": 1460,
                       "col": 2,
-                      "byteIndex": 54319
+                      "byteIndex": 54371
                     }
                   },
                   {
@@ -8072,9 +8094,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/spec/filespec.ts",
-                      "line": 1463,
+                      "line": 1464,
                       "col": 2,
-                      "byteIndex": 54423
+                      "byteIndex": 54475
                     }
                   },
                   {
@@ -8124,9 +8146,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/spec/filespec.ts",
-                      "line": 1468,
+                      "line": 1469,
                       "col": 2,
-                      "byteIndex": 54596
+                      "byteIndex": 54648
                     }
                   },
                   {
@@ -8161,9 +8183,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/spec/filespec.ts",
-                      "line": 1473,
+                      "line": 1474,
                       "col": 2,
-                      "byteIndex": 54767
+                      "byteIndex": 54819
                     }
                   },
                   {
@@ -8225,9 +8247,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/spec/filespec.ts",
-                      "line": 1488,
+                      "line": 1489,
                       "col": 2,
-                      "byteIndex": 55385
+                      "byteIndex": 55437
                     }
                   },
                   {
@@ -8283,9 +8305,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/spec/filespec.ts",
-                      "line": 1723,
+                      "line": 1751,
                       "col": 2,
-                      "byteIndex": 63773
+                      "byteIndex": 64696
                     }
                   },
                   {
@@ -8351,9 +8373,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/spec/filespec.ts",
-                      "line": 1732,
+                      "line": 1760,
                       "col": 2,
-                      "byteIndex": 64012
+                      "byteIndex": 64935
                     }
                   },
                   {
@@ -8419,9 +8441,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/spec/filespec.ts",
-                      "line": 1741,
+                      "line": 1769,
                       "col": 2,
-                      "byteIndex": 64313
+                      "byteIndex": 65236
                     }
                   }
                 ],
@@ -20171,9 +20193,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/safecopy.ts",
-                          "line": 20,
+                          "line": 19,
                           "col": 0,
-                          "byteIndex": 899
+                          "byteIndex": 841
                         },
                         "declarationKind": "export",
                         "jsDoc": {
@@ -20198,14 +20220,14 @@
                               "kind": "param",
                               "name": "dest",
                               "tsType": {
-                                "repr": "FilePath | BaseSpec",
+                                "repr": "Path | BaseSpec",
                                 "kind": "union",
                                 "value": [
                                   {
-                                    "repr": "FilePath",
+                                    "repr": "Path",
                                     "kind": "typeRef",
                                     "value": {
-                                      "typeName": "FilePath",
+                                      "typeName": "Path",
                                       "resolution": {
                                         "kind": "typeParam"
                                       }
@@ -20441,9 +20463,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/safecopy.ts",
-                          "line": 76,
+                          "line": 75,
                           "col": 0,
-                          "byteIndex": 3097
+                          "byteIndex": 3035
                         },
                         "declarationKind": "export",
                         "jsDoc": {
@@ -20468,14 +20490,14 @@
                               "kind": "param",
                               "name": "dest",
                               "tsType": {
-                                "repr": "FilePath | BaseSpec",
+                                "repr": "Path | BaseSpec",
                                 "kind": "union",
                                 "value": [
                                   {
-                                    "repr": "FilePath",
+                                    "repr": "Path",
                                     "kind": "typeRef",
                                     "value": {
-                                      "typeName": "FilePath",
+                                      "typeName": "Path",
                                       "resolution": {
                                         "kind": "typeParam"
                                       }
@@ -20634,9 +20656,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/safecopy.ts",
-                          "line": 171,
+                          "line": 137,
                           "col": 0,
-                          "byteIndex": 7287
+                          "byteIndex": 5635
                         },
                         "declarationKind": "export",
                         "jsDoc": {
@@ -20661,14 +20683,14 @@
                               "kind": "param",
                               "name": "dest",
                               "tsType": {
-                                "repr": "FilePath | BaseSpec",
+                                "repr": "Path | BaseSpec",
                                 "kind": "union",
                                 "value": [
                                   {
-                                    "repr": "FilePath",
+                                    "repr": "Path",
                                     "kind": "typeRef",
                                     "value": {
-                                      "typeName": "FilePath",
+                                      "typeName": "Path",
                                       "resolution": {
                                         "kind": "typeParam"
                                       }
@@ -20808,13 +20830,13 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                          "line": 36,
+                          "line": 42,
                           "col": 0,
-                          "byteIndex": 1915
+                          "byteIndex": 2318
                         },
                         "declarationKind": "export",
                         "jsDoc": {
-                          "doc": "Conflict resolution strategy used when a write or copy operation targets a file that already exists.\n\nPass as `backupStrategy` in {@link SafeWriteOptions} or as the `opts` argument to `backup()` / `safeCopy()`.\n\n**Strategies at a glance:**\n\n- `renameWithTilde` — Renames the existing file by appending `~` (e.g. `config.json~`).\n  Simple and cheap; only one backup is kept. **Default for `backup()`.**\n\n- `renameWithNumber` — Renames the existing file with an incrementing zero-padded index\n  (e.g. `config-01.json`). Use `limit` (default 32) to cap the search, `separator` (default `'-'`)\n  and `prefix` to customise the suffix, and `keep` to auto-rotate old backups.\n\n- `renameWithDatetime` — Renames with a formatted datetime string\n  (e.g. `config-20240614153045123.json`). Customise with `format` (default `'yyyyMMddHHmmssSSS'`).\n  **Note:** age is derived from the timestamp embedded in the filename, which is in local time.\n  Use `renameWithEpochMs` when rotating across timezones.\n\n- `renameWithEpochMs` — Renames with the current epoch milliseconds\n  (e.g. `config-1718382645123.json`). Timezone-safe; recommended for short-interval rotation.\n\n- `overwrite` — Overwrites the destination without backing it up.\n\n- `skip` — Leaves the existing file untouched and silently skips the write.\n\n- `error` — Throws an `AlreadyExists` error when the target already exists.\n\nThe `keep` option (available on `renameWithNumber`, `renameWithDatetime`, `renameWithEpochMs`) trims\nold backups after each write. Set `generations` to keep at most N copies and/or `ms` to remove\nbackups older than a given age. When both are supplied, a backup is only deleted if **both**\nconditions are satisfied simultaneously."
+                          "doc": "Conflict resolution strategy used when a write or copy operation targets a file that already exists.\n\nPass as `backupStrategy` in {@link SafeWriteOptions} or as the `opts` argument to `backup()` / `safeCopy()`.\n\n**Strategies at a glance:**\n\n- `renameWithTilde` — Renames the existing file by appending `~` (e.g. `config.json~`).\n  Simple and cheap; only one backup is kept. **Default for `backup()`.**\n\n- `renameWithNumber` — Renames the existing file with an incrementing zero-padded index\n  (e.g. `config-01.json`). Use `limit` (default 32) to cap the search, `separator` (default `'-'`)\n  and `prefix` to customise the suffix, and `keep` to auto-rotate old backups.\n\n- `renameWithDatetime` — Renames with a formatted datetime string\n  (e.g. `config-20240614153045123.json`). Customise with `format` (default `'yyyyMMddHHmmssSSS'`).\n  **Note:** age is derived from the timestamp embedded in the filename, which is in local time.\n  Use `renameWithEpochMs` when rotating across timezones.\n\n- `renameWithEpochMs` — Renames with the current epoch milliseconds\n  (e.g. `config-1718382645123.json`). Timezone-safe; recommended for short-interval rotation.\n\n- `overwrite` — Overwrites the destination without backing it up.\n\n- `skip` — Leaves the existing file untouched and silently skips the write.\n\n- `error` — Throws an `AlreadyExists` error when the target already exists.\n\nThe `keep` option (available on `renameWithNumber`, `renameWithDatetime`, `renameWithEpochMs`) trims\nold backups after each write. Set `generations` to keep at most N copies and/or `ms` to remove\nbackups older than a given age. When both are supplied, a backup is only deleted if **both**\nconditions are satisfied simultaneously.\n\n`renameWithNumber`, `renameWithDatetime` and `renameWithEpochMs` also accept a `folder`, which\nplaces backups in that folder (created if necessary) instead of beside the original file. When a\ngenerated backup name already exists it is not overwritten: a `<separator>NN` counter is appended\ninstead, so backups are always non-destructive."
                         },
                         "kind": "typeAlias",
                         "def": {
@@ -20829,9 +20851,9 @@
                                       "name": "type",
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                        "line": 37,
+                                        "line": 43,
                                         "col": 6,
-                                        "byteIndex": 1956
+                                        "byteIndex": 2359
                                       },
                                       "tsType": {
                                         "repr": "renameWithTilde",
@@ -20846,9 +20868,9 @@
                                       "name": "errorIfExists",
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                        "line": 37,
+                                        "line": 43,
                                         "col": 31,
-                                        "byteIndex": 1981
+                                        "byteIndex": 2384
                                       },
                                       "optional": true,
                                       "tsType": {
@@ -20868,9 +20890,9 @@
                                       "name": "type",
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                        "line": 39,
+                                        "line": 45,
                                         "col": 4,
-                                        "byteIndex": 2017
+                                        "byteIndex": 2420
                                       },
                                       "tsType": {
                                         "repr": "renameWithNumber",
@@ -20882,15 +20904,40 @@
                                       }
                                     },
                                     {
+                                      "name": "folder",
+                                      "jsDoc": {
+                                        "doc": "If specified then back files are put in this folder. Otherwise they are put in the same\nfolder as the original file."
+                                      },
+                                      "location": {
+                                        "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
+                                        "line": 49,
+                                        "col": 4,
+                                        "byteIndex": 2590
+                                      },
+                                      "optional": true,
+                                      "tsType": {
+                                        "repr": "FolderSpec",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "FolderSpec",
+                                          "resolution": {
+                                            "kind": "import",
+                                            "specifier": "../spec/mod.ts",
+                                            "name": "FolderSpec"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    {
                                       "name": "limit",
                                       "jsDoc": {
                                         "doc": "Maximum indexed attempts before giving up. Defaults to `32`."
                                       },
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                        "line": 41,
+                                        "line": 51,
                                         "col": 4,
-                                        "byteIndex": 2119
+                                        "byteIndex": 2687
                                       },
                                       "optional": true,
                                       "tsType": {
@@ -20913,9 +20960,9 @@
                                       },
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                        "line": 43,
+                                        "line": 53,
                                         "col": 4,
-                                        "byteIndex": 2222
+                                        "byteIndex": 2790
                                       },
                                       "optional": true,
                                       "tsType": {
@@ -20931,9 +20978,9 @@
                                       },
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                        "line": 45,
+                                        "line": 55,
                                         "col": 4,
-                                        "byteIndex": 2307
+                                        "byteIndex": 2875
                                       },
                                       "optional": true,
                                       "tsType": {
@@ -20946,9 +20993,9 @@
                                       "name": "errorIfExists",
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                        "line": 46,
+                                        "line": 56,
                                         "col": 4,
-                                        "byteIndex": 2328
+                                        "byteIndex": 2896
                                       },
                                       "optional": true,
                                       "tsType": {
@@ -20961,9 +21008,9 @@
                                       "name": "keep",
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                        "line": 47,
+                                        "line": 57,
                                         "col": 4,
-                                        "byteIndex": 2357
+                                        "byteIndex": 2925
                                       },
                                       "optional": true,
                                       "tsType": {
@@ -20974,9 +21021,9 @@
                                               "name": "ms",
                                               "location": {
                                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                                "line": 47,
+                                                "line": 57,
                                                 "col": 13,
-                                                "byteIndex": 2366
+                                                "byteIndex": 2934
                                               },
                                               "optional": true,
                                               "tsType": {
@@ -20996,9 +21043,9 @@
                                               "name": "generations",
                                               "location": {
                                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                                "line": 47,
+                                                "line": 57,
                                                 "col": 27,
-                                                "byteIndex": 2380
+                                                "byteIndex": 2948
                                               },
                                               "optional": true,
                                               "tsType": {
@@ -21029,9 +21076,9 @@
                                       "name": "type",
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                        "line": 50,
+                                        "line": 60,
                                         "col": 4,
-                                        "byteIndex": 2419
+                                        "byteIndex": 2987
                                       },
                                       "tsType": {
                                         "repr": "renameWithDatetime",
@@ -21039,6 +21086,31 @@
                                         "value": {
                                           "kind": "string",
                                           "string": "renameWithDatetime"
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "name": "folder",
+                                      "jsDoc": {
+                                        "doc": "If specified then back files are put in this folder. Otherwise they are put in the same\nfolder as the original file."
+                                      },
+                                      "location": {
+                                        "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
+                                        "line": 64,
+                                        "col": 4,
+                                        "byteIndex": 3159
+                                      },
+                                      "optional": true,
+                                      "tsType": {
+                                        "repr": "FolderSpec",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "FolderSpec",
+                                          "resolution": {
+                                            "kind": "import",
+                                            "specifier": "../spec/mod.ts",
+                                            "name": "FolderSpec"
+                                          }
                                         }
                                       }
                                     },
@@ -21055,9 +21127,9 @@
                                       },
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                        "line": 56,
+                                        "line": 70,
                                         "col": 4,
-                                        "byteIndex": 2717
+                                        "byteIndex": 3450
                                       },
                                       "optional": true,
                                       "tsType": {
@@ -21073,9 +21145,9 @@
                                       },
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                        "line": 58,
+                                        "line": 72,
                                         "col": 4,
-                                        "byteIndex": 2824
+                                        "byteIndex": 3557
                                       },
                                       "optional": true,
                                       "tsType": {
@@ -21091,9 +21163,9 @@
                                       },
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                        "line": 60,
+                                        "line": 74,
                                         "col": 4,
-                                        "byteIndex": 2906
+                                        "byteIndex": 3639
                                       },
                                       "optional": true,
                                       "tsType": {
@@ -21106,9 +21178,9 @@
                                       "name": "errorIfExists",
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                        "line": 61,
+                                        "line": 75,
                                         "col": 4,
-                                        "byteIndex": 2927
+                                        "byteIndex": 3660
                                       },
                                       "optional": true,
                                       "tsType": {
@@ -21121,9 +21193,9 @@
                                       "name": "keep",
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                        "line": 62,
+                                        "line": 76,
                                         "col": 4,
-                                        "byteIndex": 2956
+                                        "byteIndex": 3689
                                       },
                                       "optional": true,
                                       "tsType": {
@@ -21134,9 +21206,9 @@
                                               "name": "ms",
                                               "location": {
                                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                                "line": 62,
+                                                "line": 76,
                                                 "col": 13,
-                                                "byteIndex": 2965
+                                                "byteIndex": 3698
                                               },
                                               "optional": true,
                                               "tsType": {
@@ -21156,9 +21228,9 @@
                                               "name": "generations",
                                               "location": {
                                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                                "line": 62,
+                                                "line": 76,
                                                 "col": 27,
-                                                "byteIndex": 2979
+                                                "byteIndex": 3712
                                               },
                                               "optional": true,
                                               "tsType": {
@@ -21189,9 +21261,9 @@
                                       "name": "type",
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                        "line": 65,
+                                        "line": 79,
                                         "col": 4,
-                                        "byteIndex": 3018
+                                        "byteIndex": 3751
                                       },
                                       "tsType": {
                                         "repr": "renameWithEpochMs",
@@ -21203,15 +21275,40 @@
                                       }
                                     },
                                     {
+                                      "name": "folder",
+                                      "jsDoc": {
+                                        "doc": "If specified then back files are put in this folder. Otherwise they are put in the same\nfolder as the original file."
+                                      },
+                                      "location": {
+                                        "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
+                                        "line": 83,
+                                        "col": 4,
+                                        "byteIndex": 3922
+                                      },
+                                      "optional": true,
+                                      "tsType": {
+                                        "repr": "FolderSpec",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "FolderSpec",
+                                          "resolution": {
+                                            "kind": "import",
+                                            "specifier": "../spec/mod.ts",
+                                            "name": "FolderSpec"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    {
                                       "name": "separator",
                                       "jsDoc": {
                                         "doc": "String inserted between the basename and the epoch value. Defaults to `'-'`."
                                       },
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                        "line": 71,
+                                        "line": 89,
                                         "col": 4,
-                                        "byteIndex": 3326
+                                        "byteIndex": 4224
                                       },
                                       "optional": true,
                                       "tsType": {
@@ -21227,9 +21324,9 @@
                                       },
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                        "line": 73,
+                                        "line": 91,
                                         "col": 4,
-                                        "byteIndex": 3410
+                                        "byteIndex": 4308
                                       },
                                       "optional": true,
                                       "tsType": {
@@ -21242,9 +21339,9 @@
                                       "name": "errorIfExists",
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                        "line": 74,
+                                        "line": 92,
                                         "col": 4,
-                                        "byteIndex": 3431
+                                        "byteIndex": 4329
                                       },
                                       "optional": true,
                                       "tsType": {
@@ -21257,9 +21354,9 @@
                                       "name": "keep",
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                        "line": 75,
+                                        "line": 93,
                                         "col": 4,
-                                        "byteIndex": 3460
+                                        "byteIndex": 4358
                                       },
                                       "optional": true,
                                       "tsType": {
@@ -21270,9 +21367,9 @@
                                               "name": "ms",
                                               "location": {
                                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                                "line": 75,
+                                                "line": 93,
                                                 "col": 13,
-                                                "byteIndex": 3469
+                                                "byteIndex": 4367
                                               },
                                               "optional": true,
                                               "tsType": {
@@ -21292,9 +21389,9 @@
                                               "name": "generations",
                                               "location": {
                                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                                "line": 75,
+                                                "line": 93,
                                                 "col": 27,
-                                                "byteIndex": 3483
+                                                "byteIndex": 4381
                                               },
                                               "optional": true,
                                               "tsType": {
@@ -21325,9 +21422,9 @@
                                       "name": "type",
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                        "line": 77,
+                                        "line": 95,
                                         "col": 6,
-                                        "byteIndex": 3518
+                                        "byteIndex": 4416
                                       },
                                       "tsType": {
                                         "repr": "overwrite",
@@ -21342,9 +21439,9 @@
                                       "name": "errorIfExists",
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                        "line": 77,
+                                        "line": 95,
                                         "col": 25,
-                                        "byteIndex": 3537
+                                        "byteIndex": 4435
                                       },
                                       "optional": true,
                                       "tsType": {
@@ -21364,9 +21461,9 @@
                                       "name": "type",
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                        "line": 78,
+                                        "line": 96,
                                         "col": 6,
-                                        "byteIndex": 3569
+                                        "byteIndex": 4467
                                       },
                                       "tsType": {
                                         "repr": "skip",
@@ -21381,9 +21478,9 @@
                                       "name": "errorIfExists",
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                        "line": 78,
+                                        "line": 96,
                                         "col": 20,
-                                        "byteIndex": 3583
+                                        "byteIndex": 4481
                                       },
                                       "optional": true,
                                       "tsType": {
@@ -21403,9 +21500,9 @@
                                       "name": "type",
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                        "line": 79,
+                                        "line": 97,
                                         "col": 6,
-                                        "byteIndex": 3615
+                                        "byteIndex": 4513
                                       },
                                       "tsType": {
                                         "repr": "error",
@@ -21420,9 +21517,9 @@
                                       "name": "errorIfExists",
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                        "line": 79,
+                                        "line": 97,
                                         "col": 21,
-                                        "byteIndex": 3630
+                                        "byteIndex": 4528
                                       },
                                       "optional": true,
                                       "tsType": {
@@ -21446,9 +21543,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                          "line": 85,
+                          "line": 103,
                           "col": 0,
-                          "byteIndex": 3805
+                          "byteIndex": 4703
                         },
                         "declarationKind": "export",
                         "jsDoc": {
@@ -21490,9 +21587,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                          "line": 106,
+                          "line": 124,
                           "col": 0,
-                          "byteIndex": 4712
+                          "byteIndex": 5610
                         },
                         "declarationKind": "export",
                         "jsDoc": {
@@ -21511,9 +21608,9 @@
                                   },
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                    "line": 112,
+                                    "line": 130,
                                     "col": 2,
-                                    "byteIndex": 4948
+                                    "byteIndex": 5846
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -21535,9 +21632,9 @@
                                   },
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                    "line": 120,
+                                    "line": 138,
                                     "col": 2,
-                                    "byteIndex": 5230
+                                    "byteIndex": 6128
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -21564,9 +21661,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                          "line": 123,
+                          "line": 141,
                           "col": 0,
-                          "byteIndex": 5273
+                          "byteIndex": 6171
                         },
                         "declarationKind": "export",
                         "kind": "typeAlias",
@@ -21582,9 +21679,9 @@
                                   },
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                    "line": 127,
+                                    "line": 145,
                                     "col": 2,
-                                    "byteIndex": 5396
+                                    "byteIndex": 6294
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -21600,9 +21697,9 @@
                                   },
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                    "line": 131,
+                                    "line": 149,
                                     "col": 2,
-                                    "byteIndex": 5477
+                                    "byteIndex": 6375
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -21618,9 +21715,9 @@
                                   },
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                    "line": 135,
+                                    "line": 153,
                                     "col": 2,
-                                    "byteIndex": 5549
+                                    "byteIndex": 6447
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -21636,9 +21733,9 @@
                                   },
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                    "line": 139,
+                                    "line": 157,
                                     "col": 2,
-                                    "byteIndex": 5641
+                                    "byteIndex": 6539
                                   },
                                   "optional": true,
                                   "tsType": {
@@ -21660,9 +21757,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                          "line": 145,
+                          "line": 163,
                           "col": 0,
-                          "byteIndex": 5734
+                          "byteIndex": 6632
                         },
                         "declarationKind": "export",
                         "jsDoc": {
@@ -21694,9 +21791,9 @@
                                       },
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                                        "line": 149,
+                                        "line": 167,
                                         "col": 2,
-                                        "byteIndex": 5872
+                                        "byteIndex": 6770
                                       },
                                       "optional": true,
                                       "tsType": {
@@ -21725,9 +21822,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                          "line": 155,
+                          "line": 173,
                           "col": 0,
-                          "byteIndex": 5980
+                          "byteIndex": 6878
                         },
                         "declarationKind": "export",
                         "jsDoc": {
@@ -21755,9 +21852,9 @@
                       {
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fs/src/util/types.ts",
-                          "line": 163,
+                          "line": 181,
                           "col": 0,
-                          "byteIndex": 6209
+                          "byteIndex": 7107
                         },
                         "declarationKind": "export",
                         "jsDoc": {
