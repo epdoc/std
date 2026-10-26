@@ -1,3 +1,4 @@
+##### Common Deno-Project Settings #####
 # Deno
 .deno/
 dist/
@@ -73,3 +74,5 @@ typings/
 
 *scratch.ts
 .opencode/perm-log.jsonl
+
+##### Project-specific Settings #####
