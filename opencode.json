@@ -67,11 +67,14 @@
     { "action": "shell", "resource": "cargo publish*", "effect": "deny" },
 
     { "action": "shell", "resource": "grep *", "effect": "allow" },
+    { "action": "shell", "resource": "pgrep *", "effect": "allow" },
     { "action": "shell", "resource": "rg *", "effect": "allow" },
     { "action": "shell", "resource": "ls *", "effect": "allow" },
     { "action": "shell", "resource": "head *", "effect": "allow" },
     { "action": "shell", "resource": "tail *", "effect": "allow" },
     { "action": "shell", "resource": "cat *", "effect": "allow" },
+    { "action": "shell", "resource": "read *", "effect": "allow" },
+    { "action": "shell", "resource": "curl *", "effect": "allow" },
     { "action": "shell", "resource": "wc *", "effect": "allow" },
     { "action": "shell", "resource": "stat *", "effect": "allow" },
     { "action": "shell", "resource": "file *", "effect": "allow" },
@@ -82,6 +85,7 @@
     { "action": "shell", "resource": "jq *", "effect": "allow" },
     { "action": "shell", "resource": "which *", "effect": "allow" },
     { "action": "shell", "resource": "echo *", "effect": "allow" },
+    { "action": "shell", "resource": "nohup *", "effect": "allow" },
     { "action": "shell", "resource": "pwd", "effect": "allow" },
     { "action": "shell", "resource": "printenv *", "effect": "allow" },
     { "action": "shell", "resource": "mkdir *", "effect": "allow" },
@@ -182,7 +186,6 @@
     "build": {
       "mode": "primary",
       "permissions": [
-        { "action": "edit", "resource": "*", "effect": "ask" },
         { "action": "edit", "resource": "~/dev/rust/**", "effect": "allow" },
         {
           "action": "edit",
