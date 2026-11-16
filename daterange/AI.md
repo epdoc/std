@@ -99,7 +99,8 @@ Returns `DateTime | undefined`. Reference defaults to `DateTime.now()`.
 
 Keywords: `now`, `today`, `yesterday`, `tomorrow`, `startofday`, `endofday`\
 Units: `y`, `d`, `h`, `m`, `s` — combinable: `1d12h30m`\
-Negative = future: `-1h`
+Bare duration = past (`6h` is 6 hours ago); negative = future (`-1h` is 1 hour from now). A range such as `6h-4h`
+therefore needs no sign on either side.
 
 ### `dateStringToInstant(s, h?)`
 
@@ -113,7 +114,11 @@ Returns `DateRangeDef[]`. Comma-separated. Each component can be:
 - Compact date string → `dateStringToInstant`
 - Relative time → `parseRelativeTime`
 - ISO string → `DateTime.tryFrom`
-- Range `start-end` (either side optional)
+- Range `start-end` (either side optional) — both sides in any form above, so `6h-4h` is the window from 6 hours ago to
+  4 hours ago
+
+A range starting with a signed duration (`-6h--4h`, `-6h-4h`) throws: the leading `-` is an open start, not "future". A
+plain open start such as `-20250115` is still valid.
 
 Year/month/day-only strings expand to cover the full period (inclusive by default).
 
@@ -136,7 +141,16 @@ windowOptionDef; // -w, --window  → DateRange (duration ending now)
 
 // All-in-one map
 dateRangeOptionDefs; // { date, range, ranges, since, until, window }
+
+// Plain-text help, for an option's `help` field or your own output
+dateRangeHelpText(); // ranges (date/range/ranges)
+instantHelpText(); // single instants (since/until)
+windowHelpText(); // lookback durations (window)
 ```
+
+Every def carries `help`, so `@epdoc/cliapp` answers `-d help` / `-d h` / `-d ?` with that text and adds
+`(enter --date help for help)` to the option description. `windowOptionDef` also rejects a window that starts in the
+future (`-7d`).
 
 ### `buildDateHelp(msg)`
 

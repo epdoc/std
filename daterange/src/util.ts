@@ -98,6 +98,23 @@ export function dateStringToInstant(s: string, h: Integer = 0): DateTime {
 }
 
 /**
+ * Rejects a range that starts with a signed duration, such as `-6h--4h` or `-6h-4h`.
+ *
+ * Ranges are split on `-`, so a leading sign silently produced a nonsense
+ * open-ended range (from the beginning of time up to a point). A bare duration
+ * already means "ago", so the correct spelling is `6h-4h`.
+ */
+function assertNoSignedDurationRange(range: string): void {
+  if (!/^-\d+[ydhms]/i.test(range)) return;
+  if ((range.match(/-/g) ?? []).length < 2) return;
+  const suggestion = range.replace(/^-/, '').replace(/--/, '-');
+  throw new Error(
+    `Invalid date range '${range}': a leading '-' is read as an open start, not as 'future'. ` +
+      `Relative bounds already count back from now — write '${suggestion}'.`,
+  );
+}
+
+/**
  * Converts a string representation of date ranges into an array of DateRangeDef objects.
  *
  * This function supports various date string formats, range specifications, and relative time strings.
@@ -133,6 +150,7 @@ export function dateList(val: string, options: DateRangeParseOptions = {}): Date
   const ranges = val.split(',').map((s) => s.trim()).filter((s) => s.length > 0);
 
   for (const range of ranges) {
+    assertNoSignedDurationRange(range);
     const p = range.split('-');
     let after: DateTime | undefined;
     let before: DateTime | undefined;

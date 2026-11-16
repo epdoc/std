@@ -35,13 +35,18 @@ export { type DateRangeDef, type DateRangeJSON, type DateRangeParseOptions, isDa
 // CLI option helpers for @epdoc/cliapp
 export {
   buildDateHelp,
+  buildInstantHelp,
+  buildWindowHelp,
   dateOptionDef,
+  dateRangeHelpText,
   dateRangeOptionDefs,
+  instantHelpText,
   isDateRanges,
   rangeOptionDef,
   rangesOptionDef,
   sinceOptionDef,
   untilOptionDef,
+  windowHelpText,
   windowOptionDef,
 } from './cli.ts';
 export type { DateHelpBuilder } from './cli.ts';

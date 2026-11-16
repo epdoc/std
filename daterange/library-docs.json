@@ -1807,13 +1807,13 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/relative-time.ts",
-                "line": 35,
+                "line": 39,
                 "col": 0,
-                "byteIndex": 1018
+                "byteIndex": 1266
               },
               "declarationKind": "export",
               "jsDoc": {
-                "doc": "Parses a relative time string and returns a DateTime.\n\nSupported formats:\n- Single/combined units: \"1d\", \"2h30m\", \"1y6d\"\n- Negative (future): \"-1d\", \"-2h30m\"\n- Keywords: \"now\", \"today\", \"yesterday\", \"tomorrow\", \"startOfDay\", \"endOfDay\"\n",
+                "doc": "Parses a relative time string and returns a DateTime.\n\nA bare duration counts back from the reference time — \"6h\" is six hours ago.\nA leading \"-\" moves forward instead — \"-6h\" is six hours from now. This is why\na range such as \"6h-4h\" needs no sign: both bounds are already in the past.\n\nSupported formats:\n- Single/combined units: \"1d\", \"2h30m\", \"1y6d\"\n- Negative (future): \"-1d\", \"-2h30m\"\n- Keywords: \"now\", \"today\", \"yesterday\", \"tomorrow\", \"startOfDay\", \"endOfDay\"\n",
                 "tags": [
                   {
                     "kind": "param",
@@ -1895,9 +1895,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/util.ts",
-                "line": 128,
+                "line": 145,
                 "col": 0,
-                "byteIndex": 4780
+                "byteIndex": 5517
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -1980,9 +1980,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/util.ts",
-                "line": 228,
+                "line": 246,
                 "col": 0,
-                "byteIndex": 8098
+                "byteIndex": 8875
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -2062,9 +2062,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/util.ts",
-                "line": 247,
+                "line": 265,
                 "col": 0,
-                "byteIndex": 8658
+                "byteIndex": 9435
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -2557,13 +2557,13 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                "line": 76,
+                "line": 248,
                 "col": 0,
-                "byteIndex": 2027
+                "byteIndex": 8629
               },
               "declarationKind": "export",
               "jsDoc": {
-                "doc": "Appends colorized date range help text to any compatible MsgBuilder.\n\nKeeps `@epdoc/daterange` free of a logger dependency — the caller supplies\ntheir own builder instance.\n",
+                "doc": "Appends colorized date range help text to any compatible MsgBuilder.\n\nKeeps `@epdoc/daterange` free of a logger dependency — the caller supplies\ntheir own builder instance. The content is identical to `dateRangeHelpText()`.\n",
                 "tags": [
                   {
                     "kind": "example",
@@ -2625,14 +2625,148 @@
           ]
         },
         {
+          "name": "buildInstantHelp",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                "line": 253,
+                "col": 0,
+                "byteIndex": 8802
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Colorized counterpart of `instantHelpText()`."
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "msg",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "T",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "T",
+                        "resolution": {
+                          "kind": "typeParam",
+                          "declaringName": "buildInstantHelp",
+                          "declaringKind": "function"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "T",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeName": "T",
+                    "resolution": {
+                      "kind": "typeParam",
+                      "declaringName": "buildInstantHelp",
+                      "declaringKind": "function"
+                    }
+                  }
+                },
+                "hasBody": true,
+                "typeParams": [
+                  {
+                    "name": "T",
+                    "constraint": {
+                      "repr": "DateHelpBuilder",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "DateHelpBuilder",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "buildWindowHelp",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                "line": 258,
+                "col": 0,
+                "byteIndex": 8979
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Colorized counterpart of `windowHelpText()`."
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "msg",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "T",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "T",
+                        "resolution": {
+                          "kind": "typeParam",
+                          "declaringName": "buildWindowHelp",
+                          "declaringKind": "function"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "T",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeName": "T",
+                    "resolution": {
+                      "kind": "typeParam",
+                      "declaringName": "buildWindowHelp",
+                      "declaringKind": "function"
+                    }
+                  }
+                },
+                "hasBody": true,
+                "typeParams": [
+                  {
+                    "name": "T",
+                    "constraint": {
+                      "repr": "DateHelpBuilder",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "DateHelpBuilder",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "dateOptionDef",
           "declarations": [
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                "line": 142,
+                "line": 280,
                 "col": 13,
-                "byteIndex": 4618
+                "byteIndex": 9734
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -2648,9 +2782,9 @@
                         "name": "short",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 143,
+                          "line": 281,
                           "col": 2,
-                          "byteIndex": 4638
+                          "byteIndex": 9754
                         },
                         "tsType": {
                           "repr": "string",
@@ -2662,9 +2796,9 @@
                         "name": "name",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 144,
+                          "line": 282,
                           "col": 2,
-                          "byteIndex": 4652
+                          "byteIndex": 9768
                         },
                         "tsType": {
                           "repr": "string",
@@ -2676,9 +2810,9 @@
                         "name": "params",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 145,
+                          "line": 283,
                           "col": 2,
-                          "byteIndex": 4668
+                          "byteIndex": 9784
                         },
                         "tsType": {
                           "repr": "<date-range>",
@@ -2693,9 +2827,9 @@
                         "name": "description",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 146,
+                          "line": 284,
                           "col": 2,
-                          "byteIndex": 4703
+                          "byteIndex": 9819
                         },
                         "tsType": {
                           "repr": "string",
@@ -2707,18 +2841,18 @@
                         "name": "argParser",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 147,
+                          "line": 285,
                           "col": 2,
-                          "byteIndex": 4777
+                          "byteIndex": 9893
                         }
                       },
                       {
                         "name": "help",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 148,
+                          "line": 286,
                           "col": 2,
-                          "byteIndex": 4802
+                          "byteIndex": 9918
                         }
                       }
                     ]
@@ -2730,14 +2864,41 @@
           ]
         },
         {
+          "name": "dateRangeHelpText",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                "line": 218,
+                "col": 0,
+                "byteIndex": 7781
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Plain-text help for range options — suitable for an option's `help` field."
+              },
+              "kind": "function",
+              "def": {
+                "params": [],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
           "name": "dateRangeOptionDefs",
           "declarations": [
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                "line": 228,
+                "line": 376,
                 "col": 13,
-                "byteIndex": 7279
+                "byteIndex": 12769
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -2753,54 +2914,54 @@
                         "name": "date",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 229,
+                          "line": 377,
                           "col": 2,
-                          "byteIndex": 7305
+                          "byteIndex": 12795
                         }
                       },
                       {
                         "name": "range",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 230,
+                          "line": 378,
                           "col": 2,
-                          "byteIndex": 7328
+                          "byteIndex": 12818
                         }
                       },
                       {
                         "name": "ranges",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 231,
+                          "line": 379,
                           "col": 2,
-                          "byteIndex": 7353
+                          "byteIndex": 12843
                         }
                       },
                       {
                         "name": "since",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 232,
+                          "line": 380,
                           "col": 2,
-                          "byteIndex": 7380
+                          "byteIndex": 12870
                         }
                       },
                       {
                         "name": "until",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 233,
+                          "line": 381,
                           "col": 2,
-                          "byteIndex": 7405
+                          "byteIndex": 12895
                         }
                       },
                       {
                         "name": "window",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 234,
+                          "line": 382,
                           "col": 2,
-                          "byteIndex": 7430
+                          "byteIndex": 12920
                         }
                       }
                     ]
@@ -2812,14 +2973,41 @@
           ]
         },
         {
+          "name": "instantHelpText",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                "line": 223,
+                "col": 0,
+                "byteIndex": 7946
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Plain-text help for single-instant options (`--since`, `--until`)."
+              },
+              "kind": "function",
+              "def": {
+                "params": [],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
           "name": "isDateRanges",
           "declarations": [
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                "line": 240,
+                "line": 388,
                 "col": 0,
-                "byteIndex": 7538
+                "byteIndex": 13028
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -2872,9 +3060,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                "line": 155,
+                "line": 293,
                 "col": 13,
-                "byteIndex": 4981
+                "byteIndex": 10097
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -2890,9 +3078,9 @@
                         "name": "short",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 156,
+                          "line": 294,
                           "col": 2,
-                          "byteIndex": 5002
+                          "byteIndex": 10118
                         },
                         "tsType": {
                           "repr": "string",
@@ -2904,9 +3092,9 @@
                         "name": "name",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 157,
+                          "line": 295,
                           "col": 2,
-                          "byteIndex": 5016
+                          "byteIndex": 10132
                         },
                         "tsType": {
                           "repr": "string",
@@ -2918,9 +3106,9 @@
                         "name": "params",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 158,
+                          "line": 296,
                           "col": 2,
-                          "byteIndex": 5033
+                          "byteIndex": 10149
                         },
                         "tsType": {
                           "repr": "<date-range>",
@@ -2935,9 +3123,9 @@
                         "name": "description",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 159,
+                          "line": 297,
                           "col": 2,
-                          "byteIndex": 5068
+                          "byteIndex": 10184
                         },
                         "tsType": {
                           "repr": "string",
@@ -2949,9 +3137,9 @@
                         "name": "argParser",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 160,
+                          "line": 298,
                           "col": 2,
-                          "byteIndex": 5139
+                          "byteIndex": 10255
                         },
                         "tsType": {
                           "kind": "fnOrConstructor",
@@ -2988,9 +3176,9 @@
                         "name": "help",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 165,
+                          "line": 303,
                           "col": 2,
-                          "byteIndex": 5363
+                          "byteIndex": 10479
                         }
                       }
                     ]
@@ -3007,9 +3195,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                "line": 172,
+                "line": 310,
                 "col": 13,
-                "byteIndex": 5552
+                "byteIndex": 10668
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -3025,9 +3213,9 @@
                         "name": "short",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 173,
+                          "line": 311,
                           "col": 2,
-                          "byteIndex": 5574
+                          "byteIndex": 10690
                         },
                         "tsType": {
                           "repr": "string",
@@ -3039,9 +3227,9 @@
                         "name": "name",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 174,
+                          "line": 312,
                           "col": 2,
-                          "byteIndex": 5588
+                          "byteIndex": 10704
                         },
                         "tsType": {
                           "repr": "string",
@@ -3053,9 +3241,9 @@
                         "name": "params",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 175,
+                          "line": 313,
                           "col": 2,
-                          "byteIndex": 5606
+                          "byteIndex": 10722
                         },
                         "tsType": {
                           "repr": "<date-ranges>",
@@ -3070,9 +3258,9 @@
                         "name": "description",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 176,
+                          "line": 314,
                           "col": 2,
-                          "byteIndex": 5642
+                          "byteIndex": 10758
                         },
                         "tsType": {
                           "repr": "string",
@@ -3084,18 +3272,18 @@
                         "name": "argParser",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 177,
+                          "line": 315,
                           "col": 2,
-                          "byteIndex": 5723
+                          "byteIndex": 10839
                         }
                       },
                       {
                         "name": "help",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 178,
+                          "line": 316,
                           "col": 2,
-                          "byteIndex": 5748
+                          "byteIndex": 10864
                         }
                       }
                     ]
@@ -3112,9 +3300,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                "line": 185,
+                "line": 323,
                 "col": 13,
-                "byteIndex": 5938
+                "byteIndex": 11054
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -3130,9 +3318,9 @@
                         "name": "short",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 186,
+                          "line": 324,
                           "col": 2,
-                          "byteIndex": 5959
+                          "byteIndex": 11075
                         },
                         "tsType": {
                           "repr": "string",
@@ -3144,9 +3332,9 @@
                         "name": "name",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 187,
+                          "line": 325,
                           "col": 2,
-                          "byteIndex": 5973
+                          "byteIndex": 11089
                         },
                         "tsType": {
                           "repr": "string",
@@ -3158,9 +3346,9 @@
                         "name": "params",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 188,
+                          "line": 326,
                           "col": 2,
-                          "byteIndex": 5990
+                          "byteIndex": 11106
                         },
                         "tsType": {
                           "repr": "<date>",
@@ -3175,9 +3363,9 @@
                         "name": "description",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 189,
+                          "line": 327,
                           "col": 2,
-                          "byteIndex": 6019
+                          "byteIndex": 11135
                         },
                         "tsType": {
                           "repr": "string",
@@ -3189,9 +3377,18 @@
                         "name": "argParser",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 190,
+                          "line": 328,
                           "col": 2,
-                          "byteIndex": 6096
+                          "byteIndex": 11212
+                        }
+                      },
+                      {
+                        "name": "help",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 329,
+                          "col": 2,
+                          "byteIndex": 11243
                         }
                       }
                     ]
@@ -3208,9 +3405,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                "line": 197,
+                "line": 336,
                 "col": 13,
-                "byteIndex": 6316
+                "byteIndex": 11454
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -3226,9 +3423,9 @@
                         "name": "short",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 198,
+                          "line": 337,
                           "col": 2,
-                          "byteIndex": 6337
+                          "byteIndex": 11475
                         },
                         "tsType": {
                           "repr": "string",
@@ -3240,9 +3437,9 @@
                         "name": "name",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 199,
+                          "line": 338,
                           "col": 2,
-                          "byteIndex": 6351
+                          "byteIndex": 11489
                         },
                         "tsType": {
                           "repr": "string",
@@ -3254,9 +3451,9 @@
                         "name": "params",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 200,
+                          "line": 339,
                           "col": 2,
-                          "byteIndex": 6368
+                          "byteIndex": 11506
                         },
                         "tsType": {
                           "repr": "<date>",
@@ -3271,9 +3468,9 @@
                         "name": "description",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 201,
+                          "line": 340,
                           "col": 2,
-                          "byteIndex": 6397
+                          "byteIndex": 11535
                         },
                         "tsType": {
                           "repr": "string",
@@ -3285,9 +3482,9 @@
                         "name": "defVal",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 202,
+                          "line": 341,
                           "col": 2,
-                          "byteIndex": 6470
+                          "byteIndex": 11608
                         },
                         "tsType": {
                           "repr": "string",
@@ -3299,9 +3496,18 @@
                         "name": "argParser",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 203,
+                          "line": 342,
                           "col": 2,
-                          "byteIndex": 6487
+                          "byteIndex": 11625
+                        }
+                      },
+                      {
+                        "name": "help",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 343,
+                          "col": 2,
+                          "byteIndex": 11656
                         }
                       }
                     ]
@@ -3313,14 +3519,41 @@
           ]
         },
         {
+          "name": "windowHelpText",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                "line": 228,
+                "col": 0,
+                "byteIndex": 8104
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Plain-text help for lookback-duration options (`--window`)."
+              },
+              "kind": "function",
+              "def": {
+                "params": [],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
           "name": "windowOptionDef",
           "declarations": [
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                "line": 212,
+                "line": 352,
                 "col": 13,
-                "byteIndex": 6755
+                "byteIndex": 11915
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -3342,9 +3575,9 @@
                         "name": "short",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 213,
+                          "line": 353,
                           "col": 2,
-                          "byteIndex": 6777
+                          "byteIndex": 11937
                         },
                         "tsType": {
                           "repr": "string",
@@ -3356,9 +3589,9 @@
                         "name": "name",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 214,
+                          "line": 354,
                           "col": 2,
-                          "byteIndex": 6791
+                          "byteIndex": 11951
                         },
                         "tsType": {
                           "repr": "string",
@@ -3370,9 +3603,9 @@
                         "name": "params",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 215,
+                          "line": 355,
                           "col": 2,
-                          "byteIndex": 6809
+                          "byteIndex": 11969
                         },
                         "tsType": {
                           "repr": "<duration>",
@@ -3387,9 +3620,9 @@
                         "name": "description",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 216,
+                          "line": 356,
                           "col": 2,
-                          "byteIndex": 6842
+                          "byteIndex": 12002
                         },
                         "tsType": {
                           "repr": "string",
@@ -3401,9 +3634,9 @@
                         "name": "argParser",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
-                          "line": 217,
+                          "line": 357,
                           "col": 2,
-                          "byteIndex": 6908
+                          "byteIndex": 12068
                         },
                         "tsType": {
                           "kind": "fnOrConstructor",
@@ -3434,6 +3667,15 @@
                               }
                             ]
                           }
+                        }
+                      },
+                      {
+                        "name": "help",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/daterange/src/cli.ts",
+                          "line": 369,
+                          "col": 2,
+                          "byteIndex": 12581
                         }
                       }
                     ]

@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/daterange",
-  "version": "3.0.18",
+  "version": "3.0.20",
   "exports": {
     ".": "./src/mod.ts"
   },
@@ -16,7 +16,7 @@
     "fmt": "deno fmt src test *.json",
     "lint": "deno lint",
     "check": "deno check *.json src test examples",
-    "test": "deno test ./test/date-range.test.ts",
+    "test": "deno test ./test/",
     "docs": "deno doc --json src/mod.ts > library-docs.json",
     "ok": "deno fmt && deno lint && deno task check && deno task test && deno task docs"
   },

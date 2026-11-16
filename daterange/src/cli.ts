@@ -58,11 +58,183 @@ export interface DateHelpBuilder {
   code(...args: unknown[]): this;
 }
 
+/** Width of the syntax column in the help text. */
+const HELP_LABEL_WIDTH = 24;
+
+/** One row of the help reference: a literal syntax and what it means. */
+interface HelpRow {
+  /** The literal syntax, shown in the left column. */
+  label: string;
+  /** What it means. */
+  text: string;
+  /** Sample values, rendered after the text. */
+  examples?: string[];
+}
+
+/** A titled group of rows in the help reference. */
+interface HelpSection {
+  title: string;
+  rows: HelpRow[];
+  /** Caveat lines shown below the rows. */
+  notes?: string[];
+}
+
+/**
+ * Help for options that take a whole range: absolute dates, relative times,
+ * `start-end` ranges (including `6h-4h`), open ends, and comma-separated lists.
+ */
+const RANGE_SECTIONS: HelpSection[] = [
+  {
+    title: 'Absolute dates (local time zone; a bare date covers the whole period):',
+    rows: [
+      { label: 'YYYY', text: 'Whole year', examples: ['2024'] },
+      { label: 'YYYYMM', text: 'Whole month', examples: ['202401'] },
+      { label: 'YYYYMMDD', text: 'Whole day', examples: ['20240115'] },
+      { label: 'YYYYMMDDhh', text: 'Exact hour', examples: ['2024011510'] },
+      { label: 'YYYYMMDDhhmm', text: 'Exact minute', examples: ['202401151030'] },
+      { label: 'YYYYMMDDhhmmss', text: 'Exact second', examples: ['20240115103045'] },
+      { label: 'ISO 8601', text: 'Explicit offset', examples: ['2024-01-15T10:30:00Z'] },
+    ],
+  },
+  {
+    title: 'Relative to now (a bare duration is in the past, a leading "-" is the future):',
+    rows: [
+      { label: '30m, 6h, 1d', text: 'That long ago' },
+      { label: '2h30m, 1d12h', text: 'Combined units (y, d, h, m, s)' },
+      { label: '-1h', text: '1 hour from now' },
+      { label: 'now', text: 'This instant' },
+      { label: 'today', text: 'Start of today' },
+      { label: 'yesterday', text: 'Start of yesterday' },
+      { label: 'tomorrow', text: 'Start of tomorrow' },
+      { label: 'endofday', text: 'End of today' },
+    ],
+  },
+  {
+    title: 'Ranges — "start-end", both sides in any form above:',
+    rows: [
+      { label: '6h-4h', text: 'From 6 hours ago to 4 hours ago (a 2-hour window)' },
+      { label: '7d-now', text: 'The last 7 days' },
+      { label: '20240101-now', text: 'Mixed absolute and relative' },
+      { label: '20240101-20241231', text: 'Two absolute dates' },
+      { label: '20240101-', text: 'Open end: from that date, no upper bound' },
+      { label: '-20240131', text: 'Open start: up to that date, no lower bound' },
+    ],
+    notes: [
+      'Both sides of a relative range count back from now, so "6h-4h" ends 4 hours ago.',
+      'A leading "-" is an open start, not "future" — write "6h-4h", not "-6h--4h".',
+    ],
+  },
+  {
+    title: 'Multiple ranges (comma-separated):',
+    rows: [
+      { label: '2024,2025', text: 'Two whole periods' },
+      { label: '202501-202503,1d-now', text: 'Absolute and relative together' },
+    ],
+  },
+  {
+    title: 'Typical flag spellings:',
+    rows: [
+      { label: '-d 6h-4h', text: 'The 2-hour window from 6h ago to 4h ago' },
+      { label: '-d 7d-now', text: 'The last 7 days' },
+      { label: '-d 20240101-20241231', text: 'All of 2024' },
+      { label: '-d today', text: 'Today only' },
+      { label: '-d 2024,2025', text: 'All of 2024 and 2025' },
+    ],
+    notes: ['Use the flag the command actually offers — --date, --range or --ranges.'],
+  },
+];
+
+/** Help for options that take a single instant (`--since`, `--until`). */
+const INSTANT_SECTIONS: HelpSection[] = [
+  {
+    title: 'A single point in time (a bare date is the start of that period):',
+    rows: [
+      { label: 'YYYYMMDD', text: 'Start of that day', examples: ['20240115'] },
+      { label: 'YYYYMM, YYYY', text: 'Start of that month or year', examples: ['202401', '2024'] },
+      { label: 'YYYYMMDDhh[mm[ss]]', text: 'Exact time', examples: ['202401151030'] },
+      { label: 'ISO 8601', text: 'Explicit offset', examples: ['2024-01-15T10:30:00Z'] },
+      { label: '30m, 6h, 2h30m', text: 'That long ago' },
+      { label: '-1h', text: '1 hour from now (leading "-" is the future)' },
+      { label: 'now', text: 'This instant' },
+      { label: 'today, yesterday', text: 'Start of that day' },
+      { label: 'tomorrow', text: 'Start of tomorrow' },
+      { label: 'endofday', text: 'End of today' },
+    ],
+  },
+];
+
+/** Help for options that take a lookback duration (`--window`). */
+const WINDOW_SECTIONS: HelpSection[] = [
+  {
+    title: 'A duration, measured back from now:',
+    rows: [
+      { label: '30m', text: 'The last 30 minutes' },
+      { label: '24h', text: 'The last 24 hours' },
+      { label: '7d', text: 'The last 7 days' },
+      { label: '1d12h', text: 'Combined units (y, d, h, m, s)' },
+    ],
+    notes: ['A leading "-" is the future, not the past — write "7d", not "-7d".'],
+  },
+];
+
+/** Renders a section list as plain text, one row per line. */
+function renderPlainHelp(sections: HelpSection[]): string {
+  const lines: string[] = [];
+  for (const section of sections) {
+    lines.push('', section.title);
+    for (const row of section.rows) {
+      const text = row.examples?.length ? `${row.text} — e.g. ${row.examples.join(', ')}` : row.text;
+      lines.push(`  ${row.label.padEnd(HELP_LABEL_WIDTH)}${text}`);
+    }
+    for (const note of section.notes ?? []) {
+      lines.push(`  ${note}`);
+    }
+  }
+  return `${lines.join('\n')}\n`;
+}
+
+/** Renders a section list through a colorizing message builder. */
+function renderColorHelp<T extends DateHelpBuilder>(msg: T, sections: HelpSection[]): T {
+  for (const section of sections) {
+    msg.h2(`\n${section.title}\n`);
+    for (const row of section.rows) {
+      msg.label(`  ${row.label.padEnd(HELP_LABEL_WIDTH)}`).text(row.text);
+      if (row.examples?.length) {
+        msg.text(' — e.g. ');
+        row.examples.forEach((example, index) => {
+          if (index > 0) msg.text(', ');
+          msg.code(example);
+        });
+      }
+      msg.text('\n');
+    }
+    for (const note of section.notes ?? []) {
+      msg.text(`  ${note}\n`);
+    }
+  }
+  return msg;
+}
+
+/** Plain-text help for range options — suitable for an option's `help` field. */
+export function dateRangeHelpText(): string {
+  return renderPlainHelp(RANGE_SECTIONS);
+}
+
+/** Plain-text help for single-instant options (`--since`, `--until`). */
+export function instantHelpText(): string {
+  return renderPlainHelp(INSTANT_SECTIONS);
+}
+
+/** Plain-text help for lookback-duration options (`--window`). */
+export function windowHelpText(): string {
+  return renderPlainHelp(WINDOW_SECTIONS);
+}
+
 /**
  * Appends colorized date range help text to any compatible MsgBuilder.
  *
  * Keeps `@epdoc/daterange` free of a logger dependency — the caller supplies
- * their own builder instance.
+ * their own builder instance. The content is identical to `dateRangeHelpText()`.
  *
  * @example
  * ```ts
@@ -75,56 +247,22 @@ export interface DateHelpBuilder {
  * ```
  */
 export function buildDateHelp<T extends DateHelpBuilder>(msg: T): T {
-  msg.h2('\nAbsolute Dates (local timezone):\n');
-  msg.label('  YYYYMMDD          ').text('Single date — e.g. ').code('20240115').text('\n');
-  msg.label('  YYYYMM            ').text('Whole month — e.g. ').code('202401').text('\n');
-  msg.label('  YYYY              ').text('Whole year — e.g. ').code('2024').text('\n');
-  msg.label('  YYYYMMDD-YYYYMMDD ').text('Date range — e.g. ').code('20240101-20241231').text('\n');
-
-  msg.h2('\nRelative Times (from now):\n');
-  msg.label('  Ns, Nm, Nh, Nd    ').text('Seconds/minutes/hours/days — e.g. ').code('1d').text(', ').code('2h30m').text(
-    '\n',
-  );
-  msg.label('  now               ').text('Current time\n');
-  msg.label('  today             ').text('Start of today\n');
-  msg.label('  yesterday         ').text('Start of yesterday\n');
-  msg.label('  tomorrow          ').text('Start of tomorrow\n');
-
-  msg.h2('\nMultiple Ranges (comma-separated):\n');
-  msg.value('  2024,202501-202503\n');
-  msg.value('  1d-now,20240101-20240201\n');
-
-  msg.h2('\nExamples:\n');
-  msg.label('  -d ').value('20240101-20241231  ').text('All of 2024\n');
-  msg.label('  -d ').value('7d-now             ').text('Last 7 days\n');
-  msg.label('  -d ').value('today              ').text('Today only\n');
-  msg.label('  -d ').value('2024,2025          ').text('All of 2024 and 2025\n');
-
-  return msg;
+  return renderColorHelp(msg, RANGE_SECTIONS);
 }
 
-const DATE_HELP: string = `
-ABSOLUTE DATES (local timezone):
-  YYYYMMDD          Single date (e.g., 20240115)
-  YYYYMM            Whole month (e.g., 202401)
-  YYYY              Whole year (e.g., 2024)
-  YYYYMMDD-YYYYMMDD Date range (e.g., 20240101-20241231)
+/** Colorized counterpart of `instantHelpText()`. */
+export function buildInstantHelp<T extends DateHelpBuilder>(msg: T): T {
+  return renderColorHelp(msg, INSTANT_SECTIONS);
+}
 
-RELATIVE TIMES (from now):
-  Ns, Nm, Nh, Nd    Seconds, minutes, hours, days (e.g., 1d, 2h30m)
-  now               Current time
-  today / yesterday / tomorrow
+/** Colorized counterpart of `windowHelpText()`. */
+export function buildWindowHelp<T extends DateHelpBuilder>(msg: T): T {
+  return renderColorHelp(msg, WINDOW_SECTIONS);
+}
 
-MULTIPLE RANGES (comma-separated):
-  2024,202501-202503
-  1d-now,20240101-20240201
-
-EXAMPLES:
-  -d 20240101-20241231     All of 2024
-  -d 7d-now                Last 7 days
-  -d today                 Today only
-  -d 2024,2025             All of 2024 and 2025
-`;
+const DATE_HELP: string = dateRangeHelpText();
+const INSTANT_HELP: string = instantHelpText();
+const WINDOW_HELP: string = windowHelpText();
 
 /** Parses any date range expression into a `DateTime`. */
 function parseDateTimeArg(val: string): DateTime {
@@ -189,6 +327,7 @@ export const sinceOptionDef = {
   params: '<date>' as const,
   description: 'Start date/time (e.g., 1d, 20240101, 2024-01-01T00:00:00Z)',
   argParser: parseDateTimeArg,
+  help: INSTANT_HELP,
 };
 
 /**
@@ -202,6 +341,7 @@ export const untilOptionDef = {
   description: 'End date/time (e.g., now, -1h, 20240131). Default: now',
   defVal: 'now',
   argParser: parseDateTimeArg,
+  help: INSTANT_HELP,
 };
 
 /**
@@ -216,10 +356,18 @@ export const windowOptionDef = {
   params: '<duration>' as const,
   description: 'Lookback window ending now (e.g., 24h, 7d, 30m)',
   argParser: (val: string): DateRange => {
-    const since = parseRelativeTime(val);
+    const now = DateTime.now();
+    const since = parseRelativeTime(val, now);
     if (!since) throw new Error(`Invalid time window: ${val}`);
-    return DateRange.from(since, DateTime.now());
+    if (since.epochMilliseconds > now.epochMilliseconds) {
+      throw new Error(
+        `Invalid time window '${val}': it starts in the future. A leading '-' is the future — ` +
+          `write '${val.trim().replace(/^[-+]/, '')}' for a window that looks back.`,
+      );
+    }
+    return DateRange.from(since, now);
   },
+  help: WINDOW_HELP,
 };
 
 /**

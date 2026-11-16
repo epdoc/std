@@ -191,6 +191,25 @@ Deno.test('daterange', async (t) => {
       expectDateTime(d[0].before, { year: 2025, month: 1, day: 15, hour: 23, minute: 59, second: 59 });
     });
 
+    await t.step('Relative range of two past instants', () => {
+      // The window a log query asks for: from 6 hours ago to 4 hours ago.
+      const d: DateRangeDef[] = dateList('6h-4h');
+      assertEquals(d.length, 1);
+      const now = DateTime.now().epochMilliseconds;
+      const span = (d[0].before?.epochMilliseconds ?? 0) - (d[0].after?.epochMilliseconds ?? 0);
+      assertEquals(Math.round(span / 60000), 120);
+      const endsAgo = now - (d[0].before?.epochMilliseconds ?? 0);
+      assert(endsAgo >= 4 * 3600000 - 5000 && endsAgo <= 4 * 3600000 + 5000);
+    });
+
+    await t.step('Rejects a leading signed duration instead of guessing', () => {
+      assertThrows(() => dateList('-6h--4h'), Error, "write '6h-4h'");
+      assertThrows(() => dateList('-6h-4h'), Error, "write '6h-4h'");
+      // An open-start absolute date is still a supported form.
+      const d: DateRangeDef[] = dateList('-20250115');
+      assertEquals(d[0].after, undefined);
+    });
+
     await t.step('Comma-separated list of days', () => {
       const d: DateRangeDef[] = dateList('20250101,20250102');
       assertEquals(d.length, 2);

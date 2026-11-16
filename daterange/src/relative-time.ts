@@ -24,6 +24,10 @@ const UNIT_MULTIPLIERS: Record<string, number> = {
 /**
  * Parses a relative time string and returns a DateTime.
  *
+ * A bare duration counts back from the reference time — "6h" is six hours ago.
+ * A leading "-" moves forward instead — "-6h" is six hours from now. This is why
+ * a range such as "6h-4h" needs no sign: both bounds are already in the past.
+ *
  * Supported formats:
  * - Single/combined units: "1d", "2h30m", "1y6d"
  * - Negative (future): "-1d", "-2h30m"

@@ -1,13 +1,18 @@
-import { assert, assertEquals, assertThrows } from '@std/assert';
+import { assert, assertEquals, assertStringIncludes, assertThrows } from '@std/assert';
 import { DateTime } from '@epdoc/datetime';
 import {
+  buildDateHelp,
+  type DateHelpBuilder,
   dateOptionDef,
+  dateRangeHelpText,
   dateRangeOptionDefs,
+  instantHelpText,
   isDateRanges,
   rangeOptionDef,
   rangesOptionDef,
   sinceOptionDef,
   untilOptionDef,
+  windowHelpText,
   windowOptionDef,
 } from '../src/cli.ts';
 import { DateRange, DateRanges } from '../src/mod.ts';
@@ -20,6 +25,73 @@ Deno.test('dateRangeOptionDefs', async (t) => {
     assert(dateRangeOptionDefs.since);
     assert(dateRangeOptionDefs.until);
     assert(dateRangeOptionDefs.window);
+  });
+});
+
+/** Collapses builder calls into one string, to assert on colorized help output. */
+class HelpRecorder implements DateHelpBuilder {
+  out = '';
+  h2(...args: unknown[]): this {
+    this.out += String(args.join(' '));
+    return this;
+  }
+  label(...args: unknown[]): this {
+    this.out += String(args.join(' '));
+    return this;
+  }
+  value(...args: unknown[]): this {
+    this.out += String(args.join(' '));
+    return this;
+  }
+  text(...args: unknown[]): this {
+    this.out += String(args.join(' '));
+    return this;
+  }
+  code(...args: unknown[]): this {
+    this.out += String(args.join(' '));
+    return this;
+  }
+}
+
+Deno.test('help text', async (t) => {
+  await t.step('range help documents every accepted form', () => {
+    const help = dateRangeHelpText();
+    for (
+      const form of [
+        'YYYY',
+        'YYYYMMDDhhmmss',
+        'ISO 8601',
+        '-1h',
+        'endofday',
+        '6h-4h',
+        '7d-now',
+        '20240101-',
+        '-20240131',
+        'comma-separated',
+      ]
+    ) {
+      assertStringIncludes(help, form);
+    }
+  });
+
+  await t.step('range help warns against -6h--4h', () => {
+    assertStringIncludes(dateRangeHelpText(), 'not "-6h--4h"');
+  });
+
+  await t.step('every option def carries help', () => {
+    assertEquals(dateOptionDef.help, dateRangeHelpText());
+    assertEquals(rangeOptionDef.help, dateRangeHelpText());
+    assertEquals(rangesOptionDef.help, dateRangeHelpText());
+    assertEquals(sinceOptionDef.help, instantHelpText());
+    assertEquals(untilOptionDef.help, instantHelpText());
+    assertEquals(windowOptionDef.help, windowHelpText());
+  });
+
+  await t.step('buildDateHelp renders the same content colorized', () => {
+    const out = buildDateHelp(new HelpRecorder()).out;
+    assertStringIncludes(out, '6h-4h');
+    assertStringIncludes(out, 'YYYYMMDDhhmmss');
+    assertStringIncludes(out, 'not "-6h--4h"');
   });
 });
 
@@ -47,6 +119,12 @@ Deno.test('rangeOptionDef', async (t) => {
   });
   await t.step('throws for multiple ranges', () => {
     assertThrows(() => parse('2024,2025'));
+  });
+  await t.step('parses a two-hour past window (6h-4h)', () => {
+    const range = parse('6h-4h') as DateRange;
+    assertEquals(Math.round(range.duration() / 60000), 120);
+    const endsAgo = DateTime.now().epochMilliseconds - range.before.epochMilliseconds;
+    assert(endsAgo >= 4 * 3600000 - 5000 && endsAgo <= 4 * 3600000 + 5000);
   });
 });
 
@@ -98,6 +176,9 @@ Deno.test('windowOptionDef', async (t) => {
   });
   await t.step('throws for invalid duration', () => {
     assertThrows(() => parse('not-a-duration'));
+  });
+  await t.step('refuses a window that starts in the future', () => {
+    assertThrows(() => parse('-7d'), Error, "write '7d'");
   });
 });
 

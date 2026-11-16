@@ -45,17 +45,22 @@ const dr = dateRanges('7d-now,20250101-20250131');
 
 **Supported formats** (all in local timezone):
 
-| Format     | Example                       | Resolves to                    |
-| ---------- | ----------------------------- | ------------------------------ |
-| Year       | `2025`                        | Jan 1 00:00 → Dec 31 23:59:59  |
-| Month      | `202502`                      | Feb 1 00:00 → Feb 28 23:59:59  |
-| Day        | `20250215`                    | Feb 15 00:00 → Feb 15 23:59:59 |
-| Precise    | `202502151030`                | Feb 15 10:30 (exact)           |
-| ISO        | `2025-01-01T00:00:00Z`        | Parsed with offset             |
-| Relative   | `1d`, `2h30m`, `now`, `today` | From current time              |
-| Range      | `20250101-20250131`           | Start → end                    |
-| Open-ended | `20250101-` or `-20250131`    | One boundary open              |
-| Multiple   | `2024,202501-202503`          | Comma-separated                |
+| Format         | Example                       | Resolves to                    |
+| -------------- | ----------------------------- | ------------------------------ |
+| Year           | `2025`                        | Jan 1 00:00 → Dec 31 23:59:59  |
+| Month          | `202502`                      | Feb 1 00:00 → Feb 28 23:59:59  |
+| Day            | `20250215`                    | Feb 15 00:00 → Feb 15 23:59:59 |
+| Precise        | `202502151030`                | Feb 15 10:30 (exact)           |
+| ISO            | `2025-01-01T00:00:00Z`        | Parsed with offset             |
+| Relative       | `1d`, `2h30m`, `now`, `today` | From current time              |
+| Range          | `20250101-20250131`           | Start → end                    |
+| Relative range | `6h-4h`, `7d-now`             | 6h ago → 4h ago / last 7 days  |
+| Open-ended     | `20250101-` or `-20250131`    | One boundary open              |
+| Multiple       | `2024,202501-202503`          | Comma-separated                |
+
+A bare duration is in the **past**: `6h` is six hours ago. A leading `-` moves **forward**: `-6h` is six hours from now.
+Both sides of a relative range count back from now, so `6h-4h` is the two-hour window that ended four hours ago — and
+`-6h--4h` is rejected, because the leading `-` would be read as an open start.
 
 ### DateRange
 
@@ -125,7 +130,30 @@ import { dateOptionDef, sinceOptionDef, untilOptionDef } from '@epdoc/daterange'
 | `untilOptionDef`  | `-u, --until`  | `DateTime`   | End boundary only (default: `now`)      |
 | `windowOptionDef` | `-w, --window` | `DateRange`  | Duration shorthand (`7d` → last 7 days) |
 
-For colorized help text in a `helpText()` method:
+**Help on demand.** Every option def carries a `help` field, so any CLI built with `@epdoc/cliapp` answers `-d help`
+(`-d h`, `-d ?` also work) with the full syntax reference — and `--help` gains the hint `(enter --date help for help)`:
+
+```
+$ mycli --date help
+Help for -d, --date <date-range>
+Absolute dates (local time zone; a bare date covers the whole period):
+  YYYY                    Whole year — e.g. 2024
+  ...
+Ranges — "start-end", both sides in any form above:
+  6h-4h                   From 6 hours ago to 4 hours ago (a 2-hour window)
+```
+
+The text is available directly if you want to render it yourself:
+
+```typescript
+import { dateRangeHelpText, instantHelpText, windowHelpText } from '@epdoc/daterange';
+
+console.log(dateRangeHelpText()); // ranges: -d, --range, --ranges
+console.log(instantHelpText()); // single instants: --since, --until
+console.log(windowHelpText()); // lookback durations: --window
+```
+
+For colorized help inside a `helpText()` method, use the builder variants:
 
 ```typescript
 import { buildDateHelp } from '@epdoc/daterange';
@@ -133,7 +161,7 @@ import { buildDateHelp } from '@epdoc/daterange';
 helpText(): string {
   const msg = new CustomMsgBuilder();
   msg.h1('\nDate Range Formats\n');
-  buildDateHelp(msg);   // appends colorized sections using h2/label/value/code/text
+  buildDateHelp(msg); // colorized; buildInstantHelp(msg) / buildWindowHelp(msg) also exist
   return msg.format();
 }
 ```
@@ -148,7 +176,12 @@ helpText(): string {
 | `dateList(spec, options?)`             | `DateRangeDef[]`        | Parse date range string to definitions          |
 | `dateRanges(spec, options?)`           | `DateRanges`            | Parse date range string to `DateRanges`         |
 | `dateStringToInstant(s, h?)`           | `DateTime`              | Convert compact date string to `DateTime`       |
-| `buildDateHelp(msg)`                   | `T`                     | Append colorized help to any compatible builder |
+| `dateRangeHelpText()`                  | `string`                | Plain-text help for range options               |
+| `instantHelpText()`                    | `string`                | Plain-text help for `--since` / `--until`       |
+| `windowHelpText()`                     | `string`                | Plain-text help for `--window`                  |
+| `buildDateHelp(msg)`                   | `T`                     | Colorized range help for any compatible builder |
+| `buildInstantHelp(msg)`                | `T`                     | Colorized instant help                          |
+| `buildWindowHelp(msg)`                 | `T`                     | Colorized window help                           |
 
 ### Types
 
