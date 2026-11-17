@@ -31,7 +31,7 @@
     {
       "name": "Column / ColumnRegistry",
       "role": "type",
-      "description": "Type definitions for column configuration",
+      "description": "Type definitions for column configuration. ColumnRegistry is a mapped type, so each entry's formatter and color receive that property's exact value type",
       "whenToUse": "When typing your column definitions"
     },
     {
@@ -54,6 +54,16 @@
     }
   ],
   "patterns": [
+    {
+      "name": "Dynamic Columns",
+      "when": "The column set is computed at runtime (event payloads, config-driven reports) and is not a compile-time type",
+      "code": "import { TableRenderer } from '@epdoc/table';\nimport type { Column } from '@epdoc/table';\n\n// keyof Record<string, string> is string, so any key is allowed\nconst columns: Column<Record<string, string>>[] = [\n  { key: 'time', header: 'Time', maxWidth: 9 },\n  ...config.columns.map((c) => ({ key: c.key, header: c.label, maxWidth: c.width })),\n];\n\nnew TableRenderer<Record<string, string>>({ columns, data: rows, fit: true });"
+    },
+    {
+      "name": "Fit to Terminal",
+      "when": "Keeping a wide table readable on a narrow terminal, or rendering at a known width (MCP response, file, test)",
+      "code": "const table = new TableRenderer({\n  columns,\n  data,\n  fit: true,\n  availableWidth: 100, // omit to use Deno.consoleSize(), falling back to 80\n  minWidth: 8,         // floor per column\n});"
+    },
     {
       "name": "Declarative Columns",
       "when": "Defining reusable column configurations",

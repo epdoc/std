@@ -136,11 +136,11 @@ const columns: ColumnRegistry<Server> = {
   // Column with max width (truncates with ellipsis)
   name: { header: 'Name', maxWidth: 20 },
 
-  // Column with custom formatter
+  // Column with custom formatter — `v` is typed as `number` from `Server.cpu`
   cpu: {
     header: 'CPU%',
     align: 'right',
-    formatter: (v) => `${(v as number).toFixed(1)}%`,
+    formatter: (v) => `${v.toFixed(1)}%`,
   },
 
   // Column with conditional coloring
@@ -153,6 +153,65 @@ const columns: ColumnRegistry<Server> = {
   },
 };
 ```
+
+`ColumnRegistry<T>` is a mapped type, so each entry's `formatter` and `color` receive that property's exact value type —
+no `as number` casts. To get the same precision on a standalone column, narrow the second type parameter:
+`Column<Server, 'cpu'>`.
+
+#### Dynamically-Generated Columns
+
+Columns do not have to be known at compile time. When the column set is computed at runtime — an event monitor whose
+payload varies per event, a report whose columns come from a config file — declare a string-keyed column type and build
+the `Column[]` array yourself:
+
+```ts
+import { TableRenderer } from '@epdoc/table';
+import type { Column } from '@epdoc/table';
+
+// Rows are plain string maps: the values are already display-ready.
+const rows: Record<string, string>[] = events.map((event) => ({
+  time: formatTime(event.ts),
+  source: event.source,
+  event: event.name,
+  ...event.cells, // columns contributed by this particular event
+}));
+
+// `keyof Record<string, string>` is `string`, so any key is allowed.
+const columns: Column<Record<string, string>>[] = [
+  { key: 'time', header: 'Time', maxWidth: 9 },
+  { key: 'source', header: 'Src', maxWidth: 13 },
+  { key: 'event', header: 'What', maxWidth: 44 },
+  // runtime columns, merged in after the fixed ones
+  ...(config.columns ?? []).map((c) => ({ key: c.key, header: c.label, maxWidth: c.width })),
+];
+
+const renderer = new TableRenderer<Record<string, string>>({ columns, data: rows, fit: true });
+for (const line of renderer.render()) {
+  console.log(line);
+}
+```
+
+Three notes:
+
+- Use `maxWidth` rather than `width` for anything that should shrink. `width` is a **fixed** width and is excluded from
+  fitting.
+- Rows may be ragged: a column key missing from a given row renders as a blank cell, and widths are measured across all
+  rows.
+- The `table()` simple API discovers columns automatically, so it needs no declaration — but its auto-discovery is a
+  convenience for straightforward data, not a substitute for the explicit `Column[]` above.
+
+### Fitting to the Terminal
+
+Set `fit: true` to shrink columns from right to left so the table fits the terminal. Width comes from
+`Deno.consoleSize()`, which is unavailable under pipes, MCP stdio and tests (it falls back to 80). Pass `availableWidth`
+when you know the target width:
+
+```ts
+new TableRenderer({ columns, data, fit: true, availableWidth: 200 });
+```
+
+Columns never shrink below their `minWidth` (or the global `minWidth`, default 10), so a table with fixed-width or
+numerous columns can still exceed the requested width. Truncated cells end with `…`.
 
 ### Styling
 
@@ -368,6 +427,9 @@ table(logEntries, ['__key', 'timestamp'])
 | `.noBorders()`       | Disable borders                                                        |
 | `.padding(n)`        | Set column spacing (no effect with borders)                            |
 | `.noColor()`         | Strip all ANSI output                                                  |
+| `.fit(enabled?)`     | Shrink columns to fit the terminal width                               |
+| `.minWidth(n)`       | Floor for column width when fitting                                    |
+| `.availableWidth(n)` | Override terminal-size detection when fitting                          |
 | `.data(rows)`        | Override data rows                                                     |
 
 ## Advanced Examples

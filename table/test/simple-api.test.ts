@@ -7,6 +7,7 @@
 
 import { assertEquals, assertStringIncludes } from '@std/assert';
 import { table } from '../src/simple.ts';
+import { stripAnsi } from '../src/terminal.ts';
 
 interface User {
   id: number;
@@ -512,6 +513,54 @@ Deno.test('Simple API', async (t) => {
         .toString();
       assertStringIncludes(result, 'a-formatted');
       assertStringIncludes(result, 'b-formatted');
+    });
+  });
+
+  await t.step('Column discovery for heterogeneous rows', async (t) => {
+    // Event-payload shaped data: each row carries the fields its event had.
+    const events: Record<string, string>[] = [
+      { time: '00:01', event: 'motion' },
+      { time: '00:02', event: 'door', zone: 'porch', conf: '0.93' },
+      { time: '00:03', event: 'gps', lat: '51.5' },
+    ];
+
+    await t.step('should union keys across every row, in first-seen order', () => {
+      const header = table(events).noBorders().render()[0];
+      assertEquals(stripAnsi(header).trim().split(/\s{2,}/), ['Time', 'Event', 'Zone', 'Conf', 'Lat']);
+    });
+
+    await t.step('should not lose a value that only appears in a later row', () => {
+      const rendered = stripAnsi(table(events).noBorders().render().join('\n'));
+      assertStringIncludes(rendered, 'porch');
+      assertStringIncludes(rendered, '0.93');
+      assertStringIncludes(rendered, '51.5');
+    });
+
+    await t.step('should leave homogeneous data unchanged', () => {
+      // The union of a homogeneous array is exactly the first row's keys.
+      const lines = table(users).noBorders().render();
+      assertEquals(stripAnsi(lines[0]).trim().split(/\s{2,}/), [
+        'Id',
+        'User Name',
+        'Email Address',
+        'Is Active',
+      ]);
+      assertStringIncludes(stripAnsi(lines[2]), 'Alice Johnson');
+    });
+
+    await t.step('should omit keys that are undefined in every row', () => {
+      const sparse = [
+        { a: '1', maybe: undefined },
+        { a: '2', maybe: undefined },
+      ];
+      const header = stripAnsi(table(sparse).noBorders().render()[0]);
+      assertEquals(header.includes('Maybe'), false);
+      assertStringIncludes(header, 'A');
+    });
+
+    await t.step('should still use explicit columns when given', () => {
+      const header = table(events, ['time', 'event']).noBorders().render()[0];
+      assertEquals(stripAnsi(header).trim().split(/\s{2,}/), ['Time', 'Event']);
     });
   });
 });

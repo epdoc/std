@@ -244,6 +244,7 @@ class TableBuilderImpl<T> implements TableBuilder<T> {
   #noColor: boolean;
   #fitEnabled: boolean;
   #fitMinWidthValue: number;
+  #availableWidth: number | undefined;
 
   constructor(data: T[] | Map<string, unknown> | Record<string, unknown>, options: SimpleOptions<T> = {}) {
     if (data instanceof Map) {
@@ -253,10 +254,7 @@ class TableBuilderImpl<T> implements TableBuilder<T> {
     } else {
       this.#data = data;
     }
-    this.#columns = options.columns ??
-      (this.#data.length > 0 && this.#data[0] !== null && typeof this.#data[0] === 'object'
-        ? Object.keys(this.#data[0] as object) as (keyof T)[]
-        : []);
+    this.#columns = options.columns ?? this.#discoverColumns();
     this.#columnConfigs = new Map();
     this.#palette = { ...DEFAULT_COLORS, ...(options.colors ?? {}) };
     this.#formatHeaders = options.formatHeaders ?? true;
@@ -268,6 +266,7 @@ class TableBuilderImpl<T> implements TableBuilder<T> {
     this.#noColor = false;
     this.#fitEnabled = options.fit ?? false;
     this.#fitMinWidthValue = options.minWidth ?? 10;
+    this.#availableWidth = options.availableWidth;
   }
 
   /**
@@ -279,6 +278,36 @@ class TableBuilderImpl<T> implements TableBuilder<T> {
       return { ...value as Record<string, unknown>, __key: key };
     }
     return { value, __key: key };
+  }
+
+  /**
+   * Column keys, in first-seen order, unioned across **every** row.
+   *
+   * Reading only the first row assumes a homogeneous array. With sparse or
+   * per-row-variable objects — event payloads whose fields depend on the event
+   * type — that silently drops every column that first appears in a later row.
+   * The union is identical to the first row for homogeneous data, so the simple
+   * case is unaffected.
+   *
+   * Keys whose value is `undefined` in every row are omitted, so an explicit
+   * `{ field: undefined }` does not introduce a permanently blank column.
+   */
+  #discoverColumns(): (keyof T)[] {
+    const keys: (keyof T)[] = [];
+    const seen = new Set<string>();
+    for (const row of this.#data) {
+      if (row === null || typeof row !== 'object') {
+        continue;
+      }
+      for (const [key, value] of Object.entries(row as Record<string, unknown>)) {
+        if (value === undefined || seen.has(key)) {
+          continue;
+        }
+        seen.add(key);
+        keys.push(key as keyof T);
+      }
+    }
+    return keys;
   }
 
   columns(keys: (keyof T)[]): this {
@@ -358,6 +387,11 @@ class TableBuilderImpl<T> implements TableBuilder<T> {
     return this;
   }
 
+  availableWidth(val: number): this {
+    this.#availableWidth = val;
+    return this;
+  }
+
   data(rows: T[]): this {
     this.#data = rows;
     return this;
@@ -422,6 +456,7 @@ class TableBuilderImpl<T> implements TableBuilder<T> {
       noColor?: boolean;
       fit?: boolean;
       minWidth?: number;
+      availableWidth?: number;
     } = {
       columns,
       data: this.#data,
@@ -470,6 +505,9 @@ class TableBuilderImpl<T> implements TableBuilder<T> {
     if (this.#fitEnabled) {
       options.fit = true;
       options.minWidth = this.#fitMinWidthValue;
+      if (this.#availableWidth !== undefined) {
+        options.availableWidth = this.#availableWidth;
+      }
     }
 
     return new TableRenderer(options);

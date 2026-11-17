@@ -6,10 +6,17 @@ import type * as Color from '@epdoc/colors';
  * Column definition for table output.
  *
  * @template T - The row data type
+ * @template K - The specific property key this column renders. Defaults to
+ * `keyof T`. Narrowing `K` (e.g. `Column<User, 'cpu'>`) gives the formatter and
+ * color callbacks the exact value type instead of the union of all row values.
+ *
+ * `formatter` and `color` use method syntax deliberately: method parameters are
+ * checked bivariantly, so a precisely-typed column (`Column<User, 'cpu'>`) stays
+ * assignable to a `Column<User>[]`, while the value types are still enforced.
  */
-export type Column<T> = {
+export type Column<T, K extends keyof T = keyof T> = {
   /** Property key from the data object. */
-  key: keyof T;
+  key: K;
   /** Column header text. */
   header: string;
   /** Fixed width. If omitted, width is auto-calculated from header and data. */
@@ -30,8 +37,12 @@ export type Column<T> = {
    * Custom formatter that converts a cell value to a display string.
    * Receives the cell value and the full row object for context-aware
    * formatting.
+   *
+   * The value is typed as `T[K]`; use a narrowed `Column<T, 'key'>` (or a
+   * {@link ColumnRegistry}, which narrows `K` for you) to get the precise
+   * type.
    */
-  formatter?: (value: unknown, row: T) => string;
+  formatter?(value: T[K], row: T): string;
   /**
    * Returns a {@link ColorType} to apply to the formatted cell text, or
    * `undefined` to leave the cell unstyled. Evaluated per-cell so that
@@ -57,8 +68,12 @@ export type Column<T> = {
    *   ? (s) => rgb24(s, green)
    *   : (s) => rgb24(s, red)
    * ```
+   *
+   * Note: this is declared with method syntax purely to make the parameters
+   * bivariant (see the `Column` docs). Arrow functions in an object literal
+   * satisfy it normally.
    */
-  color?: (value: unknown, row: T) => Color.Spec | undefined;
+  color?(value: T[K], row: T): Color.Spec | undefined;
 };
 
 // ── Column registry & builder ──────────────────────────────────────────────
@@ -67,6 +82,9 @@ export type Column<T> = {
  * A declarative registry mapping data keys to column display properties.
  * Used with {@link buildColumns} to replace verbose switch-case column
  * construction.
+ *
+ * The mapped type narrows `K` per key, so each entry's `formatter` and `color`
+ * receive that property's exact value type.
  *
  * @template T - The row data type
  *
@@ -77,7 +95,8 @@ export type Column<T> = {
  * const COLS: ColumnRegistry<MyRow> = {
  *   id:   { header: 'ID',   align: 'left' },
  *   name: { header: 'Name', align: 'left', maxWidth: 20 },
- *   cpu:  { header: 'CPU%', align: 'right', formatter: (v) => formatPercent(v as number) },
+ *   // `v` is typed as number — no cast needed
+ *   cpu:  { header: 'CPU%', align: 'right', formatter: (v) => formatPercent(v) },
  *   status: {
  *     header: 'Status',
  *     color: (v) => v === 'ok' ? (s) => rgb24(s, 0x51d67c) : undefined,
@@ -86,7 +105,7 @@ export type Column<T> = {
  * const columns = buildColumns(['id', 'name', 'cpu', 'status'], COLS);
  * ```
  */
-export type ColumnRegistry<T> = Partial<Record<keyof T, Omit<Column<T>, 'key'>>>;
+export type ColumnRegistry<T> = { [K in keyof T]?: Omit<Column<T, K>, 'key'> };
 
 /**
  * Options for table rendering.
@@ -137,17 +156,34 @@ export interface Options<T> {
   rowStyles?: [Color.Spec | null | undefined, Color.Spec | null | undefined];
   /**
    * When `true`, automatically reduces column widths so the table fits
-   * within the available terminal width. Uses `Deno.consoleSize()` to
-   * detect width (falls back to 80).
+   * within the available terminal width.
    *
    * Columns are reduced from right to left, each down to its
    * {@link Column.minWidth} or `Options.minWidth` (whichever is lower
    * than the column's natural width). Content truncated by fitting is
    * appended with `…`.
    *
+   * The width comes from {@link Options.availableWidth} when set, otherwise
+   * from `Deno.consoleSize()`, falling back to 80. Fitting is applied lazily
+   * at render time, so a terminal resize between construction and rendering is
+   * reflected (see {@link Options.availableWidth} to make it deterministic).
+   *
    * @default false
    */
   fit?: boolean;
+  /**
+   * Available display width used when {@link Options.fit} is enabled.
+   *
+   * Overrides terminal-size detection. Set this when rendering with a known
+   * width — an MCP tool response, a pager, a file, or a test — where
+   * `Deno.consoleSize()` is unavailable and would otherwise fall back to 80.
+   *
+   * @example
+   * ```ts
+   * new TableRenderer({ columns, data, fit: true, availableWidth: 200 });
+   * ```
+   */
+  availableWidth?: number;
   /**
    * Global minimum visual width for columns during terminal fitting.
    * Used as the floor when a column has no explicit {@link Column.minWidth}.

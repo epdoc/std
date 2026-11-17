@@ -64,6 +64,7 @@ export class TableRenderer<T> {
   #bottomBorder: boolean = false;
   #borders: Table.BorderConfig | undefined;
   #fit: boolean = false;
+  #availableWidth: number | undefined;
   #globalMinWidth: number = 10;
   static #identity: Color.StyleFn = (s) => s;
 
@@ -106,11 +107,10 @@ export class TableRenderer<T> {
     this.#bottomBorder = options.bottomBorder ?? false;
     this.#borders = options.borders;
     this.#fit = options.fit ?? false;
+    this.#availableWidth = options.availableWidth;
     this.#globalMinWidth = options.minWidth ?? 10;
-    // Defer width calculation for fluent API usage
-    if (this.#columns.length > 0 && this.#data.length > 0) {
-      this.#widths = Util.calculateColumnWidths<T>(this.#data, this.#columns);
-    }
+    // Widths are deliberately left null: #ensureWidths() computes them lazily so
+    // that terminal fitting is applied and reflects the width at render time.
   }
 
   /**
@@ -120,7 +120,7 @@ export class TableRenderer<T> {
    * @param opts - Column display properties (header, align, formatter, etc.)
    * @returns This instance for method chaining
    */
-  column(key: keyof T, opts: Omit<Table.Column<T>, 'key'>): this {
+  column<K extends keyof T>(key: K, opts: Omit<Table.Column<T, K>, 'key'>): this {
     this.#columns.push({ key, ...opts } as Table.Column<T>);
     this.#widths = null; // Invalidate cached widths
     return this;
@@ -146,6 +146,7 @@ export class TableRenderer<T> {
    */
   padding(val: Integer): this {
     this.#padding = val;
+    this.#widths = null; // Affects table overhead when fitting
     return this;
   }
 
@@ -267,6 +268,7 @@ export class TableRenderer<T> {
       style,
       color,
     };
+    this.#widths = null; // Borders change the overhead when fitting
     return this;
   }
 
@@ -280,6 +282,7 @@ export class TableRenderer<T> {
    */
   fit(enabled = true): this {
     this.#fit = enabled;
+    this.#widths = null; // Fitting is applied when widths are (re)computed
     return this;
   }
 
@@ -293,6 +296,20 @@ export class TableRenderer<T> {
    */
   minWidth(val: number): this {
     this.#globalMinWidth = val;
+    this.#widths = null; // Affects the fitting floor
+    return this;
+  }
+
+  /**
+   * Set the available display width used when {@link fit} is enabled
+   * (fluent API). Overrides terminal-size detection.
+   *
+   * @param val - Available width in columns
+   * @returns This instance for method chaining
+   */
+  availableWidth(val: number): this {
+    this.#availableWidth = val;
+    this.#widths = null; // Fitting depends on the available width
     return this;
   }
 
@@ -435,7 +452,7 @@ export class TableRenderer<T> {
     if (this.#widths === null) {
       this.#widths = Util.calculateColumnWidths<T>(this.#data, this.#columns);
       if (this.#fit) {
-        const availableWidth = Util.getAvailableWidth();
+        const availableWidth = Util.getAvailableWidth(this.#availableWidth);
         this.#widths = Util.fitWidths<T>(
           this.#widths,
           this.#columns,

@@ -22,6 +22,10 @@
           },
           {
             "kind": "example",
+            "doc": "Dynamic columns (built at runtime)\n```typescript\nimport { TableRenderer } from '@epdoc/table';\nimport type { Column } from '@epdoc/table';\n\n// `keyof Record<string, string>` is `string`, so any key is allowed.\nconst columns: Column<Record<string, string>>[] = [\n  { key: 'time', header: 'Time', maxWidth: 9 },\n  ...config.columns.map((c) => ({ key: c.key, header: c.label, maxWidth: c.width })),\n];\n\nconst renderer = new TableRenderer<Record<string, string>>({ columns, data: rows, fit: true });\nrenderer.render().forEach((line) => console.log(line));\n```\n"
+          },
+          {
+            "kind": "example",
             "doc": "Basic Usage with Column Registry (Original API)\n```typescript\nimport { TableRenderer, buildColumns } from '@epdoc/table';\nimport type { ColumnRegistry } from '@epdoc/table';\n\ninterface User {\n  id: number;\n  name: string;\n  status: string;\n}\n\nconst users: User[] = [\n  { id: 1, name: 'Alice', status: 'active' },\n  { id: 2, name: 'Bob', status: 'inactive' }\n];\n\nconst columns: ColumnRegistry<User> = {\n  id: { header: 'ID', align: 'right' },\n  name: { header: 'Name', align: 'left' },\n  status: { header: 'Status', align: 'left' }\n};\n\nconst table = new TableRenderer({\n  columns: buildColumns(['id', 'name', 'status'], columns),\n  data: users\n});\n\ntable.print();\n```\n"
           },
           {
@@ -49,9 +53,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple.ts",
-                "line": 583,
+                "line": 621,
                 "col": 0,
-                "byteIndex": 15746
+                "byteIndex": 16996
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -130,9 +134,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple.ts",
-                "line": 523,
+                "line": 561,
                 "col": 0,
-                "byteIndex": 13650
+                "byteIndex": 14900
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -294,9 +298,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple.ts",
-                "line": 525,
+                "line": 563,
                 "col": 0,
-                "byteIndex": 13784
+                "byteIndex": 15034
               },
               "declarationKind": "export",
               "kind": "function",
@@ -368,9 +372,9 @@
                                               "name": "__key",
                                               "location": {
                                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple.ts",
-                                                "line": 527,
+                                                "line": 565,
                                                 "col": 31,
-                                                "byteIndex": 13910
+                                                "byteIndex": 15160
                                               },
                                               "tsType": {
                                                 "repr": "K",
@@ -423,9 +427,9 @@
                                           "name": "__key",
                                           "location": {
                                             "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple.ts",
-                                            "line": 527,
+                                            "line": 565,
                                             "col": 68,
-                                            "byteIndex": 13947
+                                            "byteIndex": 15197
                                           },
                                           "tsType": {
                                             "repr": "K",
@@ -486,9 +490,9 @@
                                   "name": "__key",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple.ts",
-                                    "line": 528,
+                                    "line": 566,
                                     "col": 18,
-                                    "byteIndex": 13982
+                                    "byteIndex": 15232
                                   },
                                   "tsType": {
                                     "repr": "K",
@@ -566,9 +570,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple.ts",
-                "line": 530,
+                "line": 568,
                 "col": 0,
-                "byteIndex": 14031
+                "byteIndex": 15281
               },
               "declarationKind": "export",
               "kind": "function",
@@ -659,9 +663,9 @@
                                       "name": "__key",
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple.ts",
-                                        "line": 532,
+                                        "line": 570,
                                         "col": 61,
-                                        "byteIndex": 14155
+                                        "byteIndex": 15405
                                       },
                                       "tsType": {
                                         "repr": "K",
@@ -680,9 +684,9 @@
                                       "name": "value",
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple.ts",
-                                        "line": 532,
+                                        "line": 570,
                                         "col": 71,
-                                        "byteIndex": 14165
+                                        "byteIndex": 15415
                                       },
                                       "tsType": {
                                         "repr": "V",
@@ -726,9 +730,9 @@
                               "name": "__key",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple.ts",
-                                "line": 533,
+                                "line": 571,
                                 "col": 18,
-                                "byteIndex": 14196
+                                "byteIndex": 15446
                               },
                               "tsType": {
                                 "repr": "K",
@@ -747,9 +751,9 @@
                               "name": "value",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple.ts",
-                                "line": 533,
+                                "line": 571,
                                 "col": 28,
-                                "byteIndex": 14206
+                                "byteIndex": 15456
                               },
                               "tsType": {
                                 "repr": "V",
@@ -794,9 +798,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple.ts",
-                "line": 535,
+                "line": 573,
                 "col": 0,
-                "byteIndex": 14255
+                "byteIndex": 15505
               },
               "declarationKind": "export",
               "kind": "function",
@@ -868,9 +872,9 @@
                                               "name": "__key",
                                               "location": {
                                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple.ts",
-                                                "line": 537,
+                                                "line": 575,
                                                 "col": 31,
-                                                "byteIndex": 14384
+                                                "byteIndex": 15634
                                               },
                                               "tsType": {
                                                 "repr": "K",
@@ -923,9 +927,9 @@
                                           "name": "__key",
                                           "location": {
                                             "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple.ts",
-                                            "line": 537,
+                                            "line": 575,
                                             "col": 68,
-                                            "byteIndex": 14421
+                                            "byteIndex": 15671
                                           },
                                           "tsType": {
                                             "repr": "K",
@@ -986,9 +990,9 @@
                                   "name": "__key",
                                   "location": {
                                     "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple.ts",
-                                    "line": 538,
+                                    "line": 576,
                                     "col": 18,
-                                    "byteIndex": 14456
+                                    "byteIndex": 15706
                                   },
                                   "tsType": {
                                     "repr": "K",
@@ -1066,9 +1070,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple.ts",
-                "line": 540,
+                "line": 578,
                 "col": 0,
-                "byteIndex": 14512
+                "byteIndex": 15762
               },
               "declarationKind": "export",
               "kind": "function",
@@ -1159,9 +1163,9 @@
                                       "name": "__key",
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple.ts",
-                                        "line": 542,
+                                        "line": 580,
                                         "col": 61,
-                                        "byteIndex": 14639
+                                        "byteIndex": 15889
                                       },
                                       "tsType": {
                                         "repr": "K",
@@ -1180,9 +1184,9 @@
                                       "name": "value",
                                       "location": {
                                         "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple.ts",
-                                        "line": 542,
+                                        "line": 580,
                                         "col": 71,
-                                        "byteIndex": 14649
+                                        "byteIndex": 15899
                                       },
                                       "tsType": {
                                         "repr": "V",
@@ -1226,9 +1230,9 @@
                               "name": "__key",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple.ts",
-                                "line": 543,
+                                "line": 581,
                                 "col": 18,
-                                "byteIndex": 14680
+                                "byteIndex": 15930
                               },
                               "tsType": {
                                 "repr": "K",
@@ -1247,9 +1251,9 @@
                               "name": "value",
                               "location": {
                                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple.ts",
-                                "line": 543,
+                                "line": 581,
                                 "col": 28,
-                                "byteIndex": 14690
+                                "byteIndex": 15940
                               },
                               "tsType": {
                                 "repr": "V",
@@ -1294,9 +1298,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple.ts",
-                "line": 545,
+                "line": 583,
                 "col": 0,
-                "byteIndex": 14721
+                "byteIndex": 15971
               },
               "declarationKind": "export",
               "kind": "function",
@@ -1367,13 +1371,13 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
-                "line": 24,
+                "line": 28,
                 "col": 13,
-                "byteIndex": 826
+                "byteIndex": 1077
               },
               "declarationKind": "export",
               "jsDoc": {
-                "doc": "Predefined boolean display styles for table columns.\nEach preset specifies distinct characters for true/false values along with their colors.\nAll presets use different characters to ensure compatibility with no-color mode rendering."
+                "doc": "Predefined boolean display styles for table columns.\nEach preset specifies distinct characters for true/false values along with their colors.\nMost presets use different characters so they remain distinguishable in no-color mode;\npresets like `circleRed` rely on color alone and collapse to a single character when\ncolors are stripped."
               },
               "kind": "variable",
               "def": {
@@ -1385,9 +1389,9 @@
                         "name": "check",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
-                          "line": 25,
+                          "line": 29,
                           "col": 2,
-                          "byteIndex": 845
+                          "byteIndex": 1096
                         },
                         "tsType": {
                           "repr": "BoolFormatterOptions",
@@ -1404,9 +1408,9 @@
                         "name": "checkBold",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
-                          "line": 26,
+                          "line": 30,
                           "col": 2,
-                          "byteIndex": 968
+                          "byteIndex": 1219
                         },
                         "tsType": {
                           "repr": "BoolFormatterOptions",
@@ -1423,9 +1427,9 @@
                         "name": "circle",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
-                          "line": 32,
+                          "line": 36,
                           "col": 2,
-                          "byteIndex": 1114
+                          "byteIndex": 1365
                         },
                         "tsType": {
                           "repr": "BoolFormatterOptions",
@@ -1442,9 +1446,9 @@
                         "name": "circleRed",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
-                          "line": 38,
+                          "line": 42,
                           "col": 2,
-                          "byteIndex": 1259
+                          "byteIndex": 1510
                         },
                         "tsType": {
                           "repr": "BoolFormatterOptions",
@@ -1461,9 +1465,9 @@
                         "name": "circleOpenRed",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
-                          "line": 44,
+                          "line": 48,
                           "col": 2,
-                          "byteIndex": 1405
+                          "byteIndex": 1656
                         },
                         "tsType": {
                           "repr": "BoolFormatterOptions",
@@ -1480,9 +1484,9 @@
                         "name": "circleDot",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
-                          "line": 50,
+                          "line": 54,
                           "col": 2,
-                          "byteIndex": 1555
+                          "byteIndex": 1806
                         },
                         "tsType": {
                           "repr": "BoolFormatterOptions",
@@ -1499,9 +1503,9 @@
                         "name": "yesno",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
-                          "line": 56,
+                          "line": 60,
                           "col": 2,
-                          "byteIndex": 1703
+                          "byteIndex": 1954
                         },
                         "tsType": {
                           "repr": "BoolFormatterOptions",
@@ -1518,9 +1522,9 @@
                         "name": "truefalse",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
-                          "line": 62,
+                          "line": 66,
                           "col": 2,
-                          "byteIndex": 1844
+                          "byteIndex": 2095
                         },
                         "tsType": {
                           "repr": "BoolFormatterOptions",
@@ -1537,9 +1541,9 @@
                         "name": "square",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
-                          "line": 68,
+                          "line": 72,
                           "col": 2,
-                          "byteIndex": 1985
+                          "byteIndex": 2236
                         },
                         "tsType": {
                           "repr": "BoolFormatterOptions",
@@ -1556,9 +1560,9 @@
                         "name": "arrow",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
-                          "line": 69,
+                          "line": 73,
                           "col": 2,
-                          "byteIndex": 2101
+                          "byteIndex": 2352
                         },
                         "tsType": {
                           "repr": "BoolFormatterOptions",
@@ -1575,9 +1579,9 @@
                         "name": "toggle",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
-                          "line": 70,
+                          "line": 74,
                           "col": 2,
-                          "byteIndex": 2216
+                          "byteIndex": 2467
                         },
                         "tsType": {
                           "repr": "BoolFormatterOptions",
@@ -1750,11 +1754,14 @@
                   },
                   {
                     "name": "bold",
+                    "jsDoc": {
+                      "doc": "Apply bold intensity to the rendered character. Default: false"
+                    },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
-                      "line": 15,
+                      "line": 16,
                       "col": 2,
-                      "byteIndex": 527
+                      "byteIndex": 599
                     },
                     "optional": true,
                     "tsType": {
@@ -1765,11 +1772,14 @@
                   },
                   {
                     "name": "dim",
+                    "jsDoc": {
+                      "doc": "Apply dim intensity to the rendered character. Default: false"
+                    },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
-                      "line": 16,
+                      "line": 18,
                       "col": 2,
-                      "byteIndex": 545
+                      "byteIndex": 688
                     },
                     "optional": true,
                     "tsType": {
@@ -1789,9 +1799,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
-                "line": 76,
+                "line": 80,
                 "col": 0,
-                "byteIndex": 2406
+                "byteIndex": 2657
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -1815,11 +1825,14 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/fmt/src/bool.ts",
-                "line": 78,
+                "line": 87,
                 "col": 13,
-                "byteIndex": 2472
+                "byteIndex": 2907
               },
               "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Runtime mapping of every preset name to itself, useful for iterating over or\ndynamically looking up preset names. Prefer the {@link BoolPreset} type for\nstatic usage."
+              },
               "kind": "variable",
               "def": {
                 "tsType": {
@@ -1925,9 +1938,9 @@
                     ],
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/render.ts",
-                      "line": 83,
+                      "line": 84,
                       "col": 2,
-                      "byteIndex": 2714
+                      "byteIndex": 2753
                     }
                   }
                 ],
@@ -1985,9 +1998,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/render.ts",
-                      "line": 76,
+                      "line": 77,
                       "col": 2,
-                      "byteIndex": 2591
+                      "byteIndex": 2630
                     }
                   },
                   {
@@ -2019,20 +2032,14 @@
                           "name": "key",
                           "optional": false,
                           "tsType": {
-                            "kind": "typeOperator",
+                            "repr": "K",
+                            "kind": "typeRef",
                             "value": {
-                              "operator": "keyof",
-                              "tsType": {
-                                "repr": "T",
-                                "kind": "typeRef",
-                                "value": {
-                                  "typeName": "T",
-                                  "resolution": {
-                                    "kind": "typeParam",
-                                    "declaringName": "TableRenderer",
-                                    "declaringKind": "class"
-                                  }
-                                }
+                              "typeName": "K",
+                              "resolution": {
+                                "kind": "typeParam",
+                                "declaringName": "column",
+                                "declaringKind": "method"
                               }
                             }
                           }
@@ -2062,6 +2069,18 @@
                                             "declaringKind": "class"
                                           }
                                         }
+                                      },
+                                      {
+                                        "repr": "K",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "K",
+                                          "resolution": {
+                                            "kind": "typeParam",
+                                            "declaringName": "column",
+                                            "declaringKind": "method"
+                                          }
+                                        }
                                       }
                                     ],
                                     "typeName": "Table.Column",
@@ -2089,13 +2108,36 @@
                         "repr": "this",
                         "kind": "this"
                       },
-                      "hasBody": true
+                      "hasBody": true,
+                      "typeParams": [
+                        {
+                          "name": "K",
+                          "constraint": {
+                            "kind": "typeOperator",
+                            "value": {
+                              "operator": "keyof",
+                              "tsType": {
+                                "repr": "T",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "T",
+                                  "resolution": {
+                                    "kind": "typeParam",
+                                    "declaringName": "TableRenderer",
+                                    "declaringKind": "class"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/render.ts",
                       "line": 122,
                       "col": 2,
-                      "byteIndex": 4374
+                      "byteIndex": 4427
                     }
                   },
                   {
@@ -2148,7 +2190,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/render.ts",
                       "line": 134,
                       "col": 2,
-                      "byteIndex": 4735
+                      "byteIndex": 4804
                     }
                   },
                   {
@@ -2198,7 +2240,7 @@
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/render.ts",
                       "line": 146,
                       "col": 2,
-                      "byteIndex": 5040
+                      "byteIndex": 5109
                     }
                   },
                   {
@@ -2245,9 +2287,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/render.ts",
-                      "line": 157,
+                      "line": 158,
                       "col": 2,
-                      "byteIndex": 5315
+                      "byteIndex": 5448
                     }
                   },
                   {
@@ -2294,9 +2336,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/render.ts",
-                      "line": 169,
+                      "line": 170,
                       "col": 2,
-                      "byteIndex": 5655
+                      "byteIndex": 5788
                     }
                   },
                   {
@@ -2343,9 +2385,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/render.ts",
-                      "line": 179,
+                      "line": 180,
                       "col": 2,
-                      "byteIndex": 5935
+                      "byteIndex": 6068
                     }
                   },
                   {
@@ -2392,9 +2434,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/render.ts",
-                      "line": 191,
+                      "line": 192,
                       "col": 2,
-                      "byteIndex": 6301
+                      "byteIndex": 6434
                     }
                   },
                   {
@@ -2435,9 +2477,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/render.ts",
-                      "line": 204,
+                      "line": 205,
                       "col": 2,
-                      "byteIndex": 6718
+                      "byteIndex": 6851
                     }
                   },
                   {
@@ -2478,9 +2520,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/render.ts",
-                      "line": 215,
+                      "line": 216,
                       "col": 2,
-                      "byteIndex": 6978
+                      "byteIndex": 7111
                     }
                   },
                   {
@@ -2527,9 +2569,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/render.ts",
-                      "line": 226,
+                      "line": 227,
                       "col": 2,
-                      "byteIndex": 7264
+                      "byteIndex": 7397
                     }
                   },
                   {
@@ -2570,9 +2612,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/render.ts",
-                      "line": 238,
+                      "line": 239,
                       "col": 2,
-                      "byteIndex": 7670
+                      "byteIndex": 7803
                     }
                   },
                   {
@@ -2613,9 +2655,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/render.ts",
-                      "line": 250,
+                      "line": 251,
                       "col": 2,
-                      "byteIndex": 8072
+                      "byteIndex": 8205
                     }
                   },
                   {
@@ -2706,9 +2748,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/render.ts",
-                      "line": 263,
+                      "line": 264,
                       "col": 2,
-                      "byteIndex": 8513
+                      "byteIndex": 8646
                     }
                   },
                   {
@@ -2753,9 +2795,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/render.ts",
-                      "line": 280,
+                      "line": 282,
                       "col": 2,
-                      "byteIndex": 9037
+                      "byteIndex": 9239
                     }
                   },
                   {
@@ -2796,9 +2838,52 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/render.ts",
-                      "line": 293,
+                      "line": 296,
                       "col": 2,
-                      "byteIndex": 9421
+                      "byteIndex": 9699
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Set the available display width used when {@link fit} is enabled\n(fluent API). Overrides terminal-size detection.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "val",
+                          "doc": "Available width in columns"
+                        },
+                        {
+                          "kind": "return",
+                          "doc": "This instance for method chaining"
+                        }
+                      ]
+                    },
+                    "name": "availableWidth",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "val",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "number",
+                            "kind": "keyword",
+                            "value": "number"
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/render.ts",
+                      "line": 309,
+                      "col": 2,
+                      "byteIndex": 10073
                     }
                   },
                   {
@@ -2845,9 +2930,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/render.ts",
-                      "line": 305,
+                      "line": 322,
                       "col": 2,
-                      "byteIndex": 9692
+                      "byteIndex": 10417
                     }
                   },
                   {
@@ -2894,9 +2979,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/render.ts",
-                      "line": 320,
+                      "line": 337,
                       "col": 2,
-                      "byteIndex": 10076
+                      "byteIndex": 10801
                     }
                   },
                   {
@@ -2943,9 +3028,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/render.ts",
-                      "line": 335,
+                      "line": 352,
                       "col": 2,
-                      "byteIndex": 10450
+                      "byteIndex": 11175
                     }
                   },
                   {
@@ -2965,9 +3050,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/render.ts",
-                      "line": 454,
+                      "line": 471,
                       "col": 2,
-                      "byteIndex": 13867
+                      "byteIndex": 14612
                     }
                   },
                   {
@@ -3013,9 +3098,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/render.ts",
-                      "line": 504,
+                      "line": 521,
                       "col": 2,
-                      "byteIndex": 15638
+                      "byteIndex": 16383
                     }
                   },
                   {
@@ -3079,9 +3164,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/render.ts",
-                      "line": 519,
+                      "line": 536,
                       "col": 2,
-                      "byteIndex": 16084
+                      "byteIndex": 16829
                     }
                   },
                   {
@@ -3104,9 +3189,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/render.ts",
-                      "line": 585,
+                      "line": 602,
                       "col": 2,
-                      "byteIndex": 18311
+                      "byteIndex": 19056
                     }
                   },
                   {
@@ -3129,9 +3214,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/render.ts",
-                      "line": 593,
+                      "line": 610,
                       "col": 2,
-                      "byteIndex": 18570
+                      "byteIndex": 19315
                     }
                   },
                   {
@@ -3157,9 +3242,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/render.ts",
-                      "line": 634,
+                      "line": 651,
                       "col": 2,
-                      "byteIndex": 19566
+                      "byteIndex": 20311
                     }
                   },
                   {
@@ -3179,9 +3264,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/render.ts",
-                      "line": 642,
+                      "line": 659,
                       "col": 2,
-                      "byteIndex": 19757
+                      "byteIndex": 20502
                     }
                   }
                 ],
@@ -3200,9 +3285,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/mod.ts",
-                "line": 147,
+                "line": 162,
                 "col": 24,
-                "byteIndex": 4184
+                "byteIndex": 4792
               },
               "declarationKind": "export",
               "kind": "reference",
@@ -4087,6 +4172,24 @@
                       "kind": "keyword",
                       "value": "number"
                     }
+                  },
+                  {
+                    "name": "availableWidth",
+                    "jsDoc": {
+                      "doc": "Available display width used when `fit` is enabled. Overrides terminal-size\ndetection, which is unavailable under pipes, MCP stdio and tests."
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple-types.ts",
+                      "line": 109,
+                      "col": 2,
+                      "byteIndex": 3589
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
                   }
                 ],
                 "typeParams": [
@@ -4104,9 +4207,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple-types.ts",
-                "line": 110,
+                "line": 115,
                 "col": 0,
-                "byteIndex": 3498
+                "byteIndex": 3689
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -4130,9 +4233,9 @@
                     "kind": "method",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple-types.ts",
-                      "line": 115,
+                      "line": 120,
                       "col": 2,
-                      "byteIndex": 3657
+                      "byteIndex": 3848
                     },
                     "params": [
                       {
@@ -4190,9 +4293,9 @@
                     "kind": "method",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple-types.ts",
-                      "line": 122,
+                      "line": 127,
                       "col": 2,
-                      "byteIndex": 3859
+                      "byteIndex": 4050
                     },
                     "params": [
                       {
@@ -4278,9 +4381,9 @@
                     "kind": "method",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple-types.ts",
-                      "line": 129,
+                      "line": 134,
                       "col": 2,
-                      "byteIndex": 4085
+                      "byteIndex": 4276
                     },
                     "params": [
                       {
@@ -4356,9 +4459,9 @@
                     "kind": "method",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple-types.ts",
-                      "line": 135,
+                      "line": 140,
                       "col": 2,
-                      "byteIndex": 4259
+                      "byteIndex": 4450
                     },
                     "params": [
                       {
@@ -4390,9 +4493,9 @@
                     "kind": "method",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple-types.ts",
-                      "line": 140,
+                      "line": 145,
                       "col": 2,
-                      "byteIndex": 4343
+                      "byteIndex": 4534
                     },
                     "params": [],
                     "returnType": {
@@ -4420,9 +4523,9 @@
                     "kind": "method",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple-types.ts",
-                      "line": 147,
+                      "line": 152,
                       "col": 2,
-                      "byteIndex": 4567
+                      "byteIndex": 4758
                     },
                     "params": [
                       {
@@ -4469,9 +4572,9 @@
                     "kind": "method",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple-types.ts",
-                      "line": 152,
+                      "line": 157,
                       "col": 2,
-                      "byteIndex": 4668
+                      "byteIndex": 4859
                     },
                     "params": [],
                     "returnType": {
@@ -4499,9 +4602,9 @@
                     "kind": "method",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple-types.ts",
-                      "line": 159,
+                      "line": 164,
                       "col": 2,
-                      "byteIndex": 4855
+                      "byteIndex": 5046
                     },
                     "params": [
                       {
@@ -4567,9 +4670,9 @@
                     "kind": "method",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple-types.ts",
-                      "line": 164,
+                      "line": 169,
                       "col": 2,
-                      "byteIndex": 4966
+                      "byteIndex": 5157
                     },
                     "params": [],
                     "returnType": {
@@ -4592,9 +4695,9 @@
                     "kind": "method",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple-types.ts",
-                      "line": 170,
+                      "line": 175,
                       "col": 2,
-                      "byteIndex": 5071
+                      "byteIndex": 5262
                     },
                     "params": [
                       {
@@ -4633,9 +4736,9 @@
                     "kind": "method",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple-types.ts",
-                      "line": 176,
+                      "line": 181,
                       "col": 2,
-                      "byteIndex": 5246
+                      "byteIndex": 5437
                     },
                     "params": [
                       {
@@ -4662,9 +4765,9 @@
                     "kind": "method",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple-types.ts",
-                      "line": 181,
+                      "line": 186,
                       "col": 2,
-                      "byteIndex": 5353
+                      "byteIndex": 5544
                     },
                     "params": [],
                     "returnType": {
@@ -4687,9 +4790,9 @@
                     "kind": "method",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple-types.ts",
-                      "line": 189,
+                      "line": 194,
                       "col": 2,
-                      "byteIndex": 5612
+                      "byteIndex": 5803
                     },
                     "params": [
                       {
@@ -4723,9 +4826,45 @@
                     "kind": "method",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple-types.ts",
-                      "line": 195,
+                      "line": 200,
                       "col": 2,
-                      "byteIndex": 5779
+                      "byteIndex": 5970
+                    },
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "val",
+                        "optional": false,
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      }
+                    ],
+                    "returnType": {
+                      "repr": "this",
+                      "kind": "this"
+                    }
+                  },
+                  {
+                    "name": "availableWidth",
+                    "jsDoc": {
+                      "doc": "Set the available display width used when fitting to the terminal.\nOverrides terminal-size detection, which is unavailable under pipes,\nMCP stdio and tests.",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "val",
+                          "doc": "Available width in columns"
+                        }
+                      ]
+                    },
+                    "kind": "method",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple-types.ts",
+                      "line": 208,
+                      "col": 2,
+                      "byteIndex": 6229
                     },
                     "params": [
                       {
@@ -4759,9 +4898,9 @@
                     "kind": "method",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple-types.ts",
-                      "line": 201,
+                      "line": 214,
                       "col": 2,
-                      "byteIndex": 5891
+                      "byteIndex": 6347
                     },
                     "params": [
                       {
@@ -4798,9 +4937,9 @@
                     "kind": "method",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple-types.ts",
-                      "line": 206,
+                      "line": 219,
                       "col": 2,
-                      "byteIndex": 5973
+                      "byteIndex": 6429
                     },
                     "params": [],
                     "returnType": {
@@ -4823,9 +4962,9 @@
                     "kind": "method",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple-types.ts",
-                      "line": 212,
+                      "line": 225,
                       "col": 2,
-                      "byteIndex": 6099
+                      "byteIndex": 6555
                     },
                     "params": [],
                     "returnType": {
@@ -4848,9 +4987,9 @@
                     "kind": "method",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/simple-types.ts",
-                      "line": 218,
+                      "line": 231,
                       "col": 2,
-                      "byteIndex": 6234
+                      "byteIndex": 6690
                     },
                     "params": [],
                     "returnType": {
@@ -5086,9 +5225,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                "line": 9,
+                "line": 16,
                 "col": 0,
-                "byteIndex": 323
+                "byteIndex": 805
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -5098,6 +5237,11 @@
                     "kind": "template",
                     "name": "T",
                     "doc": "The row data type"
+                  },
+                  {
+                    "kind": "template",
+                    "name": "K",
+                    "doc": "The specific property key this column renders. Defaults to\n`keyof T`. Narrowing `K` (e.g. `Column<User, 'cpu'>`) gives the formatter and\ncolor callbacks the exact value type instead of the union of all row values.\n\n`formatter` and `color` use method syntax deliberately: method parameters are\nchecked bivariantly, so a precisely-typed column (`Column<User, 'cpu'>`) stays\nassignable to a `Column<User>[]`, while the value types are still enforced."
                   }
                 ]
               },
@@ -5106,22 +5250,58 @@
                 "tsType": {
                   "kind": "typeLiteral",
                   "value": {
-                    "properties": [
+                    "methods": [
                       {
-                        "name": "key",
+                        "name": "formatter",
                         "jsDoc": {
-                          "doc": "Property key from the data object."
+                          "doc": "Custom formatter that converts a cell value to a display string.\nReceives the cell value and the full row object for context-aware\nformatting.\n\nThe value is typed as `T[K]`; use a narrowed `Column<T, 'key'>` (or a\n{@link ColumnRegistry}, which narrows `K` for you) to get the precise\ntype."
                         },
+                        "kind": "method",
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                          "line": 11,
+                          "line": 44,
                           "col": 2,
-                          "byteIndex": 395
+                          "byteIndex": 1821
                         },
-                        "tsType": {
-                          "kind": "typeOperator",
-                          "value": {
-                            "operator": "keyof",
+                        "params": [
+                          {
+                            "kind": "identifier",
+                            "name": "value",
+                            "optional": false,
+                            "tsType": {
+                              "kind": "indexedAccess",
+                              "value": {
+                                "objType": {
+                                  "repr": "T",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "T",
+                                    "resolution": {
+                                      "kind": "typeParam",
+                                      "declaringName": "Column",
+                                      "declaringKind": "typeAlias"
+                                    }
+                                  }
+                                },
+                                "indexType": {
+                                  "repr": "K",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "K",
+                                    "resolution": {
+                                      "kind": "typeParam",
+                                      "declaringName": "Column",
+                                      "declaringKind": "typeAlias"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "kind": "identifier",
+                            "name": "row",
+                            "optional": false,
                             "tsType": {
                               "repr": "T",
                               "kind": "typeRef",
@@ -5135,6 +5315,132 @@
                               }
                             }
                           }
+                        ],
+                        "optional": true,
+                        "returnType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "color",
+                        "jsDoc": {
+                          "doc": "Returns a {@link ColorType} to apply to the formatted cell text, or\n`undefined` to leave the cell unstyled. Evaluated per-cell so that\nstyling can vary by value or by other fields in the row.\n",
+                          "tags": [
+                            {
+                              "kind": "example",
+                              "doc": "```ts\nimport { rgb24 } from '@std/fmt/colors';\nconst green = 0x51d67c;\nconst red = 0xef5867;\n\n// Simple foreground color (most common)\ncolor: (_v, row) => row.status === 'running' ? green : red\n\n// Background color\ncolor: (_v, row) => row.hot ? { bg: 0xff0000 } : undefined\n\n// Both foreground and background\ncolor: (_v, row) => ({ fg: 0xffffff, bg: row.severity > 5 ? red : 0x333333 })\n\n// Full control with StyleFn\ncolor: (_v, row) => row.status === 'running'\n  ? (s) => rgb24(s, green)\n  : (s) => rgb24(s, red)\n```\n\nNote: this is declared with method syntax purely to make the parameters\nbivariant (see the `Column` docs). Arrow functions in an object literal\nsatisfy it normally."
+                            }
+                          ]
+                        },
+                        "kind": "method",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
+                          "line": 75,
+                          "col": 2,
+                          "byteIndex": 2896
+                        },
+                        "params": [
+                          {
+                            "kind": "identifier",
+                            "name": "value",
+                            "optional": false,
+                            "tsType": {
+                              "kind": "indexedAccess",
+                              "value": {
+                                "objType": {
+                                  "repr": "T",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "T",
+                                    "resolution": {
+                                      "kind": "typeParam",
+                                      "declaringName": "Column",
+                                      "declaringKind": "typeAlias"
+                                    }
+                                  }
+                                },
+                                "indexType": {
+                                  "repr": "K",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "K",
+                                    "resolution": {
+                                      "kind": "typeParam",
+                                      "declaringName": "Column",
+                                      "declaringKind": "typeAlias"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "kind": "identifier",
+                            "name": "row",
+                            "optional": false,
+                            "tsType": {
+                              "repr": "T",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "T",
+                                "resolution": {
+                                  "kind": "typeParam",
+                                  "declaringName": "Column",
+                                  "declaringKind": "typeAlias"
+                                }
+                              }
+                            }
+                          }
+                        ],
+                        "optional": true,
+                        "returnType": {
+                          "kind": "union",
+                          "value": [
+                            {
+                              "repr": "Color.Spec",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "Color.Spec",
+                                "resolution": {
+                                  "kind": "import",
+                                  "specifier": "@epdoc/colors"
+                                }
+                              }
+                            },
+                            {
+                              "repr": "undefined",
+                              "kind": "keyword",
+                              "value": "undefined"
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    "properties": [
+                      {
+                        "name": "key",
+                        "jsDoc": {
+                          "doc": "Property key from the data object."
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
+                          "line": 18,
+                          "col": 2,
+                          "byteIndex": 906
+                        },
+                        "tsType": {
+                          "repr": "K",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "K",
+                            "resolution": {
+                              "kind": "typeParam",
+                              "declaringName": "Column",
+                              "declaringKind": "typeAlias"
+                            }
+                          }
                         }
                       },
                       {
@@ -5144,9 +5450,9 @@
                         },
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                          "line": 13,
+                          "line": 20,
                           "col": 2,
-                          "byteIndex": 440
+                          "byteIndex": 945
                         },
                         "tsType": {
                           "repr": "string",
@@ -5161,9 +5467,9 @@
                         },
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                          "line": 15,
+                          "line": 22,
                           "col": 2,
-                          "byteIndex": 539
+                          "byteIndex": 1044
                         },
                         "optional": true,
                         "tsType": {
@@ -5179,9 +5485,9 @@
                         },
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                          "line": 20,
+                          "line": 27,
                           "col": 2,
-                          "byteIndex": 710
+                          "byteIndex": 1215
                         },
                         "optional": true,
                         "tsType": {
@@ -5197,9 +5503,9 @@
                         },
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                          "line": 25,
+                          "line": 32,
                           "col": 2,
-                          "byteIndex": 875
+                          "byteIndex": 1380
                         },
                         "optional": true,
                         "tsType": {
@@ -5215,9 +5521,9 @@
                         },
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                          "line": 27,
+                          "line": 34,
                           "col": 2,
-                          "byteIndex": 959
+                          "byteIndex": 1464
                         },
                         "optional": true,
                         "tsType": {
@@ -5230,134 +5536,6 @@
                             }
                           }
                         }
-                      },
-                      {
-                        "name": "formatter",
-                        "jsDoc": {
-                          "doc": "Custom formatter that converts a cell value to a display string.\nReceives the cell value and the full row object for context-aware\nformatting."
-                        },
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                          "line": 33,
-                          "col": 2,
-                          "byteIndex": 1150
-                        },
-                        "optional": true,
-                        "tsType": {
-                          "kind": "fnOrConstructor",
-                          "value": {
-                            "constructor": false,
-                            "tsType": {
-                              "repr": "string",
-                              "kind": "keyword",
-                              "value": "string"
-                            },
-                            "params": [
-                              {
-                                "kind": "identifier",
-                                "name": "value",
-                                "optional": false,
-                                "tsType": {
-                                  "repr": "unknown",
-                                  "kind": "keyword",
-                                  "value": "unknown"
-                                }
-                              },
-                              {
-                                "kind": "identifier",
-                                "name": "row",
-                                "optional": false,
-                                "tsType": {
-                                  "repr": "T",
-                                  "kind": "typeRef",
-                                  "value": {
-                                    "typeName": "T",
-                                    "resolution": {
-                                      "kind": "typeParam",
-                                      "declaringName": "Column",
-                                      "declaringKind": "typeAlias"
-                                    }
-                                  }
-                                }
-                              }
-                            ]
-                          }
-                        }
-                      },
-                      {
-                        "name": "color",
-                        "jsDoc": {
-                          "doc": "Returns a {@link ColorType} to apply to the formatted cell text, or\n`undefined` to leave the cell unstyled. Evaluated per-cell so that\nstyling can vary by value or by other fields in the row.\n",
-                          "tags": [
-                            {
-                              "kind": "example",
-                              "doc": "```ts\nimport { rgb24 } from '@std/fmt/colors';\nconst green = 0x51d67c;\nconst red = 0xef5867;\n\n// Simple foreground color (most common)\ncolor: (_v, row) => row.status === 'running' ? green : red\n\n// Background color\ncolor: (_v, row) => row.hot ? { bg: 0xff0000 } : undefined\n\n// Both foreground and background\ncolor: (_v, row) => ({ fg: 0xffffff, bg: row.severity > 5 ? red : 0x333333 })\n\n// Full control with StyleFn\ncolor: (_v, row) => row.status === 'running'\n  ? (s) => rgb24(s, green)\n  : (s) => rgb24(s, red)\n```"
-                            }
-                          ]
-                        },
-                        "location": {
-                          "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                          "line": 60,
-                          "col": 2,
-                          "byteIndex": 2047
-                        },
-                        "optional": true,
-                        "tsType": {
-                          "kind": "fnOrConstructor",
-                          "value": {
-                            "constructor": false,
-                            "tsType": {
-                              "kind": "union",
-                              "value": [
-                                {
-                                  "repr": "Color.Spec",
-                                  "kind": "typeRef",
-                                  "value": {
-                                    "typeName": "Color.Spec",
-                                    "resolution": {
-                                      "kind": "import",
-                                      "specifier": "@epdoc/colors"
-                                    }
-                                  }
-                                },
-                                {
-                                  "repr": "undefined",
-                                  "kind": "keyword",
-                                  "value": "undefined"
-                                }
-                              ]
-                            },
-                            "params": [
-                              {
-                                "kind": "identifier",
-                                "name": "value",
-                                "optional": false,
-                                "tsType": {
-                                  "repr": "unknown",
-                                  "kind": "keyword",
-                                  "value": "unknown"
-                                }
-                              },
-                              {
-                                "kind": "identifier",
-                                "name": "row",
-                                "optional": false,
-                                "tsType": {
-                                  "repr": "T",
-                                  "kind": "typeRef",
-                                  "value": {
-                                    "typeName": "T",
-                                    "resolution": {
-                                      "kind": "typeParam",
-                                      "declaringName": "Column",
-                                      "declaringKind": "typeAlias"
-                                    }
-                                  }
-                                }
-                              }
-                            ]
-                          }
-                        }
                       }
                     ]
                   }
@@ -5365,6 +5543,45 @@
                 "typeParams": [
                   {
                     "name": "T"
+                  },
+                  {
+                    "name": "K",
+                    "constraint": {
+                      "kind": "typeOperator",
+                      "value": {
+                        "operator": "keyof",
+                        "tsType": {
+                          "repr": "T",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "T",
+                            "resolution": {
+                              "kind": "typeParam",
+                              "declaringName": "Column",
+                              "declaringKind": "typeAlias"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "default": {
+                      "kind": "typeOperator",
+                      "value": {
+                        "operator": "keyof",
+                        "tsType": {
+                          "repr": "T",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "T",
+                            "resolution": {
+                              "kind": "typeParam",
+                              "declaringName": "Column",
+                              "declaringKind": "typeAlias"
+                            }
+                          }
+                        }
+                      }
+                    }
                   }
                 ]
               }
@@ -5377,13 +5594,13 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                "line": 88,
+                "line": 107,
                 "col": 0,
-                "byteIndex": 3013
+                "byteIndex": 4023
               },
               "declarationKind": "export",
               "jsDoc": {
-                "doc": "A declarative registry mapping data keys to column display properties.\nUsed with {@link buildColumns} to replace verbose switch-case column\nconstruction.\n",
+                "doc": "A declarative registry mapping data keys to column display properties.\nUsed with {@link buildColumns} to replace verbose switch-case column\nconstruction.\n\nThe mapped type narrows `K` per key, so each entry's `formatter` and `color`\nreceive that property's exact value type.\n",
                 "tags": [
                   {
                     "kind": "template",
@@ -5392,27 +5609,48 @@
                   },
                   {
                     "kind": "example",
-                    "doc": "```ts\nimport { rgb24 } from '@std/fmt/colors';\n\nconst COLS: ColumnRegistry<MyRow> = {\n  id:   { header: 'ID',   align: 'left' },\n  name: { header: 'Name', align: 'left', maxWidth: 20 },\n  cpu:  { header: 'CPU%', align: 'right', formatter: (v) => formatPercent(v as number) },\n  status: {\n    header: 'Status',\n    color: (v) => v === 'ok' ? (s) => rgb24(s, 0x51d67c) : undefined,\n  },\n};\nconst columns = buildColumns(['id', 'name', 'cpu', 'status'], COLS);\n```"
+                    "doc": "```ts\nimport { rgb24 } from '@std/fmt/colors';\n\nconst COLS: ColumnRegistry<MyRow> = {\n  id:   { header: 'ID',   align: 'left' },\n  name: { header: 'Name', align: 'left', maxWidth: 20 },\n  // `v` is typed as number — no cast needed\n  cpu:  { header: 'CPU%', align: 'right', formatter: (v) => formatPercent(v) },\n  status: {\n    header: 'Status',\n    color: (v) => v === 'ok' ? (s) => rgb24(s, 0x51d67c) : undefined,\n  },\n};\nconst columns = buildColumns(['id', 'name', 'cpu', 'status'], COLS);\n```"
                   }
                 ]
               },
               "kind": "typeAlias",
               "def": {
                 "tsType": {
-                  "repr": "Partial",
-                  "kind": "typeRef",
+                  "kind": "mapped",
                   "value": {
-                    "typeParams": [
-                      {
-                        "repr": "Record",
-                        "kind": "typeRef",
+                    "typeParam": {
+                      "name": "K",
+                      "constraint": {
+                        "kind": "typeOperator",
                         "value": {
-                          "typeParams": [
-                            {
-                              "kind": "typeOperator",
-                              "value": {
-                                "operator": "keyof",
-                                "tsType": {
+                          "operator": "keyof",
+                          "tsType": {
+                            "repr": "T",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "T",
+                              "resolution": {
+                                "kind": "typeParam",
+                                "declaringName": "ColumnRegistry",
+                                "declaringKind": "typeAlias"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "Omit",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeParams": [
+                          {
+                            "repr": "Column",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeParams": [
+                                {
                                   "repr": "T",
                                   "kind": "typeRef",
                                   "value": {
@@ -5423,56 +5661,36 @@
                                       "declaringKind": "typeAlias"
                                     }
                                   }
-                                }
-                              }
-                            },
-                            {
-                              "repr": "Omit",
-                              "kind": "typeRef",
-                              "value": {
-                                "typeParams": [
-                                  {
-                                    "repr": "Column",
-                                    "kind": "typeRef",
-                                    "value": {
-                                      "typeParams": [
-                                        {
-                                          "repr": "T",
-                                          "kind": "typeRef",
-                                          "value": {
-                                            "typeName": "T",
-                                            "resolution": {
-                                              "kind": "typeParam",
-                                              "declaringName": "ColumnRegistry",
-                                              "declaringKind": "typeAlias"
-                                            }
-                                          }
-                                        }
-                                      ],
-                                      "typeName": "Column",
-                                      "resolution": {
-                                        "kind": "local"
-                                      }
-                                    }
-                                  },
-                                  {
-                                    "repr": "key",
-                                    "kind": "literal",
-                                    "value": {
-                                      "kind": "string",
-                                      "string": "key"
+                                },
+                                {
+                                  "repr": "K",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "K",
+                                    "resolution": {
+                                      "kind": "typeParam"
                                     }
                                   }
-                                ],
-                                "typeName": "Omit"
+                                }
+                              ],
+                              "typeName": "Column",
+                              "resolution": {
+                                "kind": "local"
                               }
                             }
-                          ],
-                          "typeName": "Record"
-                        }
+                          },
+                          {
+                            "repr": "key",
+                            "kind": "literal",
+                            "value": {
+                              "kind": "string",
+                              "string": "key"
+                            }
+                          }
+                        ],
+                        "typeName": "Omit"
                       }
-                    ],
-                    "typeName": "Partial"
+                    }
                   }
                 },
                 "typeParams": [
@@ -5490,9 +5708,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                "line": 95,
+                "line": 114,
                 "col": 0,
-                "byteIndex": 3174
+                "byteIndex": 4182
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -5515,9 +5733,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                      "line": 97,
+                      "line": 116,
                       "col": 2,
-                      "byteIndex": 3235
+                      "byteIndex": 4243
                     },
                     "tsType": {
                       "kind": "array",
@@ -5554,9 +5772,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                      "line": 99,
+                      "line": 118,
                       "col": 2,
-                      "byteIndex": 3279
+                      "byteIndex": 4287
                     },
                     "tsType": {
                       "kind": "array",
@@ -5581,9 +5799,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                      "line": 101,
+                      "line": 120,
                       "col": 2,
-                      "byteIndex": 3353
+                      "byteIndex": 4361
                     },
                     "optional": true,
                     "tsType": {
@@ -5605,9 +5823,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                      "line": 116,
+                      "line": 135,
                       "col": 2,
-                      "byteIndex": 3655
+                      "byteIndex": 4663
                     },
                     "optional": true,
                     "tsType": {
@@ -5635,9 +5853,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                      "line": 136,
+                      "line": 155,
                       "col": 2,
-                      "byteIndex": 4267
+                      "byteIndex": 5275
                     },
                     "optional": true,
                     "tsType": {
@@ -5701,7 +5919,7 @@
                   {
                     "name": "fit",
                     "jsDoc": {
-                      "doc": "When `true`, automatically reduces column widths so the table fits\nwithin the available terminal width. Uses `Deno.consoleSize()` to\ndetect width (falls back to 80).\n\nColumns are reduced from right to left, each down to its\n{@link Column.minWidth} or `Options.minWidth` (whichever is lower\nthan the column's natural width). Content truncated by fitting is\nappended with `…`.\n",
+                      "doc": "When `true`, automatically reduces column widths so the table fits\nwithin the available terminal width.\n\nColumns are reduced from right to left, each down to its\n{@link Column.minWidth} or `Options.minWidth` (whichever is lower\nthan the column's natural width). Content truncated by fitting is\nappended with `…`.\n\nThe width comes from {@link Options.availableWidth} when set, otherwise\nfrom `Deno.consoleSize()`, falling back to 80. Fitting is applied lazily\nat render time, so a terminal resize between construction and rendering is\nreflected (see {@link Options.availableWidth} to make it deterministic).\n",
                       "tags": [
                         {
                           "kind": "unsupported",
@@ -5711,15 +5929,39 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                      "line": 149,
+                      "line": 172,
                       "col": 2,
-                      "byteIndex": 4798
+                      "byteIndex": 6057
                     },
                     "optional": true,
                     "tsType": {
                       "repr": "boolean",
                       "kind": "keyword",
                       "value": "boolean"
+                    }
+                  },
+                  {
+                    "name": "availableWidth",
+                    "jsDoc": {
+                      "doc": "Available display width used when {@link Options.fit} is enabled.\n\nOverrides terminal-size detection. Set this when rendering with a known\nwidth — an MCP tool response, a pager, a file, or a test — where\n`Deno.consoleSize()` is unavailable and would otherwise fall back to 80.\n",
+                      "tags": [
+                        {
+                          "kind": "example",
+                          "doc": "```ts\nnew TableRenderer({ columns, data, fit: true, availableWidth: 200 });\n```"
+                        }
+                      ]
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
+                      "line": 185,
+                      "col": 2,
+                      "byteIndex": 6505
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
                     }
                   },
                   {
@@ -5735,9 +5977,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                      "line": 158,
+                      "line": 194,
                       "col": 2,
-                      "byteIndex": 5141
+                      "byteIndex": 6858
                     },
                     "optional": true,
                     "tsType": {
@@ -5763,9 +6005,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                      "line": 178,
+                      "line": 214,
                       "col": 2,
-                      "byteIndex": 5770
+                      "byteIndex": 7487
                     },
                     "optional": true,
                     "tsType": {
@@ -5787,9 +6029,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                      "line": 192,
+                      "line": 228,
                       "col": 2,
-                      "byteIndex": 6080
+                      "byteIndex": 7797
                     },
                     "optional": true,
                     "tsType": {
@@ -5811,9 +6053,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                      "line": 208,
+                      "line": 244,
                       "col": 2,
-                      "byteIndex": 6442
+                      "byteIndex": 8159
                     },
                     "optional": true,
                     "tsType": {
@@ -5845,9 +6087,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                      "line": 220,
+                      "line": 256,
                       "col": 2,
-                      "byteIndex": 6706
+                      "byteIndex": 8423
                     },
                     "optional": true,
                     "tsType": {
@@ -5873,9 +6115,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                      "line": 232,
+                      "line": 268,
                       "col": 2,
-                      "byteIndex": 6970
+                      "byteIndex": 8687
                     },
                     "optional": true,
                     "tsType": {
@@ -5901,9 +6143,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                      "line": 268,
+                      "line": 304,
                       "col": 2,
-                      "byteIndex": 7819
+                      "byteIndex": 9536
                     },
                     "optional": true,
                     "tsType": {
@@ -5933,9 +6175,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                "line": 271,
+                "line": 307,
                 "col": 0,
-                "byteIndex": 7846
+                "byteIndex": 9563
               },
               "declarationKind": "export",
               "kind": "typeAlias",
@@ -5979,9 +6221,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                "line": 273,
+                "line": 309,
                 "col": 0,
-                "byteIndex": 7900
+                "byteIndex": 9617
               },
               "declarationKind": "export",
               "kind": "typeAlias",
@@ -6053,9 +6295,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                "line": 297,
+                "line": 333,
                 "col": 0,
-                "byteIndex": 8596
+                "byteIndex": 10313
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -6077,9 +6319,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                      "line": 299,
+                      "line": 335,
                       "col": 2,
-                      "byteIndex": 8680
+                      "byteIndex": 10397
                     },
                     "tsType": {
                       "repr": "string",
@@ -6094,9 +6336,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                      "line": 301,
+                      "line": 337,
                       "col": 2,
-                      "byteIndex": 8749
+                      "byteIndex": 10466
                     },
                     "tsType": {
                       "repr": "string",
@@ -6111,9 +6353,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                      "line": 303,
+                      "line": 339,
                       "col": 2,
-                      "byteIndex": 8821
+                      "byteIndex": 10538
                     },
                     "tsType": {
                       "repr": "string",
@@ -6128,9 +6370,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                      "line": 305,
+                      "line": 341,
                       "col": 2,
-                      "byteIndex": 8896
+                      "byteIndex": 10613
                     },
                     "tsType": {
                       "repr": "string",
@@ -6145,9 +6387,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                      "line": 307,
+                      "line": 343,
                       "col": 2,
-                      "byteIndex": 8968
+                      "byteIndex": 10685
                     },
                     "tsType": {
                       "repr": "string",
@@ -6162,9 +6404,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                      "line": 309,
+                      "line": 345,
                       "col": 2,
-                      "byteIndex": 9037
+                      "byteIndex": 10754
                     },
                     "tsType": {
                       "repr": "string",
@@ -6179,9 +6421,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                      "line": 311,
+                      "line": 347,
                       "col": 2,
-                      "byteIndex": 9103
+                      "byteIndex": 10820
                     },
                     "tsType": {
                       "repr": "string",
@@ -6196,9 +6438,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                      "line": 313,
+                      "line": 349,
                       "col": 2,
-                      "byteIndex": 9175
+                      "byteIndex": 10892
                     },
                     "tsType": {
                       "repr": "string",
@@ -6213,9 +6455,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                      "line": 315,
+                      "line": 351,
                       "col": 2,
-                      "byteIndex": 9248
+                      "byteIndex": 10965
                     },
                     "tsType": {
                       "repr": "string",
@@ -6230,9 +6472,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                      "line": 317,
+                      "line": 353,
                       "col": 2,
-                      "byteIndex": 9320
+                      "byteIndex": 11037
                     },
                     "tsType": {
                       "repr": "string",
@@ -6247,9 +6489,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                      "line": 319,
+                      "line": 355,
                       "col": 2,
-                      "byteIndex": 9393
+                      "byteIndex": 11110
                     },
                     "tsType": {
                       "repr": "string",
@@ -6268,9 +6510,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                "line": 330,
+                "line": 366,
                 "col": 0,
-                "byteIndex": 9876
+                "byteIndex": 11593
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -6325,9 +6567,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                "line": 356,
+                "line": 392,
                 "col": 0,
-                "byteIndex": 10391
+                "byteIndex": 12108
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -6355,9 +6597,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                      "line": 362,
+                      "line": 398,
                       "col": 2,
-                      "byteIndex": 10537
+                      "byteIndex": 12254
                     },
                     "tsType": {
                       "repr": "boolean",
@@ -6378,9 +6620,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                      "line": 369,
+                      "line": 405,
                       "col": 2,
-                      "byteIndex": 10673
+                      "byteIndex": 12390
                     },
                     "optional": true,
                     "tsType": {
@@ -6407,9 +6649,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                      "line": 388,
+                      "line": 424,
                       "col": 2,
-                      "byteIndex": 11071
+                      "byteIndex": 12788
                     },
                     "optional": true,
                     "tsType": {
@@ -6431,9 +6673,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                      "line": 393,
+                      "line": 429,
                       "col": 2,
-                      "byteIndex": 11178
+                      "byteIndex": 12895
                     },
                     "optional": true,
                     "tsType": {
@@ -6458,9 +6700,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/types.ts",
-                "line": 405,
+                "line": 441,
                 "col": 13,
-                "byteIndex": 11409
+                "byteIndex": 13126
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -6662,23 +6904,39 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/utils.ts",
-                "line": 37,
+                "line": 38,
                 "col": 0,
-                "byteIndex": 1297
+                "byteIndex": 1394
               },
               "declarationKind": "export",
               "jsDoc": {
-                "doc": "Detects the available display width of the terminal.\nUses `Deno.consoleSize()` when available, falls back to 80 columns.\n",
+                "doc": "Detects the available display width of the terminal.\n",
                 "tags": [
                   {
+                    "kind": "param",
+                    "name": "override",
+                    "doc": "Explicit width to use instead of terminal detection"
+                  },
+                  {
                     "kind": "return",
-                    "doc": "The number of available character columns"
+                    "doc": "The override when given, else `Deno.consoleSize().columns`,\nfalling back to 80 when no terminal is attached (pipes, MCP stdio, tests)"
                   }
                 ]
               },
               "kind": "function",
               "def": {
-                "params": [],
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "override",
+                    "optional": true,
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  }
+                ],
                 "returnType": {
                   "repr": "number",
                   "kind": "keyword",
@@ -6695,9 +6953,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/utils.ts",
-                "line": 56,
+                "line": 60,
                 "col": 0,
-                "byteIndex": 1967
+                "byteIndex": 2138
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -6824,9 +7082,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/utils.ts",
-                "line": 96,
+                "line": 100,
                 "col": 0,
-                "byteIndex": 3145
+                "byteIndex": 3316
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -6926,9 +7184,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/utils.ts",
-                "line": 112,
+                "line": 116,
                 "col": 0,
-                "byteIndex": 3598
+                "byteIndex": 3769
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -7009,9 +7267,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/utils.ts",
-                "line": 140,
+                "line": 144,
                 "col": 0,
-                "byteIndex": 4746
+                "byteIndex": 4917
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -7231,9 +7489,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/utils.ts",
-                "line": 196,
+                "line": 200,
                 "col": 0,
-                "byteIndex": 6352
+                "byteIndex": 6523
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -7296,9 +7554,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/utils.ts",
-                "line": 209,
+                "line": 213,
                 "col": 0,
-                "byteIndex": 6812
+                "byteIndex": 6983
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -7367,9 +7625,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/std/table/src/utils.ts",
-                "line": 223,
+                "line": 227,
                 "col": 0,
-                "byteIndex": 7224
+                "byteIndex": 7395
               },
               "declarationKind": "export",
               "jsDoc": {

@@ -47,6 +47,21 @@
  *   .print();
  * ```
  *
+ * @example Dynamic columns (built at runtime)
+ * ```typescript
+ * import { TableRenderer } from '@epdoc/table';
+ * import type { Column } from '@epdoc/table';
+ *
+ * // `keyof Record<string, string>` is `string`, so any key is allowed.
+ * const columns: Column<Record<string, string>>[] = [
+ *   { key: 'time', header: 'Time', maxWidth: 9 },
+ *   ...config.columns.map((c) => ({ key: c.key, header: c.label, maxWidth: c.width })),
+ * ];
+ *
+ * const renderer = new TableRenderer<Record<string, string>>({ columns, data: rows, fit: true });
+ * renderer.render().forEach((line) => console.log(line));
+ * ```
+ *
  * @example Basic Usage with Column Registry (Original API)
  * ```typescript
  * import { TableRenderer, buildColumns } from '@epdoc/table';

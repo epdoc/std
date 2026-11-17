@@ -103,6 +103,11 @@ export interface SimpleOptions<T> {
   fit?: boolean;
   /** Global minimum column width used during terminal fitting (default: 10) */
   minWidth?: number;
+  /**
+   * Available display width used when `fit` is enabled. Overrides terminal-size
+   * detection, which is unavailable under pipes, MCP stdio and tests.
+   */
+  availableWidth?: number;
 }
 
 /**
@@ -194,6 +199,14 @@ export interface TableBuilder<T> {
    * @param val Minimum visual width (default: 10)
    */
   minWidth(val: number): this;
+
+  /**
+   * Set the available display width used when fitting to the terminal.
+   * Overrides terminal-size detection, which is unavailable under pipes,
+   * MCP stdio and tests.
+   * @param val Available width in columns
+   */
+  availableWidth(val: number): this;
 
   /**
    * Override the data rows.

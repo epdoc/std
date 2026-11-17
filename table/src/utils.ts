@@ -31,11 +31,15 @@ export function buildColumns<T>(
 
 /**
  * Detects the available display width of the terminal.
- * Uses `Deno.consoleSize()` when available, falls back to 80 columns.
  *
- * @returns The number of available character columns
+ * @param override - Explicit width to use instead of terminal detection
+ * @returns The override when given, else `Deno.consoleSize().columns`,
+ * falling back to 80 when no terminal is attached (pipes, MCP stdio, tests)
  */
-export function getAvailableWidth(): number {
+export function getAvailableWidth(override?: number): number {
+  if (override !== undefined) {
+    return override;
+  }
   try {
     return Deno.consoleSize().columns;
   } catch {
