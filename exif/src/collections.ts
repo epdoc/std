@@ -46,6 +46,24 @@ export function readTag<K extends keyof Metadata>(tag: K): (fs: FS.File, meta: M
 }
 
 /**
+ * Factory: read the first parseable duration, in seconds, from the named
+ * duration tags in priority order (e.g. `Duration`, `MediaDuration`).
+ * exiftool emits these as `"H:MM:SS"` strings, bare numbers, or XMP
+ * `{ Scale, Value }` rationals; {@link Meta.Parse.duration} handles all three.
+ */
+export function readDuration(
+  ...tags: Array<'Duration' | 'AudioDuration' | 'MediaDuration' | 'TrackDuration'>
+): (fs: FS.File, meta: Metadata) => number | undefined {
+  return (_fs, m) => {
+    for (const tag of tags) {
+      const seconds = Meta.Parse.duration(m[tag]);
+      if (_.isDefined(seconds)) return seconds;
+    }
+    return undefined;
+  };
+}
+
+/**
  * Enumerate a section's defs and collect property values into a result object.
  * Keys are visited in declaration order. Properties whose value is `undefined`
  * are omitted (per task 1e). In `json` mode, each def's `json` extractor is
@@ -190,7 +208,7 @@ export const videoOtherDef: VideoOtherDef = {
   originatedAt: { value: exifOriginal },
   digitizedAt: { value: exifDigitized },
   modifiedAt: { value: exifModified },
-  duration: { value: (_fs: FS.File, m: Metadata): number | undefined => Meta.Parse.duration(m.Duration) },
+  duration: { value: readDuration('Duration') },
   fileSize: { value: readTag('FileSize') },
   codec: { value: (_fs: FS.File, m: Metadata): string | undefined => Normalize.videoCodec(m) },
   framerate: { value: readTag('VideoFrameRate') },
@@ -226,14 +244,7 @@ export const audioDef: AudioDef = {
   bitsPerSample: { value: (_fs: FS.File, m: Metadata): number | undefined => asInt(m.AudioBitsPerSample) },
   codec: { value: (_fs: FS.File, m: Metadata): string | undefined => Normalize.audioCodec(m) },
   language: { value: readTag('MediaLanguageCode') },
-  duration: {
-    value: (_fs: FS.File, m: Metadata): number | undefined => {
-      return Meta.Parse.duration(m.Duration) ??
-        Meta.Parse.duration(m.AudioDuration) ??
-        Meta.Parse.duration(m.MediaDuration) ??
-        Meta.Parse.duration(m.TrackDuration) ?? undefined;
-    },
-  },
+  duration: { value: readDuration('Duration', 'AudioDuration', 'MediaDuration', 'TrackDuration') },
 };
 
 const asInt = (val: unknown): Integer | undefined => _.isDefined(val) ? _.asInt(val) : undefined;

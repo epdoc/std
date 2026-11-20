@@ -166,6 +166,18 @@ Deno.test('File.video section', async (t) => {
     assertEquals(vid.duration, 3723);
   });
 
+  await t.step('returns video duration from an XMP xmpDM:Duration object', () => {
+    // A Premiere Pro export carries both QuickTime and XMP durations; exiftool
+    // then emits Duration as `{ Scale, Value }` instead of "0:00:45".
+    const file = File.fromMetadata(videoMeta({
+      Duration: { Scale: 0.0000111111111111111, Value: 4072320 },
+      MediaDuration: '0:00:45',
+    }));
+    const vid = file.video;
+    assert(vid);
+    assertEquals(Math.round(vid.duration! * 1000) / 1000, 45.248);
+  });
+
   await t.step('returns codec when available', () => {
     const file = File.fromMetadata(videoMeta({
       CompressorID: 'avc1',

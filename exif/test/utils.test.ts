@@ -67,4 +67,27 @@ Deno.test('parseDuration', async (t) => {
   await t.step('returns undefined for unparseable input', () => {
     assertEquals(Meta.Parse.duration('not a duration'), undefined);
   });
+
+  await t.step('parses an XMP xmpDM:Duration rational', () => {
+    // exiftool replaces Duration with the XMP rational when a file carries
+    // both a QuickTime duration and an xmpDM:Duration (e.g. Premiere Pro).
+    assertEquals(Meta.Parse.duration({ Scale: 0.0001, Value: 432824 }), 43.2824);
+    assertEquals(Meta.Parse.duration({ Scale: 0.001, Value: 3602900 }), 3602.9);
+  });
+
+  await t.step('parses an XMP duration given as numeric strings', () => {
+    assertEquals(Meta.Parse.duration({ Scale: '0.0001', Value: '980575' }), 98.0575);
+  });
+
+  await t.step('returns undefined for a malformed XMP duration', () => {
+    assertEquals(Meta.Parse.duration({ Value: 100 }), undefined);
+    assertEquals(Meta.Parse.duration({ Scale: 0, Value: 100 }), undefined);
+    assertEquals(Meta.Parse.duration({ Scale: 0.0001, Value: 'abc' }), undefined);
+  });
+
+  await t.step('returns undefined for null or non-string, non-object input', () => {
+    assertEquals(Meta.Parse.duration(null), undefined);
+    assertEquals(Meta.Parse.duration(true), undefined);
+    assertEquals(Meta.Parse.duration([]), undefined);
+  });
 });

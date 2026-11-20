@@ -140,6 +140,24 @@ Deno.test('Resolver.duration', async (t) => {
   await t.step('returns undefined when no duration tags exist', () => {
     assertEquals(Meta.Resolver.from(videoMeta()).duration, undefined);
   });
+
+  await t.step('parses an XMP xmpDM:Duration object in the Duration tag', () => {
+    const meta = videoMeta({ Duration: { Scale: 0.0001, Value: 432824 } });
+    assertEquals(Meta.Resolver.from(meta).duration, 43.2824);
+  });
+
+  await t.step('prefers an XMP Duration object over the fallback tags', () => {
+    const meta = videoMeta({
+      Duration: { Scale: 0.001, Value: 43500 },
+      MediaDuration: '9:59',
+    });
+    assertEquals(Meta.Resolver.from(meta).duration, 43.5);
+  });
+
+  await t.step('skips a malformed Duration and uses the fallback tags', () => {
+    const meta = videoMeta({ Duration: { Value: 432824 }, MediaDuration: '0:45' });
+    assertEquals(Meta.Resolver.from(meta).duration, 45);
+  });
 });
 
 // --- codec() ---

@@ -12,6 +12,13 @@ export type ExifDateTime = string;
 export type GpsCoordinate = number | string;
 
 /**
+ * An XMP `xmpDM:Duration` rational as exiftool renders it in its default
+ * (non-numeric) output: `Value` ticks of `Scale` seconds each. Multiply the
+ * two to get seconds, e.g. `{ Scale: 0.0001, Value: 432824 }` = 43.2824 s.
+ */
+export type XmpDuration = { Scale?: number | string; Value?: number | string };
+
+/**
  * Latitude/longitude reference hemisphere. exiftool emits the long form by
  * default (`"North"`) and the short form with `-n` (`"N"`).
  */
@@ -93,11 +100,15 @@ export interface ExifMetadata {
   /**
    * Video duration. Default format is a string with units, e.g. `"2.00 s"`,
    * or `"H:MM:SS"`; with `-n` it is a plain number of seconds.
+   *
+   * When the file also carries an XMP `xmpDM:Duration` (e.g. video exported
+   * from Adobe Premiere Pro), exiftool replaces the string with a rational
+   * object `{ Scale, Value }` whose product is the duration in seconds.
    */
-  Duration?: string | number;
-  AudioDuration?: string | number;
-  MediaDuration?: string | number;
-  TrackDuration?: string | number;
+  Duration?: string | number | XmpDuration;
+  AudioDuration?: string | number | XmpDuration;
+  MediaDuration?: string | number | XmpDuration;
+  TrackDuration?: string | number | XmpDuration;
 
   // --- File size & capture settings ---
   FileSize?: string | number; // e.g. "5.8 MB"

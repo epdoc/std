@@ -262,15 +262,40 @@ export function dateString(value: string | undefined): Parts | undefined {
 }
 
 /**
+ * An XMP `xmpDM:Duration` rational, as exiftool renders it in its default
+ * (non-numeric) output, e.g. `{ Scale: 0.0001, Value: 432824 }` for 43.2824 s.
+ * It replaces a plain `Duration` string with an object when the file carries
+ * an XMP duration alongside its QuickTime duration.
+ */
+type XmpDuration = { Scale?: number | string; Value?: number | string };
+
+/**
+ * Parse `{ Scale, Value }` into seconds, e.g. `0.0001 * 432824` = 43.2824.
+ *
+ * @internal
+ */
+function xmpDuration(value: XmpDuration): number | undefined {
+  const scale = Number(value.Scale);
+  const raw = Number(value.Value);
+  if (!Number.isFinite(scale) || !Number.isFinite(raw) || scale <= 0) return undefined;
+  const seconds = raw * scale;
+  return Number.isFinite(seconds) && seconds >= 0 ? seconds : undefined;
+}
+
+/**
  * Normalize an exiftool video `Duration` value to a number of seconds.
- * Accepts `"2.00 s"`, `"MM:SS"`, `"H:MM:SS"`, a bare number, or a plain
- * numeric string. Returns `undefined` for missing/unparseable input.
+ * Accepts `"2.00 s"`, `"MM:SS"`, `"H:MM:SS"`, a bare number, a plain numeric
+ * string, or an XMP duration object (`{ Scale, Value }`). Returns `undefined`
+ * for missing/unparseable input.
  *
  * @internal Used by {@link File.duration}.
  */
-export function duration(value: string | number | undefined): number | undefined {
-  if (value === undefined) return undefined;
+export function duration(value: unknown): number | undefined {
+  if (!_.isDefined(value)) return undefined;
   if (_.isNumber(value)) return Number.isFinite(value) ? value : undefined;
+  if (!_.isString(value)) {
+    return _.isObject(value) ? xmpDuration(value as XmpDuration) : undefined;
+  }
 
   const s = value.trim();
   if (!s) return undefined;

@@ -408,11 +408,19 @@ export class Resolver {
 
   /**
    * Returns the duration of the video or audio file.
+   *
+   * The tag lookup runs over the flat metadata object rather than the
+   * normalized index, because exiftool can emit `Duration` as an XMP
+   * `{ Scale, Value }` object (for files with an `xmpDM:Duration`), which
+   * the string-only index skips. Since `Duration` has priority over the
+   * fallbacks, sampling the index would hide the primary value.
    */
   get duration(): number | undefined {
     if (!_.isDefined(this.#cache.duration)) {
-      const val = this.getTagValue('Duration', 'MediaDuration', 'AudioDuration', 'TrackDuration');
-      this.#cache.duration = Parse.duration(val);
+      for (const tag of ['Duration', 'MediaDuration', 'AudioDuration', 'TrackDuration'] as const) {
+        this.#cache.duration = Parse.duration(this.meta[tag]);
+        if (_.isDefined(this.#cache.duration)) break;
+      }
     }
     return this.#cache.duration;
   }
